@@ -1,11 +1,10 @@
-import { T, ThreeProps } from '@solid-three/fiber'
-import { createEffect } from 'solid-js'
+import { Ref, createEffect } from 'solid-js'
+import { S3, T } from 'solid-three'
 import * as THREE from 'three'
-import { processProps } from '../helpers/processProps'
-import { RefComponent } from '../helpers/typeHelpers'
-import { createImperativeHandle } from '../helpers/useImperativeHandle'
+import { processProps } from '../utils/process-props'
 
-export type ResizeProps = ThreeProps<'Group'> & {
+export interface ResizeProps extends S3.Props<'Group'> {
+  ref?: Ref<THREE.Group>
   /** Whether to fit into width (x axis), undefined */
   width?: boolean
   /** Whether to fit into height (y axis), undefined */
@@ -18,13 +17,13 @@ export type ResizeProps = ThreeProps<'Group'> & {
   precise?: boolean
 }
 
-export const Resize: RefComponent<THREE.Group, ResizeProps> = (_props) => {
-  const [props, rest] = processProps(
-    _props,
+export function Resize(props: ResizeProps) {
+  const [config, rest] = processProps(
+    props,
     {
       precise: true,
     },
-    ['ref', 'children', 'width', 'height', 'depth', 'box3', 'precise']
+    ['ref', 'children', 'width', 'height', 'depth', 'box3', 'precise'],
   )
 
   let ref: THREE.Group = null!
@@ -33,25 +32,28 @@ export const Resize: RefComponent<THREE.Group, ResizeProps> = (_props) => {
 
   createEffect(() => {
     outer.matrixWorld.identity()
-    let box = props.box3 || new THREE.Box3().setFromObject(inner, props.precise)
+    let box = config.box3 || new THREE.Box3().setFromObject(inner, config.precise)
     const w = box.max.x - box.min.x
     const h = box.max.y - box.min.y
     const d = box.max.z - box.min.z
 
     let dimension = Math.max(w, h, d)
-    if (props.width) dimension = w
-    if (props.height) dimension = h
-    if (props.depth) dimension = d
+    if (config.width) dimension = w
+    if (config.height) dimension = h
+    if (config.depth) dimension = d
 
     outer.scale.setScalar(1 / dimension)
-  }, [props.width, props.height, props.depth, props.box3, props.precise])
+  }, [config.width, config.height, config.depth, config.box3, config.precise])
 
-  createImperativeHandle(props, () => ref)
+  createEffect(() => {
+    if (typeof config.ref === 'function') config.ref(ref)
+    else config.ref = ref
+  })
 
   return (
     <T.Group {...rest} ref={ref}>
       <T.Group ref={outer}>
-        <T.Group ref={inner}>{props.children}</T.Group>
+        <T.Group ref={inner}>{config.children}</T.Group>
       </T.Group>
     </T.Group>
   )

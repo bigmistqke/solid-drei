@@ -1,25 +1,21 @@
-import { ThreeProps, useThree } from '@solid-three/fiber'
 import { createMemo } from 'solid-js'
-import { processProps } from '../helpers/processProps'
-export enum GradientType {
-  Linear = 'linear',
-  Radial = 'radial',
-}
+import { S3, T, useThree } from 'solid-three'
+import { processProps } from '../utils/process-props'
 
-type Props = {
+interface GradientTextureProps extends Omit<S3.Props<'Texture'>, 'type'> {
   stops: Array<number>
   colors: Array<string>
   attach?: string
   size?: number
   width?: number
-  type?: GradientType
+  type?: 'linear' | 'radial'
   innerCircleRadius?: number
   outerCircleRadius?: string | number
-} & ThreeProps<'Texture'>
+}
 
-export function GradientTexture(_props: Props) {
-  const [props, rest] = processProps(
-    _props,
+export function GradientTexture(props: GradientTextureProps) {
+  const [config, rest] = processProps(
+    props,
     {
       size: 1024,
       width: 16,
@@ -28,47 +24,57 @@ export function GradientTexture(_props: Props) {
       innerCircleRadius: 0,
       outerCircleRadius: 'auto',
     },
-    ['size', 'width', 'type', 'innerCircleRadius', 'outerCircleRadius']
+    ['colors', 'innerCircleRadius', 'outerCircleRadius', 'size', 'stops', 'type', 'width'],
   )
-
   const store = useThree()
+
   const canvas = createMemo(() => {
     const canvas = document.createElement('canvas')
     const context = canvas.getContext('2d')!
-    canvas.width = props.width
-    canvas.height = props.size
-    let gradient
-    if (props.type === GradientType.Linear) {
-      gradient = context.createLinearGradient(0, 0, 0, props.size)
+    canvas.width = config.width
+    canvas.height = config.size
+
+    let gradient: CanvasGradient
+
+    if (config.type === 'linear') {
+      gradient = context.createLinearGradient(0, 0, 0, config.size)
     } else {
       const canvasCenterX = canvas.width / 2
       const canvasCenterY = canvas.height / 2
       const radius =
-        props.outerCircleRadius !== 'auto'
-          ? Math.abs(Number(props.outerCircleRadius))
+        config.outerCircleRadius !== 'auto'
+          ? Math.abs(Number(config.outerCircleRadius))
           : Math.sqrt(canvasCenterX ** 2 + canvasCenterY ** 2)
       gradient = context.createRadialGradient(
         canvasCenterX,
         canvasCenterY,
-        Math.abs(props.innerCircleRadius),
+        Math.abs(config.innerCircleRadius),
         canvasCenterX,
         canvasCenterY,
-        radius
+        radius,
       )
     }
 
-    let i = props.stops.length
+    let i = config.stops.length
     while (i--) {
-      gradient.addColorStop(props.stops[i], props.colors[i])
+      gradient.addColorStop(config.stops[i]!, config.colors[i]!)
     }
+
     context.save()
     context.fillStyle = gradient
-    context.fillRect(0, 0, props.width, props.size)
+    context.fillRect(0, 0, config.width, config.size)
     context.restore()
 
     return canvas
   })
 
-  // @ts-ignore ????
-  return <T.CanvasTexture colorSpace={store.gl.outputColorSpace} args={[canvas()]} attach="map" {...rest} />
+  return (
+    <T.CanvasTexture
+      colorSpace={store.gl.outputColorSpace}
+      /* @ts-expect-error TODO: this fails when strict: false */
+      args={[canvas()]}
+      attach="map"
+      {...rest}
+    />
+  )
 }

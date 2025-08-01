@@ -1,10 +1,9 @@
-import { T, type ThreeProps } from '@solid-three/fiber'
-import { createMemo, createRenderEffect } from 'solid-js'
+import { Ref, createMemo, createRenderEffect } from 'solid-js'
+import { S3, T } from 'solid-three'
 import { ExtrudeGeometry, Mesh, Shape } from 'three'
 import { toCreasedNormals } from 'three-stdlib'
-import { processProps } from '../helpers/processProps'
-import { NamedArrayTuple } from '../helpers/ts-utils'
-import { RefComponent } from '../helpers/typeHelpers'
+import { processProps } from '../utils/process-props'
+import { NamedArrayTuple } from '../utils/type-utils'
 
 const eps = 0.00001
 
@@ -18,17 +17,18 @@ function createShape(width: number, height: number, radius0: number) {
   return shape
 }
 
-type Props = {
+interface RoundedBoxProps extends Omit<S3.Props<'Mesh'>, 'args'> {
+  ref?: Ref<Mesh>
   args?: NamedArrayTuple<(width?: number, height?: number, depth?: number) => void>
   radius?: number
   smoothness?: number
   steps?: number
   creaseAngle?: number
-} & Omit<ThreeProps<'Mesh'>, 'args'>
+}
 
-export const RoundedBox: RefComponent<Mesh, Props> = function RoundedBox(_props) {
-  const [props, rest] = processProps(
-    _props,
+export function RoundedBox(props: RoundedBoxProps) {
+  const [config, rest] = processProps(
+    props,
     {
       args: [],
       radius: 0.05,
@@ -36,37 +36,38 @@ export const RoundedBox: RefComponent<Mesh, Props> = function RoundedBox(_props)
       smoothness: 4,
       creaseAngle: 0.4,
     },
-    ['args', 'radius', 'steps', 'smoothness', 'creaseAngle', 'children']
+    ['args', 'radius', 'steps', 'smoothness', 'creaseAngle', 'children'],
   )
 
-  const memo = () => {
-    const [width = 1, height = 1, depth = 1] = props.args
+  let geometry: ExtrudeGeometry
+
+  const args = () => {
+    const [width = 1, height = 1, depth = 1] = config.args
     return { width, height, depth }
   }
 
-  const shape = createMemo(() => createShape(memo().width, memo().height, props.radius))
+  const shape = createMemo(() => createShape(args().width, args().height, config.radius))
   const params = createMemo(() => ({
-    depth: memo().depth - props.radius * 2,
+    depth: args().depth - config.radius * 2,
     bevelEnabled: true,
-    bevelSegments: props.smoothness * 2,
-    steps: props.steps,
-    bevelSize: props.radius - eps,
-    bevelThickness: props.radius,
-    curveSegments: props.smoothness,
+    bevelSegments: config.smoothness * 2,
+    steps: config.steps,
+    bevelSize: config.radius - eps,
+    bevelThickness: config.radius,
+    curveSegments: config.smoothness,
   }))
-  let geomRef: ExtrudeGeometry
 
   createRenderEffect(() => {
-    if (geomRef) {
-      geomRef.center()
-      toCreasedNormals(geomRef, props.creaseAngle)
+    if (geometry) {
+      geometry.center()
+      toCreasedNormals(geometry, config.creaseAngle)
     }
   })
 
   return (
     <T.Mesh {...rest}>
-      <T.ExtrudeGeometry ref={geomRef!} args={[shape(), params()]} />
-      {props.children}
+      <T.ExtrudeGeometry ref={geometry!} args={[shape(), params()]} />
+      {config.children}
     </T.Mesh>
   )
 }

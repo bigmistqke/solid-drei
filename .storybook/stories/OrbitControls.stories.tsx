@@ -1,4 +1,4 @@
-import { T, createPortal, useFrame } from '@solid-three/fiber'
+import { T, createPortal, useFrame } from 'solid-three'
 import { Scene } from 'three'
 import { Box, OrbitControls, PerspectiveCamera, Plane, useFBO } from '../../src'
 import { Setup } from '../Setup'
@@ -29,7 +29,7 @@ OrbitControlsStory.storyName = 'Default'
 export default {
   title: 'Controls/OrbitControls',
   component: OrbitControls,
-  decorators: [(storyFn) => <Setup controls={false}>{storyFn()}</Setup>],
+  decorators: [storyFn => <Setup controls={false}>{storyFn()}</Setup>],
 }
 
 const CustomCamera = (props: OrbitControlsProps) => {
@@ -67,7 +67,7 @@ const CustomCamera = (props: OrbitControlsProps) => {
           {/* @ts-ignore */}
           <T.Color attach="background" args={['hotpink']} />
         </>,
-        virtualScene
+        virtualScene,
       )}
     </>
   )

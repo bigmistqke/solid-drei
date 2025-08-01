@@ -1,27 +1,73 @@
-import { Node, T, ThreeProps, extend, useFrame, useThree } from '@solid-three/fiber'
-import { createMemo } from 'solid-js'
-import * as THREE from 'three'
-import { processProps } from '../helpers/processProps'
-import { RefComponent } from '../helpers/typeHelpers'
-import { createImperativeHandle } from '../helpers/useImperativeHandle'
-import { shaderMaterial } from './shaderMaterial'
+import { Accessor, Ref, Show, createEffect, createMemo } from 'solid-js'
+import { S3, T, extend, useFrame, useThree } from 'solid-three'
+import { Color, ColorRepresentation, MathUtils, Points, Vector2, Vector3, Vector4 } from 'three'
+import { shaderMaterial } from '../materials/shaderMaterial'
+import { processProps } from '../utils/process-props'
 
-export interface Props {
-  /** Number of particles (default: 100) */
-  count?: number
-  /** Speed of particles (default: 1) */
-  speed?: number | Float32Array
-  /** Opacity of particles (default: 1) */
-  opacity?: number | Float32Array
-  /** Color of particles (default: 100) */
-  color?: THREE.ColorRepresentation | Float32Array
-  /** Size of particles (default: randomized between 0 and 1) */
-  size?: number | Float32Array
-  /** The space the particles occupy (default: 1) */
-  scale?: number | [number, number, number] | THREE.Vector3
-  /** Movement factor (default: 1) */
-  noise?: number | [number, number, number] | THREE.Vector3 | Float32Array
+declare global {
+  namespace SolidThree {
+    interface Elements {
+      SparklesImplMaterial: { pixelRatio: number } & typeof SparklesImplMaterial
+    }
+  }
 }
+
+/**********************************************************************************/
+/*                                                                                */
+/*                                      Utils                                     */
+/*                                                                                */
+/**********************************************************************************/
+
+function expandColor(v: Color) {
+  return [v.r, v.g, v.b]
+}
+
+function isVector(v: any): v is Vector2 | Vector3 | Vector4 {
+  return v instanceof Vector2 || v instanceof Vector3 || v instanceof Vector4
+}
+
+function isFloat32Array(def: any): def is Float32Array {
+  return def && (def as Float32Array).constructor === Float32Array
+}
+
+function normalizeVector(v: any): number[] {
+  if (Array.isArray(v)) return v
+  else if (isVector(v)) return v.toArray()
+  return [v, v, v] as number[]
+}
+
+function usePropAsIsOrAsAttribute<T extends any>(
+  getCount: Accessor<number>,
+  getProp: Accessor<T | Float32Array | undefined>,
+  setDefault?: (v: T) => number,
+) {
+  return createMemo(() => {
+    const count = getCount()
+    const prop = getProp?.()
+
+    if (prop === undefined) {
+      return Float32Array.from({ length: count }, setDefault!)
+    }
+    if (isFloat32Array(prop)) {
+      return prop as Float32Array
+    }
+    if (prop instanceof Color) {
+      const a = Array.from({ length: count * 3 }, () => expandColor(prop)).flat()
+      return Float32Array.from(a)
+    }
+    if (isVector(prop) || Array.isArray(prop)) {
+      const a = Array.from({ length: count * 3 }, () => normalizeVector(prop)).flat()
+      return Float32Array.from(a)
+    }
+    return Float32Array.from({ length: count }, () => prop as number)
+  })
+}
+
+/**********************************************************************************/
+/*                                                                                */
+/*                             Sparkles Impl Material                             */
+/*                                                                                */
+/**********************************************************************************/
 
 const SparklesImplMaterial = shaderMaterial(
   { time: 0, pixelRatio: 1 },
@@ -55,58 +101,38 @@ const SparklesImplMaterial = shaderMaterial(
       gl_FragColor = vec4(vColor, strength * vOpacity);
       #include <tonemapping_fragment>
       #include <encodings_fragment>
-    }`
+    }`,
 )
-
-declare global {
-  namespace SolidThree {
-    interface IntrinsicElements {
-      SparklesImplMaterial: Node<any, any>
-    }
-  }
-}
-
-const isFloat32Array = (def: any): def is Float32Array => def && (def as Float32Array).constructor === Float32Array
-
-const expandColor = (v: THREE.Color) => [v.r, v.g, v.b]
-const isVector = (v: any): v is THREE.Vector2 | THREE.Vector3 | THREE.Vector4 =>
-  v instanceof THREE.Vector2 || v instanceof THREE.Vector3 || v instanceof THREE.Vector4
-
-const normalizeVector = (v: any): number[] => {
-  if (Array.isArray(v)) return v
-  else if (isVector(v)) return v.toArray()
-  return [v, v, v] as number[]
-}
-
-function usePropAsIsOrAsAttribute<T extends any>(
-  count: number,
-  prop?: T | Float32Array,
-  setDefault?: (v: T) => number
-) {
-  return createMemo(() => {
-    if (prop !== undefined) {
-      if (isFloat32Array(prop)) {
-        return prop as Float32Array
-      } else {
-        if (prop instanceof THREE.Color) {
-          const a = Array.from({ length: count * 3 }, () => expandColor(prop)).flat()
-          return Float32Array.from(a)
-        } else if (isVector(prop) || Array.isArray(prop)) {
-          const a = Array.from({ length: count * 3 }, () => normalizeVector(prop)).flat()
-          return Float32Array.from(a)
-        }
-        return Float32Array.from({ length: count }, () => prop as number)
-      }
-    }
-    return Float32Array.from({ length: count }, setDefault!)
-  })
-}
 
 extend({ SparklesImplMaterial })
 
-export const Sparkles: RefComponent<THREE.Points, Props & ThreeProps<'Points'>> = (_props) => {
-  const [props, rest] = processProps(
-    _props,
+/**********************************************************************************/
+/*                                                                                */
+/*                                    Sparkles                                    */
+/*                                                                                */
+/**********************************************************************************/
+
+export interface SparklesProps extends S3.Props<'Points'> {
+  ref: Ref<Points>
+  /** Number of particles (default: 100) */
+  count?: number
+  /** Speed of particles (default: 1) */
+  speed?: number | Float32Array
+  /** Opacity of particles (default: 1) */
+  opacity?: number | Float32Array
+  /** Color of particles (default: 100) */
+  color?: ColorRepresentation | Float32Array
+  /** Size of particles (default: randomized between 0 and 1) */
+  size?: number | Float32Array
+  /** The space the particles occupy (default: 1) */
+  scale?: number | [number, number, number] | Vector3
+  /** Movement factor (default: 1) */
+  noise?: number | [number, number, number] | Vector3 | Float32Array
+}
+
+export function Sparkles(props: SparklesProps) {
+  const [config, rest] = processProps(
+    props,
     {
       noise: 1,
       count: 100,
@@ -114,37 +140,55 @@ export const Sparkles: RefComponent<THREE.Points, Props & ThreeProps<'Points'>> 
       opacity: 1,
       scale: 1,
     },
-    ['ref', 'noise', 'count', 'speed', 'opacity', 'scale', 'size', 'color', 'children']
+    ['ref', 'noise', 'count', 'speed', 'opacity', 'scale', 'size', 'color', 'children'],
   )
 
-  let ref: THREE.Points = null!
+  let points: Points = null!
   const store = useThree()
 
-  const _scale = normalizeVector(props.scale)
-  const positions = createMemo(
-    () =>
-      Float32Array.from(Array.from({ length: props.count }, () => _scale.map(THREE.MathUtils.randFloatSpread)).flat()),
-    [props.count, ..._scale]
+  const positions = createMemo(() =>
+    Float32Array.from(
+      Array.from({ length: config.count }, () =>
+        normalizeVector(config.scale).map(MathUtils.randFloatSpread),
+      ).flat(),
+    ),
   )
 
-  const sizes = usePropAsIsOrAsAttribute<number>(props.count, props.size, Math.random)
-  const opacities = usePropAsIsOrAsAttribute<number>(props.count, props.opacity)
-  const speeds = usePropAsIsOrAsAttribute<number>(props.count, props.speed)
-  const noises = usePropAsIsOrAsAttribute<typeof props.noise>(props.count * 3, props.noise)
-  const colors = usePropAsIsOrAsAttribute<THREE.ColorRepresentation>(
-    props.color === undefined ? props.count * 3 : props.count,
-    !isFloat32Array(props.color) ? new THREE.Color(props.color) : props.color,
-    () => 1
+  const sizes = usePropAsIsOrAsAttribute<number>(
+    () => config.count,
+    () => config.size,
+    Math.random,
+  )
+  const opacities = usePropAsIsOrAsAttribute<number>(
+    () => config.count,
+    () => config.opacity,
+  )
+  const speeds = usePropAsIsOrAsAttribute<number>(
+    () => config.count,
+    () => config.speed,
+  )
+  const noises = usePropAsIsOrAsAttribute<typeof config.noise>(
+    () => config.count * 3,
+    () => config.noise,
+  )
+  const colors = usePropAsIsOrAsAttribute<ColorRepresentation>(
+    () => (config.color === undefined ? config.count * 3 : config.count),
+    () => (!isFloat32Array(config.color) ? new Color(config.color) : config.color),
+    () => 1,
   )
 
-  useFrame((state) => {
-    if (ref && ref.material) (ref.material as any).time = state.clock.elapsedTime
+  useFrame(state => {
+    // TODO: implement store.clock in solid-three
+    if (points && points.material) (points.material as any).time = state.clock.elapsedTime
   })
 
-  createImperativeHandle(props, () => ref)
+  createEffect(() => {
+    if (typeof props.ref === 'function') props.ref(points)
+    else props.ref = points
+  })
 
   return (
-    <T.Points key={`particle-${props.count}-${JSON.stringify(props.scale)}`} {...rest} ref={ref}>
+    <T.Points {...rest} ref={points}>
       <T.BufferGeometry>
         <T.BufferAttribute attach="attributes-position" args={[positions(), 3]} />
         <T.BufferAttribute attach="attributes-size" args={[sizes(), 1]} />
@@ -153,11 +197,12 @@ export const Sparkles: RefComponent<THREE.Points, Props & ThreeProps<'Points'>> 
         <T.BufferAttribute attach="attributes-color" args={[colors(), 3]} />
         <T.BufferAttribute attach="attributes-noise" args={[noises(), 3]} />
       </T.BufferGeometry>
-      {props.children ? (
-        props.children
-      ) : (
-        <T.SparklesImplMaterial transparent pixelRatio={store.viewport.dpr} depthWrite={false} />
-      )}
+      <Show
+        when={config.children}
+        fallback={<T.SparklesImplMaterial transparent pixelRatio={store.dpr} depthWrite={false} />}
+      >
+        {config.children}
+      </Show>
     </T.Points>
   )
 }

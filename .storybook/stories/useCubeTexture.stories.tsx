@@ -1,16 +1,18 @@
 import { Setup } from '../Setup'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { Icosahedron, useCubeTexture } from '../../src'
 
 export default {
   title: 'Loaders/CubeTexture',
   component: useCubeTexture,
-  decorators: [(storyFn) => <Setup>{storyFn()}</Setup>],
+  decorators: [storyFn => <Setup>{storyFn()}</Setup>],
 }
 
 function TexturedMeshes() {
-  const envMap = useCubeTexture(['px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png'], { path: 'cube/' })
+  const envMap = useCubeTexture(['px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png'], {
+    path: 'cube/',
+  })
 
   return (
     <Icosahedron args={[3, 4]}>

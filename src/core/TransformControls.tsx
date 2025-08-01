@@ -1,39 +1,40 @@
-import { Primitive, SolidThreeFiber, T, useThree } from '@solid-three/fiber'
-import { Accessor, JSX, createEffect, createMemo, onCleanup, splitProps, untrack } from 'solid-js'
+import { whenever } from '@/utils/conditionals'
+import { Accessor, JSX, Ref, createEffect, createMemo, onCleanup, splitProps } from 'solid-js'
+import { S3, T, useThree } from 'solid-three'
 import * as THREE from 'three'
-import { TransformControls as TransformControlsImpl } from 'three-stdlib'
-import { RefComponent } from '../helpers/typeHelpers'
+import { TransformControls as ThreeTransformControls } from 'three-stdlib'
+import { ControlUtils } from '../control-utils'
 
-type ControlsProto = {
-  enabled: boolean
+type TransformControlsPropsBase = Omit<
+  S3.Props<'Group'> & S3.ClassProps<typeof ThreeTransformControls>,
+  'object' | 'onMouseDown' | 'onMouseUp'
+>
+export interface TransformControlsProps extends TransformControlsPropsBase {
+  ref?: Ref<ThreeTransformControls>
+  axis?: string | null
+  camera?: S3.CameraType
+  children?: JSX.Element
+  domElement?: HTMLElement
+  enabled?: boolean
+  makeDefault?: boolean
+  mode?: 'translate' | 'rotate' | 'scale'
+  object?: THREE.Object3D | Accessor<THREE.Object3D>
+  onChange?: (e?: THREE.Event) => void
+  onMouseDown?: (e?: THREE.Event) => void
+  onMouseUp?: (e?: THREE.Event) => void
+  onObjectChange?: (e?: THREE.Event) => void
+  rotationSnap?: number | null
+  scaleSnap?: number | null
+  showX?: boolean
+  showY?: boolean
+  showZ?: boolean
+  size?: number
+  space?: 'world' | 'local'
+  translationSnap?: number | null
 }
 
-export type TransformControlsProps = SolidThreeFiber.Object3DNode<TransformControlsImpl> &
-  Omit<Parameters<typeof T.Group>[0], 'ref'> & {
-    object?: THREE.Object3D | Accessor<THREE.Object3D>
-    enabled?: boolean
-    axis?: string | null
-    domElement?: HTMLElement
-    mode?: 'translate' | 'rotate' | 'scale'
-    translationSnap?: number | null
-    rotationSnap?: number | null
-    scaleSnap?: number | null
-    space?: 'world' | 'local'
-    size?: number
-    showX?: boolean
-    showY?: boolean
-    showZ?: boolean
-    children?: JSX.Element
-    camera?: THREE.Camera
-    onChange?: (e?: THREE.Event) => void
-    onMouseDown?: (e?: THREE.Event) => void
-    onMouseUp?: (e?: THREE.Event) => void
-    onObjectChange?: (e?: THREE.Event) => void
-    makeDefault?: boolean
-  }
-
-export const TransformControls: RefComponent<TransformControlsImpl, TransformControlsProps> = (_props) => {
-  const [props, rest] = splitProps(_props, [
+export function TransformControls(props: TransformControlsProps) {
+  const [config, rest] = splitProps(props, [
     'camera',
     'children',
     'domElement',
@@ -61,65 +62,44 @@ export const TransformControls: RefComponent<TransformControlsImpl, TransformCon
   ])
 
   const store = useThree()
-  const explCamera = () => props.camera || store.camera
-  const explDomElement = () => (props.domElement || store.events.connected || store.gl.domElement) as HTMLElement
-  const controls = createMemo(() => new TransformControlsImpl(explCamera(), explDomElement()))
+  const camera = () => ControlUtils.getCamera(store, config)
+  const element = () => ControlUtils.getDomElement(store, config)
+  const controls = createMemo(() => new ThreeTransformControls(camera(), element()))
   let group: THREE.Group
 
-  createEffect(() => {
-    if (props.object) {
-      controls().attach(props.object instanceof THREE.Object3D ? props.object : props.object())
-    } else if (group instanceof THREE.Object3D) {
-      controls().attach(group)
-    }
-    onCleanup(() => controls().detach())
-  })
+  ControlUtils.makeDefault(controls, store, config)
+  ControlUtils.addEventHandler(controls, 'change', event => config.onChange?.(event))
+  ControlUtils.addEventHandler(controls, 'mouseUp', event => config.onMouseUp?.(event))
+  ControlUtils.addEventHandler(controls, 'mouseDown', event => config.onMouseDown?.(event))
+  ControlUtils.addEventHandler(controls, 'objectChange', event => config.onObjectChange?.(event))
 
-  createEffect(() => {
-    if (store.controls) {
-      const callback = (event) => ((store.controls as any as ControlsProto).enabled = !event.value)
-      controls().addEventListener('dragging-changed', callback)
-      onCleanup(() => controls().removeEventListener('dragging-changed', callback))
-    }
-  })
-
-  createEffect(() => {
-    const onChange = (e: THREE.Event) => {
-      store.invalidate()
-      props.onChange?.(e)
-    }
-
-    const onMouseDown = (e: THREE.Event) => props.onMouseDown?.(e)
-    const onMouseUp = (e: THREE.Event) => props.onMouseUp?.(e)
-    const onObjectChange = (e: THREE.Event) => props.onObjectChange?.(e)
-
-    controls().addEventListener('change', onChange)
-    controls().addEventListener('mouseDown', onMouseDown)
-    controls().addEventListener('mouseUp', onMouseUp)
-    controls().addEventListener('objectChange', onObjectChange)
-
-    onCleanup(() => {
-      controls().removeEventListener('change', onChange)
-      controls().removeEventListener('mouseDown', onMouseDown)
-      controls().removeEventListener('mouseUp', onMouseUp)
-      controls().removeEventListener('objectChange', onObjectChange)
-    })
-  })
-
-  createEffect(() => {
-    if (props.makeDefault) {
-      const old = untrack(() => store.controls)
-      store.set({
-        controls: controls(),
+  createEffect(
+    whenever(controls, controls => {
+      createEffect(() => {
+        if (!store.controls) return
+        function callback(event: THREE.Event<'dragging-changed'>) {
+          // @ts-expect-error TODO: fix type-error
+          return ((store.controls as any).enabled = !event.value)
+        }
+        controls.addEventListener('dragging-changed', callback)
+        onCleanup(() => controls.removeEventListener('dragging-changed', callback))
       })
-      onCleanup(() => store.set({ controls: old }))
-    }
-  })
+      createEffect(() => {
+        if (config.object) {
+          controls.attach(config.object instanceof THREE.Object3D ? config.object : config.object())
+        } else {
+          controls.attach(group)
+        }
+        onCleanup(() => controls.detach())
+      })
+    }),
+  )
+
   return (
     <>
-      <Primitive object={controls()} {...transformProps} />
+      <T.Primitive object={controls()} {...transformProps} />
       <T.Group ref={group!} {...objectProps}>
-        {props.children}
+        {config.children}
       </T.Group>
     </>
   )

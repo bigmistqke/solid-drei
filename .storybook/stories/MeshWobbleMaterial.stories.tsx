@@ -1,4 +1,4 @@
-import { ThreeProps, useFrame } from '@solid-three/fiber'
+import { ThreeProps, useFrame } from 'solid-three'
 
 import { number, withKnobs } from '@storybook/addon-knobs'
 
@@ -8,7 +8,7 @@ import { Setup } from '../Setup'
 export default {
   title: 'Shaders/MeshWobbleMaterial',
   component: MeshWobbleMaterial,
-  decorators: [withKnobs, (storyFn) => <Setup> {storyFn()}</Setup>],
+  decorators: [withKnobs, storyFn => <Setup> {storyFn()}</Setup>],
 }
 
 function MeshWobbleMaterialScene() {

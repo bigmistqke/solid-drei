@@ -1,11 +1,14 @@
 import { boolean, optionsKnob, withKnobs } from '@storybook/addon-knobs'
 import { Show, createEffect, createSignal, onCleanup, onMount } from 'solid-js'
 import { Object3D } from 'three'
-import { OrbitControls as OrbitControlsImpl, TransformControls as TransformControlsImpl } from 'three-stdlib'
+import {
+  OrbitControls as OrbitControlsImpl,
+  TransformControls as TransformControlsImpl,
+} from 'three-stdlib'
 
 import { Setup } from '../Setup'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { Box, OrbitControls, Select, TransformControls } from '../../src'
 
 export function TransformControlsStory() {
@@ -71,7 +74,7 @@ function TransformControlsLockScene(props) {
   const [orbitEnabled, setOrbitEnabled] = createSignal(true)
 
   onMount(() => {
-    const callback = (event) => setOrbitEnabled(!event.value)
+    const callback = event => setOrbitEnabled(!event.value)
     transformControls.addEventListener('dragging-changed', callback)
     onCleanup(() => transformControls.removeEventListener('dragging-changed', callback))
   })
@@ -114,4 +117,7 @@ export const TransformControlsLockSt = () => {
 }
 
 TransformControlsLockSt.storyName = 'Lock orbit controls while transforming'
-TransformControlsLockSt.decorators = [withKnobs, (storyFn) => <Setup controls={false}>{storyFn()}</Setup>]
+TransformControlsLockSt.decorators = [
+  withKnobs,
+  storyFn => <Setup controls={false}>{storyFn()}</Setup>,
+]

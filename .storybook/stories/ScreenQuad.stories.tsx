@@ -1,4 +1,4 @@
-import { T, ThreeProps, extend, useFrame, useThree } from '@solid-three/fiber'
+import { T, ThreeProps, extend, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
 
 import { Setup } from '../Setup'
@@ -8,7 +8,7 @@ import { ScreenQuad, shaderMaterial } from '../../src'
 export default {
   title: 'Shapes/ScreenQuad',
   component: ScreenQuad,
-  decorators: [(storyFn) => <Setup>{storyFn()}</Setup>],
+  decorators: [storyFn => <Setup>{storyFn()}</Setup>],
 }
 
 const ColorShiftMaterial = shaderMaterial(
@@ -32,7 +32,7 @@ const ColorShiftMaterial = shaderMaterial(
     #include <tonemapping_fragment>
     #include <encodings_fragment>
   }
-  `
+  `,
 )
 
 extend({ ColorShiftMaterial })
@@ -53,7 +53,7 @@ declare global {
 function ScreenQuadScene() {
   const store = useThree()
   const ref: ColorShiftMaterialImpl = null!
-  useFrame((state) => {
+  useFrame(state => {
     if (ref?.uniforms) {
       ref.uniforms.time.value = state.clock.elapsedTime
     }
@@ -61,7 +61,11 @@ function ScreenQuadScene() {
 
   return (
     <ScreenQuad>
-      <T.ColorShiftMaterial ref={ref!} time={0} resolution={[store.size.width, store.size.height]} />
+      <T.ColorShiftMaterial
+        ref={ref!}
+        time={0}
+        resolution={[store.size.width, store.size.height]}
+      />
     </ScreenQuad>
   )
 }

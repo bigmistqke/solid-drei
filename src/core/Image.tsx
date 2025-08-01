@@ -1,41 +1,52 @@
-import { Color, T, ThreeProps, extend } from '@solid-three/fiber'
-import { JSXElement, Show, createMemo, splitProps } from 'solid-js'
-import * as THREE from 'three'
-import { processProps } from '../helpers/processProps'
-import { RefComponent } from '../helpers/typeHelpers'
-import { shaderMaterial } from './shaderMaterial'
+import { Ref, Show, splitProps } from 'solid-js'
+import { S3, T, extend } from 'solid-three'
+import { Color, Mesh, Texture } from 'three'
+import { shaderMaterial } from '../materials/shaderMaterial'
+import { processProps } from '../utils/process-props'
 import { useTexture } from './useTexture'
 
-export type ImageProps = Omit<ThreeProps<'Mesh'>, 'scale'> & {
+interface ImagePropsBase extends Omit<S3.Props<'Mesh'>, 'scale'> {
+  ref?: Ref<Mesh>
   segments?: number
   scale?: number | [number, number]
-  color?: Color
+  color?: S3.Color
   zoom?: number
   grayscale?: number
   toneMapped?: boolean
   transparent?: boolean
   opacity?: number
-} & ({ texture: THREE.Texture; url?: never } | { texture?: never; url: string }) // {texture: THREE.Texture} XOR {url: string}
+}
 
-type ImageMaterialType = ThreeProps<'ShaderMaterial'> & {
+type TextureImageProps = ImagePropsBase & { texture: Texture; url?: never }
+type UrlImageProps = ImagePropsBase & { texture?: never; url: string }
+
+interface ImageMaterialType extends S3.Props<'ShaderMaterial'> {
   scale?: number[]
   imageBounds?: number[]
-  color?: Color
-  map: THREE.Texture
+  color?: S3.Color
+  map: Texture
   zoom?: number
   grayscale?: number
 }
 
 declare global {
   namespace SolidThree {
-    interface IntrinsicElements {
+    interface Elements {
       ImageMaterial: ImageMaterialType
     }
   }
 }
 
 const ImageMaterialImpl = shaderMaterial(
-  { color: new THREE.Color('white'), scale: [1, 1], imageBounds: [1, 1], map: null, zoom: 1, grayscale: 0, opacity: 1 },
+  {
+    color: new Color('white'),
+    scale: [1, 1],
+    imageBounds: [1, 1],
+    map: null,
+    zoom: 1,
+    grayscale: 0,
+    opacity: 1,
+  },
   /* glsl */ `
   varying vec2 vUv;
   void main() {
@@ -74,12 +85,12 @@ const ImageMaterialImpl = shaderMaterial(
     #include <tonemapping_fragment>
     #include <encodings_fragment>
   }
-`
+`,
 )
 
-const ImageBase: RefComponent<THREE.Mesh, Omit<ImageProps, 'url'>, true> = (_props) => {
-  const [props, rest] = processProps(
-    _props,
+function ImageBase(props: Omit<ImageProps, 'url'>) {
+  const [config, rest] = processProps(
+    props,
     {
       segments: 1,
       scale: 1,
@@ -99,39 +110,42 @@ const ImageBase: RefComponent<THREE.Mesh, Omit<ImageProps, 'url'>, true> = (_pro
       'texture',
       'toneMapped',
       'transparent',
-    ]
+    ],
   )
 
   extend({ ImageMaterial: ImageMaterialImpl })
 
-  const planeBounds = () => (Array.isArray(props.scale) ? [props.scale[0], props.scale[1]] : [props.scale, props.scale])
-  const imageBounds = () => [props.texture?.image.width, props.texture?.image.height]
+  const planeBounds = () =>
+    Array.isArray(config.scale) ? [config.scale[0], config.scale[1]] : [config.scale, config.scale]
+  const imageBounds = () => [config.texture?.image.width, config.texture?.image.height]
   return (
     <T.Mesh
-      ref={props.ref}
-      scale={Array.isArray(props.scale) ? [...(props.scale as [number, number]), 1] : props.scale}
+      ref={config.ref}
+      scale={
+        Array.isArray(config.scale) ? [...(config.scale as [number, number]), 1] : config.scale
+      }
       {...rest}
     >
-      <T.PlaneGeometry args={[1, 1, props.segments, props.segments]} />
+      <T.PlaneGeometry args={[1, 1, config.segments, config.segments]} />
       <T.ImageMaterial
-        color={props.color}
-        map={props.texture!}
-        zoom={props.zoom}
-        grayscale={props.grayscale}
-        opacity={props.opacity}
+        color={config.color}
+        map={config.texture!}
+        zoom={config.zoom}
+        grayscale={config.grayscale}
+        opacity={config.opacity}
         scale={planeBounds()}
         imageBounds={imageBounds()}
-        toneMapped={props.toneMapped}
-        transparent={props.transparent}
+        toneMapped={config.toneMapped}
+        transparent={config.transparent}
       />
-      {props.children}
+      {config.children}
     </T.Mesh>
   )
 }
 
-const ImageWithUrl: RefComponent<THREE.Mesh, ImageProps> = (_props) => {
-  const [props, rest] = splitProps(_props, ['url'])
-  const texture = useTexture(props.url!)
+function ImageWithUrl(props: UrlImageProps) {
+  const [config, rest] = splitProps(props, ['url'])
+  const texture = useTexture(config.url)
   return (
     <Show when={texture()}>
       <ImageBase {...rest} texture={texture()} />
@@ -139,16 +153,19 @@ const ImageWithUrl: RefComponent<THREE.Mesh, ImageProps> = (_props) => {
   )
 }
 
-const ImageWithTexture: RefComponent<THREE.Mesh, ImageProps> = (_props) => {
-  const [, rest] = splitProps(_props, ['url'])
-  return <ImageBase {...rest} />
+function ImageWithTexture(props: TextureImageProps) {
+  return <ImageBase {...props} />
 }
 
-export const Image: RefComponent<THREE.Mesh, ImageProps> = (props) => {
-  const memo = createMemo(() => {
-    if (props.url) return <ImageWithUrl {...props} />
-    else if (props.texture) return <ImageWithTexture {...props} />
-    else console.error('<Image /> requires a url or texture')
-  })
-  return memo as unknown as JSXElement
+export type ImageProps = UrlImageProps | TextureImageProps
+
+export function Image(props: ImageProps) {
+  return (
+    <Show
+      when={props.url !== undefined}
+      fallback={<ImageWithTexture {...(props as TextureImageProps)} />}
+    >
+      <ImageWithUrl {...(props as UrlImageProps)} />
+    </Show>
+  )
 }

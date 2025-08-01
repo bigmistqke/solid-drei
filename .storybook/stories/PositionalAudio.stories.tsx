@@ -1,14 +1,14 @@
 import { For } from 'solid-js'
 import { Vector3 } from 'three'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { OrbitControls, PositionalAudio } from '../../src'
 import { Setup } from '../Setup'
 
 export default {
   title: 'Abstractions/PositionalAudio',
   component: PositionalAudioScene,
-  decorators: [(storyFn) => <Setup cameraPosition={new Vector3(0, 0, 20)}>{storyFn()}</Setup>],
+  decorators: [storyFn => <Setup cameraPosition={new Vector3(0, 0, 20)}>{storyFn()}</Setup>],
 }
 
 function PositionalAudioScene() {
@@ -36,7 +36,7 @@ function PositionalAudioScene() {
       <T.Suspense fallback={null}>
         <T.Group position={[0, 0, 5]}>
           <For each={args}>
-            {(arg) => (
+            {arg => (
               <T.Mesh position={arg.position}>
                 <T.SphereGeometry />
                 <T.MeshBasicMaterial wireframe color="hotpink" />

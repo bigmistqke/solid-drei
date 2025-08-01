@@ -1,12 +1,12 @@
 import { Setup } from '../Setup'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { Icosahedron, useTexture } from '../../src'
 
 export default {
   title: 'Loaders/Texture',
   component: useTexture,
-  decorators: [(storyFn) => <Setup>{storyFn()}</Setup>],
+  decorators: [storyFn => <Setup>{storyFn()}</Setup>],
 }
 
 function TexturedMeshes() {
@@ -28,7 +28,11 @@ function TexturedMeshes() {
         <T.MeshMatcapMaterial matcap={resource()?.[1]} />
       </Icosahedron>
       <Icosahedron position={[6, 0, 0]}>
-        <T.MeshStandardMaterial map={props()?.map} metalnessMap={props()?.metalnessMap} metalness={1} />
+        <T.MeshStandardMaterial
+          map={props()?.map}
+          metalnessMap={props()?.metalnessMap}
+          metalness={1}
+        />
       </Icosahedron>
     </>
   )

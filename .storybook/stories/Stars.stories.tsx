@@ -1,12 +1,12 @@
 import { Setup } from '../Setup'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { Plane, Stars } from '../../src'
 
 export default {
   title: 'Staging/Stars',
   component: Stars,
-  decorators: [(storyFn) => <Setup> {storyFn()}</Setup>],
+  decorators: [storyFn => <Setup> {storyFn()}</Setup>],
 }
 
 function StarsScene() {

@@ -1,12 +1,12 @@
 import { Setup } from '../Setup'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { Stats } from '../../src'
 
 export default {
   title: 'Misc/Stats',
   component: Stats,
-  decorators: [(storyFn) => <Setup>{storyFn()}</Setup>],
+  decorators: [storyFn => <Setup>{storyFn()}</Setup>],
 }
 
 function Scene() {

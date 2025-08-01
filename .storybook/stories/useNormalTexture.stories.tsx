@@ -1,14 +1,17 @@
 import { number, withKnobs } from '@storybook/addon-knobs'
 import { Vector2, Vector3 } from 'three'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { useGLTF, useNormalTexture } from '../../src'
 import { Setup } from '../Setup'
 
 export default {
   title: 'Staging/useNormalTexture',
   component: useNormalTexture,
-  decorators: [withKnobs, (storyFn) => <Setup cameraPosition={new Vector3(0, 0, 3)}>{storyFn()}</Setup>],
+  decorators: [
+    withKnobs,
+    storyFn => <Setup cameraPosition={new Vector3(0, 0, 3)}>{storyFn()}</Setup>,
+  ],
 }
 
 function Suzanne() {

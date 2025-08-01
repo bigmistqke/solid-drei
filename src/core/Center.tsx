@@ -1,27 +1,26 @@
-import { T, ThreeProps } from '@solid-three/fiber'
-import { createEffect } from 'solid-js'
-import { Box3, Group, Sphere, Vector3 } from 'three'
-import { processProps } from '../helpers/processProps'
-import { RefComponent } from '../helpers/typeHelpers'
-import { createImperativeHandle } from '../helpers/useImperativeHandle'
+import { Ref, createEffect } from 'solid-js'
+import { S3, T } from 'solid-three'
+import { Box3, Group, Object3D, Sphere, Vector3 } from 'three'
+import { processProps } from '../utils/process-props'
 
-export type OnCenterCallbackProps = {
+export interface OnCenterCallbackProps {
   /** The next parent above <Center> */
-  parent: THREE.Object3D
+  parent: Object3D
   /** The outmost container group of the <Center> component */
-  container: THREE.Object3D
+  container: Object3D
   width: number
   height: number
   depth: number
-  boundingBox: THREE.Box3
-  boundingSphere: THREE.Sphere
-  center: THREE.Vector3
+  boundingBox: Box3
+  boundingSphere: Sphere
+  center: Vector3
   verticalAlignment: number
   horizontalAlignment: number
   depthAlignment: number
 }
 
-export type CenterProps = {
+export interface CenterProps extends S3.Props<'Group'> {
+  ref?: Ref<Group>
   top?: boolean
   right?: boolean
   bottom?: boolean
@@ -44,9 +43,9 @@ export type CenterProps = {
   cacheKey?: any
 }
 
-export const Center: RefComponent<Group, ThreeProps<'Group'> & CenterProps, true> = function Center(_props) {
-  const [props, rest] = processProps(
-    _props,
+export function Center(props: CenterProps) {
+  const [config, rest] = processProps(
+    props,
     {
       precise: true,
       cacheKey: 0,
@@ -67,15 +66,16 @@ export const Center: RefComponent<Group, ThreeProps<'Group'> & CenterProps, true
       'onCentered',
       'precise',
       'cacheKey',
-    ]
+    ],
   )
 
   let ref: Group = null!
   let outer: Group = null!
   let inner: Group = null!
+
   createEffect(() => {
     outer.matrixWorld.identity()
-    const box3 = new Box3().setFromObject(inner, props.precise)
+    const box3 = new Box3().setFromObject(inner, config.precise)
     const center = new Vector3()
     const sphere = new Sphere()
     const width = box3.max.x - box3.min.x
@@ -83,19 +83,19 @@ export const Center: RefComponent<Group, ThreeProps<'Group'> & CenterProps, true
     const depth = box3.max.z - box3.min.z
     box3.getCenter(center)
     box3.getBoundingSphere(sphere)
-    const vAlign = props.top ? height / 2 : props.bottom ? -height / 2 : 0
-    const hAlign = props.left ? -width / 2 : props.right ? width / 2 : 0
-    const dAlign = props.front ? depth / 2 : props.back ? -depth / 2 : 0
+    const vAlign = config.top ? height / 2 : config.bottom ? -height / 2 : 0
+    const hAlign = config.left ? -width / 2 : config.right ? width / 2 : 0
+    const dAlign = config.front ? depth / 2 : config.back ? -depth / 2 : 0
 
     outer.position.set(
-      props.disable || props.disableX ? 0 : -center.x + hAlign,
-      props.disable || props.disableY ? 0 : -center.y + vAlign,
-      props.disable || props.disableZ ? 0 : -center.z + dAlign
+      config.disable || config.disableX ? 0 : -center.x + hAlign,
+      config.disable || config.disableY ? 0 : -center.y + vAlign,
+      config.disable || config.disableZ ? 0 : -center.z + dAlign,
     )
 
     // Only fire onCentered if the bounding box has changed
-    if (typeof props.onCentered !== 'undefined') {
-      props.onCentered({
+    if (typeof config.onCentered !== 'undefined') {
+      config.onCentered({
         parent: ref.parent!,
         container: ref,
         width,
@@ -111,12 +111,15 @@ export const Center: RefComponent<Group, ThreeProps<'Group'> & CenterProps, true
     }
   })
 
-  createImperativeHandle(props, () => ref)
+  createEffect(() => {
+    if (typeof config.ref === 'function') config.ref(ref)
+    else config.ref = ref
+  })
 
   return (
     <T.Group ref={ref} {...rest}>
       <T.Group ref={outer}>
-        <T.Group ref={inner}>{props.children}</T.Group>
+        <T.Group ref={inner}>{config.children}</T.Group>
       </T.Group>
     </T.Group>
   )

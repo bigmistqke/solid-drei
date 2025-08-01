@@ -2,91 +2,80 @@
  *    https://github.com/N8python/caustics
  */
 
-import { extend, SolidThreeFiber, T, ThreeProps, useFrame, useThree } from '@solid-three/fiber'
-import { createContext, createEffect } from 'solid-js'
-import * as THREE from 'three'
+import { Ref, Show, createEffect, createEffect as onMount } from 'solid-js'
+import { S3, T, extend, useFrame, useThree } from 'solid-three'
+import {
+  BackSide,
+  Box3,
+  CameraHelper,
+  Color,
+  CustomBlending,
+  FloatType,
+  FrontSide,
+  Frustum,
+  LinearFilter,
+  LinearMipmapLinearFilter,
+  Matrix4,
+  Mesh,
+  MeshNormalMaterial,
+  Object3D,
+  OneFactor,
+  OrthographicCamera,
+  Plane,
+  PlaneGeometry,
+  Scene,
+  ShaderMaterial,
+  SrcAlphaFactor,
+  Texture,
+  UnsignedByteType,
+  Vector3,
+} from 'three'
 import { FullScreenQuad } from 'three-stdlib'
-import { processProps } from '../helpers/processProps'
-import { RefComponent } from '../helpers/typeHelpers'
-import { createImperativeHandle } from '../helpers/useImperativeHandle'
-import { Edges } from './Edges'
-import { shaderMaterial } from './shaderMaterial'
-import { useFBO } from './useFBO'
-import { useHelper } from './useHelper'
-
-type CausticsMaterialType = THREE.ShaderMaterial & {
-  cameraMatrixWorld?: THREE.Matrix4
-  cameraProjectionMatrixInv?: THREE.Matrix4
-  lightPlaneNormal?: THREE.Vector3
-  lightPlaneConstant?: number
-  normalTexture?: THREE.Texture | null
-  depthTexture?: THREE.Texture | null
-  lightDir?: THREE.Vector3
-  near?: number
-  far?: number
-  modelMatrix?: THREE.Matrix4
-  worldRadius?: number
-  ior?: number
-  bounces?: number
-  resolution?: number
-  size?: number
-  intensity?: number
-}
-
-type CausticsProjectionMaterialType = THREE.MeshNormalMaterial & {
-  viewMatrix: { value?: THREE.Matrix4 }
-  color?: THREE.Color
-  causticsTexture?: THREE.Texture
-  causticsTextureB?: THREE.Texture
-  lightProjMatrix?: THREE.Matrix4
-  lightViewMatrix?: THREE.Matrix4
-}
-
-type CausticsProps = ThreeProps<'Group'> & {
-  /** How many frames it will render, set it to Infinity for runtime, default: 1 */
-  frames?: number
-  /** Enables visual cues to help you stage your scene, default: false */
-  debug?: boolean
-  /** Will display caustics only and skip the models, default: false */
-  causticsOnly?: boolean
-  /** Will include back faces and enable the backsideIOR prop, default: false */
-  backside?: boolean
-  /** The IOR refraction index, default: 1.1 */
-  ior?: number
-  /** The IOR refraction index for back faces (only available when backside is enabled), default: 1.1 */
-  backsideIOR?: number
-  /** The texel size, default: 0.3125 */
-  worldRadius?: number
-  /** Intensity of the prjected caustics, default: 0.05 */
-  intensity?: number
-  /** Caustics color, default: white */
-  color?: SolidThreeFiber.Color
-  /** Buffer resolution, default: 2048 */
-  resolution?: number
-  /** Camera position, it will point towards the contents bounds center, default: [5, 5, 5] */
-  lightSource?: [x: number, y: number, z: number] | THREE.Object3D
-}
+import { shaderMaterial } from '../../materials/shaderMaterial'
+import { processProps } from '../../utils/process-props'
+import { Edges } from '../Edges'
+import { useFBO } from '../unported/useFBO'
+import { useHelper } from '../useHelper'
 
 declare global {
   namespace SolidThree {
-    interface IntrinsicElements {
-      CausticsProjectionMaterial: ThreeProps<'MeshNormalMaterial'> & {
-        viewMatrix?: { value: THREE.Matrix4 }
-        color?: SolidThreeFiber.Color
-        causticsTexture?: THREE.Texture
-        causticsTextureB?: THREE.Texture
-        lightProjMatrix?: THREE.Matrix4
-        lightViewMatrix?: THREE.Matrix4
+    interface Elements {
+      CausticsProjectionMaterial: S3.Props<'MeshNormalMaterial'> & {
+        viewMatrix?: { value: Matrix4 }
+        color?: S3.Color
+        causticsTexture?: Texture
+        causticsTextureB?: Texture
+        lightProjMatrix?: Matrix4
+        lightViewMatrix?: Matrix4
       }
     }
   }
 }
 
-function createNormalMaterial(side = THREE.FrontSide) {
-  const viewMatrix = { value: new THREE.Matrix4() }
-  return Object.assign(new THREE.MeshNormalMaterial({ side }) as CausticsProjectionMaterialType, {
+/**********************************************************************************/
+/*                                                                                */
+/*                                      Utils                                     */
+/*                                                                                */
+/**********************************************************************************/
+
+function createVectorArray() {
+  return Array.from({ length: 8 }, () => new Vector3()) as [
+    Vector3,
+    Vector3,
+    Vector3,
+    Vector3,
+    Vector3,
+    Vector3,
+    Vector3,
+    Vector3,
+  ]
+}
+
+function createNormalMaterial(side = FrontSide) {
+  const viewMatrix = { value: new Matrix4() }
+  return Object.assign(new MeshNormalMaterial({ side }) as CausticsProjectionMaterialType, {
     viewMatrix,
-    onBeforeCompile: (shader) => {
+    onBeforeCompile: shader => {
       shader.uniforms.viewMatrix = viewMatrix
       shader.fragmentShader =
         `vec3 inverseTransformDirection( in vec3 dir, in mat4 matrix ) {
@@ -95,19 +84,34 @@ function createNormalMaterial(side = THREE.FrontSide) {
         shader.fragmentShader.replace(
           '#include <normal_fragment_maps>',
           `#include <normal_fragment_maps>
-           normal = inverseTransformDirection( normal, viewMatrix );\n`
+           normal = inverseTransformDirection( normal, viewMatrix );\n`,
         )
     },
   })
+}
+
+/**********************************************************************************/
+/*                                                                                */
+/*                          Caustics Projection Material                          */
+/*                                                                                */
+/**********************************************************************************/
+
+interface CausticsProjectionMaterialType extends MeshNormalMaterial {
+  viewMatrix: { value?: Matrix4 }
+  color?: Color
+  causticsTexture?: Texture
+  causticsTextureB?: Texture
+  lightProjMatrix?: Matrix4
+  lightViewMatrix?: Matrix4
 }
 
 const CausticsProjectionMaterial = shaderMaterial(
   {
     causticsTexture: null,
     causticsTextureB: null,
-    color: new THREE.Color(),
-    lightProjMatrix: new THREE.Matrix4(),
-    lightViewMatrix: new THREE.Matrix4(),
+    color: new Color(),
+    lightProjMatrix: new Matrix4(),
+    lightViewMatrix: new Matrix4(),
   },
   `varying vec3 vWorldPosition;   
    void main() {
@@ -131,21 +135,21 @@ const CausticsProjectionMaterial = shaderMaterial(
     gl_FragColor = vec4((front + back) * color, 1.0);
     #include <tonemapping_fragment>
     #include <encodings_fragment>
-   }`
+   }`,
 )
 
 const CausticsMaterial = shaderMaterial(
   {
-    cameraMatrixWorld: new THREE.Matrix4(),
-    cameraProjectionMatrixInv: new THREE.Matrix4(),
+    cameraMatrixWorld: new Matrix4(),
+    cameraProjectionMatrixInv: new Matrix4(),
     normalTexture: null,
     depthTexture: null,
-    lightDir: new THREE.Vector3(0, 1, 0),
-    lightPlaneNormal: new THREE.Vector3(0, 1, 0),
+    lightDir: new Vector3(0, 1, 0),
+    lightPlaneNormal: new Vector3(0, 1, 0),
     lightPlaneConstant: 0,
     near: 0.1,
     far: 100,
-    modelMatrix: new THREE.Matrix4(),
+    modelMatrix: new Matrix4(),
     worldRadius: 1 / 40,
     ior: 1.1,
     bounces: 0,
@@ -261,28 +265,79 @@ const CausticsMaterial = shaderMaterial(
     caustic += intensity * (lightPosArea / finalArea);
     // Calculate the area of the triangle in light spaces
     gl_FragColor = vec4(vec3(max(caustic, 0.0)), 1.0);
-  }`
+  }`,
 )
+
+/**********************************************************************************/
+/*                                                                                */
+/*                                    Caustics                                    */
+/*                                                                                */
+/**********************************************************************************/
+
+interface CausticsMaterialType extends ShaderMaterial {
+  cameraMatrixWorld?: Matrix4
+  cameraProjectionMatrixInv?: Matrix4
+  lightPlaneNormal?: Vector3
+  lightPlaneConstant?: number
+  normalTexture?: Texture | null
+  depthTexture?: Texture | null
+  lightDir?: Vector3
+  near?: number
+  far?: number
+  modelMatrix?: Matrix4
+  worldRadius?: number
+  ior?: number
+  bounces?: number
+  resolution?: number
+  size?: number
+  intensity?: number
+}
+
+interface CausticsProps extends S3.Props<'Group'> {
+  ref?: Ref<Scene>
+  /** How many frames it will render, set it to Infinity for runtime, default: 1 */
+  frames?: number
+  /** Enables visual cues to help you stage your scene, default: false */
+  debug?: boolean
+  /** Will display caustics only and skip the models, default: false */
+  causticsOnly?: boolean
+  /** Will include back faces and enable the backsideIOR prop, default: false */
+  backside?: boolean
+  /** The IOR refraction index, default: 1.1 */
+  ior?: number
+  /** The IOR refraction index for back faces (only available when backside is enabled), default: 1.1 */
+  backsideIOR?: number
+  /** The texel size, default: 0.3125 */
+  worldRadius?: number
+  /** Intensity of the prjected caustics, default: 0.05 */
+  intensity?: number
+  /** Caustics color, default: white */
+  color?: S3.Color
+  /** Buffer resolution, default: 2048 */
+  resolution?: number
+  /** Camera position, it will point towards the contents bounds center, default: [5, 5, 5] */
+  lightSource?: [x: number, y: number, z: number] | Object3D
+}
 
 const NORMALPROPS = {
   depth: true,
-  minFilter: THREE.LinearFilter,
-  magFilter: THREE.LinearFilter,
-  type: THREE.UnsignedByteType,
+  minFilter: LinearFilter,
+  magFilter: LinearFilter,
+  type: UnsignedByteType,
 }
 
 const CAUSTICPROPS = {
-  minFilter: THREE.LinearMipmapLinearFilter,
-  magFilter: THREE.LinearFilter,
-  type: THREE.FloatType,
+  minFilter: LinearMipmapLinearFilter,
+  magFilter: LinearFilter,
+  type: FloatType,
   generateMipmaps: true,
 }
 
-const causticsContext = createContext(null)
+export function Caustics(props: CausticsProps) {
+  extend({ CausticsProjectionMaterial })
 
-export const Caustics: RefComponent<any, CausticsProps> = (_props: CausticsProps) => {
-  const [props, rest] = processProps(
-    _props,
+  const [config, rest] = processProps(
+    props,
     {
       frames: 1,
       ior: 1.1,
@@ -309,67 +364,69 @@ export const Caustics: RefComponent<any, CausticsProps> = (_props: CausticsProps
       'intensity',
       'resolution',
       'lightSource',
-    ]
+    ],
   )
-
-  extend({ CausticsProjectionMaterial })
-
-  let ref: THREE.Group = null!
-  let camera: THREE.OrthographicCamera = null!
-  let scene: THREE.Scene = null!
-  let plane: THREE.Mesh<THREE.PlaneGeometry, CausticsProjectionMaterialType> = null!
-
   const store = useThree()
-  const helper = useHelper(props.debug && camera, THREE.CameraHelper)
+  const helper = useHelper(() => (config.debug ? camera : undefined), CameraHelper)
 
-  // Buffers for front and back faces
-  const normalTarget = useFBO(props.resolution, props.resolution, NORMALPROPS)
-  const normalTargetB = useFBO(props.resolution, props.resolution, NORMALPROPS)
-  const causticsTarget = useFBO(props.resolution, props.resolution, CAUSTICPROPS)
-  const causticsTargetB = useFBO(props.resolution, props.resolution, CAUSTICPROPS)
-  // Normal materials for front and back faces
-  const normalMat = createNormalMaterial()
-  const normalMatB = createNormalMaterial(THREE.BackSide)
+  let camera: OrthographicCamera = null!
+  let count = 0
+  let plane: Mesh<PlaneGeometry, CausticsProjectionMaterialType> = null!
+  let scene: Scene = null!
+  let ref: Scene = null!
+
+  const bounds = new Box3()
+  const boundsVertices = createVectorArray()
+  const cameraPosition = new Vector3()
   // The quad that catches the caustics
   const causticsMaterial = new CausticsMaterial() as CausticsMaterialType
   const causticsQuad = new FullScreenQuad(causticsMaterial)
+  const focusPosition = new Vector3()
+  const lightDirection = new Vector3()
+  const lightDirectionInverted = new Vector3()
+  const lightDirections = createVectorArray()
+  const lightProjectionFrustum = new Frustum()
+  const lightProjectionMatrix = new Matrix4()
+  const lightProjectionPlane = new Plane()
+  // Normal materials for front and back faces
+  const normalMaterial = createNormalMaterial()
+  const normalMaterialB = createNormalMaterial(BackSide)
+  const projectedVertices = createVectorArray()
+  const vector = new Vector3()
+  const worldVertices = createVectorArray()
 
-  createEffect(() => {
-    ref?.updateWorldMatrix(false, true)
-  })
-
-  let count = 0
-
-  const v = new THREE.Vector3()
-  const lpF = new THREE.Frustum()
-  const lpM = new THREE.Matrix4()
-  const lpP = new THREE.Plane()
-
-  const lightDir = new THREE.Vector3()
-  const lightDirInv = new THREE.Vector3()
-  const bounds = new THREE.Box3()
-  const focusPos = new THREE.Vector3()
-
-  const boundsVertices: THREE.Vector3[] = []
-  const worldVerts: THREE.Vector3[] = []
-  const projectedVerts: THREE.Vector3[] = []
-  const lightDirs: THREE.Vector3[] = []
-
-  const cameraPos = new THREE.Vector3()
-
-  for (let i = 0; i < 8; i++) {
-    boundsVertices.push(new THREE.Vector3())
-    worldVerts.push(new THREE.Vector3())
-    projectedVerts.push(new THREE.Vector3())
-    lightDirs.push(new THREE.Vector3())
-  }
+  // Buffers for front and back faces
+  const normalTarget = useFBO(
+    () => config.resolution,
+    () => config.resolution,
+    NORMALPROPS,
+  )
+  const normalTargetB = useFBO(
+    () => config.resolution,
+    () => config.resolution,
+    NORMALPROPS,
+  )
+  const causticsTarget = useFBO(
+    () => config.resolution,
+    () => config.resolution,
+    CAUSTICPROPS,
+  )
+  const causticsTargetB = useFBO(
+    () => config.resolution,
+    () => config.resolution,
+    CAUSTICPROPS,
+  )
 
   useFrame(() => {
-    if (props.frames === Infinity || count++ < props.frames) {
-      if (Array.isArray(props.lightSource)) lightDir.fromArray(props.lightSource).normalize()
-      else lightDir.copy(ref.worldToLocal(props.lightSource.getWorldPosition(v)).normalize())
+    if (config.frames === Infinity || count++ < config.frames) {
+      if (Array.isArray(config.lightSource))
+        lightDirection.fromArray(config.lightSource).normalize()
+      else
+        lightDirection.copy(
+          scene.worldToLocal(config.lightSource.getWorldPosition(vector)).normalize(),
+        )
 
-      lightDirInv.copy(lightDir).multiplyScalar(-1)
+      lightDirectionInverted.copy(lightDirection).multiplyScalar(-1)
 
       scene.parent?.matrixWorld.identity()
       bounds.setFromObject(scene, true)
@@ -383,70 +440,82 @@ export const Caustics: RefComponent<any, CausticsProps> = (_props: CausticsProps
       boundsVertices[7].set(bounds.max.x, bounds.max.y, bounds.max.z)
 
       for (let i = 0; i < 8; i++) {
-        worldVerts[i].copy(boundsVertices[i])
+        worldVertices[i]!.copy(boundsVertices[i]!)
       }
 
-      bounds.getCenter(focusPos)
-      boundsVertices.map((v) => v.sub(focusPos))
-      const lightPlane = lpP.set(lightDirInv, 0)
+      bounds.getCenter(focusPosition)
+      boundsVertices.forEach(v => v.sub(focusPosition))
+      const lightPlane = lightProjectionPlane.set(lightDirectionInverted, 0)
 
-      boundsVertices.map((v, i) => lightPlane.projectPoint(v, projectedVerts[i]))
+      boundsVertices.forEach((v, i) => lightPlane.projectPoint(v, projectedVertices[i]!))
 
-      const centralVert = projectedVerts.reduce((a, b) => a.add(b), v.set(0, 0, 0)).divideScalar(projectedVerts.length)
-      const radius = projectedVerts.map((v) => v.distanceTo(centralVert)).reduce((a, b) => Math.max(a, b))
-      const dirLength = boundsVertices.map((x) => x.dot(lightDir)).reduce((a, b) => Math.max(a, b))
+      const centralVert = projectedVertices
+        .reduce((a, b) => a.add(b), vector.set(0, 0, 0))
+        .divideScalar(projectedVertices.length)
+      const radius = projectedVertices
+        .map(v => v.distanceTo(centralVert))
+        .reduce((a, b) => Math.max(a, b))
+      const dirLength = boundsVertices
+        .map(x => x.dot(lightDirection))
+        .reduce((a, b) => Math.max(a, b))
       // Shadows
-      camera.position.copy(cameraPos.copy(lightDir).multiplyScalar(dirLength).add(focusPos))
-      camera.lookAt(scene.localToWorld(focusPos))
-      const dirMatrix = lpM.lookAt(camera.position, focusPos, v.set(0, 1, 0))
+      camera.position.copy(
+        cameraPosition.copy(lightDirection).multiplyScalar(dirLength).add(focusPosition),
+      )
+      camera.lookAt(scene.localToWorld(focusPosition))
+      const directionMatrix = lightProjectionMatrix.lookAt(
+        camera.position,
+        focusPosition,
+        vector.set(0, 1, 0),
+      )
       camera.left = -radius
       camera.right = radius
       camera.top = radius
       camera.bottom = -radius
-      const yOffset = v.set(0, radius, 0).applyMatrix4(dirMatrix)
-      const yTime = (camera.position.y + yOffset.y) / lightDir.y
+      const yOffset = vector.set(0, radius, 0).applyMatrix4(directionMatrix)
+      const yTime = (camera.position.y + yOffset.y) / lightDirection.y
       camera.near = 0.1
       camera.far = yTime
       camera.updateProjectionMatrix()
       camera.updateMatrixWorld()
 
       // Now find size of ground plane
-      const groundProjectedCoords = worldVerts.map((v, i) =>
-        v.add(lightDirs[i].copy(lightDir).multiplyScalar(-v.y / lightDir.y))
+      const groundProjectedCoords = worldVertices.map((v, i) =>
+        v.add(lightDirections[i]!.copy(lightDirection).multiplyScalar(-v.y / lightDirection.y)),
       )
       const centerPos = groundProjectedCoords
-        .reduce((a, b) => a.add(b), v.set(0, 0, 0))
+        .reduce((a, b) => a.add(b), vector.set(0, 0, 0))
         .divideScalar(groundProjectedCoords.length)
       const maxSize =
         2 *
         groundProjectedCoords
-          .map((v) => Math.hypot(v.x - centerPos.x, v.z - centerPos.z))
+          .map(v => Math.hypot(v.x - centerPos.x, v.z - centerPos.z))
           .reduce((a, b) => Math.max(a, b))
       plane.scale.setScalar(maxSize)
       plane.position.copy(centerPos)
 
-      if (props.debug) helper()?.update()
+      if (config.debug) helper()?.update()
 
       // Inject uniforms
-      normalMatB.viewMatrix.value = normalMat.viewMatrix.value = camera.matrixWorldInverse
+      normalMaterialB.viewMatrix.value = normalMaterial.viewMatrix.value = camera.matrixWorldInverse
 
-      const dirLightNearPlane = lpF.setFromProjectionMatrix(
-        lpM.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse)
-      ).planes[4]
+      const dirLightNearPlane = lightProjectionFrustum.setFromProjectionMatrix(
+        lightProjectionMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse),
+      ).planes[4]!
 
       causticsMaterial.cameraMatrixWorld = camera.matrixWorld
       causticsMaterial.cameraProjectionMatrixInv = camera.projectionMatrixInverse
-      causticsMaterial.lightDir = lightDirInv
+      causticsMaterial.lightDir = lightDirectionInverted
 
       causticsMaterial.lightPlaneNormal = dirLightNearPlane.normal
       causticsMaterial.lightPlaneConstant = dirLightNearPlane.constant
 
       causticsMaterial.near = camera.near
       causticsMaterial.far = camera.far
-      causticsMaterial.resolution = props.resolution
+      causticsMaterial.resolution = config.resolution
       causticsMaterial.size = radius
-      causticsMaterial.intensity = props.intensity
-      causticsMaterial.worldRadius = props.worldRadius
+      causticsMaterial.intensity = config.intensity
+      causticsMaterial.worldRadius = config.worldRadius
 
       // Switch the scene on
       scene.visible = true
@@ -454,14 +523,14 @@ export const Caustics: RefComponent<any, CausticsProps> = (_props: CausticsProps
       // Render front face normals
       store.gl.setRenderTarget(normalTarget)
       store.gl.clear()
-      scene.overrideMaterial = normalMat
+      scene.overrideMaterial = normalMaterial
       store.gl.render(scene, camera)
 
       // Render back face normals, if enabled
       store.gl.setRenderTarget(normalTargetB)
       store.gl.clear()
-      if (props.backside) {
-        scene.overrideMaterial = normalMatB
+      if (config.backside) {
+        scene.overrideMaterial = normalMaterialB
         store.gl.render(scene, camera)
       }
 
@@ -469,7 +538,7 @@ export const Caustics: RefComponent<any, CausticsProps> = (_props: CausticsProps
       scene.overrideMaterial = null
 
       // Render front face caustics
-      causticsMaterial.ior = props.ior
+      causticsMaterial.ior = config.ior
       plane.material.lightProjMatrix = camera.projectionMatrix
       plane.material.lightViewMatrix = camera.matrixWorldInverse
       causticsMaterial.normalTexture = normalTarget.texture
@@ -479,46 +548,51 @@ export const Caustics: RefComponent<any, CausticsProps> = (_props: CausticsProps
       causticsQuad.render(store.gl)
 
       // Render back face caustics, if enabled
-      causticsMaterial.ior = props.backsideIOR
+      causticsMaterial.ior = config.backsideIOR
       causticsMaterial.normalTexture = normalTargetB.texture
       causticsMaterial.depthTexture = normalTargetB.depthTexture
       store.gl.setRenderTarget(causticsTargetB)
       store.gl.clear()
-      if (props.backside) causticsQuad.render(store.gl)
+      if (config.backside) causticsQuad.render(store.gl)
 
       // Reset render target
       store.gl.setRenderTarget(null)
 
       // Switch the scene off if caustics is all that's wanted
-      if (props.causticsOnly) scene.visible = false
+      if (config.causticsOnly) scene.visible = false
     }
   })
 
-  createImperativeHandle(props, () => ref)
+  onMount(() => scene?.updateWorldMatrix(false, true))
+
+  createEffect(() => {
+    if (typeof config.ref === 'function') config.ref(scene)
+    else config.ref = scene
+  })
 
   return (
     <T.Group {...rest}>
       <T.Scene ref={scene}>
         <T.OrthographicCamera ref={camera} up={[0, 1, 0]} />
-        {props.children}
+        {config.children}
       </T.Scene>
       <T.Mesh renderOrder={2} ref={plane} rotation-x={-Math.PI / 2}>
         <T.PlaneGeometry />
         <T.CausticsProjectionMaterial
           transparent
-          color={props.color}
+          color={config.color}
           causticsTexture={causticsTarget.texture}
           causticsTextureB={causticsTargetB.texture}
-          blending={THREE.CustomBlending}
-          blendSrc={THREE.OneFactor}
-          blendDst={THREE.SrcAlphaFactor}
+          blending={CustomBlending}
+          blendSrc={OneFactor}
+          blendDst={SrcAlphaFactor}
           depthWrite={false}
         />
-        {props.debug && (
+        <Show when={config.debug}>
           <Edges>
             <T.LineBasicMaterial color="#ffff00" toneMapped={false} />
           </Edges>
-        )}
+        </Show>
       </T.Mesh>
     </T.Group>
   )

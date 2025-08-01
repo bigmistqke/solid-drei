@@ -1,4 +1,4 @@
-import { Portal, T, useFrame, useThree } from '@solid-three/fiber'
+import { Portal, T, useFrame, useThree } from 'solid-three'
 import { For, createMemo, createSignal } from 'solid-js'
 import * as THREE from 'three'
 
@@ -9,7 +9,7 @@ import { OrthographicCamera, useCamera } from '../../src'
 export default {
   title: 'Misc/useCamera',
   component: UseCameraScene,
-  decorators: [(storyFn) => <Setup cameraPosition={new THREE.Vector3(0, 0, 5)}>{storyFn()}</Setup>],
+  decorators: [storyFn => <Setup cameraPosition={new THREE.Vector3(0, 0, 5)}>{storyFn()}</Setup>],
 }
 
 // s3f:   event-system with Portal is currently broken
@@ -56,7 +56,9 @@ function UseCameraScene() {
           onPointerMove={handlePointerMove}
         >
           <For each={[...Array(6)]}>
-            {(_, index) => <T.MeshLambertMaterial color="hotpink" wireframe={hover() !== index()} />}
+            {(_, index) => (
+              <T.MeshLambertMaterial color="hotpink" wireframe={hover() !== index()} />
+            )}
           </For>
           <T.BoxGeometry args={[60, 60, 60]} />
         </T.Mesh>

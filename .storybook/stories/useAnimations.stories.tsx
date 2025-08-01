@@ -5,13 +5,16 @@ import { GLTF } from 'three-stdlib'
 
 import { Setup } from '../Setup'
 
-import { Primitive, T, ThreeProps } from '@solid-three/fiber'
+import { Primitive, T, ThreeProps } from 'solid-three'
 import { useAnimations, useGLTF, useMatcapTexture } from '../../src'
 
 export default {
   title: 'Abstractions/useAnimations',
   component: useAnimations,
-  decorators: [(storyFn) => <Setup cameraPosition={new Vector3(0, 0, 3)}>{storyFn()}</Setup>, withKnobs],
+  decorators: [
+    storyFn => <Setup cameraPosition={new Vector3(0, 0, 3)}>{storyFn()}</Setup>,
+    withKnobs,
+  ],
 }
 
 type GLTFResult = GLTF & {
@@ -67,11 +70,17 @@ function YBotModel(props: ThreeProps<'Group'>) {
     <T.Group ref={setYbotRef} {...props} dispose={null}>
       <T.Group rotation={[Math.PI / 2, 0, 0]} scale={[0.01, 0.01, 0.01]}>
         <Primitive object={gltf()?.nodes.mixamorigHips} />
-        <T.SkinnedMesh geometry={gltf()?.nodes.YB_Body.geometry} skeleton={gltf()?.nodes.YB_Body.skeleton}>
+        <T.SkinnedMesh
+          geometry={gltf()?.nodes.YB_Body.geometry}
+          skeleton={gltf()?.nodes.YB_Body.skeleton}
+        >
           {/* s3f   skinning-prop is undefined */}
           <T.MeshMatcapMaterial matcap={matcapBody()} skinning />
         </T.SkinnedMesh>
-        <T.SkinnedMesh geometry={gltf()?.nodes.YB_Joints.geometry} skeleton={gltf()?.nodes.YB_Joints.skeleton}>
+        <T.SkinnedMesh
+          geometry={gltf()?.nodes.YB_Joints.geometry}
+          skeleton={gltf()?.nodes.YB_Joints.skeleton}
+        >
           <T.MeshMatcapMaterial matcap={matcapJoints()} skinning />
         </T.SkinnedMesh>
       </T.Group>

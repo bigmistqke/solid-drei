@@ -1,6 +1,6 @@
 import { Setup } from '../Setup'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { Box, FirstPersonControls } from '../../src'
 
 export const FirstPersonControlsStory = ({ ...args }) => (
@@ -33,5 +33,5 @@ FirstPersonControlsStory.storyName = 'Default'
 export default {
   title: 'Controls/FirstPersonControls',
   component: FirstPersonControls,
-  decorators: [(storyFn) => <Setup controls={false}>{storyFn()}</Setup>],
+  decorators: [storyFn => <Setup controls={false}>{storyFn()}</Setup>],
 }

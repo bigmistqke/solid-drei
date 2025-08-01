@@ -4,7 +4,7 @@ import { Vector3 } from 'three'
 
 import { Setup } from '../Setup'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { Facemesh, FacemeshDatas } from '../../src'
 
 export default {
@@ -12,7 +12,7 @@ export default {
   component: Facemesh,
   decorators: [
     withKnobs,
-    (storyFn) => (
+    storyFn => (
       <Setup cameraPosition={new Vector3(0, 0, 5)} cameraFov={60}>
         {storyFn()}
       </Setup>
@@ -32,12 +32,20 @@ export const FacemeshSt = ({ depth, origin, eyes, eyesAsOrigin, offset, offsetSc
       faceBlendshapes={FacemeshDatas.SAMPLE_FACELANDMARKER_RESULT.faceBlendshapes[0]}
       eyesAsOrigin={eyesAsOrigin}
       offset={offset}
-      facialTransformationMatrix={FacemeshDatas.SAMPLE_FACELANDMARKER_RESULT.facialTransformationMatrixes[0]}
+      facialTransformationMatrix={
+        FacemeshDatas.SAMPLE_FACELANDMARKER_RESULT.facialTransformationMatrixes[0]
+      }
       offsetScalar={offsetScalar}
       debug={debug}
       rotation-z={Math.PI}
     >
-      <T.MeshStandardMaterial side={THREE.DoubleSide} color="#cbcbcb" flatShading={true} transparent opacity={0.98} />
+      <T.MeshStandardMaterial
+        side={THREE.DoubleSide}
+        color="#cbcbcb"
+        flatShading={true}
+        transparent
+        opacity={0.98}
+      />
     </Facemesh>
   </>
 )

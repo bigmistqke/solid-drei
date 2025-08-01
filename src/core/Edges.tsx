@@ -1,17 +1,16 @@
-import { SolidThreeFiber, T } from '@solid-three/fiber'
-import { createRenderEffect } from 'solid-js'
-import * as THREE from 'three'
-import { processProps } from '../helpers/processProps'
-import { RefComponent } from '../helpers/typeHelpers'
-import { createImperativeHandle } from '../helpers/useImperativeHandle'
+import { Ref, createEffect } from 'solid-js'
+import { S3, T } from 'solid-three'
+import { EdgesGeometry, LineSegments, Mesh } from 'three'
+import { processProps } from '../utils/process-props'
 
-type Props = Parameters<typeof T.LineSegments>[0] & {
+interface EdgesProps extends S3.Props<'LineSegments'> {
+  ref?: Ref<LineSegments>
   threshold?: number
-  color?: SolidThreeFiber.Color
+  color?: S3.Color
 }
 
-export const Edges: RefComponent<THREE.LineSegments, Props, true> = (_props) => {
-  const [props, rest] = processProps(_props, { threshold: 15, color: 'black' }, [
+export const Edges = (props: EdgesProps) => {
+  const [config, rest] = processProps(props, { threshold: 15, color: 'black' }, [
     'ref',
     'userData',
     'children',
@@ -19,22 +18,31 @@ export const Edges: RefComponent<THREE.LineSegments, Props, true> = (_props) => 
     'threshold',
     'color',
   ])
-  const ref: THREE.LineSegments = null!
-  createRenderEffect(() => {
-    const parent = ref.parent as THREE.Mesh
+  let lineSegments: LineSegments = null!
+
+  createEffect(() => {
+    const parent = lineSegments.parent as Mesh
     if (parent) {
-      const geom = props.geometry || parent.geometry
-      if (geom !== ref.userData.currentGeom || props.threshold !== ref.userData.currentThreshold) {
-        ref.userData.currentGeom = geom
-        ref.userData.currentThreshold = props.threshold
-        ref.geometry = new THREE.EdgesGeometry(geom, props.threshold)
+      const geom = config.geometry || parent.geometry
+      if (
+        geom !== lineSegments.userData.currentGeom ||
+        config.threshold !== lineSegments.userData.currentThreshold
+      ) {
+        lineSegments.userData.currentGeom = geom
+        lineSegments.userData.currentThreshold = config.threshold
+        lineSegments.geometry = new EdgesGeometry(geom, config.threshold)
       }
     }
   })
-  createImperativeHandle(props, () => ref)
+
+  createEffect(() => {
+    if (typeof props.ref === 'function') props.ref(lineSegments)
+    else props.ref = lineSegments
+  })
+
   return (
-    <T.LineSegments ref={ref} raycast={() => null} {...rest}>
-      {props.children ? props.children : <T.LineBasicMaterial color={props.color} />}
+    <T.LineSegments ref={lineSegments} raycast={() => null} {...rest}>
+      {config.children ? config.children : <T.LineBasicMaterial color={config.color} />}
     </T.LineSegments>
   )
 }

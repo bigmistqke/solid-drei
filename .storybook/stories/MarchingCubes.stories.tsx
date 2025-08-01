@@ -2,14 +2,14 @@ import { Color, Group, Vector3 } from 'three'
 
 import { Setup } from '../Setup'
 
-import { T, useFrame } from '@solid-three/fiber'
+import { T, useFrame } from 'solid-three'
 import { MarchingCube, MarchingCubes, MarchingPlane, OrbitControls } from '../../src'
 
 export default {
   title: 'Abstractions/MarchingCubes',
   component: MarchingCubes,
   decorators: [
-    (storyFn) => (
+    storyFn => (
       <Setup controls={false} cameraPosition={new Vector3(0, 0, 10)}>
         {storyFn()}
       </Setup>
@@ -29,7 +29,12 @@ const MarchingCubesScene = ({ resolution, maxPolyCount, planeX, planeY, planeZ }
   })
 
   return (
-    <MarchingCubes resolution={resolution} maxPolyCount={maxPolyCount} enableColors={true} scale={2}>
+    <MarchingCubes
+      resolution={resolution}
+      maxPolyCount={maxPolyCount}
+      enableColors={true}
+      scale={2}
+    >
       <MarchingCube ref={cubeRefOne!} color={new Color('#f0f')} position={[0.5, 0.6, 0.5]} />
       <MarchingCube ref={cubeRefTwo!} color={new Color('#ff0')} position={[0.5, 0.5, 0.5]} />
 

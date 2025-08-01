@@ -1,22 +1,20 @@
-import { Primitive, SolidThreeFiber } from '@solid-three/fiber'
-import { createRenderEffect } from 'solid-js'
+import { Ref, createRenderEffect } from 'solid-js'
+import { S3, T } from 'solid-three'
 import { Vector3 } from 'three'
 import { Sky as SkyImpl } from 'three-stdlib'
-import { processProps } from '../helpers/processProps'
-import { RefComponent } from '../helpers/typeHelpers'
+import { processProps } from '../utils/process-props'
 
-type Props = {
-  distance?: number
-  sunPosition?: SolidThreeFiber.Vector3
-  inclination?: number
-  azimuth?: number
-  mieCoefficient?: number
-  mieDirectionalG?: number
-  rayleigh?: number
-  turbidity?: number
-}
+/**********************************************************************************/
+/*                                                                                */
+/*                                      Utils                                     */
+/*                                                                                */
+/**********************************************************************************/
 
-export function calcPosFromAngles(inclination: number, azimuth: number, vector: Vector3 = new Vector3()) {
+export function calculatePositionFromAngles(
+  inclination: number,
+  azimuth: number,
+  vector: Vector3 = new Vector3(),
+) {
   const theta = Math.PI * (inclination - 0.5)
   const phi = 2 * Math.PI * (azimuth - 0.5)
 
@@ -27,9 +25,27 @@ export function calcPosFromAngles(inclination: number, azimuth: number, vector: 
   return vector
 }
 
-export const Sky: RefComponent<SkyImpl, Props> = (_props) => {
-  const [props, rest] = processProps(
-    _props,
+/**********************************************************************************/
+/*                                                                                */
+/*                                       Sky                                      */
+/*                                                                                */
+/**********************************************************************************/
+
+interface SkyProps {
+  ref?: Ref<SkyImpl>
+  distance?: number
+  sunPosition?: S3.Vector3
+  inclination?: number
+  azimuth?: number
+  mieCoefficient?: number
+  mieDirectionalG?: number
+  rayleigh?: number
+  turbidity?: number
+}
+
+export function Sky(props: SkyProps) {
+  const [config, rest] = processProps(
+    props,
     {
       inclination: 0.6,
       azimuth: 0.1,
@@ -49,25 +65,24 @@ export const Sky: RefComponent<SkyImpl, Props> = (_props) => {
       'rayleigh',
       'turbidity',
       'sunPosition',
-    ]
+    ],
   )
 
-  const sunPosition = () => props.sunPosition || calcPosFromAngles(props.inclination, props.azimuth)
-
-  const scale = new Vector3()
-  createRenderEffect(() => scale.setScalar(props.distance))
-
   const sky = new SkyImpl()
+  const scale = new Vector3()
+  createRenderEffect(() => scale.setScalar(config.distance))
 
   return (
-    <Primitive
+    <T.Primitive
       object={sky}
-      ref={props.ref}
-      material-uniforms-mieCoefficient-value={props.mieCoefficient}
-      material-uniforms-mieDirectionalG-value={props.mieDirectionalG}
-      material-uniforms-rayleigh-value={props.rayleigh}
-      material-uniforms-sunPosition-value={sunPosition()}
-      material-uniforms-turbidity-value={props.turbidity}
+      ref={config.ref}
+      material-uniforms-mieCoefficient-value={config.mieCoefficient}
+      material-uniforms-mieDirectionalG-value={config.mieDirectionalG}
+      material-uniforms-rayleigh-value={config.rayleigh}
+      material-uniforms-sunPosition-value={
+        config.sunPosition || calculatePositionFromAngles(config.inclination, config.azimuth)
+      }
+      material-uniforms-turbidity-value={config.turbidity}
       scale={scale}
       {...rest}
     />

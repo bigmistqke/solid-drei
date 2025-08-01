@@ -1,43 +1,39 @@
-import { Object3DNode } from '@solid-three/fiber'
-import { createEffect, createMemo } from 'solid-js'
+import { Ref, createEffect, createMemo } from 'solid-js'
+import { S3 } from 'solid-three'
 import { QuadraticBezierCurve3, Vector3 } from 'three'
 import { Line2 } from 'three-stdlib'
-import { createRef } from '../helpers/createRef'
-import { mergeRefs } from '../helpers/mergeRefs'
-import { processProps } from '../helpers/processProps'
-import { RefComponent } from '../helpers/typeHelpers'
+import { processProps } from '../utils/process-props'
 import { Line, LineProps } from './Line'
 
-type Props = Omit<LineProps, 'points' | 'ref' | 'segments'> & {
-  start: Vector3 | [number, number, number]
-  end: Vector3 | [number, number, number]
-  mid?: Vector3 | [number, number, number]
+const VECTOR = new Vector3()
+
+interface QuadraticBezierLineRef extends Line2 {
+  setPoints: (start: S3.Vector3, end: S3.Vector3, mid: S3.Vector3) => void
+}
+interface QuadraticBezierLineProps extends Omit<LineProps, 'points' | 'ref' | 'segments'> {
+  ref: Ref<QuadraticBezierLineRef>
+  start?: S3.Vector3
+  end?: S3.Vector3
+  mid?: S3.Vector3
   segments?: number
 }
 
-type Line2Props = Object3DNode<Line2> & {
-  setPoints: (
-    start: Vector3 | [number, number, number],
-    end: Vector3 | [number, number, number],
-    mid: Vector3 | [number, number, number]
-  ) => void
-}
-
-const v = new Vector3()
-export const QuadraticBezierLine: RefComponent<Line2Props, Props> = function QuadraticBezierLine(_props) {
-  const [props, rest] = processProps(
-    _props,
+export function QuadraticBezierLine(props: QuadraticBezierLineProps) {
+  const [config, rest] = processProps(
+    props,
     {
-      start: [0, 0, 0],
       end: [0, 0, 0],
+      mid: [0, 0, 0],
       segments: 20,
+      start: [0, 0, 0],
     },
-    ['ref', 'start', 'end', 'mid', 'segments']
+    ['ref', 'start', 'end', 'mid', 'segments'],
   )
 
-  const lineRef = createRef<Line2Props>(null!)
+  let quadraticBezierLine: QuadraticBezierLineRef
   const curve = new QuadraticBezierCurve3(undefined as any, undefined as any, undefined as any)
-  const getPoints = (start, end, mid, segments = 20) => {
+
+  function getPoints(start: S3.Vector3, end: S3.Vector3, mid: S3.Vector3, segments = 20) {
     if (start instanceof Vector3) curve.v0.copy(start)
     else curve.v0.set(...(start as [number, number, number]))
     if (end instanceof Vector3) curve.v2.copy(end)
@@ -51,27 +47,25 @@ export const QuadraticBezierLine: RefComponent<Line2Props, Props> = function Qua
         curve.v0
           .clone()
           .add(curve.v2.clone().sub(curve.v0))
-          .add(v.set(0, curve.v0.y - curve.v2.y, 0))
+          .add(VECTOR.set(0, curve.v0.y - curve.v2.y, 0)),
       )
     }
     return curve.getPoints(segments)
   }
 
+  const points = createMemo(() => getPoints(config.start, config.end, config.mid, config.segments))
+
   createEffect(() => {
-    lineRef.ref.setPoints = (
-      start: Vector3 | [number, number, number],
-      end: Vector3 | [number, number, number],
-      mid: Vector3 | [number, number, number]
-    ) => {
+    quadraticBezierLine.setPoints = (start: S3.Vector3, end: S3.Vector3, mid: S3.Vector3) => {
       const points = getPoints(start, end, mid)
-      if (lineRef.ref.geometry) lineRef.ref.geometry.setPositions(points.map((p) => p.toArray()).flat())
+      if (quadraticBezierLine.geometry)
+        quadraticBezierLine.geometry.setPositions(points.map(p => p.toArray()).flat())
     }
+    createEffect(() => {
+      if (typeof config.ref === 'function') config.ref(quadraticBezierLine)
+      else config.ref = quadraticBezierLine
+    })
   })
 
-  const points = createMemo(
-    () => getPoints(props.start, props.end, props.mid, props.segments),
-    [props.start, props.end, props.mid, props.segments]
-  )
-  // s3f:   ref is Line2Props? idgi.
-  return <Line ref={mergeRefs(lineRef, props)} points={points()} {...rest} />
+  return <Line ref={quadraticBezierLine!} points={points()} {...rest} />
 }

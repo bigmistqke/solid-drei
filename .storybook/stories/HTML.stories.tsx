@@ -4,7 +4,7 @@ import * as THREE from 'three'
 import { Setup } from '../Setup'
 import { useTurntable } from '../useTurntable'
 
-import { T, useFrame, useThree } from '@solid-three/fiber'
+import { T, useFrame, useThree } from 'solid-three'
 import { Object3D } from 'three'
 import { Html, Icosahedron, OrthographicCamera } from '../../src'
 import { processProps } from '../../src/helpers/processProps'
@@ -13,17 +13,21 @@ import { CalculatePosition, HtmlProps } from '../../src/web/Html'
 export default {
   title: 'Misc/Html',
   component: Html,
-  decorators: [(storyFn) => <Setup cameraPosition={new THREE.Vector3(-20, 20, -20)}> {storyFn()}</Setup>],
+  decorators: [
+    storyFn => <Setup cameraPosition={new THREE.Vector3(-20, 20, -20)}> {storyFn()}</Setup>,
+  ],
 }
 
-function HTMLScene(_props: Omit<HtmlProps, 'children'> & { color?: string; children?: JSX.Element }) {
+function HTMLScene(
+  _props: Omit<HtmlProps, 'children'> & { color?: string; children?: JSX.Element },
+) {
   const [props, htmlProps] = processProps(
     _props,
     {
       children: null!,
       color: 'hotpink',
     },
-    ['children', 'color']
+    ['children', 'color'],
   )
 
   const turntable = useTurntable()
@@ -148,7 +152,12 @@ function HTMLOccluderScene() {
         </Icosahedron>
         <Icosahedron name="yellow" args={[5, 5]} position={[16, 0, 0]}>
           <T.MeshBasicMaterial color="yellow" />
-          <Html transform position={[0, 0, -6]} class="html-story-label html-story-label-B" occlude="blending">
+          <Html
+            transform
+            position={[0, 0, -6]}
+            class="html-story-label html-story-label-B"
+            occlude="blending"
+          >
             Blending w/ transform
           </Html>
         </Icosahedron>

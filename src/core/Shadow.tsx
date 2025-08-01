@@ -1,10 +1,10 @@
-import { T, ThreeProps } from '@solid-three/fiber'
-import { createMemo, onMount } from 'solid-js'
-import { Color, DoubleSide } from 'three'
-import { processProps } from '../helpers/processProps'
-import { RefComponent } from '../helpers/typeHelpers'
+import { Ref, createMemo, onMount } from 'solid-js'
+import { S3, T } from 'solid-three'
+import { Color, DoubleSide, Mesh, MeshBasicMaterial } from 'three'
+import { processProps } from '../utils/process-props'
 
-type Props = ThreeProps<'Mesh'> & {
+interface ShadowProps extends S3.Props<'Mesh'> {
+  ref?: Ref<Mesh>
   colorStop?: number
   fog?: boolean
   color?: Color | number | string
@@ -12,12 +12,13 @@ type Props = ThreeProps<'Mesh'> & {
   depthWrite?: boolean
 }
 
-export const Shadow: RefComponent<THREE.Mesh, Props> = (_props) => {
-  const [props, rest] = processProps(
-    _props,
+export function Shadow(props: ShadowProps) {
+  const [config, rest] = processProps(
+    props,
     { fog: false, depthWrite: false, colorStop: 0.0, color: 'black', opacity: 0.5 },
-    ['ref', 'fog', 'renderOrder', 'depthWrite', 'colorStop', 'color', 'opacity']
+    ['ref', 'fog', 'renderOrder', 'depthWrite', 'colorStop', 'color', 'opacity'],
   )
+  let mat: MeshBasicMaterial
 
   const canvas = createMemo(() => {
     const canvas = document.createElement('canvas')
@@ -30,29 +31,27 @@ export const Shadow: RefComponent<THREE.Mesh, Props> = (_props) => {
       0,
       canvas.width / 2,
       canvas.height / 2,
-      canvas.width / 2
+      canvas.width / 2,
     )
-    gradient.addColorStop(props.colorStop, new Color(props.color).getStyle())
+    gradient.addColorStop(config.colorStop, new Color(config.color).getStyle())
     gradient.addColorStop(1, 'rgba(0,0,0,0)')
     context.fillStyle = gradient
     context.fillRect(0, 0, canvas.width, canvas.height)
     return canvas
   })
 
-  let mat
-  onMount(() => {
-    mat.needsUpdate = true
-  })
+  onMount(() => (mat.needsUpdate = true))
+
   return (
-    <T.Mesh renderOrder={props.renderOrder} ref={props.ref} rotation-x={-Math.PI / 2} {...rest}>
+    <T.Mesh renderOrder={config.renderOrder} ref={config.ref} rotation-x={-Math.PI / 2} {...rest}>
       <T.PlaneGeometry />
       <T.MeshBasicMaterial
         transparent={true}
-        opacity={props.opacity}
-        fog={props.fog}
-        depthWrite={props.depthWrite}
+        opacity={config.opacity}
+        fog={config.fog}
+        depthWrite={config.depthWrite}
         side={DoubleSide}
-        ref={mat}
+        ref={mat!}
       >
         <T.CanvasTexture attach="map" args={[canvas()]} />
       </T.MeshBasicMaterial>

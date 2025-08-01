@@ -1,60 +1,66 @@
 import { createMemo } from 'solid-js'
 import { CatmullRomCurve3, Color, Vector3 } from 'three'
 import { Line2 } from 'three-stdlib'
-import { processProps } from '../helpers/processProps'
-import { RefComponent } from '../helpers/typeHelpers'
+import { processProps } from '../utils/process-props'
 import { Line, LineProps } from './Line'
 
-type Props = Omit<LineProps, 'ref'> & {
+interface Props extends Omit<LineProps, 'ref' | 'segments'> {
+  ref: Line2
   closed?: boolean
   curveType?: 'centripetal' | 'chordal' | 'catmullrom'
   tension?: number
   segments?: number
 }
 
-export const CatmullRomLine: RefComponent<Line2, Props> = function CatmullRomLine(_props) {
-  const [props, rest] = processProps(
-    _props,
+export function CatmullRomLine(props: Props) {
+  const [config, rest] = processProps(
+    props,
     {
       closed: false,
       curveType: 'centripetal',
       tension: 0.5,
       segments: 20,
     },
-    ['ref', 'points', 'closed', 'curveType', 'tension', 'segments', 'vertexColors']
+    ['ref', 'points', 'closed', 'curveType', 'tension', 'segments', 'vertexColors'],
   )
 
   const curve = createMemo(() => {
-    const mappedPoints = props.points.map((pt) =>
-      pt instanceof Vector3 ? pt : new Vector3(...(pt as [number, number, number]))
+    const mappedPoints = config.points.map(pt =>
+      pt instanceof Vector3 ? pt : new Vector3(...(pt as [number, number, number])),
     )
+    return new CatmullRomCurve3(mappedPoints, config.closed, config.curveType, config.tension)
+  })
 
-    return new CatmullRomCurve3(mappedPoints, props.closed, props.curveType, props.tension)
-  }, [props.points, props.closed, props.curveType, props.tension])
-
-  const segmentedPoints = createMemo(() => curve().getPoints(props.segments), [curve, props.segments])
+  const segmentedPoints = createMemo(() => curve().getPoints(config.segments))
 
   const interpolatedVertexColors = createMemo(() => {
-    if (!props.vertexColors || props.vertexColors.length < 2) return undefined
+    if (!config.vertexColors || config.vertexColors.length < 2) return undefined
 
-    if (props.vertexColors.length === props.segments + 1) return props.vertexColors
+    if (config.vertexColors.length === config.segments + 1) return config.vertexColors
 
-    const mappedColors = props.vertexColors.map((color) =>
-      color instanceof Color ? color : new Color(...(color as [number, number, number]))
+    const mappedColors = config.vertexColors.map(color =>
+      color instanceof Color ? color : new Color(...(color as [number, number, number])),
     )
-    if (props.closed) mappedColors.push(mappedColors[0].clone())
+    if (config.closed) mappedColors.push(mappedColors[0]!.clone())
 
-    const iColors: Color[] = [mappedColors[0]]
-    const divisions = props.segments / (mappedColors.length - 1)
-    for (let i = 1; i < props.segments; i++) {
+    const iColors: Color[] = [mappedColors[0]!]
+    const divisions = config.segments / (mappedColors.length - 1)
+    for (let i = 1; i < config.segments; i++) {
       const alpha = (i % divisions) / divisions
       const colorIndex = Math.floor(i / divisions)
-      iColors.push(mappedColors[colorIndex].clone().lerp(mappedColors[colorIndex + 1], alpha))
+      iColors.push(mappedColors[colorIndex]!.clone().lerp(mappedColors[colorIndex + 1]!, alpha))
     }
-    iColors.push(mappedColors[mappedColors.length - 1])
+    iColors.push(mappedColors[mappedColors.length - 1]!)
 
     return iColors
-  }, [props.vertexColors, props.segments])
+  })
 
-  return <Line ref={props.ref} points={segmentedPoints()} vertexColors={interpolatedVertexColors()} {...rest} />
+  return (
+    <Line
+      ref={config.ref}
+      points={segmentedPoints()}
+      vertexColors={interpolatedVertexColors()}
+      {...rest}
+    />
+  )
 }

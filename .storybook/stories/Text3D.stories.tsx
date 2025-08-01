@@ -3,13 +3,16 @@ import { Vector3 } from 'three'
 
 import { Setup } from '../Setup'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { Center, Float, Text, Text3D } from '../../src'
 
 export default {
   title: 'Abstractions/Text3D',
   component: Text,
-  decorators: [withKnobs, (storyFn) => <Setup cameraPosition={new Vector3(0, 0, 5)}>{storyFn()}</Setup>],
+  decorators: [
+    withKnobs,
+    storyFn => <Setup cameraPosition={new Vector3(0, 0, 5)}>{storyFn()}</Setup>,
+  ],
 }
 
 function Text3DScene() {

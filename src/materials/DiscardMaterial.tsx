@@ -1,7 +1,7 @@
-import { shaderMaterial } from '../core/shaderMaterial'
+import { shaderMaterial } from './shaderMaterial'
 
 export const DiscardMaterial = shaderMaterial(
   {},
   'void main() { }',
-  'void main() { gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0); discard;  }'
+  'void main() { gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0); discard;  }',
 )

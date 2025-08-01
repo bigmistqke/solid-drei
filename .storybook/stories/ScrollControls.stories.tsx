@@ -1,4 +1,4 @@
-import { T, useFrame, useThree } from '@solid-three/fiber'
+import { T, useFrame, useThree } from 'solid-three'
 import { createSignal } from 'solid-js'
 import * as THREE from 'three'
 
@@ -12,7 +12,7 @@ export default {
   decorators: [],
 }
 
-const ScrollControlsSetup = (props) => (
+const ScrollControlsSetup = props => (
   <Setup
     controls={false}
     orthographic
@@ -31,12 +31,17 @@ function Suzanne(props) {
   useCursor(hovered)
 
   let visible = false
-  const [meshRef, setMeshRef] = useIntersect((isVisible) => (visible = isVisible))
+  const [meshRef, setMeshRef] = useIntersect(isVisible => (visible = isVisible))
 
   const store = useThree()
   useFrame((_state, delta) => {
-    when(meshRef)((meshRef) => {
-      meshRef.rotation.x = THREE.MathUtils.damp(meshRef.rotation.x, visible ? 0 : -store.size.height / 2 + 1, 4, delta)
+    when(meshRef)(meshRef => {
+      meshRef.rotation.x = THREE.MathUtils.damp(
+        meshRef.rotation.x,
+        visible ? 0 : -store.size.height / 2 + 1,
+        4,
+        delta,
+      )
     })
   })
 
@@ -68,8 +73,14 @@ const ScrollControlsExample = () => {
           react to scroll by using useScroll! */}
       <Scroll>
         <Suzanne position={[0, 0, 0]} scale={[2, 2, 2]} />
-        <Suzanne position={[-store.viewport.width / 8, -store.viewport.height * 1, 0]} scale={[3, 3, 3]} />
-        <Suzanne position={[store.viewport.width / 4, -store.viewport.height * 2, 0]} scale={[1.5, 1.5, 1.5]} />
+        <Suzanne
+          position={[-store.viewport.width / 8, -store.viewport.height * 1, 0]}
+          scale={[3, 3, 3]}
+        />
+        <Suzanne
+          position={[store.viewport.width / 4, -store.viewport.height * 2, 0]}
+          scale={[1.5, 1.5, 1.5]}
+        />
       </Scroll>
       <Scroll html style={{ width: '100%', color: '#EC2D2D' }}>
         {/*
@@ -141,7 +152,7 @@ const ScrollControlsExample = () => {
   )
 }
 
-const Container = (props) => (
+const Container = props => (
   <div
     style={{
       margin: '50px',
@@ -159,7 +170,7 @@ export const DefaultStory = () => (
     <ScrollControlsExample />
   </T.Suspense>
 )
-DefaultStory.decorators = [(storyFn) => <ScrollControlsSetup>{storyFn()}</ScrollControlsSetup>]
+DefaultStory.decorators = [storyFn => <ScrollControlsSetup>{storyFn()}</ScrollControlsSetup>]
 DefaultStory.storyName = 'Default'
 
 export const InsideContainerStory = () => (

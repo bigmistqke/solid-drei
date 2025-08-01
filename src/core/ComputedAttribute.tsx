@@ -1,9 +1,8 @@
-import { Instance, Primitive, ThreeProps } from '@solid-three/fiber'
-import { ParentComponent, createRenderEffect, createSignal } from 'solid-js'
+import { ParentProps, createRenderEffect, createSignal, splitProps } from 'solid-js'
+import { $S3C, S3, T } from 'solid-three'
 import { BufferAttribute, BufferGeometry } from 'three'
-import { processProps } from '../helpers/processProps'
 
-type Props = {
+interface ComputedAttributeProps extends ParentProps<S3.Props<'BufferAttribute'>> {
   compute: (geometry: BufferGeometry) => BufferAttribute
   name: string
 }
@@ -13,19 +12,26 @@ type Props = {
  * Computes the BufferAttribute by calling the `compute` function
  * and attaches the attribute to the geometry.
  */
-export const ComputedAttribute: ParentComponent<Props & ThreeProps<'BufferAttribute'>> = (_props) => {
-  const [props, rest] = processProps(_props, {}, ['compute', 'name'])
+export function ComputedAttribute(props: ComputedAttributeProps) {
+  const [config, rest] = splitProps(props, ['compute', 'name'])
 
   const bufferAttribute = new BufferAttribute(new Float32Array(0), 1)
 
-  const [primitive, setPrimitive] = createSignal<Instance<BufferAttribute>['object']>()
+  const [primitive, setPrimitive] = createSignal<BufferAttribute>()
 
   createRenderEffect(() => {
-    const parent = primitive()?.__r3f?.parent?.object
+    const parent = primitive()[$S3C]?.parent?.object
     if (!parent) return
-    const attr = props.compute(parent)
+    const attr = config.compute(parent)
     primitive()!.copy(attr)
   })
 
-  return <Primitive ref={setPrimitive} object={bufferAttribute} attach={`attributes-${props.name}`} {...rest} />
+  return (
+    <T.Primitive
+      ref={setPrimitive}
+      object={bufferAttribute}
+      attach={`attributes-${config.name}`}
+      {...rest}
+    />
+  )
 }

@@ -1,9 +1,9 @@
 /*  Integration and compilation: @N8Programs
     Inspired by:
-     https://github.com/mrdoob/three.js/blob/dev/examples/webgl_shadowmap_pcss.html
+     https://github.com/mrdoob/js/blob/dev/examples/webgl_shadowmap_pcss.html
      https://developer.nvidia.com/gpugems/gpugems2/part-ii-shading-lighting-and-shadows/chapter-17-efficient-soft-edged-shadows-using
      https://developer.download.nvidia.com/whitepapers/2008/PCSS_Integration.pdf
-     https://github.com/mrdoob/three.js/blob/master/examples/webgl_shadowmap_pcss.html [spidersharma03]
+     https://github.com/mrdoob/js/blob/master/examples/webgl_shadowmap_pcss.html [spidersharma03]
      https://spline.design/
    Concept:
      https://www.gamedev.net/tutorials/programming/graphics/contact-hardening-soft-shadows-made-fast-r4906/
@@ -13,19 +13,16 @@
      https://www.shadertoy.com/view/tt3fDH [spawner64]
 */
 
-import { useThree } from '@solid-three/fiber'
 import { createEffect, onCleanup } from 'solid-js'
-import * as THREE from 'three'
-import { defaultProps } from '../helpers/defaultProps'
+import { useThree } from 'solid-three'
+import { Camera, Material, Scene, ShaderChunk, WebGLRenderer } from 'three'
+import { defaultProps } from '../../utils/default-props'
 
-type SoftShadowsProps = {
-  /** Size of the light source (the larger the softer the light), default: 25 */
-  size?: number
-  /** Number of samples (more samples less noise but more expensive), default: 10 */
-  samples?: number
-  /** Depth focus, use it to shift the focal point (where the shadow is the sharpest), default: 0 (the beginning) */
-  focus?: number
-}
+/**********************************************************************************/
+/*                                                                                */
+/*                                      Utils                                     */
+/*                                                                                */
+/**********************************************************************************/
 
 const pcss = ({ focus = 0, size = 25, samples = 10 }: SoftShadowsProps = {}) => `
 #define PENUMBRA_FILTER_SIZE float(${size})
@@ -129,38 +126,59 @@ float PCSS (sampler2D shadowMap, vec4 coords) {
   return vogelFilter(shadowMap, uv, zReceiver, 1.25 * penumbraRatio, angle);
 }`
 
-function reset(gl, scene, camera) {
-  scene.traverse((object) => {
-    if (object.material) {
+function reset(gl: WebGLRenderer, scene: Scene, camera: Camera) {
+  scene.traverse(object => {
+    if ('material' in object && object.material instanceof Material) {
       gl.properties.remove(object.material)
       object.material.dispose?.()
     }
   })
-  gl.info.programs.length = 0
+  if (gl.info.programs) {
+    gl.info.programs.length = 0
+  }
   gl.compile(scene, camera)
 }
 
-export function SoftShadows(_props: SoftShadowsProps) {
-  const props = defaultProps(_props, {
+/**********************************************************************************/
+/*                                                                                */
+/*                                  Soft Shadows                                  */
+/*                                                                                */
+/**********************************************************************************/
+
+interface SoftShadowsProps {
+  /** Size of the light source (the larger the softer the light), default: 25 */
+  size?: number
+  /** Number of samples (more samples less noise but more expensive), default: 10 */
+  samples?: number
+  /** Depth focus, use it to shift the focal point (where the shadow is the sharpest), default: 0 (the beginning) */
+  focus?: number
+}
+
+export function SoftShadows(props: SoftShadowsProps) {
+  const config = defaultProps(props, {
     focus: 0,
     samples: 10,
     size: 25,
   })
 
   const store = useThree()
+
   createEffect(() => {
-    const original = THREE.ShaderChunk.shadowmap_pars_fragment
-    THREE.ShaderChunk.shadowmap_pars_fragment = THREE.ShaderChunk.shadowmap_pars_fragment
-      .replace('#ifdef USE_SHADOWMAP', '#ifdef USE_SHADOWMAP\n' + pcss(props))
+    const original = ShaderChunk.shadowmap_pars_fragment
+    ShaderChunk.shadowmap_pars_fragment = ShaderChunk.shadowmap_pars_fragment
+      .replace('#ifdef USE_SHADOWMAP', '#ifdef USE_SHADOWMAP\n' + pcss(config))
       .replace(
         '#if defined( SHADOWMAP_TYPE_PCF )',
-        '\nreturn PCSS(shadowMap, shadowCoord);\n#if defined( SHADOWMAP_TYPE_PCF )'
+        '\nreturn PCSS(shadowMap, shadowCoord);\n#if defined( SHADOWMAP_TYPE_PCF )',
       )
+
     reset(store.gl, store.scene, store.camera)
+
     onCleanup(() => {
-      THREE.ShaderChunk.shadowmap_pars_fragment = original
+      ShaderChunk.shadowmap_pars_fragment = original
       reset(store.gl, store.scene, store.camera)
     })
   })
+
   return null
 }

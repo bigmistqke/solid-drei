@@ -3,7 +3,7 @@ import { Vector3 } from 'three'
 
 import { Setup } from '../Setup'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { Example, ExampleApi } from '../../src'
 
 export default {
@@ -11,7 +11,7 @@ export default {
   component: Example,
   decorators: [
     withKnobs,
-    (storyFn) => (
+    storyFn => (
       <Setup cameraPosition={new Vector3(1, 2, 4)} cameraFov={60}>
         {storyFn()}
       </Setup>
@@ -35,7 +35,7 @@ export const ExampleSt = ({ fontUrl, color, bevelSize, debug }) => {
         bevelSize={bevelSize}
         debug={debug}
         ref={apiRef!}
-        onClick={(e) => {
+        onClick={e => {
           if ((e as any as PointerEvent).metaKey) {
             apiRef?.decr()
           } else {
@@ -54,7 +54,10 @@ ExampleSt.args = {
 }
 
 ExampleSt.argTypes = {
-  fontUrl: { control: 'select', options: ['/fonts/Inter_Bold.json', '/fonts/helvetiker_regular.typeface.json'] },
+  fontUrl: {
+    control: 'select',
+    options: ['/fonts/Inter_Bold.json', '/fonts/helvetiker_regular.typeface.json'],
+  },
   bevelSize: { control: { type: 'range', min: 0, max: 0.1, step: 0.01 } },
   color: { control: { type: 'color' } },
   debug: { control: { type: 'boolean' } },

@@ -1,24 +1,21 @@
-import { useFrame, useThree } from '@solid-three/fiber'
-import { createEffect, onCleanup } from 'solid-js'
+import { createWritable } from '@/utils/create-writable'
+import { defaultProps } from '@/utils/default-props'
+import { Ref, createEffect, onCleanup } from 'solid-js'
+import { useFrame, useThree } from 'solid-three'
 import { Euler } from 'three'
 import { SimplexNoise } from 'three-stdlib'
-import { defaultProps } from '../helpers/defaultProps'
-import { RefComponent } from '../helpers/typeHelpers'
-import { createImperativeHandle } from '../helpers/useImperativeHandle'
+
+function constrain(value: number) {
+  return Math.max(0, Math.min(1, value))
+}
 
 export interface ShakeController {
   getIntensity: () => number
   setIntensity: (val: number) => void
 }
 
-type ControlsProto = {
-  update(): void
-  target: THREE.Vector3
-  addEventListener: (event: string, callback: (event: any) => void) => void
-  removeEventListener: (event: string, callback: (event: any) => void) => void
-}
-
 export interface CameraShakeProps {
+  ref?: Ref<ShakeController>
   intensity?: number
   decay?: boolean
   decayRate?: number
@@ -30,8 +27,8 @@ export interface CameraShakeProps {
   rollFrequency?: number
 }
 
-export const CameraShake: RefComponent<ShakeController | undefined, CameraShakeProps> = (_props) => {
-  const props = defaultProps(_props, {
+export function CameraShake(props: CameraShakeProps) {
+  const config = defaultProps(props, {
     intensity: 1,
     decayRate: 0.65,
     maxYaw: 0.1,
@@ -42,27 +39,39 @@ export const CameraShake: RefComponent<ShakeController | undefined, CameraShakeP
     rollFrequency: 0.1,
   })
 
+  const [intensity, setIntensity] = createWritable(() => config.intensity)
+  function setClampedIntensity(value: number | ((value: number) => number)) {
+    if (typeof value === 'number') {
+      return setIntensity(constrain(value))
+    }
+    return setIntensity(intensity => constrain(value(intensity)))
+  }
+
   const store = useThree()
   let initialRotation: Euler = store.camera.rotation.clone()
   const yawNoise = new SimplexNoise()
   const pitchNoise = new SimplexNoise()
   const rollNoise = new SimplexNoise()
 
-  const constrainIntensity = () => {
-    if (props.intensity < 0 || props.intensity > 1) {
-      props.intensity = props.intensity < 0 ? 0 : 1
+  useFrame((state, delta) => {
+    const shake = Math.pow(intensity(), 2)
+    const yaw =
+      config.maxYaw * shake * yawNoise.noise(state.clock.elapsedTime * config.yawFrequency, 1)
+    const pitch =
+      config.maxPitch * shake * pitchNoise.noise(state.clock.elapsedTime * config.pitchFrequency, 1)
+    const roll =
+      config.maxRoll * shake * rollNoise.noise(state.clock.elapsedTime * config.rollFrequency, 1)
+
+    store.camera.rotation.set(
+      initialRotation.x + pitch,
+      initialRotation.y + yaw,
+      initialRotation.z + roll,
+    )
+
+    if (config.decay && intensity() > 0) {
+      setClampedIntensity(intensity => intensity - config.decayRate * delta)
     }
-  }
-
-  const methods = {
-    getIntensity: (): number => props.intensity,
-    setIntensity: (val: number): void => {
-      props.intensity = val
-      constrainIntensity()
-    },
-  }
-
-  createImperativeHandle(props, () => methods)
+  })
 
   createEffect(() => {
     if (store.controls) {
@@ -75,18 +84,14 @@ export const CameraShake: RefComponent<ShakeController | undefined, CameraShakeP
     }
   })
 
-  useFrame((state, delta) => {
-    const shake = Math.pow(props.intensity, 2)
-    const yaw = props.maxYaw * shake * yawNoise.noise(state.clock.elapsedTime * props.yawFrequency, 1)
-    const pitch = props.maxPitch * shake * pitchNoise.noise(state.clock.elapsedTime * props.pitchFrequency, 1)
-    const roll = props.maxRoll * shake * rollNoise.noise(state.clock.elapsedTime * props.rollFrequency, 1)
+  const methods: ShakeController = {
+    getIntensity: intensity,
+    setIntensity: setClampedIntensity,
+  }
 
-    store.camera.rotation.set(initialRotation.x + pitch, initialRotation.y + yaw, initialRotation.z + roll)
-
-    if (props.decay && props.intensity > 0) {
-      props.intensity -= props.decayRate * delta
-      constrainIntensity()
-    }
+  createEffect(() => {
+    if (typeof config.ref === 'function') config.ref(methods)
+    else config.ref = methods
   })
 
   return null

@@ -1,20 +1,20 @@
-import { useLoader } from '@solid-three/fiber'
 import { createMemo, createRenderEffect, createResource } from 'solid-js'
+// import { useLoader } from 'solid-three'
+import { awaitLoader } from 'solid-three'
 import {
   CubeReflectionMapping,
-  CubeTexture,
   CubeTextureLoader,
-  DataTexture,
   EquirectangularReflectionMapping,
   Loader,
   TextureEncoding,
 } from 'three'
 import { EXRLoader, RGBELoader } from 'three-stdlib'
-import { defaultProps } from '../helpers/defaultProps'
-import { PresetsType, presetsObj } from '../helpers/environment-assets'
-import { when } from '../helpers/when'
+import { when } from '../utils/conditionals'
+import { defaultProps } from '../utils/default-props'
+import { PresetsType, presetsObj } from '../utils/environment-assets'
 
-const CUBEMAP_ROOT = 'https://raw.githack.com/pmndrs/drei-assets/456060a26bbeb8fdf79326f224b6d99b8bcce736/hdri/'
+const CUBEMAP_ROOT =
+  'https://raw.githack.com/pmndrs/drei-assets/456060a26bbeb8fdf79326f224b6d99b8bcce736/hdri/'
 const isArray = (arr: any): arr is string[] => Array.isArray(arr)
 
 export type EnvironmentLoaderProps = {
@@ -25,71 +25,73 @@ export type EnvironmentLoaderProps = {
   encoding?: TextureEncoding
 }
 
-export function useEnvironment(_props: Partial<EnvironmentLoaderProps> = {}) {
-  const props = defaultProps(_props, {
+export function useEnvironment(props: Partial<EnvironmentLoaderProps> = {}) {
+  const config = defaultProps(props, {
     files: ['/px.png', '/nx.png', '/py.png', '/ny.png', '/pz.png', '/nz.png'],
     path: '',
-  })
-
-  const memo = createMemo(() => {
-    let files = props.files
-    let path = props.path
-    if (props.preset) {
-      if (!(props.preset in presetsObj)) throw new Error('Preset must be one of: ' + Object.keys(presetsObj).join(', '))
-      files = presetsObj[props.preset]
-      path = CUBEMAP_ROOT
-    }
-
-    // Everything else
-    const isCubeMap = isArray(files)
-    const extension = isArray(files)
-      ? 'cube'
-      : files.startsWith('data:application/exr')
-      ? 'exr'
-      : files.startsWith('data:application/hdr')
-      ? 'hdr'
-      : files.split('.').pop()?.toLowerCase()
-
-    const loader = isCubeMap
-      ? CubeTextureLoader
-      : extension === 'hdr'
-      ? RGBELoader
-      : extension === 'exr'
-      ? EXRLoader
-      : null
-    return { files, path, isCubeMap, extension, loader }
   })
 
   const sRGBEncoding = 3001
   const LinearEncoding = 3000
 
-  const texture = createResource(
-    memo,
-    ({ loader, files, path, isCubeMap }) =>
-      new Promise<CubeTexture | DataTexture | (CubeTexture | DataTexture)[]>((resolve) => {
-        if (!loader) throw new Error('useEnvironment: Unrecognized file extension: ' + files)
+  const data = createMemo<{ files: string | string[]; path: string }>(previous => {
+    let { files, path, preset } = config
+    if (preset) {
+      if (!(preset in presetsObj)) {
+        throw new Error('Preset must be one of: ' + Object.keys(presetsObj).join(', '))
+      }
+      files = presetsObj[config.preset]
+      path = CUBEMAP_ROOT
+    }
+    if (previous.files === files && path === path) {
+      return previous
+    }
+    return { files, path }
+  })
 
-        const resource = useLoader(
-          loader,
-          () => (isCubeMap ? [files] : files),
-          (loader) => {
-            loader.setPath?.(path)
-            if (props.extensions) props.extensions(loader)
-          }
-        )
-
-        createRenderEffect(() =>
-          when(resource)((_texture) => {
-            const texture = isCubeMap ? _texture[0] : _texture
-            texture.mapping = isCubeMap ? CubeReflectionMapping : EquirectangularReflectionMapping
-            if ('colorSpace' in texture)
-              (texture as any).colorSpace = props.encoding ?? isCubeMap ? 'srgb' : 'srgb-linear'
-            else (texture as any).encoding = props.encoding ?? isCubeMap ? sRGBEncoding : LinearEncoding
-            resolve(texture)
-          })
-        )
+  const [resource] = createResource(data, ({ files, path }) => {
+    if (isArray(files)) {
+      return awaitLoader(CubeTextureLoader, files, loader => {
+        loader.setPath?.(path)
+        if (config.extensions) config.extensions(loader)
       })
-  )[0]
+    }
 
-  return texture
+    const loader = files.startsWith('data:application/exr')
+      ? EXRLoader
+      : files.startsWith('data:application/hdr')
+      ? RGBELoader
+      : undefined
+
+    if (loader) {
+      return awaitLoader(loader, files, loader => {
+        loader.setPath?.(path)
+        if (config.extensions) config.extensions(loader)
+      })
+    }
+  })
+
+  createRenderEffect(() =>
+    when(resource, texture => {
+      if (Array.isArray(config.files)) {
+        texture[0].mapping = CubeReflectionMapping
+        if ('colorSpace' in texture) {
+          texture.colorSpace = config.encoding ?? 'srgb'
+        } else {
+          //@ts-expect-error
+          texture.encoding = config.encoding ?? sRGBEncoding
+        }
+      } else {
+        texture.mapping = EquirectangularReflectionMapping
+        if ('colorSpace' in texture) {
+          texture.colorSpace = config.encoding ?? 'srgb-linear'
+        } else {
+          //@ts-expect-error
+          texture.encoding = config.encoding ?? LinearEncoding
+        }
+      }
+    }),
+  )
+
+  return resource
 }

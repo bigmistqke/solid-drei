@@ -1,41 +1,81 @@
-import { Object3DNode, Primitive, SolidThreeFiber, T, ThreeProps, extend, useFrame } from '@solid-three/fiber'
-import { createContext, createSignal, onMount, useContext, type JSX } from 'solid-js'
-import * as THREE from 'three'
+import {
+  Ref,
+  createContext,
+  createEffect,
+  createSignal,
+  onMount,
+  useContext,
+  type JSX,
+} from 'solid-js'
+import { S3, T, extend, useFrame } from 'solid-three'
+import { Color, Vector2, Vector3 } from 'three'
 import { Line2, LineMaterial, LineSegmentsGeometry } from 'three-stdlib'
-import { createRef } from '../helpers/createRef'
-import { mergeRefs } from '../helpers/mergeRefs'
-import { processProps } from '../helpers/processProps'
-import { RefComponent } from '../helpers/typeHelpers'
+import { processProps } from '../utils/process-props'
 
-type SegmentsProps = {
+declare global {
+  namespace SolidThree {
+    interface Elements {
+      SegmentObject: SegmentObject
+    }
+  }
+}
+
+/**********************************************************************************/
+/*                                                                                */
+/*                                 Segment Object                                 */
+/*                                                                                */
+/**********************************************************************************/
+
+export class SegmentObject {
+  color: Color
+  start: Vector3
+  end: Vector3
+  constructor() {
+    this.color = new Color('white')
+    this.start = new Vector3(0, 0, 0)
+    this.end = new Vector3(0, 0, 0)
+  }
+}
+
+/**********************************************************************************/
+/*                                                                                */
+/*                                Segments Context                                */
+/*                                                                                */
+/**********************************************************************************/
+
+interface SegmentsContext {
+  subscribe: (ref: SegmentObject) => void
+}
+const segmentsContext = createContext<SegmentsContext>()
+function useSegments() {
+  const context = useContext(segmentsContext)
+  if (!context) throw '<Segment/> should be a descendant of <Segments/>'
+  return context
+}
+
+/**********************************************************************************/
+/*                                                                                */
+/*                                    Segments                                    */
+/*                                                                                */
+/**********************************************************************************/
+
+interface SegmentsProps {
+  ref?: Ref<Line2>
   limit?: number
   lineWidth?: number
   children: JSX.Element
 }
 
-type Api = {
-  subscribe: (ref: SegmentObject) => void
-}
-
-// type SegmentRef = React.RefObject<SegmentObject>
-type SegmentProps = Omit<ThreeProps<'SegmentObject'>, 'start' | 'end' | 'color'> & {
-  start: SolidThreeFiber.Vector3
-  end: SolidThreeFiber.Vector3
-  color?: SolidThreeFiber.Color
-}
-
-const context = createContext<Api>()
-
-const Segments: RefComponent<Line2, SegmentsProps> = (_props) => {
+export function Segments(props: SegmentsProps) {
   extend({ SegmentObject })
 
-  const [props, rest] = processProps(
-    _props,
+  const [config, rest] = processProps(
+    props,
     {
       limit: 1000,
       lineWidth: 1.0,
     },
-    ['ref', 'limit', 'lineWidth', 'children']
+    ['ref', 'limit', 'lineWidth', 'children'],
   )
 
   const [segments, setSegments] = createSignal<Array<SegmentObject>>([])
@@ -43,21 +83,14 @@ const Segments: RefComponent<Line2, SegmentsProps> = (_props) => {
   const line = new Line2()
   const material = new LineMaterial()
   const geometry = new LineSegmentsGeometry()
-  const resolution = new THREE.Vector2(512, 512)
-  const positions = Array(props.limit * 6).fill(0)
-  const colors = Array(props.limit * 6).fill(0)
-
-  const api: Api = {
-    subscribe: (ref: SegmentObject) => {
-      setSegments((segments) => [...segments, ref])
-      return () => setSegments((segments) => segments.filter((item) => item !== ref))
-    },
-  }
+  const resolution = new Vector2(512, 512)
+  const positions = Array(config.limit * 6).fill(0)
+  const colors = Array(config.limit * 6).fill(0)
 
   useFrame(() => {
-    const limit = Math.min(segments().length, props.limit)
+    const limit = Math.min(segments().length, config.limit)
     for (let i = 0; i < limit; i++) {
-      const segment = segments()[i]
+      const segment = segments()[i]!
       positions[i * 6 + 0] = segment.start.x
       positions[i * 6 + 1] = segment.start.y
       positions[i * 6 + 2] = segment.start.z
@@ -80,57 +113,72 @@ const Segments: RefComponent<Line2, SegmentsProps> = (_props) => {
   })
 
   return (
-    <Primitive object={line} ref={props.ref}>
-      <Primitive object={geometry} attach="geometry" />
-      <Primitive
+    <T.Primitive object={line} ref={config.ref}>
+      <T.Primitive object={geometry} attach="geometry" />
+      <T.Primitive
         object={material}
         attach="material"
         vertexColors={true}
         resolution={resolution}
-        linewidth={props.lineWidth}
+        linewidth={config.lineWidth}
         {...rest}
       />
-      <context.Provider value={api}>{props.children}</context.Provider>
-    </Primitive>
+      <segmentsContext.Provider
+        value={{
+          subscribe(ref: SegmentObject) {
+            setSegments(segments => [...segments, ref])
+            return () => setSegments(segments => segments.filter(item => item !== ref))
+          },
+        }}
+      >
+        {config.children}
+      </segmentsContext.Provider>
+    </T.Primitive>
   )
 }
 
-declare global {
-  namespace SolidThree {
-    interface IntrinsicElements {
-      SegmentObject: Object3DNode<SegmentObject>
-    }
+/**********************************************************************************/
+/*                                                                                */
+/*                                     Segment                                    */
+/*                                                                                */
+/**********************************************************************************/
+
+function normalizePosition(position: SegmentProps['start']): Vector3 {
+  if (position instanceof Vector3) {
+    return position
   }
+  if (typeof position === 'number') {
+    return new Vector3(position, position, position)
+  }
+  return new Vector3(...position)
 }
 
-export class SegmentObject {
-  color: THREE.Color
-  start: THREE.Vector3
-  end: THREE.Vector3
-  constructor() {
-    this.color = new THREE.Color('white')
-    this.start = new THREE.Vector3(0, 0, 0)
-    this.end = new THREE.Vector3(0, 0, 0)
-  }
+interface SegmentProps extends Omit<S3.Props<'SegmentObject'>, 'start' | 'end' | 'color'> {
+  ref?: Ref<SegmentObject>
+  start: S3.Vector3
+  end: S3.Vector3
+  color?: S3.Color
 }
 
-const normPos = (pos: SegmentProps['start']): SegmentObject['start'] =>
-  pos instanceof THREE.Vector3 ? pos : new THREE.Vector3(...(typeof pos === 'number' ? [pos, pos, pos] : pos))
+export function Segment(props: SegmentProps) {
+  const api = useSegments()
+  let segmentObject: SegmentObject
 
-const Segment: RefComponent<SegmentObject, SegmentProps> = (props) => {
-  const api = useContext(context)
+  onMount(() => {
+    api.subscribe(segmentObject)
+  })
 
-  if (!api) throw 'Segment must used inside Segments component.'
-  const segmentRef = createRef<SegmentObject>(null!)
-  onMount(() => api.subscribe(segmentRef.ref))
+  createEffect(() => {
+    if (typeof props.ref === 'function') props.ref(segmentObject)
+    else props.ref = segmentObject
+  })
+
   return (
     <T.SegmentObject
-      ref={mergeRefs(segmentRef, props)}
+      ref={segmentObject!}
       color={props.color}
-      start={normPos(props.start)}
-      end={normPos(props.end)}
+      start={normalizePosition(props.start)}
+      end={normalizePosition(props.end)}
     />
   )
 }
-
-export { Segment, Segments }

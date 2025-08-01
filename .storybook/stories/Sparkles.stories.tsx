@@ -3,14 +3,14 @@ import { Vector3 } from 'three'
 
 import { Setup } from '../Setup'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { OrbitControls, PerspectiveCamera, Sparkles } from '../../src'
 
 export default {
   title: 'Staging/Sparkles',
   component: Sparkles,
   decorators: [
-    (storyFn) => (
+    storyFn => (
       <Setup cameraPosition={new Vector3(1, 1, 1)} controls={false}>
         {storyFn()}
       </Setup>
@@ -19,7 +19,7 @@ export default {
 }
 
 // s3f:   Sparkles is not working currently
-export const SparklesStory = (_props) => {
+export const SparklesStory = _props => {
   const [props, rest] = splitProps(_props, ['random', 'size', 'amount'])
 
   const sizes = createMemo(() => {
@@ -28,7 +28,12 @@ export const SparklesStory = (_props) => {
 
   return (
     <>
-      <Sparkles {...rest} size={props.random ? sizes() : props.size} color="orange" count={props.amount} />
+      <Sparkles
+        {...rest}
+        size={props.random ? sizes() : props.size}
+        color="orange"
+        count={props.amount}
+      />
       <OrbitControls />
       <T.AxesHelper />
       <PerspectiveCamera position={[2, 2, 2]} makeDefault />

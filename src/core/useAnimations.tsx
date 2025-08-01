@@ -1,67 +1,82 @@
-import { useFrame } from '@solid-three/fiber'
-import { Accessor, createEffect, createRenderEffect, on, onCleanup } from 'solid-js'
+import { resolveAccessor } from '@/utils/resolve-accessor'
+import { Accessor, createEffect, createMemo, createRenderEffect, on, onCleanup } from 'solid-js'
+import { useFrame } from 'solid-three'
 import { AnimationAction, AnimationClip, AnimationMixer, Object3D } from 'three'
 
-type Api<T extends AnimationClip> = {
-  ref: Accessor<Object3D | undefined | null>
+type AnimationApi<T extends AnimationClip> = {
+  actions: { [key in T['name']]: AnimationAction | null }
   clips: AnimationClip[]
   mixer: AnimationMixer
   names: T['name'][]
-  actions: { [key in T['name']]: AnimationAction | null }
+  ref: Accessor<Object3D | undefined | null>
 }
 
 export function useAnimations<T extends AnimationClip>(
-  clips: T[],
-  root?: Accessor<Object3D | undefined | null> | Object3D
-) {
-  const actualRef = () => (root ? (root instanceof Object3D ? root : root()) : undefined)
-  // eslint-disable-next-line prettier/prettier
+  clips: Accessor<T[]>,
+  root?: Accessor<Object3D | undefined | null> | Object3D,
+): AnimationApi<T> {
+  // Actions are lazily initialized with mixer.clipAction
+  let lazyActions: Record<string, AnimationAction> = {}
   const mixer = new AnimationMixer(undefined as unknown as Object3D)
-  createRenderEffect(() => void ((mixer as any)._root = actualRef()), [mixer, root])
-  let lazyActions = {}
 
-  const api: Accessor<Api<T>> = () => {
+  const resolveRoot = () => resolveAccessor(root)
+
+  const actions = createMemo(() => {
     const actions = {} as { [key in T['name']]: AnimationAction | null }
-    clips.forEach((clip) =>
+    // Add getters to actions to lazily initialize the actions with mixer.clipAction
+    clips().forEach(clip =>
       Object.defineProperty(actions, clip.name, {
         enumerable: true,
         get() {
-          const ref = actualRef()
-          if (ref) {
-            return lazyActions[clip.name] || (lazyActions[clip.name] = mixer.clipAction(clip, ref))
-          }
+          const ref = resolveRoot()
+          if (!ref) return
+          return lazyActions[clip.name] || (lazyActions[clip.name] = mixer.clipAction(clip, ref))
         },
         configurable: true,
-      })
+      }),
     )
-    return { ref: actualRef, clips, actions, names: clips.map((c) => c.name), mixer }
-  }
+    return actions
+  })
 
-  useFrame((state, delta) => mixer.update(delta))
+  useFrame((_, delta) => {
+    mixer.update(delta)
+  })
+
+  createRenderEffect(() => {
+    // @ts-expect-error
+    mixer._root = resolveRoot()
+  })
+
   createEffect(
-    on(
-      () => [clips],
-      () => {
-        const currentRoot = actualRef()
-        onCleanup(() => {
-          // Clean up only when clips change, wipe out lazy actions and uncache clips
-          lazyActions = {}
-          Object.values(api().actions).forEach((action) => {
-            if (currentRoot) {
-              mixer.uncacheAction(action as AnimationClip, currentRoot)
-            }
-          })
+    on(clips, () => {
+      const currentRoot = resolveRoot()
+      const currentActions = actions()
+      onCleanup(() => {
+        // Clean up only when clips change, wipe out lazy actions and uncache clips
+        lazyActions = {}
+        if (!currentRoot) return
+        Object.values(currentActions).forEach(action => {
+          mixer.uncacheAction(action as AnimationClip, currentRoot)
         })
-      }
-    )
+      })
+    }),
   )
 
-  createEffect(
-    on(
-      () => [mixer],
-      () => onCleanup(() => mixer.stopAllAction())
-    )
-  )
+  onCleanup(() => mixer.stopAllAction())
 
-  return api
+  return {
+    get actions() {
+      return actions()
+    },
+    get clips() {
+      return clips()
+    },
+    mixer,
+    ref() {
+      return resolveRoot()
+    },
+    get names() {
+      return clips().map(c => c.name)
+    },
+  }
 }

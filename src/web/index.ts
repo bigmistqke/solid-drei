@@ -1,15 +1,13 @@
-export { CycleRaycast } from './CycleRaycast'
-export { Html } from './Html'
-export { Loader } from './Loader'
-export * from './ScrollControls'
-export { useCursor } from './useCursor'
-// export * from './PresentationControls'
 export * from '../core'
 export * from './KeyboardControls'
-export * from './Select'
-
+export { Loader } from './Loader'
+export { useCursor } from './useCursor'
+// export { Html } from './unported/Html'
+// export { CycleRaycast } from './unported/CycleRaycast'
+// export * from './unported/ScrollControls'
+// export * from './unported/PresentationControls'
+// export * from './unported/Select'
 // Portal
-export * from './View'
-
+// export * from './unported/View'
 // Gizmos
-export * from './pivotControls'
+// export * from './unported/pivotControls'

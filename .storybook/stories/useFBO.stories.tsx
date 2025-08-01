@@ -1,4 +1,4 @@
-import { Portal, T, useFrame } from '@solid-three/fiber'
+import { Portal, T, useFrame } from 'solid-three'
 import { createMemo } from 'solid-js'
 import * as THREE from 'three'
 
@@ -9,7 +9,7 @@ import { Box, PerspectiveCamera, TorusKnot, useFBO } from '../../src'
 export default {
   title: 'Misc/useFBO',
   component: useFBO,
-  decorators: [(storyFn) => <Setup>{storyFn()}</Setup>],
+  decorators: [storyFn => <Setup>{storyFn()}</Setup>],
 }
 
 function SpinningThing() {
@@ -33,7 +33,7 @@ function UseFBOScene({ color = 'orange', ...props }) {
   })
   const target = useFBO(props)
 
-  useFrame((state) => {
+  useFrame(state => {
     cam.position.z = 5 + Math.sin(state.clock.getElapsedTime() * 1.5) * 2
     state.gl.setRenderTarget(target)
     state.gl.render(scene(), cam)
@@ -57,6 +57,12 @@ export const UseFBOSt = () => <UseFBOScene />
 UseFBOSt.storyName = 'Default'
 
 export const UseFBOWithSettings = () => (
-  <UseFBOScene color="blue" multisample samples={8} stencilBuffer={false} format={THREE.RGBFormat} />
+  <UseFBOScene
+    color="blue"
+    multisample
+    samples={8}
+    stencilBuffer={false}
+    format={THREE.RGBFormat}
+  />
 )
 UseFBOWithSettings.storyName = 'With settings'

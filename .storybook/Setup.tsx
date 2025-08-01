@@ -1,4 +1,4 @@
-import { Canvas, Props as CanvasProps, T } from '@solid-three/fiber'
+import { Canvas, Props as CanvasProps, T } from 'solid-three'
 import { Vector3 } from 'three'
 
 import { ParentComponent } from 'solid-js'
@@ -12,7 +12,7 @@ type Props = CanvasProps & {
   lights?: boolean
 }
 
-export const Setup: ParentComponent<Props> = (_props) => {
+export const Setup: ParentComponent<Props> = _props => {
   const [props, rest] = processProps(
     _props,
     {
@@ -21,7 +21,7 @@ export const Setup: ParentComponent<Props> = (_props) => {
       controls: true,
       lights: true,
     },
-    ['cameraFov', 'cameraPosition', 'controls', 'lights', 'children']
+    ['cameraFov', 'cameraPosition', 'controls', 'lights', 'children'],
   )
 
   return (

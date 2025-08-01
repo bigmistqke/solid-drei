@@ -1,4 +1,4 @@
-import { T, useFrame } from '@solid-three/fiber'
+import { T, useFrame } from 'solid-three'
 import { number, withKnobs } from '@storybook/addon-knobs'
 import { createSignal } from 'solid-js'
 
@@ -9,7 +9,7 @@ import { Plane, Sky } from '../../src'
 export default {
   title: 'Staging/Sky',
   component: Sky,
-  decorators: [withKnobs, (storyFn) => <Setup> {storyFn()}</Setup>],
+  decorators: [withKnobs, storyFn => <Setup> {storyFn()}</Setup>],
 }
 
 // s3f  there are no errors but i am only seeing a grey background
@@ -65,7 +65,7 @@ function SkyScene3() {
   // NOT the right way to do it...
   const [inclination, setInclination] = createSignal(0)
   useFrame(() => {
-    setInclination((a) => a + 0.002)
+    setInclination(a => a + 0.002)
   })
 
   return (

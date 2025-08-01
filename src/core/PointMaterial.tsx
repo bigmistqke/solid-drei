@@ -1,19 +1,23 @@
-import { Primitive, T, ThreeProps } from '@solid-three/fiber'
+import { Ref } from 'solid-js'
+import { S3, T } from 'solid-three'
 import * as THREE from 'three'
-import { RefComponent } from '../helpers/typeHelpers'
-
-type PointMaterialType = Parameters<typeof T.PointsMaterial>[0]
 
 declare global {
   namespace SolidThree {
-    interface IntrinsicElements {
-      PointMaterialImpl: PointMaterialType
+    interface Elements {
+      PointMaterialImpl: Parameters<typeof T.PointsMaterial>[0]
     }
   }
 }
 
+/**********************************************************************************/
+/*                                                                                */
+/*                              Point Material Impl                               */
+/*                                                                                */
+/**********************************************************************************/
+
 export class PointMaterialImpl extends THREE.PointsMaterial {
-  constructor(props) {
+  constructor(props: any) {
     super(props)
     this.onBeforeCompile = (shader, renderer) => {
       const { isWebGL2 } = renderer.capabilities
@@ -32,17 +36,23 @@ export class PointMaterialImpl extends THREE.PointsMaterial {
       gl_FragColor = vec4(gl_FragColor.rgb, mask * gl_FragColor.a );
       #include <tonemapping_fragment>
       #include <encodings_fragment>
-      `
+      `,
       )
     }
   }
 }
 
-export const PointMaterial: RefComponent<PointMaterialImpl, Omit<ThreeProps<'PointMaterialImpl'>, 'attach'>> = (
-  props
-) => {
+/**********************************************************************************/
+/*                                                                                */
+/*                                 Point Material                                 */
+/*                                                                                */
+/**********************************************************************************/
+
+interface PointMaterialProps extends Omit<S3.Props<'PointMaterialImpl'>, 'attach'> {
+  ref: Ref<PointMaterialImpl>
+}
+
+export function PointMaterial(props: PointMaterialProps) {
   const material = new PointMaterialImpl(null)
-  // s3f:   how should we type attach in Primitive?
-  //        make it available when it's instanceof Geometry Material Attribute?
-  return <Primitive {...props} object={material} ref={props.ref} attach="material" />
+  return <T.Primitive {...props} object={material} ref={props.ref} attach="material" />
 }

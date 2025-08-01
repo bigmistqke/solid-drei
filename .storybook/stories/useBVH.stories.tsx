@@ -3,7 +3,7 @@ import { For, createEffect, createSignal } from 'solid-js'
 import { MeshBVHVisualizer } from 'three-mesh-bvh'
 import { Setup } from '../Setup'
 
-import { T, useFrame, useThree } from '@solid-three/fiber'
+import { T, useFrame, useThree } from 'solid-three'
 import { boolean, select, withKnobs } from '@storybook/addon-knobs'
 import { Mesh, Raycaster, Vector3 } from 'three'
 import { OrbitControls, TorusKnot, useBVH, useHelper } from '../../src'
@@ -11,7 +11,7 @@ import { OrbitControls, TorusKnot, useBVH, useHelper } from '../../src'
 export default {
   title: 'Performance/useBVH',
   component: useBVH,
-  decorators: [(storyFn) => <Setup controls={false}>{storyFn()}</Setup>, withKnobs],
+  decorators: [storyFn => <Setup controls={false}>{storyFn()}</Setup>, withKnobs],
 }
 
 /* s3f performance is not great, but in r3f/drei this story is not working at all */

@@ -1,4 +1,4 @@
-import { Primitive, T, useFrame } from '@solid-three/fiber'
+import { Primitive, T, useFrame } from 'solid-three'
 import * as THREE from 'three'
 
 import { Setup } from '../Setup'
@@ -10,7 +10,7 @@ import { processProps } from '../../src/helpers/processProps'
 export default {
   title: 'misc/useCubeCamera',
   component: useCubeCamera,
-  decorators: [(storyFn) => <Setup cameraPosition={new THREE.Vector3(0, 10, 40)}>{storyFn()}</Setup>],
+  decorators: [storyFn => <Setup cameraPosition={new THREE.Vector3(0, 10, 40)}>{storyFn()}</Setup>],
 }
 
 declare global {
@@ -43,7 +43,12 @@ function Sphere(_props) {
         <Primitive object={camera()} />
         <T.SphereGeometry args={[5, 64, 64]} />
         <Show when={fbo()?.texture}>
-          <T.MeshStandardMaterial color="white" roughness={0} metalness={1} envMap={fbo().texture} />
+          <T.MeshStandardMaterial
+            color="white"
+            roughness={0}
+            metalness={1}
+            envMap={fbo().texture}
+          />
         </Show>
       </T.Mesh>
     </T.Group>
@@ -59,7 +64,12 @@ function Scene() {
       <Sphere position={[-10, 10, 0]} />
       <Sphere position={[10, 9, 0]} offset={2000} />
 
-      <Box material-color="hotpink" args={[5, 5, 5]} position-y={2.5} onClick={() => setVisible((bool) => !bool)} />
+      <Box
+        material-color="hotpink"
+        args={[5, 5, 5]}
+        position-y={2.5}
+        onClick={() => setVisible(bool => !bool)}
+      />
 
       <T.GridHelper args={[100, 10]} />
     </>

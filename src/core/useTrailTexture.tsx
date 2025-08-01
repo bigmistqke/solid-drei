@@ -1,5 +1,5 @@
-import { useFrame } from '@solid-three/fiber'
 import { Accessor, createMemo } from 'solid-js'
+import { useFrame } from 'solid-three'
 import { Texture } from 'three'
 
 /**
@@ -116,7 +116,7 @@ class TrailTexture {
     // reset force when empty (when smoothing)
     if (!this.trail.length) this.force = 0
 
-    this.trail.forEach((point) => {
+    this.trail.forEach(point => {
       this.drawTouch(point)
     })
 
@@ -184,7 +184,7 @@ class TrailTexture {
       Math.max(0, radius * 0.25),
       pos.x,
       pos.y,
-      Math.max(0, radius)
+      Math.max(0, radius),
     )
     grd.addColorStop(0, `rgba(255, 255, 255, ${this.intensity})`)
     grd.addColorStop(1, `rgba(0, 0, 0, 0.0)`)
@@ -198,11 +198,16 @@ class TrailTexture {
 
 // s3f:   currently config would not be reactive. should we do Accessor<config>?
 export function useTrailTexture(
-  config: Partial<TrailConfig> = {}
+  config: Partial<TrailConfig> = {},
 ): Accessor<{ texture: Texture; onMove: (ThreeEvent) => void }> {
   const trail = createMemo(() => new TrailTexture(config))
-  useFrame((_, delta) => void trail().update(delta))
-  const onMove = (e) => trail().addTouch(e.uv)
+
+  useFrame((_, delta) => {
+    trail().update(delta)
+  })
+  function onMove(e) {
+    trail().addTouch(e.uv)
+  }
 
   return () => ({
     texture: trail()?.texture,

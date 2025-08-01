@@ -1,13 +1,13 @@
 import { Vector3 } from 'three'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { Box, Grid } from '../../src'
 import { Setup } from '../Setup'
 
 export default {
   title: 'Gizmos/Grid',
   component: Grid,
-  decorators: [(storyFn) => <Setup cameraPosition={new Vector3(-5, 5, 10)}>{storyFn()}</Setup>],
+  decorators: [storyFn => <Setup cameraPosition={new Vector3(-5, 5, 10)}>{storyFn()}</Setup>],
 }
 
 function UseGridScene() {

@@ -1,35 +1,46 @@
-import { T, ThreeProps, useFrame } from '@solid-three/fiber'
-import { createEffect } from 'solid-js'
+import { Ref, createEffect } from 'solid-js'
+import { S3, T, useFrame } from 'solid-three'
 import { LOD } from 'three'
-import { createRef } from '../helpers/createRef'
-import { mergeRefs } from '../helpers/mergeRefs'
-import { processProps } from '../helpers/processProps'
-import { RefComponent } from '../helpers/typeHelpers'
+import { processProps } from '../utils/process-props'
 
-type Props = ThreeProps<'LOD'> & {
+interface DetailedProps extends S3.Props<'LOD'> {
+  ref?: Ref<LOD>
   hysteresis?: number
   distances: number[]
 }
 
-export const Detailed: RefComponent<any, Props> = (_props) => {
-  const [props, rest] = processProps(
-    _props,
+export function Detailed(props: DetailedProps) {
+  const [config, rest] = processProps(
+    props,
     {
       hysteresis: 0,
     },
-    ['ref', 'children', 'hysteresis', 'distances']
+    ['ref', 'children', 'hysteresis', 'distances'],
   )
-  const lodRef = createRef<LOD>(null!)
+
+  let lod: LOD
+
   createEffect(() => {
-    lodRef.ref.levels.length = 0
-    lodRef.ref.children.forEach((object, index) =>
-      lodRef.ref.levels.push({ object, hysteresis: props.hysteresis, distance: props.distances[index] })
+    lod.levels.length = 0
+    lod.children.forEach((object, index) =>
+      lod.levels.push({
+        object,
+        hysteresis: config.hysteresis,
+        distance: config.distances[index]!,
+      }),
     )
   })
-  useFrame((state) => lodRef.ref.update(state.camera))
+
+  useFrame(state => lod.update(state.camera))
+
+  createEffect(() => {
+    if (typeof props.ref === 'function') props.ref(lod)
+    else props.ref = lod
+  })
+
   return (
-    <T.LOD ref={mergeRefs(lodRef, props)} {...rest}>
-      {props.children}
+    <T.LOD ref={lod!} {...rest}>
+      {config.children}
     </T.LOD>
   )
 }

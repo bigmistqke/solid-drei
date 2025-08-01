@@ -1,5 +1,5 @@
-import { T, ThreeProps, extend, useFrame, useThree } from '@solid-three/fiber'
-import { createMemo, mergeProps, splitProps } from 'solid-js'
+import { Ref, createEffect, createMemo, mergeProps, splitProps } from 'solid-js'
+import { $S3C, S3, T, extend, useFrame, useThree } from 'solid-three'
 import {
   DepthFormat,
   DepthTexture,
@@ -14,23 +14,31 @@ import {
   Vector4,
   WebGLRenderTarget,
 } from 'three'
-import { mergeRefs } from '../helpers/mergeRefs'
-
-import { createRef } from '../helpers/createRef'
-import { processProps } from '../helpers/processProps'
-import { RefComponent } from '../helpers/typeHelpers'
 import { BlurPass } from '../materials/BlurPass'
 import {
   MeshReflectorMaterial as MeshReflectorMaterialImpl,
-  MeshReflectorMaterialProps,
+  MeshReflectorMaterialProps as MeshReflectorMaterialImplProps,
 } from '../materials/MeshReflectorMaterial'
+import { processProps } from '../utils/process-props'
 
-type Props = ThreeProps<'MeshStandardMaterial'> & {
+extend({ MeshReflectorMaterialImpl })
+
+declare global {
+  namespace SolidThree {
+    interface Elements {
+      MeshReflectorMaterialImpl: MeshReflectorMaterialImplProps
+    }
+  }
+}
+
+interface MeshReflectorMaterialProps extends S3.Props<'MeshStandardMaterial'> {
+  ref?: Ref<MeshReflectorMaterialImpl>
+  key?: any
   resolution?: number
   mixBlur?: number
   mixStrength?: number
   blur?: [number, number] | number
-  mirror: number
+  mirror?: number
   minDepthThreshold?: number
   maxDepthThreshold?: number
   depthScale?: number
@@ -41,19 +49,9 @@ type Props = ThreeProps<'MeshStandardMaterial'> & {
   reflectorOffset?: number
 }
 
-declare global {
-  namespace SolidThree {
-    interface IntrinsicElements {
-      MeshReflectorMaterialImpl: MeshReflectorMaterialProps
-    }
-  }
-}
-
-extend({ MeshReflectorMaterialImpl })
-
-export const MeshReflectorMaterial: RefComponent<MeshReflectorMaterialImpl, Props> = (_props) => {
-  const [props, rest] = processProps(
-    _props,
+export function MeshReflectorMaterial(props: MeshReflectorMaterialProps) {
+  const [config, rest] = processProps(
+    props,
     {
       mixBlur: 0,
       mixStrength: 1,
@@ -84,14 +82,14 @@ export const MeshReflectorMaterial: RefComponent<MeshReflectorMaterialImpl, Prop
       'mixContrast',
       'distortionMap',
       'reflectorOffset',
-    ]
+    ],
   )
 
   const store = useThree()
-  const blur = () => (Array.isArray(props.blur) ? props.blur : [props.blur, props.blur])
+  const blur = () => (Array.isArray(config.blur) ? config.blur : [config.blur, config.blur])
   const hasBlur = () => blur()[0] + blur()[1] > 0
 
-  const materialRef = createRef<MeshReflectorMaterialImpl>(null!)
+  let materialRef: MeshReflectorMaterialImpl
   const reflectorPlane = new Plane()
   const normal = new Vector3()
   const reflectorWorldPosition = new Vector3()
@@ -106,7 +104,7 @@ export const MeshReflectorMaterial: RefComponent<MeshReflectorMaterialImpl, Prop
   const virtualCamera = new PerspectiveCamera()
 
   const reflectorProps = mergeProps(
-    splitProps(props, [
+    splitProps(config, [
       'mirror',
       'mixBlur',
       'mixStrength',
@@ -136,12 +134,12 @@ export const MeshReflectorMaterial: RefComponent<MeshReflectorMaterialImpl, Prop
         return hasBlur() ? '' : undefined
       },
       get 'defines-USE_DEPTH'() {
-        return props.depthScale > 0 ? '' : undefined
+        return config.depthScale > 0 ? '' : undefined
       },
       get 'defines-USE_DISTORTION'() {
-        return props.distortionMap ? '' : undefined
+        return config.distortionMap ? '' : undefined
       },
-    }
+    },
   )
 
   const fboParameters = {
@@ -151,35 +149,35 @@ export const MeshReflectorMaterial: RefComponent<MeshReflectorMaterialImpl, Prop
   }
 
   const fbo1 = createMemo(() => {
-    const fbo1 = new WebGLRenderTarget(props.resolution, props.resolution, fboParameters)
+    const fbo1 = new WebGLRenderTarget(config.resolution, config.resolution, fboParameters)
     fbo1.depthBuffer = true
-    fbo1.depthTexture = new DepthTexture(props.resolution, props.resolution)
+    fbo1.depthTexture = new DepthTexture(config.resolution, config.resolution)
     fbo1.depthTexture.format = DepthFormat
     fbo1.depthTexture.type = UnsignedShortType
     return fbo1
   })
 
   const fbo2 = createMemo(() => {
-    return new WebGLRenderTarget(props.resolution, props.resolution, fboParameters)
+    return new WebGLRenderTarget(config.resolution, config.resolution, fboParameters)
   })
 
   const blurpass = createMemo(
     () =>
       new BlurPass({
         gl: store.gl,
-        resolution: props.resolution,
+        resolution: config.resolution,
         width: blur()[0],
         height: blur()[1],
-        minDepthThreshold: props.minDepthThreshold,
-        maxDepthThreshold: props.maxDepthThreshold,
-        depthScale: props.depthScale,
-        depthToBlurRatioBias: props.depthToBlurRatioBias,
-      })
+        minDepthThreshold: config.minDepthThreshold,
+        maxDepthThreshold: config.maxDepthThreshold,
+        depthScale: config.depthScale,
+        depthToBlurRatioBias: config.depthToBlurRatioBias,
+      }),
   )
 
   const beforeRender = () => {
     // TODO: As of R3f 7-8 this should be __r3f.parent
-    const parent = (materialRef.ref as any).parent?.object || (materialRef.ref as any)?.__r3f.parent?.object
+    const parent = (materialRef as any).parent?.object || (materialRef as any)?.__r3f.parent?.object
 
     if (!parent.matrixWorld) return
 
@@ -188,7 +186,7 @@ export const MeshReflectorMaterial: RefComponent<MeshReflectorMaterialImpl, Prop
     rotationMatrix.extractRotation(parent.matrixWorld)
     normal.set(0, 0, 1)
     normal.applyMatrix4(rotationMatrix)
-    reflectorWorldPosition.addScaledVector(normal, props.reflectorOffset)
+    reflectorWorldPosition.addScaledVector(normal, config.reflectorOffset)
     view.subVectors(reflectorWorldPosition, cameraWorldPosition)
     // Avoid rendering when reflector is facing away
     if (view.dot(normal) > 0) return
@@ -210,7 +208,24 @@ export const MeshReflectorMaterial: RefComponent<MeshReflectorMaterialImpl, Prop
     virtualCamera.updateMatrixWorld()
     virtualCamera.projectionMatrix.copy(store.camera.projectionMatrix)
     // Update the texture matrix
-    textureMatrix.set(0.5, 0.0, 0.0, 0.5, 0.0, 0.5, 0.0, 0.5, 0.0, 0.0, 0.5, 0.5, 0.0, 0.0, 0.0, 1.0)
+    textureMatrix.set(
+      0.5,
+      0.0,
+      0.0,
+      0.5,
+      0.0,
+      0.5,
+      0.0,
+      0.5,
+      0.0,
+      0.0,
+      0.5,
+      0.5,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+    )
     textureMatrix.multiply(virtualCamera.projectionMatrix)
     textureMatrix.multiply(virtualCamera.matrixWorldInverse)
     textureMatrix.multiply(parent.matrixWorld)
@@ -218,7 +233,12 @@ export const MeshReflectorMaterial: RefComponent<MeshReflectorMaterialImpl, Prop
     // Paper explaining this technique: http://www.terathon.com/lengyel/Lengyel-Oblique.pdf
     reflectorPlane.setFromNormalAndCoplanarPoint(normal, reflectorWorldPosition)
     reflectorPlane.applyMatrix4(virtualCamera.matrixWorldInverse)
-    clipPlane.set(reflectorPlane.normal.x, reflectorPlane.normal.y, reflectorPlane.normal.z, reflectorPlane.constant)
+    clipPlane.set(
+      reflectorPlane.normal.x,
+      reflectorPlane.normal.y,
+      reflectorPlane.normal.z,
+      reflectorPlane.constant,
+    )
     const projectionMatrix = virtualCamera.projectionMatrix
     q.x = (Math.sign(clipPlane.x) + projectionMatrix.elements[8]) / projectionMatrix.elements[0]
     q.y = (Math.sign(clipPlane.y) + projectionMatrix.elements[9]) / projectionMatrix.elements[5]
@@ -235,7 +255,7 @@ export const MeshReflectorMaterial: RefComponent<MeshReflectorMaterialImpl, Prop
 
   useFrame(() => {
     // TODO: As of R3f 7-8 this should be __r3f.parent
-    const parent = materialRef.ref.__r3f.parent
+    const parent = materialRef[$S3C].parent
     if (!parent) return
 
     parent.visible = false
@@ -255,16 +275,22 @@ export const MeshReflectorMaterial: RefComponent<MeshReflectorMaterialImpl, Prop
     store.gl.setRenderTarget(null)
   })
 
+  createEffect(() => {
+    if (typeof props.ref === 'function') props.ref(materialRef)
+    else props.ref = materialRef
+  })
+
   return (
     <T.MeshReflectorMaterialImpl
       // Defines can't be updated dynamically, so we need to recreate the material
+      /* @ts-expect-error TODO: add key-type to component */
       key={
         'key' +
         reflectorProps['defines-USE_BLUR'] +
         reflectorProps['defines-USE_DEPTH'] +
         reflectorProps['defines-USE_DISTORTION']
       }
-      ref={mergeRefs(materialRef, props)}
+      ref={materialRef}
       {...reflectorProps}
       {...rest}
     />

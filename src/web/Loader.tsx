@@ -1,6 +1,6 @@
 import { Show, createEffect, createSignal, onCleanup } from 'solid-js'
 import { useProgress } from '../core/useProgress'
-import { defaultProps } from '../helpers/defaultProps'
+import { defaultProps } from '../utils/default-props'
 
 interface LoaderOptions {
   containerStyles: any
@@ -34,7 +34,8 @@ export function Loader(_props: Partial<LoaderOptions>) {
   const updateProgress = () => {
     if (!progressSpanRef) return
     progressRef += (progress.progress - progressRef) / 2
-    if (progressRef > 0.95 * progress.progress || progress.progress === 100) progressRef = progress.progress
+    if (progressRef > 0.95 * progress.progress || progress.progress === 100)
+      progressRef = progress.progress
     progressSpanRef.innerText = props.dataInterpolation(progressRef)
     if (progressRef < progress.progress) rafRef = requestAnimationFrame(updateProgress)
   }
@@ -46,10 +47,18 @@ export function Loader(_props: Partial<LoaderOptions>) {
 
   return (
     <Show when={shown()}>
-      <div style={{ ...styles.container, opacity: progress.active ? 1 : 0, ...props.containerStyles }}>
+      <div
+        style={{ ...styles.container, opacity: progress.active ? 1 : 0, ...props.containerStyles }}
+      >
         <div>
           <div style={{ ...styles.inner, ...props.innerStyles }}>
-            <div style={{ ...styles.bar, transform: `scaleX(${progress.progress / 100})`, ...props.barStyles }}></div>
+            <div
+              style={{
+                ...styles.bar,
+                transform: `scaleX(${progress.progress / 100})`,
+                ...props.barStyles,
+              }}
+            ></div>
             <span ref={progressSpanRef} style={{ ...styles.data, ...props.dataStyles }} />
           </div>
         </div>

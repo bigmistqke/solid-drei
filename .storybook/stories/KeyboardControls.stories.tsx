@@ -1,4 +1,4 @@
-import { T, useFrame } from '@solid-three/fiber'
+import { T, useFrame } from 'solid-three'
 import { createMemo, createSignal } from 'solid-js'
 import { MathUtils, Vector3 } from 'three'
 import { Cone, KeyboardControls, KeyboardControlsEntry, useKeyboardControls } from '../../src'
@@ -7,7 +7,7 @@ import { Setup } from '../Setup'
 export default {
   title: 'Controls/KeyboardControls',
   decorators: [
-    (storyFn) => (
+    storyFn => (
       <Setup cameraPosition={new Vector3(0, 10, 0)} lights={true}>
         {storyFn()}
       </Setup>
@@ -40,7 +40,7 @@ export const KeyboardControlsSt = () => {
       onChange={(name, pressed, _state) => {
         // Test onChange by toggling the color.
         if (name === Controls.color && pressed) {
-          setColor((color) => (color === 'green' ? 'red' : 'green'))
+          setColor(color => (color === 'green' ? 'red' : 'green'))
         }
       }}
     >

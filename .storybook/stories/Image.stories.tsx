@@ -2,7 +2,7 @@ import { Vector3 } from 'three'
 
 import { Setup } from '../Setup'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { splitProps } from 'solid-js'
 import { Image, useTexture } from '../../src'
 
@@ -10,7 +10,7 @@ export default {
   title: 'Abstractions/Image',
   component: Image,
   decorators: [
-    (storyFn) => (
+    storyFn => (
       <Setup controls={false} cameraPosition={new Vector3(0, 0, 10)}>
         {storyFn()}
       </Setup>
@@ -30,13 +30,18 @@ function TextureWrapper({ ...args }) {
   )
 }
 
-export const ImageStory = (_props) => {
+export const ImageStory = _props => {
   const [props, args] = splitProps(_props, ['url'])
 
   return (
     <T.Suspense>
       <TextureWrapper {...args} />
-      <Image url={props.url?.[0] || '/images/living-room-2.jpg'} scale={[6, 4]} position={[0, 0, 0]} {...args} />
+      <Image
+        url={props.url?.[0] || '/images/living-room-2.jpg'}
+        scale={[6, 4]}
+        position={[0, 0, 0]}
+        {...args}
+      />
     </T.Suspense>
   )
 }

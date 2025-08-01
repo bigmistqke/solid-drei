@@ -1,14 +1,14 @@
 import { Vector3 } from 'three'
 import { Box, Html, OrbitControls, ScreenSpace } from '../../src'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { Setup } from '../Setup'
 
 export default {
   title: 'Abstractions/ScreenSpace',
   component: ScreenSpace,
   decorators: [
-    (storyFn) => (
+    storyFn => (
       <Setup controls={false} cameraPosition={new Vector3(0, 0, 10)}>
         {storyFn()}
       </Setup>

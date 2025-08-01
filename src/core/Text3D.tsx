@@ -1,34 +1,33 @@
-import { T, ThreeProps, extend, type Node } from '@solid-three/fiber'
-import { JSXElement, Show, createEffect, createMemo, mergeProps, splitProps } from 'solid-js'
-import * as THREE from 'three'
+import { JSXElement, Ref, Show, createEffect, createMemo, mergeProps, splitProps } from 'solid-js'
+import { S3, T, extend } from 'solid-three'
+import { Mesh } from 'three'
 import { TextGeometry, TextGeometryParameters, mergeVertices } from 'three-stdlib'
-import { processProps } from '../helpers/processProps'
-import { resolveAccessor } from '../helpers/resolveAccessor'
-import { RefComponent } from '../helpers/typeHelpers'
-import { createImperativeHandle } from '../helpers/useImperativeHandle'
+import { processProps } from '../utils/process-props'
+import { resolveAccessor } from '../utils/resolve-accessor'
 import { FontData, useFont } from './useFont'
 
 declare global {
   namespace SolidThree {
-    interface IntrinsicElements {
-      RenamedTextGeometry: Node<any>
+    interface Elements {
+      RenamedTextGeometry: TextGeometry
     }
   }
 }
 
-type Text3DProps = {
-  font: FontData | string
-  bevelSegments?: number
-  smooth?: number
-} & Omit<TextGeometryParameters, 'font'> &
-  ThreeProps<'Mesh'>
+extend({ RenamedTextGeometry: TextGeometry })
 
-const types = ['string', 'number']
-const getTextFromChildren = (children) => {
+/**********************************************************************************/
+/*                                                                                */
+/*                                      Utils                                     */
+/*                                                                                */
+/**********************************************************************************/
+
+const TYPES = ['string', 'number']
+function getTextFromChildren(children: any) {
   let label = ''
   const rest: JSXElement[] = []
-  children.map(resolveAccessor).forEach((child) => {
-    if (types.includes(typeof child)) label += child + ''
+  children.map(resolveAccessor).forEach((child: any) => {
+    if (TYPES.includes(typeof child)) label += child + ''
     else rest.push(child)
   })
   return {
@@ -37,13 +36,25 @@ const getTextFromChildren = (children) => {
   }
 }
 
-extend({ RenamedTextGeometry: TextGeometry })
+/**********************************************************************************/
+/*                                                                                */
+/*                                     Text 3D                                    */
+/*                                                                                */
+/**********************************************************************************/
 
-export const Text3D: RefComponent<THREE.Mesh, Text3DProps & { letterSpacing?: number; lineHeight?: number }> = (
-  _props
-) => {
-  const [props, rest] = processProps(
-    _props,
+type Text3DPropsBase = Omit<TextGeometryParameters, 'font'> & S3.Props<'Mesh'>
+interface Text3DProps extends Text3DPropsBase {
+  ref?: Ref<Mesh>
+  letterSpacing?: number
+  lineHeight?: number
+  font: FontData | string
+  bevelSegments?: number
+  smooth?: number
+}
+
+export function Text3D(props: Text3DProps) {
+  const [config, rest] = processProps(
+    props,
     {
       letterSpacing: 0,
       lineHeight: 1,
@@ -71,38 +82,38 @@ export const Text3D: RefComponent<THREE.Mesh, Text3DProps & { letterSpacing?: nu
       'bevelOffset',
       'bevelSegments',
       'curveSegments',
-    ]
+    ],
   )
-
-  let ref: THREE.Mesh
-  const font = useFont(props.font)
-
-  const fontProps = splitProps(props, ['font'])[1]
-  const opts = mergeProps(
+  const [, fontProps] = splitProps(config, ['font'])
+  const options = mergeProps(
     {
       get font() {
         return font()
       },
     },
-    fontProps
+    fontProps,
   )
 
-  const memo = createMemo(() => getTextFromChildren(props.children))
-  const args = createMemo(() => [memo().label, opts])
+  let mesh: Mesh
+  const font = useFont(() => config.font)
+
+  const memo = createMemo(() => getTextFromChildren(config.children))
 
   createEffect(() => {
-    if (props.smooth) {
-      ref.geometry = mergeVertices(ref.geometry, props.smooth)
-      ref.geometry.computeVertexNormals()
-    }
+    if (!config.smooth) return
+    mesh.geometry = mergeVertices(mesh.geometry, config.smooth)
+    mesh.geometry.computeVertexNormals()
   })
 
-  createImperativeHandle(props, () => ref)
+  createEffect(() => {
+    if (typeof config.ref === 'function') config.ref(mesh)
+    else config.ref = mesh
+  })
 
   return (
-    <T.Mesh {...rest} ref={ref!}>
-      <Show when={opts.font}>
-        <T.RenamedTextGeometry args={args()} />
+    <T.Mesh {...rest} ref={mesh!}>
+      <Show when={options.font}>
+        <T.RenamedTextGeometry args={[memo().label, options]} />
       </Show>
       {memo().rest}
     </T.Mesh>

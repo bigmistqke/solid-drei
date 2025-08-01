@@ -2,14 +2,14 @@ import * as THREE from 'three'
 
 import { Setup } from '../Setup'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { createSignal } from 'solid-js'
 import { Plane, useTexture, useVideoTexture } from '../../src'
 
 export default {
   title: 'Misc/useVideoTexture',
   component: useVideoTexture,
-  decorators: [(storyFn) => <Setup>{storyFn()}</Setup>],
+  decorators: [storyFn => <Setup>{storyFn()}</Setup>],
 }
 
 //
@@ -17,7 +17,9 @@ export default {
 //
 
 function VideoTexturedPlane() {
-  const texture = useVideoTexture('http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4')
+  const texture = useVideoTexture(
+    'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+  )
 
   return (
     <>
@@ -92,7 +94,7 @@ function VideoTexturedPlane3() {
     <>
       <Plane
         args={[4, 2.25]}
-        onClick={async (e) => {
+        onClick={async e => {
           const mediaStream = await navigator.mediaDevices.getDisplayMedia({ video: true })
 
           setMediaStream(mediaStream)

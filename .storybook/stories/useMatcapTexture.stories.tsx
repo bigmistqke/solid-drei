@@ -3,13 +3,16 @@ import { Vector3 } from 'three'
 
 import { Setup } from '../Setup'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { useGLTF, useMatcapTexture } from '../../src'
 
 export default {
   title: 'Staging/useMatcapTexture',
   component: useMatcapTexture,
-  decorators: [withKnobs, (storyFn) => <Setup cameraPosition={new Vector3(0, 0, 3)}>{storyFn()}</Setup>],
+  decorators: [
+    withKnobs,
+    storyFn => <Setup cameraPosition={new Vector3(0, 0, 3)}>{storyFn()}</Setup>,
+  ],
 }
 
 function Suzanne() {

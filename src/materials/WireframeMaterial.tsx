@@ -1,6 +1,6 @@
 import { Accessor, createEffect } from 'solid-js'
 import * as THREE from 'three'
-import { shaderMaterial } from '../core/shaderMaterial'
+import { shaderMaterial } from './shaderMaterial'
 
 export interface WireframeMaterialProps extends THREE.ShaderMaterialParameters {
   fillOpacity?: number
@@ -163,16 +163,16 @@ export const WireframeMaterial = shaderMaterial(
 
 		gl_FragColor = outColor;
 	}
-  `
+  `,
 )
 
 export function setWireframeOverride(
   material: THREE.Material,
   uniforms: Accessor<{
     [key: string]: THREE.IUniform<any>
-  }>
+  }>,
 ) {
-  material.onBeforeCompile = (shader) => {
+  material.onBeforeCompile = shader => {
     shader.uniforms = {
       ...shader.uniforms,
       ...uniforms(),
@@ -184,7 +184,7 @@ export function setWireframeOverride(
 		  ${WireframeMaterialShaders.vertex}
 		  void main() {
 			initWireframe();
-		`
+		`,
     )
 
     shader.fragmentShader = shader.fragmentShader.replace(
@@ -192,7 +192,7 @@ export function setWireframeOverride(
       `
 		  ${WireframeMaterialShaders.fragment}
 		  void main() {
-		`
+		`,
     )
 
     shader.fragmentShader = shader.fragmentShader.replace(
@@ -209,7 +209,7 @@ export function setWireframeOverride(
 
 		  diffuseColor.rgb = outColor.rgb;
 		  diffuseColor.a *= outColor.a;
-		`
+		`,
     )
   }
 
@@ -217,32 +217,73 @@ export function setWireframeOverride(
   material.transparent = true
 }
 
+type WireFrameUniforms = {
+  fillOpacity: THREE.IUniform<any>
+  fillMix: THREE.IUniform<any>
+  strokeOpacity: THREE.IUniform<any>
+  thickness: THREE.IUniform<any>
+  colorBackfaces: THREE.IUniform<any>
+  dash: THREE.IUniform<any>
+  dashInvert: THREE.IUniform<any>
+  dashRepeats: THREE.IUniform<any>
+  dashLength: THREE.IUniform<any>
+  squeeze: THREE.IUniform<any>
+  squeezeMax: THREE.IUniform<any>
+  squeezeMin: THREE.IUniform<any>
+  stroke: THREE.IUniform<any>
+  fill: THREE.IUniform<any>
+  backfaceStroke: THREE.IUniform<any>
+}
+
 export function useWireframeUniforms(
-  uniforms: Accessor<{
-    [key: string]: THREE.IUniform<any>
-  }>,
-  props: WireframeMaterialProps
+  uniforms: Accessor<WireFrameUniforms>,
+  props: WireframeMaterialProps,
 ) {
-  createEffect(() => void (uniforms().fillOpacity.value = props.fillOpacity ?? uniforms().fillOpacity.value))
-  createEffect(() => void (uniforms().fillMix.value = props.fillMix ?? uniforms().fillMix.value))
-  createEffect(() => void (uniforms().strokeOpacity.value = props.strokeOpacity ?? uniforms().strokeOpacity.value))
-  createEffect(() => void (uniforms().thickness.value = props.thickness ?? uniforms().thickness.value))
-  createEffect(() => void (uniforms().colorBackfaces.value = !!props.colorBackfaces))
-  createEffect(() => void (uniforms().dash.value = !!props.dash))
-  createEffect(() => void (uniforms().dashInvert.value = !!props.dashInvert))
-  createEffect(() => void (uniforms().dashRepeats.value = props.dashRepeats ?? uniforms().dashRepeats.value))
-  createEffect(() => void (uniforms().dashLength.value = props.dashLength ?? uniforms().dashLength.value))
-  createEffect(() => void (uniforms().squeeze.value = !!props.squeeze), [props.squeeze])
-  createEffect(() => void (uniforms().squeezeMin.value = props.squeezeMin ?? uniforms().squeezeMin.value))
-  createEffect(() => void (uniforms().squeezeMax.value = props.squeezeMax ?? uniforms().squeezeMax.value))
-  createEffect(
-    () => void (uniforms().stroke.value = props.stroke ? new THREE.Color(props.stroke) : uniforms().stroke.value)
-  )
-  createEffect(() => void (uniforms().fill.value = props.fill ? new THREE.Color(props.fill) : uniforms().fill.value))
-  createEffect(
-    () =>
-      void (uniforms().backfaceStroke.value = props.backfaceStroke
-        ? new THREE.Color(props.backfaceStroke)
-        : uniforms().backfaceStroke.value)
-  )
+  createEffect(() => {
+    uniforms().fillOpacity.value = props.fillOpacity ?? uniforms().fillOpacity.value
+  })
+  createEffect(() => {
+    uniforms().fillMix.value = props.fillMix ?? uniforms().fillMix.value
+  })
+  createEffect(() => {
+    uniforms().strokeOpacity.value = props.strokeOpacity ?? uniforms().strokeOpacity.value
+  })
+  createEffect(() => {
+    uniforms().thickness.value = props.thickness ?? uniforms().thickness.value
+  })
+  createEffect(() => {
+    uniforms().colorBackfaces.value = !!props.colorBackfaces
+  })
+  createEffect(() => {
+    uniforms().dash.value = !!props.dash
+  })
+  createEffect(() => {
+    uniforms().dashInvert.value = !!props.dashInvert
+  })
+  createEffect(() => {
+    uniforms().dashRepeats.value = props.dashRepeats ?? uniforms().dashRepeats.value
+  })
+  createEffect(() => {
+    uniforms().dashLength.value = props.dashLength ?? uniforms().dashLength.value
+  })
+  createEffect(() => {
+    uniforms().squeeze.value = !!props.squeeze
+  })
+  createEffect(() => {
+    uniforms().squeezeMin.value = props.squeezeMin ?? uniforms().squeezeMin.value
+  })
+  createEffect(() => {
+    uniforms().squeezeMax.value = props.squeezeMax ?? uniforms().squeezeMax.value
+  })
+  createEffect(() => {
+    uniforms().stroke.value = props.stroke ? new THREE.Color(props.stroke) : uniforms().stroke.value
+  })
+  createEffect(() => {
+    uniforms().fill.value = props.fill ? new THREE.Color(props.fill) : uniforms().fill.value
+  })
+  createEffect(() => {
+    uniforms().backfaceStroke.value = props.backfaceStroke
+      ? new THREE.Color(props.backfaceStroke)
+      : uniforms().backfaceStroke.value
+  })
 }

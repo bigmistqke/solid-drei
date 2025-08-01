@@ -1,9 +1,8 @@
 import { Accessor } from 'solid-js'
 import { createStore } from 'solid-js/store'
 import { DefaultLoadingManager } from 'three'
-// import create from 'zustand'
 
-type Data = {
+interface Data {
   errors: string[]
   active: boolean
   progress: number
@@ -41,7 +40,7 @@ DefaultLoadingManager.onStart = (item, loaded, total) => {
 DefaultLoadingManager.onLoad = () => {
   setProgress({ active: false })
 }
-DefaultLoadingManager.onError = (item) => setProgress((state) => ({ errors: [...state.errors, item] }))
+DefaultLoadingManager.onError = item => setProgress(state => ({ errors: [...state.errors, item] }))
 DefaultLoadingManager.onProgress = (item, loaded, total) => {
   if (loaded === total) {
     saveLastTotalLoaded = total

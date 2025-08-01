@@ -1,10 +1,13 @@
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { For, JSX, createMemo, createSignal } from 'solid-js'
 import { Euler, InstancedBufferAttribute, Matrix4, Mesh, Quaternion, Vector3 } from 'three'
 import { Decal, PerspectiveCamera, Sampler, useSurfaceSampler, useTexture } from '../../src'
 import { Setup } from '../Setup'
 
-function LoopOverInstancedBufferAttribute(props: { buffer?: InstancedBufferAttribute; children: any }) {
+function LoopOverInstancedBufferAttribute(props: {
+  buffer?: InstancedBufferAttribute
+  children: any
+}) {
   const m = new Matrix4()
   return (
     <For each={new Array(props.buffer?.count || [])}>
@@ -29,7 +32,7 @@ export default {
   title: 'Misc/Decal',
   component: Sampler,
   decorators: [
-    (storyFn) => (
+    storyFn => (
       <Setup cameraPosition={new Vector3(0, 0, 5)}>
         <T.Suspense fallback={null}>{storyFn()}</T.Suspense>
       </Setup>
@@ -68,7 +71,7 @@ function DecalScene() {
       </T.Mesh>
 
       <LoopOverInstancedBufferAttribute buffer={bufferAttribute()}>
-        {(props) => (
+        {props => (
           <Decal mesh={ref()} {...props}>
             <T.MeshPhysicalMaterial
               roughness={0.2}

@@ -1,16 +1,15 @@
-import { T, useFrame } from '@solid-three/fiber'
+import { Ref, createEffect } from 'solid-js'
+import { S3, T, useFrame } from 'solid-three'
 import { Group } from 'three'
-import { createRef } from '../helpers/createRef'
-import { mergeRefs } from '../helpers/mergeRefs'
-import { processProps } from '../helpers/processProps'
-import { RefComponent } from '../helpers/typeHelpers'
+import { processProps } from '../utils/process-props'
 
-export type BillboardProps = {
+export interface BillboardProps extends S3.Props<'Group'> {
+  ref?: Ref<Group>
   follow?: boolean
   lockX?: boolean
   lockY?: boolean
   lockZ?: boolean
-} & Parameters<typeof T.Group>[0]
+}
 
 /**
  * Wraps children in a billboarded group. Sample usage:
@@ -21,28 +20,33 @@ export type BillboardProps = {
  * </Billboard>
  * ```
  */
-export const Billboard: RefComponent<Group, BillboardProps> = function Billboard(_props) {
-  const [props, rest] = processProps(_props, { follow: true, lockX: false, lockY: false, lockZ: false }, [
-    'follow',
-    'lockX',
-    'lockY',
-    'lockZ',
-    'ref',
-  ])
-  const localRef = createRef<Group>()
+export function Billboard(props: BillboardProps) {
+  const [config, rest] = processProps(
+    props,
+    { follow: true, lockX: false, lockY: false, lockZ: false },
+    ['follow', 'lockX', 'lockY', 'lockZ', 'ref'],
+  )
+  let group: Group
+
   useFrame(({ camera }) => {
-    if (!props.follow || !localRef.ref) return
+    if (!config.follow) return
 
     // save previous rotation in case we're locking an axis
-    const prevRotation = localRef.ref.rotation.clone()
+    const prevRotation = group.rotation.clone()
 
     // always face the camera
-    camera.getWorldQuaternion(localRef.ref.quaternion)
+    camera.getWorldQuaternion(group.quaternion)
 
     // readjust any axis that is locked
-    if (props.lockX) localRef.ref.rotation.x = prevRotation.x
-    if (props.lockY) localRef.ref.rotation.y = prevRotation.y
-    if (props.lockZ) localRef.ref.rotation.z = prevRotation.z
+    if (config.lockX) group.rotation.x = prevRotation.x
+    if (config.lockY) group.rotation.y = prevRotation.y
+    if (config.lockZ) group.rotation.z = prevRotation.z
   })
-  return <T.Group ref={mergeRefs(localRef, props)} {...rest} />
+
+  createEffect(() => {
+    if (typeof config.ref === 'function') config.ref(group)
+    else config.ref = group
+  })
+
+  return <T.Group ref={group!} {...rest} />
 }

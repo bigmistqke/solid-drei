@@ -2,7 +2,7 @@ import { withKnobs } from '@storybook/addon-knobs'
 
 import { Setup } from '../Setup'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { Box, Resize, ResizeProps } from '../../src'
 
 export default {
@@ -10,7 +10,7 @@ export default {
   component: Resize,
   decorators: [
     withKnobs,
-    (storyFn) => (
+    storyFn => (
       <Setup camera={{ position: [1, 1, 1], zoom: 150 }} orthographic>
         {storyFn()}
       </Setup>

@@ -3,7 +3,7 @@ import { MathUtils, Quaternion, Vector3 } from 'three'
 
 import { Setup } from '../Setup'
 
-import { T, extend, useFrame, useThree } from '@solid-three/fiber'
+import { T, extend, useFrame, useThree } from 'solid-three'
 import { Point, PointMaterial, Points, shaderMaterial } from '../../src'
 
 import * as buffer from 'maath/buffer'
@@ -44,7 +44,7 @@ const MyPointsMaterial = shaderMaterial(
       #include <tonemapping_fragment>
       #include <encodings_fragment>
     }
-  `
+  `,
 )
 
 extend({ MyPointsMaterial })
@@ -87,7 +87,9 @@ export function BasicPointsBuffer() {
 }
 
 BasicPointsBuffer.storyName = 'Buffer'
-BasicPointsBuffer.decorators = [(storyFn) => <Setup cameraPosition={new Vector3(10, 10, 10)}>{storyFn()}</Setup>]
+BasicPointsBuffer.decorators = [
+  storyFn => <Setup cameraPosition={new Vector3(10, 10, 10)}>{storyFn()}</Setup>,
+]
 
 function PointEvent(_props) {
   const [props, rest] = splitProps(_props, ['color'])
@@ -98,9 +100,9 @@ function PointEvent(_props) {
     <Point
       {...rest}
       color={clicked() ? 'hotpink' : hovered() ? 'red' : props.color}
-      onPointerOver={(e) => (e.stopPropagation(), setHover(true))}
-      onPointerOut={(e) => setHover(false)}
-      onClick={(e) => (e.stopPropagation(), setClick((state) => !state))}
+      onPointerOver={e => (e.stopPropagation(), setHover(true))}
+      onPointerOut={e => setHover(false)}
+      onClick={e => (e.stopPropagation(), setClick(state => !state))}
     />
   )
 }
@@ -109,7 +111,11 @@ function BasicPointsInstancesScene() {
   const points = (() => {
     const n = 10
     return Array.from({ length: n * n * n }, () => {
-      return [MathUtils.randFloatSpread(4), MathUtils.randFloatSpread(4), MathUtils.randFloatSpread(4)]
+      return [
+        MathUtils.randFloatSpread(4),
+        MathUtils.randFloatSpread(4),
+        MathUtils.randFloatSpread(4),
+      ]
     })
   })()
   const store = useThree()
@@ -126,7 +132,7 @@ function BasicPointsInstancesScene() {
     <>
       <Points>
         <For each={points}>
-          {(p) => (
+          {p => (
             <PointEvent
               position={p as [number, number, number]}
               color={p as [number, number, number]}
@@ -146,10 +152,12 @@ export function BasicPointsInstances() {
 }
 
 BasicPointsInstances.storyName = 'Instances'
-BasicPointsInstances.decorators = [(storyFn) => <Setup cameraPosition={new Vector3(10, 10, 10)}>{storyFn()}</Setup>]
+BasicPointsInstances.decorators = [
+  storyFn => <Setup cameraPosition={new Vector3(10, 10, 10)}>{storyFn()}</Setup>,
+]
 
 function BasicPointsInstancesSelectionScene() {
-  const points = Array.from({ length: 100 }, (i) => [
+  const points = Array.from({ length: 100 }, i => [
     MathUtils.randFloatSpread(10),
     MathUtils.randFloatSpread(10),
     MathUtils.randFloatSpread(10),
@@ -169,7 +177,13 @@ function BasicPointsInstancesSelectionScene() {
 
   return (
     <Points limit={points.length} range={points.length}>
-      <PointMaterial transparent vertexColors size={15} sizeAttenuation={false} depthWrite={false} />
+      <PointMaterial
+        transparent
+        vertexColors
+        size={15}
+        sizeAttenuation={false}
+        depthWrite={false}
+      />
       <For each={points}>{(position, i) => <PointEvent color="orange" position={position} />}</For>
     </Points>
   )
@@ -181,5 +195,5 @@ export function BasicPointsInstancesSelection() {
 
 BasicPointsInstancesSelection.storyName = 'Selection'
 BasicPointsInstancesSelection.decorators = [
-  (storyFn) => <Setup cameraPosition={new Vector3(10, 10, 10)}>{storyFn()}</Setup>,
+  storyFn => <Setup cameraPosition={new Vector3(10, 10, 10)}>{storyFn()}</Setup>,
 ]

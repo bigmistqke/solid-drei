@@ -1,12 +1,17 @@
-import { useFrame, useThree } from '@solid-three/fiber'
 import { createMemo } from 'solid-js'
+import { useFrame, useThree } from 'solid-three'
 import { DepthFormat, DepthTexture, UnsignedShortType } from 'three'
-import { useFBO } from './useFBO'
+import { useFBO } from './unported/useFBO'
 
-function useDepthBuffer({ size = 256, frames = Infinity }: { size?: number; frames?: number } = {}) {
+export function useDepthBuffer({
+  size = 256,
+  frames = Infinity,
+}: { size?: number; frames?: number } = {}) {
   const store = useThree()
-  const w = () => size || store.size.width * store.viewport.dpr
-  const h = () => size || store.size.height * store.viewport.dpr
+  let count = 0
+
+  const w = () => size || store.bounds.width * store.dpr
+  const h = () => size || store.bounds.height * store.dpr
 
   const depthConfig = createMemo(() => {
     const depthTexture = new DepthTexture(w(), h())
@@ -15,9 +20,9 @@ function useDepthBuffer({ size = 256, frames = Infinity }: { size?: number; fram
     return { depthTexture }
   })
 
-  let count = 0
   const depthFBO = useFBO(w, h, depthConfig)
-  useFrame((state) => {
+
+  useFrame(state => {
     if (frames === Infinity || count < frames) {
       state.gl.setRenderTarget(depthFBO)
       state.gl.render(state.scene, state.camera)
@@ -25,7 +30,6 @@ function useDepthBuffer({ size = 256, frames = Infinity }: { size?: number; fram
       count++
     }
   })
+
   return depthFBO.depthTexture
 }
-
-export { useDepthBuffer }

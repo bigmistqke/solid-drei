@@ -4,14 +4,14 @@ import { Setup } from '../Setup'
 
 import { ContactShadows, Environment, OrbitControls } from '../../src'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { presetsObj } from '../../src/helpers/environment-assets'
 
 export default {
   title: 'Staging/Environment',
   component: Environment,
   decorators: [
-    (storyFn) => (
+    storyFn => (
       <Setup cameraPosition={new Vector3(0, 0, 10)} controls={false}>
         <T.Suspense>{storyFn()}</T.Suspense>
       </Setup>
@@ -19,7 +19,7 @@ export default {
   ],
 }
 
-export const EnvironmentStory = (props) => {
+export const EnvironmentStory = props => {
   return (
     <>
       <Environment preset={props.preset} background={props.background} blur={props.blur} />
@@ -52,7 +52,7 @@ EnvironmentStory.argTypes = {
 
 EnvironmentStory.storyName = 'Default'
 
-export const EnvironmentFilesStory = (props) => (
+export const EnvironmentFilesStory = props => (
   <>
     <Environment
       background={props.background}
@@ -73,7 +73,7 @@ EnvironmentFilesStory.args = {
 
 EnvironmentFilesStory.storyName = 'Files'
 
-export const EnvironmentGroundStory = (props) => {
+export const EnvironmentGroundStory = props => {
   return (
     <>
       <Environment ground={{ height: props.height, radius: props.radius }} preset={props.preset} />
@@ -81,7 +81,14 @@ export const EnvironmentGroundStory = (props) => {
         <T.BoxGeometry args={[10, 10, 10]} />
         <T.MeshStandardMaterial color="white" metalness={1} roughness={0} />
       </T.Mesh>
-      <ContactShadows resolution={1024} position={[0, 0, 0]} scale={100} blur={2} opacity={1} far={10} />
+      <ContactShadows
+        resolution={1024}
+        position={[0, 0, 0]}
+        scale={100}
+        blur={2}
+        opacity={1}
+        far={10}
+      />
       <OrbitControls autoRotate />
       {/* <PerspectiveCamera position={[40, 40, 40]} makeDefault /> */}
     </>

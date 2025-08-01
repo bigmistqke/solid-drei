@@ -1,4 +1,4 @@
-import { T, useFrame } from '@solid-three/fiber'
+import { T, useFrame } from 'solid-three'
 import { createEffect, createMemo } from 'solid-js'
 import { Mesh, RepeatWrapping, Vector2, Vector3 } from 'three'
 
@@ -10,7 +10,7 @@ export default {
   title: 'Shaders/MeshReflectorMaterial',
   component: MeshReflectorMaterial,
   decorators: [
-    (storyFn) => (
+    storyFn => (
       <Setup cameraFov={20} cameraPosition={new Vector3(-2, 2, 6)}>
         {storyFn()}
       </Setup>
@@ -36,7 +36,7 @@ function ReflectorScene(props: {
   const _normalScale = createMemo(() => new Vector2(props.normalScale || 0), [props.normalScale])
 
   createEffect(() => {
-    when(distortionMap)((distortionMap) => {
+    when(distortionMap)(distortionMap => {
       distortionMap.wrapS = distortionMap.wrapT = RepeatWrapping
       distortionMap.repeat.set(4, 4)
     })

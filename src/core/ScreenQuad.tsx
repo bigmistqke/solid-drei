@@ -1,26 +1,23 @@
 // reference: https://medium.com/@luruke/simple-postprocessing-in-three-js-91936ecadfb7
 // and @gsimone ;)
-import { T, ThreeProps } from '@solid-three/fiber'
-import { splitProps } from 'solid-js'
-import * as THREE from 'three'
-import { RefComponent } from '../helpers/typeHelpers'
+import { Ref, splitProps } from 'solid-js'
+import { S3, T } from 'solid-three'
+import { BufferAttribute, BufferGeometry, Mesh } from 'three'
 
-function createScreenQuadGeometry() {
-  const geometry = new THREE.BufferGeometry()
-  const vertices = new Float32Array([-1, -1, 3, -1, -1, 3])
-  geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 2))
-  return geometry
+interface Props extends Omit<S3.Props<'Mesh'>, 'args'> {
+  ref?: Ref<Mesh>
 }
 
-type Props = Omit<ThreeProps<'Mesh'>, 'args'>
+export function ScreenQuad(props: Props) {
+  const [config, rest] = splitProps(props, ['children'])
 
-export const ScreenQuad: RefComponent<THREE.Mesh, Props> = function ScreenQuad(_props) {
-  const [props, rest] = splitProps(_props, ['children'])
-  const geometry = createScreenQuadGeometry()
+  const geometry = new BufferGeometry()
+  const vertices = new Float32Array([-1, -1, 3, -1, -1, 3])
+  geometry.setAttribute('position', new BufferAttribute(vertices, 2))
 
   return (
     <T.Mesh geometry={geometry} frustumCulled={false} {...rest}>
-      {props.children}
+      {config.children}
     </T.Mesh>
   )
 }

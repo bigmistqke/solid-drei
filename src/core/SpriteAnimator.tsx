@@ -1,8 +1,103 @@
-import { T, ThreeProps, useFrame, useThree, Vector3 } from '@solid-three/fiber'
-import { Component, createEffect, createRenderEffect, createSignal, on, onMount, splitProps, Suspense } from 'solid-js'
-import * as THREE from 'three'
+import { every, when, whenever } from '@/utils/conditionals'
+import {
+  Show,
+  createEffect,
+  createMemo,
+  createRenderEffect,
+  createResource,
+  createSignal,
+  on,
+  splitProps,
+  untrack,
+} from 'solid-js'
+import { S3, T, useFrame } from 'solid-three'
+import { RepeatWrapping, Sprite, SpriteMaterial, TextureLoader } from 'three'
 
-export type SpriteAnimatorProps = {
+/**********************************************************************************/
+/*                                                                                */
+/*                                      Utils                                     */
+/*                                                                                */
+/**********************************************************************************/
+
+function getFirstItem(param: any) {
+  if (Array.isArray(param)) {
+    return param[0]
+  } else if (typeof param === 'object' && param !== null) {
+    const keys = Object.keys(param)
+    return param[keys[0]!][0]
+  } else {
+    return { w: 0, h: 0 }
+  }
+}
+
+function calculateAspectRatio(width: number, height: number): [number, number, number] {
+  const aspectRatio = height / width
+  return [1, aspectRatio, 1]
+}
+
+type Sprites = Record<
+  string,
+  Array<{
+    x: number
+    y: number
+    w: number
+    h: number
+    frame: { x: number; y: number; w: number; h: number }
+    sourceSize: { w: number; h: number }
+  }>
+>
+// for frame based JSON Hash sprite data
+function spriteDataToSprites(data: any, delimiters?: string[]) {
+  const sprites: Sprites = {}
+
+  if (delimiters) {
+    for (let i = 0; i < delimiters.length; i++) {
+      sprites[delimiters[i]!] = []
+      for (let innerKey in data['frames']) {
+        if (
+          typeof innerKey === 'string' &&
+          innerKey.toLowerCase().indexOf(delimiters[i]!.toLowerCase()) !== -1
+        ) {
+          const value = data.frames[innerKey]
+          const frame = value.frame
+          sprites[delimiters[i]!]!.push({
+            frame,
+            sourceSize: value.sourceSize,
+            x: frame.x,
+            y: frame.y,
+            w: frame.width,
+            h: frame.height,
+          })
+        }
+      }
+    }
+  }
+
+  return sprites
+}
+
+/**********************************************************************************/
+/*                                                                                */
+/*                                 Sprite Animator                                */
+/*                                                                                */
+/**********************************************************************************/
+
+interface SpriteData {
+  frames: Array<{
+    frame: { x: number; y: number; w: number; h: number }
+    rotated: boolean
+    trimmed: boolean
+    spriteSourceSize: { x: number; y: number; w: number; h: number }
+    sourceSize: { w: number; h: number }
+  }>
+  meta: {
+    version: '1.0'
+    size: { w: number; h: number }
+    scale: '1'
+  }
+}
+
+export interface SpriteAnimatorProps extends S3.Props<'Group'> {
   startFrame?: number
   endFrame?: number
   fps?: number
@@ -20,13 +115,11 @@ export type SpriteAnimatorProps = {
   play?: boolean
   pause?: boolean
   flipX?: boolean
-  position?: Array<number>
   alphaTest?: number
-} & ThreeProps<'Group'>
+}
 
-// s3f:   should it be a forwardRef?
-export const SpriteAnimator: Component<SpriteAnimatorProps> = (_props, fref) => {
-  const [props, rest] = splitProps(_props, [
+export function SpriteAnimator(props: SpriteAnimatorProps) {
+  const [config, rest] = splitProps(props, [
     'startFrame',
     'endFrame',
     'fps',
@@ -47,301 +140,252 @@ export const SpriteAnimator: Component<SpriteAnimatorProps> = (_props, fref) => 
     'alphaTest',
     'children',
   ])
-
-  const store = useThree()
-  let spriteData: any = null
   const [isJsonReady, setJsonReady] = createSignal(false)
-  let matRef: any
-  let spriteRef: any
+  const [sprite, setSprite] = createSignal<Sprite>()
+  const [spriteMaterial, setSpriteMaterial] = createSignal<SpriteMaterial>()
+
+  let currentFrame: number = config.startFrame || 0
+  let currentFrameName: string = config.frameName || ''
   let timerOffset = window.performance.now()
-  let textureData: any
-  let currentFrame: number = props.startFrame || 0
-  let currentFrameName: string = props.frameName || ''
-  const fpsInterval = 1000 / (props.fps || 30)
-  const [spriteTexture, setSpriteTexture] = createSignal<THREE.Texture>(new THREE.Texture())
-  let totalFrames = 0
-  const [aspect, setAspect] = createSignal<Vector3 | undefined>([1, 1, 1])
-  const flipOffset = () => (props.flipX ? -1 : 1)
 
-  function loadJsonAndTextureAndExecuteCallback(
-    jsonUrl: string,
-    textureUrl: string,
-    callback: (json: any, texture: THREE.Texture) => void
-  ): void {
-    const textureLoader = new THREE.TextureLoader()
-    const jsonPromise = fetch(jsonUrl).then((response) => response.json())
-    const texturePromise = new Promise<THREE.Texture>((resolve) => {
-      textureLoader.load(textureUrl, resolve)
-    })
+  const fpsInterval = () => 1000 / (config.fps || 30)
+  const flipOffset = () => (config.flipX ? -1 : 1)
 
-    Promise.all([jsonPromise, texturePromise]).then((response) => {
-      callback(response[0], response[1])
-    })
-  }
-
-  const calculateAspectRatio = (width: number, height: number): Vector3 => {
-    const aspectRatio = height / width
-    spriteRef.scale.set(1, aspectRatio, 1)
-    return [1, aspectRatio, 1]
-  }
-
-  // initial loads
-  onMount(() => {
-    if (props.textureDataURL && props.textureImageURL) {
-      loadJsonAndTextureAndExecuteCallback(props.textureDataURL, props.textureImageURL, parseSpriteData)
-    } else if (props.textureImageURL) {
-      // only load the texture, this is an image sprite only
-      const textureLoader = new THREE.TextureLoader()
-      new Promise<THREE.Texture>((resolve) => {
-        textureLoader.load(props.textureImageURL, resolve)
-      }).then((texture) => {
-        parseSpriteData(null, texture)
-      })
-    }
+  const [spriteTexture] = createResource(async () => {
+    const textureLoader = new TextureLoader()
+    const texture = await textureLoader.loadAsync(untrack(() => config.textureImageURL))
+    texture.premultiplyAlpha = false
+    return texture
   })
 
-  createRenderEffect(
-    on(
-      // s3f:   unclear if spriteTexture() would trigger modifySpritePosition() without being included in on
-      () => [spriteTexture(), props.flipX],
-      () => {
-        modifySpritePosition()
+  const [json] = createResource(async () => {
+    let result: SpriteData | undefined
+    if (config.textureDataURL) {
+      try {
+        result = await fetch(config.textureDataURL).then(
+          response => response.json() as unknown as SpriteData | undefined,
+        )
+      } catch (err) {
+        console.error(err)
+        return 'NONE'
       }
-    )
+    }
+    return result || 'NONE'
+  })
+
+  const [spriteData] = createResource(every(spriteTexture, json), async ([texture, json]) => {
+    if (json !== 'NONE') return json
+
+    if (!config.numberOfFrames) return undefined
+
+    //get size from texture
+    const width = texture.image.width
+    const height = texture.image.height
+    const frameWidth = width / config.numberOfFrames
+    const frameHeight = height
+
+    const data: SpriteData = {
+      frames: [],
+      meta: {
+        version: '1.0',
+        size: { w: width, h: height },
+        scale: '1',
+      },
+    }
+
+    if (parseInt(frameWidth.toString(), 10) === frameWidth) {
+      // if it fits
+      for (let i = 0; i < config.numberOfFrames; i++) {
+        data.frames.push({
+          frame: { x: i * frameWidth, y: 0, w: frameWidth, h: frameHeight },
+          rotated: false,
+          trimmed: false,
+          spriteSourceSize: { x: 0, y: 0, w: frameWidth, h: frameHeight },
+          sourceSize: { w: frameWidth, h: height },
+        })
+      }
+    }
+
+    return data
+  })
+
+  const sprites = createMemo(
+    whenever(spriteData, spriteData => {
+      if (Array.isArray(spriteData.frames)) return spriteData.frames
+      return spriteDataToSprites(spriteData, config.animationNames)
+    }),
   )
 
-  // s3f:   unnecessary effect?
-  createEffect(() => {
-    if (props.autoPlay === false) {
-      if (props.play) {
-      }
-    }
-  }, [props.pause])
+  const aspect = whenever(
+    sprites,
+    sprites => {
+      const { w, h } = getFirstItem(sprites).sourceSize
+      return calculateAspectRatio(w, h)
+    },
+    () => [1, 1, 1] as [number, number, number],
+  )
+
+  createEffect(
+    whenever(every(aspect, sprite), ([aspect, spriteRef]) => spriteRef.scale.set(1, aspect[1], 1)),
+  )
+
+  createEffect(
+    whenever(
+      every(spriteMaterial, spriteTexture),
+      ([spriteMaterial, spriteTexture]) => (spriteMaterial.map = spriteTexture),
+    ),
+  )
+
+  createRenderEffect(
+    whenever(
+      every(spriteMaterial, spriteData),
+      ([
+        spriteMaterial,
+        {
+          meta: { size: metaInfo },
+          frames,
+        },
+      ]) => {
+        const { w: frameWidth, h: frameHeight } = Array.isArray(frames)
+          ? frames[0]!.sourceSize
+          : config.frameName
+          ? frames[config.frameName]
+            ? /* @ts-ignore-error TODO: fix types */
+              frames[config.frameName][0].sourceSize
+            : { w: 0, h: 0 }
+          : { w: 0, h: 0 }
+
+        createRenderEffect(
+          on(
+            () => [spriteTexture(), config.flipX],
+            () => {
+              spriteMaterial.map!.wrapS = spriteMaterial.map!.wrapT = RepeatWrapping
+              spriteMaterial.map!.center.set(0, 0)
+              spriteMaterial.map!.repeat.set(
+                (1 * flipOffset()) / (metaInfo.w / frameWidth),
+                1 / (metaInfo.h / frameHeight),
+              )
+              //const framesH = (metaInfo.w - 1) / frameW
+              const framesV = (metaInfo.h - 1) / frameHeight
+              const frameOffsetY = 1 / framesV
+              spriteMaterial.map!.offset.x = 0.0 //-matRef.map.repeat.x
+              spriteMaterial.map!.offset.y = 1 - frameOffsetY
+              setJsonReady(true)
+              if (config.onStart) {
+                config.onStart({ currentFrameName: config.frameName, currentFrame: currentFrame })
+              }
+            },
+          ),
+        )
+      },
+    ),
+  )
 
   createEffect(() => {
-    if (currentFrameName !== props.frameName && props.frameName) {
+    if (config.frameName && currentFrameName !== config.frameName) {
       currentFrame = 0
-      currentFrameName = props.frameName
+      currentFrameName = config.frameName
     }
   })
-
-  const parseSpriteData = (json: any, _spriteTexture: THREE.Texture): void => {
-    // sprite only case
-    if (json === null) {
-      if (_spriteTexture && props.numberOfFrames) {
-        //get size from texture
-        const width = _spriteTexture.image.width
-        const height = _spriteTexture.image.height
-        const frameWidth = width / props.numberOfFrames
-        const frameHeight = height
-        textureData = _spriteTexture
-        totalFrames = props.numberOfFrames
-        spriteData = {
-          frames: [],
-          meta: {
-            version: '1.0',
-            size: { w: width, h: height },
-            scale: '1',
-          },
-        }
-
-        if (parseInt(frameWidth.toString(), 10) === frameWidth) {
-          // if it fits
-          for (let i = 0; i < props.numberOfFrames; i++) {
-            spriteData.frames.push({
-              frame: { x: i * frameWidth, y: 0, w: frameWidth, h: frameHeight },
-              rotated: false,
-              trimmed: false,
-              spriteSourceSize: { x: 0, y: 0, w: frameWidth, h: frameHeight },
-              sourceSize: { w: frameWidth, h: height },
-            })
-          }
-        }
-      }
-    } else if (_spriteTexture) {
-      spriteData = json
-      spriteData.frames = Array.isArray(json.frames) ? json.frames : parseFrames()
-      totalFrames = Array.isArray(json.frames) ? json.frames.length : Object.keys(json.frames).length
-      textureData = _spriteTexture
-
-      const { w, h } = getFirstItem(json.frames).sourceSize
-      const aspect = calculateAspectRatio(w, h)
-
-      setAspect(aspect)
-      if (matRef) {
-        matRef.map = _spriteTexture
-      }
-    }
-
-    _spriteTexture.premultiplyAlpha = false
-
-    setSpriteTexture(_spriteTexture)
-  }
-
-  // for frame based JSON Hash sprite data
-  const parseFrames = (): any => {
-    const sprites: any = {}
-    const data = spriteData
-    const delimiters = props.animationNames
-    if (delimiters) {
-      for (let i = 0; i < delimiters.length; i++) {
-        sprites[delimiters[i]] = []
-
-        for (let innerKey in data['frames']) {
-          const value = data['frames'][innerKey]
-          const frameData = value['frame']
-          const x = frameData['x']
-          const y = frameData['y']
-          const width = frameData['w']
-          const height = frameData['h']
-          const sourceWidth = value['sourceSize']['w']
-          const sourceHeight = value['sourceSize']['h']
-
-          if (typeof innerKey === 'string' && innerKey.toLowerCase().indexOf(delimiters[i].toLowerCase()) !== -1) {
-            sprites[delimiters[i]].push({
-              x: x,
-              y: y,
-              w: width,
-              h: height,
-              frame: frameData,
-              sourceSize: { w: sourceWidth, h: sourceHeight },
-            })
-          }
-        }
-      }
-    }
-
-    return sprites
-  }
-
-  // modify the sprite material after json is parsed and state updated
-  const modifySpritePosition = (): void => {
-    if (!spriteData) return
-    const {
-      meta: { size: metaInfo },
-      frames,
-    } = spriteData
-
-    const { w: frameW, h: frameH } = Array.isArray(frames)
-      ? frames[0].sourceSize
-      : props.frameName
-      ? frames[props.frameName]
-        ? frames[props.frameName][0].sourceSize
-        : { w: 0, h: 0 }
-      : { w: 0, h: 0 }
-
-    matRef.map.wrapS = matRef.map.wrapT = THREE.RepeatWrapping
-    matRef.map.center.set(0, 0)
-    matRef.map.repeat.set((1 * flipOffset()) / (metaInfo.w / frameW), 1 / (metaInfo.h / frameH))
-
-    //const framesH = (metaInfo.w - 1) / frameW
-    const framesV = (metaInfo.h - 1) / frameH
-    const frameOffsetY = 1 / framesV
-    matRef.map.offset.x = 0.0 //-matRef.map.repeat.x
-    matRef.map.offset.y = 1 - frameOffsetY
-
-    setJsonReady(true)
-    if (props.onStart) props.onStart({ currentFrameName: props.frameName, currentFrame: currentFrame })
-  }
-
-  // run the animation on each frame
-  const runAnimation = (): void => {
-    //if (!frameName) return
-    const now = window.performance.now()
-    const diff = now - timerOffset
-    const {
-      meta: { size: metaInfo },
-      frames,
-    } = spriteData
-    const { w: frameW, h: frameH } = getFirstItem(frames).sourceSize
-    const spriteFrames = Array.isArray(frames) ? frames : props.frameName ? frames[props.frameName] : []
-
-    let finalValX = 0
-    let finalValY = 0
-    const _endFrame = props.endFrame || spriteFrames.length - 1
-
-    if (currentFrame > _endFrame) {
-      currentFrame = props.loop ? props.startFrame ?? 0 : 0
-      if (props.loop) {
-        props.onLoopEnd?.({
-          currentFrameName: props.frameName,
-          currentFrame: currentFrame,
-        })
-      } else {
-        props.onEnd?.({
-          currentFrameName: props.frameName,
-          currentFrame: currentFrame,
-        })
-      }
-      if (!props.loop) return
-    }
-
-    if (diff <= fpsInterval) return
-    timerOffset = now - (diff % fpsInterval)
-
-    calculateAspectRatio(frameW, frameH)
-    const framesH = (metaInfo.w - 1) / frameW
-    const framesV = (metaInfo.h - 1) / frameH
-    const {
-      frame: { x: frameX, y: frameY },
-      sourceSize: { w: originalSizeX, h: originalSizeY },
-    } = spriteFrames[currentFrame]
-    const frameOffsetX = 1 / framesH
-    const frameOffsetY = 1 / framesV
-    finalValX =
-      flipOffset() > 0
-        ? frameOffsetX * (frameX / originalSizeX)
-        : frameOffsetX * (frameX / originalSizeX) - matRef.map.repeat.x
-    finalValY = Math.abs(1 - frameOffsetY) - frameOffsetY * (frameY / originalSizeY)
-
-    matRef.map.offset.x = finalValX
-    matRef.map.offset.y = finalValY
-
-    currentFrame += 1
-  }
 
   // *** Warning! It runs on every frame! ***
-  useFrame((state, delta) => {
-    if (!spriteData?.frames || !matRef?.map) {
-      return
-    }
+  const tick = whenever(
+    every(spriteData, spriteMaterial),
+    ([
+      {
+        meta: { size: metaInfo },
+        frames,
+      },
+      spriteMaterial,
+    ]) => {
+      if (!frames || !spriteMaterial.map || config.autoPlay || config.play) return
 
-    if (props.pause) {
-      return
-    }
+      if (config.autoPlay || config.play) {
+        // run the animation on each frame
 
-    if (props.autoPlay || props.play) {
-      runAnimation()
-      props.onFrame && props.onFrame({ currentFrameName: currentFrameName, currentFrame: currentFrame })
-    }
+        const now = window.performance.now()
+        const diff = now - timerOffset
+
+        const { w: frameW, h: frameH } = getFirstItem(frames).sourceSize
+        const spriteFrames = Array.isArray(frames)
+          ? frames
+          : config.frameName
+          ? frames[config.frameName]
+          : []
+
+        let finalValX = 0
+        let finalValY = 0
+        const _endFrame = config.endFrame || spriteFrames.length - 1
+
+        if (currentFrame > _endFrame) {
+          currentFrame = config.loop ? config.startFrame ?? 0 : 0
+          if (config.loop) {
+            config.onLoopEnd?.({
+              currentFrameName: config.frameName,
+              currentFrame: currentFrame,
+            })
+          } else {
+            config.onEnd?.({
+              currentFrameName: config.frameName,
+              currentFrame: currentFrame,
+            })
+          }
+          if (!config.loop) return
+        }
+
+        if (diff <= fpsInterval()) return
+        timerOffset = now - (diff % fpsInterval())
+
+        when(sprite, sprite => {
+          const aspect = calculateAspectRatio(frameW, frameH)
+          sprite.scale.set(1, aspect[1], 1)
+        })
+
+        const framesH = (metaInfo.w - 1) / frameW
+        const framesV = (metaInfo.h - 1) / frameH
+        const {
+          frame: { x: frameX, y: frameY },
+          sourceSize: { w: originalSizeX, h: originalSizeY },
+        } = spriteFrames[currentFrame]!
+        const frameOffsetX = 1 / framesH
+        const frameOffsetY = 1 / framesV
+        finalValX =
+          flipOffset() > 0
+            ? frameOffsetX * (frameX / originalSizeX)
+            : frameOffsetX * (frameX / originalSizeX) - spriteMaterial.map!.repeat.x
+        finalValY = Math.abs(1 - frameOffsetY) - frameOffsetY * (frameY / originalSizeY)
+
+        spriteMaterial.map!.offset.x = finalValX
+        spriteMaterial.map!.offset.y = finalValY
+
+        currentFrame += 1
+
+        config.onFrame?.({ currentFrameName, currentFrame })
+      }
+    },
+  )
+
+  useFrame(() => {
+    if (config.pause) return
+    tick()
   })
-
-  // utils
-  const getFirstItem = (param: any): any => {
-    if (Array.isArray(param)) {
-      return param[0]
-    } else if (typeof param === 'object' && param !== null) {
-      const keys = Object.keys(param)
-      return param[keys[0]][0]
-    } else {
-      return { w: 0, h: 0 }
-    }
-  }
 
   return (
     <T.Group {...rest}>
-      <Suspense fallback={null}>
-        <T.Sprite ref={spriteRef} scale={aspect()}>
-          <T.SpriteMaterial
-            toneMapped={false}
-            ref={matRef}
-            map={spriteTexture()}
-            transparent={true}
-            alphaTest={props.alphaTest ?? 0.0}
-          />
-        </T.Sprite>
-      </Suspense>
-      {props.children}
+      <Show when={spriteTexture()}>
+        {spriteTexture => (
+          <T.Sprite ref={setSprite} scale={aspect()}>
+            <T.SpriteMaterial
+              ref={setSpriteMaterial}
+              alphaTest={config.alphaTest ?? 0.0}
+              map={spriteTexture()}
+              toneMapped={false}
+              transparent={true}
+            />
+          </T.Sprite>
+        )}
+      </Show>
+      {config.children}
     </T.Group>
   )
 }

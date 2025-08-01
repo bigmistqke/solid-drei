@@ -2,25 +2,30 @@ import { Vector3 } from 'three'
 
 import { Setup } from '../Setup'
 
-import { Primitive, T } from '@solid-three/fiber'
+import { Primitive, T } from 'solid-three'
 import { boolean, withKnobs } from '@storybook/addon-knobs'
 import { Environment, Html, Loader, useGLTF, useProgress } from '../../src'
 
 export default {
   title: 'Misc/useProgress',
   component: useProgress,
-  decorators: [withKnobs, (storyFn) => <Setup cameraPosition={new Vector3(0, 0, 5)}>{storyFn()}</Setup>],
+  decorators: [
+    withKnobs,
+    storyFn => <Setup cameraPosition={new Vector3(0, 0, 5)}>{storyFn()}</Setup>,
+  ],
 }
 
 function Helmet() {
-  const resource = useGLTF('https://threejs.org/examples/models/gltf/DamagedHelmet/glTF/DamagedHelmet.gltf')
+  const resource = useGLTF(
+    'https://threejs.org/examples/models/gltf/DamagedHelmet/glTF/DamagedHelmet.gltf',
+  )
 
   return <Primitive object={resource()?.nodes['node_damagedHelmet_-6514']} />
 }
 
 function Shoe() {
   const resource = useGLTF(
-    'https://threejs.org/examples/models/gltf/MaterialsVariantsShoe/glTF/MaterialsVariantsShoe.gltf'
+    'https://threejs.org/examples/models/gltf/MaterialsVariantsShoe/glTF/MaterialsVariantsShoe.gltf',
   )
 
   return <Primitive object={resource()?.nodes['Shoe']} />
@@ -46,7 +51,9 @@ function LoadExtras() {
 
 function UseProgressScene() {
   return (
-    <T.Suspense fallback={<CustomLoader />}>{boolean('Load extras', false) ? <LoadExtras /> : <Helmet />}</T.Suspense>
+    <T.Suspense fallback={<CustomLoader />}>
+      {boolean('Load extras', false) ? <LoadExtras /> : <Helmet />}
+    </T.Suspense>
   )
 }
 

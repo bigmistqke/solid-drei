@@ -2,13 +2,13 @@ import { number, withKnobs } from '@storybook/addon-knobs'
 
 import { Setup } from '../Setup'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { useTrailTexture } from '../../src'
 
 export default {
   title: 'misc/useTrailTexture',
   component: useTrailTexture,
-  decorators: [withKnobs, (storyFn) => <Setup>{storyFn()}</Setup>],
+  decorators: [withKnobs, storyFn => <Setup>{storyFn()}</Setup>],
 }
 
 function TrailMesh() {

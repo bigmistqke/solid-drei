@@ -1,4 +1,4 @@
-import { T, useFrame } from '@solid-three/fiber'
+import { T, useFrame } from 'solid-three'
 import * as THREE from 'three'
 
 import { Setup } from '../Setup'
@@ -9,7 +9,7 @@ import { Box, CubeCamera } from '../../src'
 export default {
   title: 'Camera/CubeCamera',
   component: CubeCamera,
-  decorators: [(storyFn) => <Setup cameraPosition={new THREE.Vector3(0, 10, 40)}>{storyFn()}</Setup>],
+  decorators: [storyFn => <Setup cameraPosition={new THREE.Vector3(0, 10, 40)}>{storyFn()}</Setup>],
 }
 
 declare global {
@@ -28,7 +28,7 @@ function Sphere({ offset = 0, ...props }) {
 
   return (
     <CubeCamera {...props}>
-      {(texture) => (
+      {texture => (
         <T.Mesh ref={ref!}>
           <T.SphereGeometry args={[5, 64, 64]} />
           <T.MeshStandardMaterial color="white" roughness={0} metalness={1} envMap={texture} />
@@ -43,7 +43,12 @@ function Scene() {
   return (
     <>
       <T.Fog attach="fog" args={['#f0f0f0', 100, 200]} />
-      <Box material-color="hotpink" args={[5, 5, 5]} position-y={2.5} onClick={() => setShow((v) => !v)} />
+      <Box
+        material-color="hotpink"
+        args={[5, 5, 5]}
+        position-y={2.5}
+        onClick={() => setShow(v => !v)}
+      />
 
       <Sphere position={[-10, 10, 5]} />
       <Show when={show()}>

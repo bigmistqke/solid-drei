@@ -1,7 +1,7 @@
 import { number, withKnobs } from '@storybook/addon-knobs'
 import { createRenderEffect } from 'solid-js'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { MathUtils, RepeatWrapping } from 'three'
 import {
   Circle,
@@ -20,7 +20,7 @@ import { Setup } from '../Setup'
 export default {
   title: 'Staging/Spotlight',
   component: SpotLight,
-  decorators: [withKnobs, (storyFn) => <Setup lights={false}> {storyFn()}</Setup>],
+  decorators: [withKnobs, storyFn => <Setup lights={false}> {storyFn()}</Setup>],
 }
 
 function SpotLightScene() {
@@ -71,9 +71,9 @@ function SpotLightShadowsScene({ debug, wind }: { debug: boolean; wind: boolean 
   ])
 
   createRenderEffect(() => {
-    when(texs)((texs) => {
+    when(texs)(texs => {
       for (const tex of texs) {
-        when(tex)((tex) => {
+        when(tex)(tex => {
           tex.wrapS = tex.wrapT = RepeatWrapping
           tex.repeat.set(2, 2)
         })
@@ -177,7 +177,7 @@ function SpotLightShadowsSceneWithSuspense(props) {
   )
 }
 
-export const SpotlightShadowsSt = (props) => <SpotLightShadowsSceneWithSuspense {...props} />
+export const SpotlightShadowsSt = props => <SpotLightShadowsSceneWithSuspense {...props} />
 SpotlightShadowsSt.storyName = 'Shadows'
 
 SpotlightShadowsSt.args = {

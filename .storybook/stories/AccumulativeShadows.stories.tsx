@@ -1,17 +1,23 @@
-import { Primitive, T, applyProps } from '@solid-three/fiber'
 import { Show, Suspense, createEffect } from 'solid-js'
+import { T, applyProps } from 'solid-three'
 import * as THREE from 'three'
 
 import { Setup } from '../Setup'
 
 import { FlakesTexture } from 'three-stdlib'
-import { AccumulativeShadows, Environment, OrbitControls, RandomizedLight, useGLTF } from '../../src'
+import {
+  AccumulativeShadows,
+  Environment,
+  OrbitControls,
+  RandomizedLight,
+  useGLTF,
+} from '../../src'
 import { when } from '../../src/helpers/when'
 
 export default {
   title: 'Staging/AccumulativeShadows',
   component: AccumulativeShadowScene,
-  decorators: [(storyFn) => <Setup>{storyFn()}</Setup>],
+  decorators: [storyFn => <Setup>{storyFn()}</Setup>],
 }
 
 function AccumulativeShadowScene() {
@@ -38,11 +44,11 @@ function AccumulativeShadowScene() {
 
 function Suzi(props) {
   const resource = useGLTF(
-    'https://vazxmixjsiawhamofees.supabase.co/storage/v1/object/public/models/suzanne-high-poly/model.gltf'
+    'https://vazxmixjsiawhamofees.supabase.co/storage/v1/object/public/models/suzanne-high-poly/model.gltf',
   )
   createEffect(() => {
-    when(resource)((resource) => {
-      resource.scene.traverse((obj) => obj.isMesh && (obj.receiveShadow = obj.castShadow = true))
+    when(resource)(resource => {
+      resource.scene.traverse(obj => obj.isMesh && (obj.receiveShadow = obj.castShadow = true))
 
       applyProps(resource.materials.default, {
         color: 'orange',
@@ -51,7 +57,7 @@ function Suzi(props) {
           new FlakesTexture(),
           THREE.UVMapping,
           THREE.RepeatWrapping,
-          THREE.RepeatWrapping
+          THREE.RepeatWrapping,
         ),
         'normalMap-flipY': false,
         'normalMap-repeat': [40, 40],
@@ -63,7 +69,7 @@ function Suzi(props) {
   return (
     <>
       <Show when={resource()}>
-        <Primitive object={resource()?.scene} {...props} />
+        <T.Primitive object={resource()?.scene} {...props} />
       </Show>
     </>
   )

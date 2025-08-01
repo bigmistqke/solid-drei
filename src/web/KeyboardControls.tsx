@@ -11,8 +11,11 @@ import {
 import { createStore } from 'solid-js/store'
 
 type KeyboardControlsState<T extends string = string> = { [K in T]: boolean }
+type KeyboardControls<T extends string = string> = [Subscribe, KeyboardControlsState]
+type Subscribe = (on: Accessor<boolean>, effect: (pressed: boolean) => void) => void
+type KeyMap = Record<string, { fn: (value: boolean) => void; pressed: boolean; up: boolean }>
 
-export type KeyboardControlsEntry<T extends string = string> = {
+export interface KeyboardControlsEntry<T extends string = string> {
   /** Name of the action */
   name: T
   /** The keys that define it, you can use either event.key, or event.code */
@@ -21,7 +24,7 @@ export type KeyboardControlsEntry<T extends string = string> = {
   up?: boolean
 }
 
-type KeyboardControlsProps = {
+interface KeyboardControlsProps {
   /** A map of named keys */
   map: KeyboardControlsEntry[]
   /** All children will be able to useKeyboardControls */
@@ -32,14 +35,10 @@ type KeyboardControlsProps = {
   domElement?: HTMLElement
 }
 
-type Subscribe = (on: Accessor<boolean>, effect: (pressed: boolean) => void) => void
-
-type KeyboardControls<T extends string = string> = [Subscribe, KeyboardControlsState]
-
-const context = /*@__PURE__*/ createContext<KeyboardControls>()
+const keyboardControlsContext = /*@__PURE__*/ createContext<KeyboardControls>()
 
 export function KeyboardControls(props: KeyboardControlsProps) {
-  const key = () => props.map.map((item) => item.name + item.keys).join('-')
+  const key = () => props.map.map(item => item.name + item.keys).join('-')
   const [controls, setControls] = createStore<Record<string, boolean>>({})
 
   createRenderEffect(() => {
@@ -58,12 +57,13 @@ export function KeyboardControls(props: KeyboardControlsProps) {
           if (props.onChange) props.onChange(name, value, controls)
         },
       }))
-      const keyMap = config.reduce((out, { keys, fn, up = true }) => {
-        keys.forEach((key) => (out[key] = { fn, pressed: false, up }))
-        return out
-      }, {})
 
-      const downHandler = ({ key, code }: KeyboardEvent) => {
+      const keyMap = config.reduce((out, { keys, fn, up = true }) => {
+        keys.forEach(key => (out[key] = { fn, pressed: false, up }))
+        return out
+      }, {} as KeyMap)
+
+      function downHandler({ key, code }: KeyboardEvent) {
         const obj = keyMap[key] || keyMap[code]
         if (!obj) return
         const { fn, pressed, up } = obj
@@ -71,7 +71,7 @@ export function KeyboardControls(props: KeyboardControlsProps) {
         if (up || !pressed) fn(true)
       }
 
-      const upHandler = ({ key, code }: KeyboardEvent) => {
+      function upHandler({ key, code }: KeyboardEvent) {
         const obj = keyMap[key] || keyMap[code]
         if (!obj) return
         const { fn, up } = obj
@@ -80,31 +80,37 @@ export function KeyboardControls(props: KeyboardControlsProps) {
       }
 
       const source = props.domElement || window
-      source.addEventListener('keydown', downHandler as EventListenerOrEventListenerObject, { passive: true })
-      source.addEventListener('keyup', upHandler as EventListenerOrEventListenerObject, { passive: true })
+      source.addEventListener('keydown', downHandler as EventListener, {
+        passive: true,
+      })
+      source.addEventListener('keyup', upHandler as EventListener, {
+        passive: true,
+      })
 
       onCleanup(() => {
-        source.removeEventListener('keydown', downHandler as EventListenerOrEventListenerObject)
-        source.removeEventListener('keyup', upHandler as EventListenerOrEventListenerObject)
+        source.removeEventListener('keydown', downHandler as EventListener)
+        source.removeEventListener('keyup', upHandler as EventListener)
       })
-    })
+    }),
   )
 
   function sub<T extends boolean>(boolean: Accessor<T>, effect: (pressed: T) => void) {
     createRenderEffect(on(boolean, effect))
   }
 
-  return <context.Provider value={[sub, controls]} children={props.children} />
+  return <keyboardControlsContext.Provider value={[sub, controls]} children={props.children} />
 }
 
 type Selector<T extends string = string> = (state: KeyboardControlsState<T>) => boolean
 
 export function useKeyboardControls<T extends string = string>(): [Subscribe, KeyboardControlsState]
-export function useKeyboardControls<T extends string = string>(sel: Selector<T>): Accessor<ReturnType<Selector<T>>>
 export function useKeyboardControls<T extends string = string>(
-  sel?: Selector<T>
+  sel: Selector<T>,
+): Accessor<ReturnType<Selector<T>>>
+export function useKeyboardControls<T extends string = string>(
+  sel?: Selector<T>,
 ): Accessor<ReturnType<Selector<T>>> | [Subscribe, KeyboardControlsState] {
-  const [sub, store] = useContext(context)!
+  const [sub, store] = useContext(keyboardControlsContext)!
   if (sel) return () => sel(store)
   else return [sub, store]
 }

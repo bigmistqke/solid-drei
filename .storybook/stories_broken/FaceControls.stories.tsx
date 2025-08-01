@@ -2,14 +2,14 @@
 
 import { Setup } from '../Setup'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { Suspense } from 'solid-js'
 import { Box, FaceControls, FaceLandmarker } from '../../src'
 
 export default {
   title: 'Controls/FaceControls',
   component: FaceControls,
-  decorators: [(storyFn) => <Setup cameraFov={60}>{storyFn()}</Setup>],
+  decorators: [storyFn => <Setup cameraFov={60}>{storyFn()}</Setup>],
 }
 
 function FaceControlsScene(props) {
@@ -31,7 +31,7 @@ function FaceControlsScene(props) {
   )
 }
 
-export const FaceControlsSt = (args) => <FaceControlsScene {...args} />
+export const FaceControlsSt = args => <FaceControlsScene {...args} />
 FaceControlsSt.args = {
   eyes: undefined,
 }

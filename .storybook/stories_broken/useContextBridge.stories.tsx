@@ -1,4 +1,4 @@
-import { Canvas } from '@solid-three/fiber'
+import { Canvas } from 'solid-three'
 import { withKnobs } from '@storybook/addon-knobs'
 import { Suspense, createContext, createSignal, useContext } from 'solid-js'
 
@@ -7,7 +7,7 @@ import { Box, OrbitControls, Text, useContextBridge } from '../../src'
 export default {
   title: 'Misc/useContextBridge',
   component: useContextBridge,
-  decorators: [(storyFn) => storyFn(), withKnobs],
+  decorators: [storyFn => storyFn(), withKnobs],
 }
 
 type ThemeContext = { colors: { red: string; green: string; blue: string } }
@@ -72,7 +72,9 @@ function UseContextBridgeStory() {
     // Provide several contexts from above the Canvas
     // This mimics the standard behavior of composing them
     // in the `App.tsx` or `index.tsx` files
-    <ThemeContext.Provider value={{ colors: { red: '#ff0000', green: '#00ff00', blue: '#0000ff' } }}>
+    <ThemeContext.Provider
+      value={{ colors: { red: '#ff0000', green: '#00ff00', blue: '#0000ff' } }}
+    >
       <GreetingContext.Provider
         value={{
           get name() {

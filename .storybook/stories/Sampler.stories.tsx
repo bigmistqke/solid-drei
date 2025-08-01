@@ -1,13 +1,13 @@
 import { Setup } from '../Setup'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { BufferAttribute, Vector3 } from 'three'
 import { ComputedAttribute, Sampler, TransformFn } from '../../src'
 
 export default {
   title: 'Misc/Sampler',
   component: Sampler,
-  decorators: [(storyFn) => <Setup cameraPosition={new Vector3(0, 0, 5)}> {storyFn()}</Setup>],
+  decorators: [storyFn => <Setup cameraPosition={new Vector3(0, 0, 5)}> {storyFn()}</Setup>],
 }
 
 function SamplerScene() {
@@ -109,7 +109,7 @@ const transformInstances: TransformFn = ({ dummy, position }) => {
   dummy.scale.setScalar(Math.random() * 0.75)
 }
 
-const computeUpness = (geometry) => {
+const computeUpness = geometry => {
   const { array, count } = geometry.attributes.normal
   const arr = Float32Array.from({ length: count })
 

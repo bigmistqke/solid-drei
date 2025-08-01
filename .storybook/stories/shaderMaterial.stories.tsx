@@ -1,4 +1,4 @@
-import { T, ThreeProps, extend } from '@solid-three/fiber'
+import { T, ThreeProps, extend } from 'solid-three'
 import { Texture } from 'three'
 
 import { number, withKnobs } from '@storybook/addon-knobs'
@@ -9,7 +9,7 @@ import { Setup } from '../Setup'
 export default {
   title: 'Shaders/shaderMaterial',
   component: MeshDistortMaterial,
-  decorators: [withKnobs, (storyFn) => <Setup> {storyFn()}</Setup>],
+  decorators: [withKnobs, storyFn => <Setup> {storyFn()}</Setup>],
 }
 
 const MyMaterial = shaderMaterial(
@@ -49,7 +49,7 @@ void main(){
   #include <tonemapping_fragment>
   #include <encodings_fragment>
 }
-`
+`,
 )
 
 extend({ MyMaterial })
@@ -72,7 +72,10 @@ function ShaderMaterialScene() {
 
   return (
     <Box args={[5, 5, 5]}>
-      <T.MyMaterial repeats={number('repeats', 2, { range: true, min: 1, max: 10, step: 1 })} map={map()} />
+      <T.MyMaterial
+        repeats={number('repeats', 2, { range: true, min: 1, max: 10, step: 1 })}
+        map={map()}
+      />
     </Box>
   )
 }

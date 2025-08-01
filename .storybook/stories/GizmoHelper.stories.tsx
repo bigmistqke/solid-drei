@@ -1,15 +1,22 @@
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { Show, createEffect, createSignal } from 'solid-js'
 import * as THREE from 'three'
 import { Vector3 } from 'three'
-import { GizmoHelper, GizmoViewcube, GizmoViewport, OrbitControls, TrackballControls, useGLTF } from '../../src'
+import {
+  GizmoHelper,
+  GizmoViewcube,
+  GizmoViewport,
+  OrbitControls,
+  TrackballControls,
+  useGLTF,
+} from '../../src'
 import { Setup } from '../Setup'
 
 export default {
   title: 'Gizmos/GizmoHelper',
   component: GizmoHelper,
   decorators: [
-    (storyFn) => (
+    storyFn => (
       <Setup controls={false} cameraPosition={new Vector3(0, 0, 10)}>
         <T.Suspense>{storyFn()}</T.Suspense>
       </Setup>
@@ -146,7 +153,7 @@ const GizmoHelperStoryImpl = (props: {
   )
 }
 
-export const GizmoHelperStory = (props) => <GizmoHelperStoryImpl {...props} />
+export const GizmoHelperStory = props => <GizmoHelperStoryImpl {...props} />
 
 GizmoHelperStory.args = args
 GizmoHelperStory.argTypes = argTypes

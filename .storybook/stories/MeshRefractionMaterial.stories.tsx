@@ -1,4 +1,4 @@
-import { T, useLoader } from '@solid-three/fiber'
+import { T, useLoader } from 'solid-three'
 import { Show } from 'solid-js'
 import * as THREE from 'three'
 import { RGBELoader } from 'three-stdlib'
@@ -20,7 +20,7 @@ export default {
   title: 'Shaders/MeshRefractionMaterial',
   component: MeshRefractionMaterial,
   decorators: [
-    (storyFn) => (
+    storyFn => (
       <Setup cameraFov={45} cameraPosition={new THREE.Vector3(-5, 0.5, 5)}>
         {storyFn()}
       </Setup>
@@ -35,14 +35,14 @@ function Diamond(props: any) {
   // This way we can have a clear BG while cube-cam can still film other objects
   const texture = useLoader(
     RGBELoader,
-    'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/aerodynamics_workshop_1k.hdr'
+    'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/aerodynamics_workshop_1k.hdr',
   )
 
   return (
     <Show when={all(texture, resource)} keyed>
       {([texture, resource]) => (
         <CubeCamera resolution={256} frames={1} envMap={texture}>
-          {(texture) => (
+          {texture => (
             <>
               <Caustics
                 // @ts-ignore
@@ -55,7 +55,12 @@ function Diamond(props: any) {
                 backfaceIor={1.1}
                 intensity={0.1}
               >
-                <T.Mesh castShadow ref={ref} geometry={resource.nodes.Diamond_1_0.geometry} {...props}>
+                <T.Mesh
+                  castShadow
+                  ref={ref}
+                  geometry={resource.nodes.Diamond_1_0.geometry}
+                  {...props}
+                >
                   <MeshRefractionMaterial
                     envMap={texture}
                     bounces={3}
@@ -92,7 +97,13 @@ export const RefractionSt = () => (
     >
       <T.Mesh castShadow receiveShadow position={[-2, 0.5, -1]} scale={0.5}>
         <T.SphereGeometry args={[1, 64, 64]} />
-        <MeshTransmissionMaterial resolution={1024} distortion={0.25} color="#FF8F20" thickness={1} anisotropy={1} />
+        <MeshTransmissionMaterial
+          resolution={1024}
+          distortion={0.25}
+          color="#FF8F20"
+          thickness={1}
+          anisotropy={1}
+        />
       </T.Mesh>
     </Caustics>
     <T.Mesh castShadow receiveShadow position={[1.75, 0.25, 1]} scale={0.75}>
@@ -110,10 +121,23 @@ export const RefractionSt = () => (
       scale={12}
       position={[0, -0.5, 0]}
     >
-      <RandomizedLight amount={8} radius={10} ambient={0.5} intensity={1} position={[5, 5, -10]} bias={0.001} />
+      <RandomizedLight
+        amount={8}
+        radius={10}
+        ambient={0.5}
+        intensity={1}
+        position={[5, 5, -10]}
+        bias={0.001}
+      />
     </AccumulativeShadows>
     <Environment files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/aerodynamics_workshop_1k.hdr" />
-    <OrbitControls makeDefault autoRotate autoRotateSpeed={0.1} minPolarAngle={0} maxPolarAngle={Math.PI / 2} />
+    <OrbitControls
+      makeDefault
+      autoRotate
+      autoRotateSpeed={0.1}
+      minPolarAngle={0}
+      maxPolarAngle={Math.PI / 2}
+    />
   </T.Suspense>
 )
 RefractionSt.storyName = 'Default'

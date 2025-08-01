@@ -1,93 +1,65 @@
-import { Primitive, SolidThreeFiber, useFrame, useThree } from '@solid-three/fiber'
-// import { createEffect, createRenderEffect, createSignal , createMemo} from 'solid-js'
-import { createEffect, createMemo, onCleanup, untrack } from 'solid-js'
-import type { Camera, Event } from 'three'
-import { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
-import { processProps } from '../helpers/processProps'
-import { RefComponent } from '../helpers/typeHelpers'
+import { ControlUtils } from '@/core/control-utils'
+import { processProps } from '@/utils/process-props'
+import { Ref, createEffect, createMemo } from 'solid-js'
+import { S3, T, useThree } from 'solid-three'
+import type { Event } from 'three'
+import { OrbitControls as ThreeOrbitControls } from 'three-stdlib'
 
-export type OrbitControlsChangeEvent = Event & {
-  target: EventTarget & { object: Camera }
+export type OrbitControlsProps = S3.ClassProps<typeof ThreeOrbitControls> & {
+  ref?: Ref<ThreeOrbitControls>
+  camera?: S3.CameraType
+  domElement?: HTMLElement
+  enableDamping?: boolean
+  makeDefault?: boolean
+  onChange?: (e?: Event<'change', ThreeOrbitControls>) => void
+  onEnd?: (e?: Event<'end', ThreeOrbitControls>) => void
+  onStart?: (e?: Event<'start', ThreeOrbitControls>) => void
+  regress?: boolean
+  target?: S3.Vector3
+  keyEvents?: boolean | HTMLElement
 }
 
-export type OrbitControlsProps = Omit<
-  SolidThreeFiber.Overwrite<
-    SolidThreeFiber.Object3DNode<OrbitControlsImpl>,
-    {
-      camera?: Camera
-      domElement?: HTMLElement
-      enableDamping?: boolean
-      makeDefault?: boolean
-      onChange?: (e?: OrbitControlsChangeEvent) => void
-      onEnd?: (e?: Event) => void
-      onStart?: (e?: Event) => void
-      regress?: boolean
-      target?: SolidThreeFiber.Vector3
-      keyEvents?: boolean | HTMLElement
-    }
-  >,
-  'ref'
->
-
-export const OrbitControls: RefComponent<OrbitControlsImpl, OrbitControlsProps> = (props) => {
-  const [, rest] = processProps(
+export function OrbitControls(props: OrbitControlsProps) {
+  const [config, rest] = processProps(
     props,
     {
       enableDamping: true,
       keyEvents: false,
     },
-    ['makeDefault', 'camera', 'regress', 'domElement', 'keyEvents', 'onChange', 'onStart', 'onEnd', 'object', 'dispose']
+    [
+      'makeDefault',
+      'camera',
+      'regress',
+      'domElement',
+      'keyEvents',
+      'onChange',
+      'onStart',
+      'onEnd',
+      'object',
+      'dispose',
+    ],
   )
   const store = useThree()
-  const explDomElement = () => (props.domElement || store.events.connected || store.gl.domElement) as HTMLElement
-  const camera = () => (props.camera || store.camera) as THREE.OrthographicCamera | THREE.PerspectiveCamera
-  const controls = createMemo(() => new OrbitControlsImpl(camera()))
+  const element = () =>
+    config.keyEvents instanceof HTMLElement
+      ? config.keyEvents
+      : ControlUtils.getDomElement(store, config)
+  const camera = () => config.camera || store.camera
+  const controls = createMemo(() => new ThreeOrbitControls(camera()))
 
-  useFrame(() => {
-    if (controls().enabled) controls().update()
-  }, -1)
-
+  ControlUtils.initialize(controls, element, store, config)
   createEffect(() => {
-    if (props.keyEvents) {
-      controls().connect(props.keyEvents === true ? explDomElement() : props.keyEvents)
-    }
-    controls().connect(explDomElement())
-    onCleanup(() => void controls().dispose())
+    if (!config.onChange) return
+    ControlUtils.addEventHandler(controls, 'change', config.onChange)
+  })
+  createEffect(() => {
+    if (!config.onEnd) return
+    ControlUtils.addEventHandler(controls, 'end', config.onEnd)
+  })
+  createEffect(() => {
+    if (!config.onStart) return
+    ControlUtils.addEventHandler(controls, 'start', config.onStart)
   })
 
-  createEffect(() => {
-    const callback = (e: OrbitControlsChangeEvent) => {
-      store.invalidate()
-      if (props.regress) store.performance.regress()
-      if (props.onChange) props.onChange(e)
-    }
-
-    const onStartCb = (e: Event) => {
-      if (props.onStart) props.onStart(e)
-    }
-
-    const onEndCb = (e: Event) => {
-      if (props.onEnd) props.onEnd(e)
-    }
-
-    controls().addEventListener('change', callback)
-    controls().addEventListener('start', onStartCb)
-    controls().addEventListener('end', onEndCb)
-
-    onCleanup(() => {
-      controls().removeEventListener('start', onStartCb)
-      controls().removeEventListener('end', onEndCb)
-      controls().removeEventListener('change', callback)
-    })
-  })
-
-  createEffect(() => {
-    if (props.makeDefault) {
-      const old = untrack(() => store.controls)
-      store.set({ controls: controls() })
-      onCleanup(() => store.set({ controls: old }))
-    }
-  })
-
-  return <Primitive ref={props.ref} object={controls()} {...rest} />
+  return <T.Primitive ref={props.ref} object={controls()} {...rest} />
 }

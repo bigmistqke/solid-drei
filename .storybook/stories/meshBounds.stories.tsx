@@ -4,13 +4,13 @@ import { Vector3 } from 'three'
 import { Setup } from '../Setup'
 import { useTurntable } from '../useTurntable'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { meshBounds } from '../../src'
 
 export default {
   title: 'Misc/meshBounds',
   component: MeshBounds,
-  decorators: [(storyFn) => <Setup cameraPosition={new Vector3(0, 0, 5)}>{storyFn()}</Setup>],
+  decorators: [storyFn => <Setup cameraPosition={new Vector3(0, 0, 5)}>{storyFn()}</Setup>],
 }
 function MeshBounds(props) {
   const turntable = useTurntable()

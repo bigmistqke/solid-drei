@@ -1,16 +1,19 @@
-import { extend, T, ThreeProps } from '@solid-three/fiber'
-import { RefComponent } from '../helpers/typeHelpers'
+import { Ref } from 'solid-js'
+import { extend, S3, T } from 'solid-three'
+import { ShaderMaterial } from 'three'
 import { DiscardMaterial as DiscardMaterialImpl } from '../materials/DiscardMaterial'
 
 declare global {
   namespace SolidThree {
-    interface IntrinsicElements {
-      DiscardMaterialImpl: ThreeProps<'ShaderMaterial'>
+    interface Elements {
+      DiscardMaterialImpl: ShaderMaterial
     }
   }
 }
 
-export const MeshDiscardMaterial: RefComponent<THREE.ShaderMaterial, ThreeProps<'ShaderMaterial'>> = (props) => {
+export function MeshDiscardMaterial(
+  props: S3.Props<'ShaderMaterial'> & { ref: Ref<ShaderMaterial> },
+) {
   extend({ DiscardMaterialImpl })
   return <T.DiscardMaterialImpl {...props} />
 }

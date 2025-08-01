@@ -2,7 +2,7 @@ import { For, createMemo } from 'solid-js'
 
 import { Setup } from '../Setup'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { Icosahedron, PointerLockControls } from '../../src'
 
 export default {

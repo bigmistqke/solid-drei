@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { onMount, splitProps, type JSX } from 'solid-js'
 import { BBAnchor, Html, Icosahedron, OrbitControls, Sphere, useHelper } from '../../src'
 import { Setup } from '../Setup'
@@ -9,7 +9,7 @@ export default {
   title: 'Staging/BBAnchor',
   component: BBAnchor,
   decorators: [
-    (storyFn) => (
+    storyFn => (
       <Setup cameraPosition={new THREE.Vector3(2, 2, 2)} controls={false}>
         {storyFn()}
       </Setup>
@@ -26,7 +26,11 @@ export default {
 
 type Anchor = THREE.Vector3 | [number, number, number]
 
-function BBAnchorScene(props: { anchor: Anchor; drawBoundingBox: boolean; children?: JSX.Element }) {
+function BBAnchorScene(props: {
+  anchor: Anchor
+  drawBoundingBox: boolean
+  children?: JSX.Element
+}) {
   let ref
 
   onMount(() => useHelper(() => props.drawBoundingBox && ref, THREE.BoxHelper, 'cyan'))
@@ -42,7 +46,7 @@ function BBAnchorScene(props: { anchor: Anchor; drawBoundingBox: boolean; childr
   )
 }
 
-const Template = (_props) => {
+const Template = _props => {
   const [props, rest] = splitProps(_props, ['drawBoundingBox', 'anchorX', 'anchorY', 'anchorZ'])
   return (
     <BBAnchorScene

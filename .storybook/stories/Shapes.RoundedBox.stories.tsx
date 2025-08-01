@@ -4,13 +4,16 @@ import { Vector3 } from 'three'
 import { Setup } from '../Setup'
 import { useTurntable } from '../useTurntable'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { RoundedBox } from '../../src'
 
 export default {
   title: 'Shapes/RoundedBox',
   component: RoundedBox,
-  decorators: [withKnobs, (storyFn) => <Setup cameraPosition={new Vector3(-30, 30, 30)}>{storyFn()}</Setup>],
+  decorators: [
+    withKnobs,
+    storyFn => <Setup cameraPosition={new Vector3(-30, 30, 30)}>{storyFn()}</Setup>,
+  ],
 }
 
 function RoundedBoxScene() {

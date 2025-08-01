@@ -1,4 +1,4 @@
-import { T, useFrame } from '@solid-three/fiber'
+import { T, useFrame } from 'solid-three'
 import * as THREE from 'three'
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
 
@@ -46,7 +46,7 @@ export default {
   title: 'Staging/CameraShake',
   component: CameraShake,
   decorators: [
-    (storyFn) => (
+    storyFn => (
       <Setup cameraPosition={new THREE.Vector3(0, 0, 10)} controls={false}>
         {storyFn()}
       </Setup>

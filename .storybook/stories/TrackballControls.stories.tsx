@@ -3,13 +3,13 @@ import { Vector3 } from 'three'
 
 import { Setup } from '../Setup'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { Icosahedron, TrackballControls } from '../../src'
 
 export default {
   title: 'Controls/TrackballControls',
   component: TrackballControlsScene,
-  decorators: [(storyFn) => <Setup cameraPosition={new Vector3(0, 0, 10)}>{storyFn()}</Setup>],
+  decorators: [storyFn => <Setup cameraPosition={new Vector3(0, 0, 10)}>{storyFn()}</Setup>],
 }
 
 const NUM = 2

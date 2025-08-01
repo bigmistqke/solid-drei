@@ -1,19 +1,33 @@
-import { createMemo } from 'solid-js'
-// eslint-disable-next-line
-import { Primitive, T, ThreeElement, useFrame } from '@solid-three/fiber'
-import { AdditiveBlending, Color, ShaderMaterial, Spherical, Vector3 } from 'three'
-import { defaultProps } from '../helpers/defaultProps'
-import { RefComponent } from '../helpers/typeHelpers'
+import { Ref, createMemo } from 'solid-js'
+import { T, useFrame } from 'solid-three'
+import { AdditiveBlending, Color, Points, ShaderMaterial, Spherical, Vector3 } from 'three'
+import { defaultProps } from '../../utils/default-props'
 
-type Props = {
-  radius?: number
-  depth?: number
-  count?: number
-  factor?: number
-  saturation?: number
-  fade?: boolean
-  speed?: number
+declare global {
+  namespace SolidThree {
+    interface Elements {
+      StarfieldMaterial: typeof StarfieldMaterial
+    }
+  }
 }
+
+/**********************************************************************************/
+/*                                                                                */
+/*                                      Utils                                     */
+/*                                                                                */
+/**********************************************************************************/
+
+function generateStar(r: number) {
+  return new Vector3().setFromSpherical(
+    new Spherical(r, Math.acos(1 - Math.random() * 2), Math.random() * 2 * Math.PI),
+  )
+}
+
+/**********************************************************************************/
+/*                                                                                */
+/*                               Star Field Material                              */
+/*                                                                                */
+/**********************************************************************************/
 
 class StarfieldMaterial extends ShaderMaterial {
   constructor() {
@@ -48,20 +62,25 @@ class StarfieldMaterial extends ShaderMaterial {
   }
 }
 
-declare global {
-  namespace SolidThree {
-    interface IntrinsicElements {
-      StarfieldMaterial: ThreeElement<typeof StarfieldMaterial>
-    }
-  }
+/**********************************************************************************/
+/*                                                                                */
+/*                                      Star                                      */
+/*                                                                                */
+/**********************************************************************************/
+
+type StarProps = {
+  ref?: Ref<Points>
+  radius?: number
+  depth?: number
+  count?: number
+  factor?: number
+  saturation?: number
+  fade?: boolean
+  speed?: number
 }
 
-const genStar = (r: number) => {
-  return new Vector3().setFromSpherical(new Spherical(r, Math.acos(1 - Math.random() * 2), Math.random() * 2 * Math.PI))
-}
-
-export const Stars: RefComponent<any, Props> = (_props) => {
-  const props = defaultProps(_props, {
+export function Stars(props: StarProps) {
+  const config = defaultProps(props, {
     radius: 100,
     depth: 50,
     count: 5000,
@@ -70,19 +89,22 @@ export const Stars: RefComponent<any, Props> = (_props) => {
     fade: false,
     speed: 1,
   })
-
   let material: StarfieldMaterial
+
   const memo = createMemo(() => {
     const positions: any[] = []
     const colors: any[] = []
-    const sizes = Array.from({ length: props.count }, () => (0.5 + 0.5 * Math.random()) * props.factor)
+    const sizes = Array.from(
+      { length: config.count },
+      () => (0.5 + 0.5 * Math.random()) * config.factor,
+    )
     const color = new Color()
-    let r = props.radius + props.depth
-    const increment = props.depth / props.count
-    for (let i = 0; i < props.count; i++) {
+    let r = config.radius + config.depth
+    const increment = config.depth / config.count
+    for (let i = 0; i < config.count; i++) {
       r -= increment * Math.random()
-      positions.push(...genStar(r).toArray())
-      color.setHSL(i / props.count, props.saturation, 0.9)
+      positions.push(...generateStar(r).toArray())
+      color.setHSL(i / config.count, config.saturation, 0.9)
       colors.push(color.r, color.g, color.b)
     }
     return {
@@ -92,23 +114,26 @@ export const Stars: RefComponent<any, Props> = (_props) => {
     }
   })
 
-  useFrame((state) => material && (material.uniforms.time.value = state.clock.getElapsedTime() * props.speed))
+  useFrame(state => {
+    if (!material) return
+    material.uniforms.time!.value = state.clock.getElapsedTime() * config.speed
+  })
 
   const starfieldMaterial = new StarfieldMaterial()
 
   return (
-    <T.Points ref={props.ref}>
+    <T.Points ref={config.ref}>
       <T.BufferGeometry>
         <T.BufferAttribute attach="attributes-position" args={[memo().position, 3]} />
         <T.BufferAttribute attach="attributes-color" args={[memo().color, 3]} />
         <T.BufferAttribute attach="attributes-size" args={[memo().size, 1]} />
       </T.BufferGeometry>
-      <Primitive
+      <T.Primitive
         ref={material!}
         object={starfieldMaterial}
         attach="material"
         blending={AdditiveBlending}
-        uniforms-fade-value={props.fade}
+        uniforms-fade-value={config.fade}
         depthWrite={false}
         transparent
         vertexColors

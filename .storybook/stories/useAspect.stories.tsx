@@ -1,4 +1,4 @@
-import { T, useLoader } from '@solid-three/fiber'
+import { T, useLoader } from 'solid-three'
 import { TextureLoader, Vector3 } from 'three'
 
 import { Setup } from '../Setup'
@@ -8,7 +8,7 @@ import { Plane, useAspect } from '../../src'
 export default {
   title: 'Misc/useAspect',
   component: useAspect,
-  decorators: [(storyFn) => <Setup cameraPosition={new Vector3(0, -10, 0)}>{storyFn()}</Setup>],
+  decorators: [storyFn => <Setup cameraPosition={new Vector3(0, -10, 0)}>{storyFn()}</Setup>],
 }
 
 function Simple() {

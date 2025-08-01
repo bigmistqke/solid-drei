@@ -1,4 +1,4 @@
-import { useFrame } from '@solid-three/fiber'
+import { useFrame } from 'solid-three'
 import { withKnobs } from '@storybook/addon-knobs'
 import { Vector3 } from 'three'
 
@@ -31,7 +31,7 @@ BasicSegments.storyName = 'Basic'
 
 BasicSegments.decorators = [
   withKnobs,
-  (storyFn) => (
+  storyFn => (
     <Setup controls={false} cameraPosition={new Vector3(10, 10, 10)}>
       {storyFn()}
     </Setup>
@@ -54,7 +54,7 @@ function AnimatedSegments() {
   return (
     <Segments limit={10000} lineWidth={0.1}>
       {Array.from({ length: 10000 }).map((_, i) => (
-        <Segment ref={(r) => (ref[i] = r)} color="orange" start={[0, 0, 0]} end={[0, 0, 0]} />
+        <Segment ref={r => (ref[i] = r)} color="orange" start={[0, 0, 0]} end={[0, 0, 0]} />
       ))}
     </Segments>
   )
@@ -72,7 +72,7 @@ ManySegments.storyName = 'Performance'
 
 ManySegments.decorators = [
   withKnobs,
-  (storyFn) => (
+  storyFn => (
     <Setup controls={false} cameraPosition={new Vector3(10, 10, 10)}>
       {storyFn()}
     </Setup>

@@ -1,46 +1,50 @@
-import { T, useLoader, useThree } from '@solid-three/fiber'
-import { createEffect, onCleanup, onMount } from 'solid-js'
+import { Ref, createEffect, onCleanup, onMount } from 'solid-js'
+import { S3, T, useLoader, useThree } from 'solid-three'
 import { AudioListener, AudioLoader, PositionalAudio as PositionalAudioImpl } from 'three'
-import { processProps } from '../helpers/processProps'
-import { RefComponent } from '../helpers/typeHelpers'
-import { when } from '../helpers/when'
+import { whenever } from '../utils/conditionals'
+import { processProps } from '../utils/process-props'
 
-type Props = Parameters<typeof T.PositionalAudio>[0] & {
+interface PositionalAudioProps extends S3.Props<'PositionalAudio'> {
+  ref?: Ref<PositionalAudioImpl>
   url: string
   distance?: number
   loop?: boolean
 }
 
-export const PositionalAudio: RefComponent<any, Props> = (_props) => {
-  const [props, rest] = processProps(
-    _props,
+export function PositionalAudio(props: PositionalAudioProps) {
+  const [config, rest] = processProps(
+    props,
     {
       distance: 1,
       loop: true,
     },
-    ['ref', 'url', 'distance', 'loop', 'autoplay']
+    ['ref', 'url', 'distance', 'loop', 'autoplay'],
   )
+  let positionalAudio: PositionalAudioImpl
 
-  let sound: PositionalAudioImpl
   const store = useThree()
+  const buffer = useLoader(AudioLoader, () => config.url)
   const listener = new AudioListener()
-  const buffer = useLoader(AudioLoader, props.url)
 
-  createEffect(() => {
-    when(buffer)((buffer) => {
-      sound.setBuffer(buffer)
-      sound.setRefDistance(props.distance)
-      sound.setLoop(props.loop)
-      if (props.autoplay && !sound.isPlaying) sound.play()
-    })
-  })
+  createEffect(
+    whenever(buffer, buffer => {
+      positionalAudio.setBuffer(buffer)
+      positionalAudio.setRefDistance(config.distance)
+      positionalAudio.setLoop(config.loop)
+      if (config.autoplay && !positionalAudio.isPlaying) {
+        positionalAudio.play()
+      }
+    }),
+  )
 
   onMount(() => store.camera.add(listener))
 
   onCleanup(() => {
     store.camera.remove(listener)
-    if (sound.isPlaying) sound.stop()
-    if (sound.source && (sound.source as any)._connected) sound.disconnect()
+    if (positionalAudio.isPlaying) positionalAudio.stop()
+    if (positionalAudio.source && (positionalAudio.source as any)._connected)
+      positionalAudio.disconnect()
   })
-  return <T.PositionalAudio ref={sound!} args={[listener]} {...rest} />
+
+  return <T.PositionalAudio ref={positionalAudio!} args={[listener]} {...rest} />
 }

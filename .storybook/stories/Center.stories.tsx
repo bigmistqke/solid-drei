@@ -3,13 +3,13 @@ import { Vector3 } from 'three'
 import { Setup } from '../Setup'
 import { useTurntable } from '../useTurntable'
 
-import { Primitive, T } from '@solid-three/fiber'
+import { Primitive, T } from 'solid-three'
 import { Box, Center, useGLTF } from '../../src'
 
 export default {
   title: 'Staging/Center',
   component: Center,
-  decorators: [(storyFn) => <Setup cameraPosition={new Vector3(0, 0, -10)}>{storyFn()}</Setup>],
+  decorators: [storyFn => <Setup cameraPosition={new Vector3(0, 0, -10)}>{storyFn()}</Setup>],
 }
 
 const SimpleExample = () => {

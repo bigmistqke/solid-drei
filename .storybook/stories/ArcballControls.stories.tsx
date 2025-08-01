@@ -1,4 +1,4 @@
-import { Portal, T, useFrame } from '@solid-three/fiber'
+import { Portal, T, useFrame } from 'solid-three'
 import { Scene } from 'three'
 
 import { ArcballControls, Box, PerspectiveCamera, Plane, useFBO } from '../../src'
@@ -28,7 +28,7 @@ ArcballControlsStory.storyName = 'Default'
 export default {
   title: 'Controls/ArcballControls',
   component: ArcballControls,
-  decorators: [(storyFn) => <Setup controls={false}>{storyFn()}</Setup>],
+  decorators: [storyFn => <Setup controls={false}>{storyFn()}</Setup>],
 }
 
 const CustomCamera = (props: ArcballControlsProps) => {

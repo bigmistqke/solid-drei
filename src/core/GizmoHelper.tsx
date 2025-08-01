@@ -1,19 +1,47 @@
-import { T, useFrame, useThree } from '@solid-three/fiber'
-import { createContext, createEffect, mergeProps, onCleanup, useContext } from 'solid-js'
-import { Group, Matrix4, Object3D, Quaternion, Vector3 } from 'three'
+import { defaultProps } from '@/utils/default-props'
+import { createContext, createEffect, useContext } from 'solid-js'
+import { S3, T, useFrame, useThree } from 'solid-three'
+import {
+  Group,
+  Matrix4,
+  Object3D,
+  OrthographicCamera as OrthographicCameraImpl,
+  Quaternion,
+  Vector3,
+} from 'three'
 import { OrbitControls as OrbitControlsType } from 'three-stdlib'
-import { Hud } from './Hud'
 import { OrthographicCamera } from './OrthographicCamera'
+import { Hud } from './missing-api/Hud'
+
+/**********************************************************************************/
+/*                                                                                */
+/*                                      Utils                                     */
+/*                                                                                */
+/**********************************************************************************/
+
+type ControlsProto = { update(): void; target: Vector3 }
+
+const isOrbitControls = (controls: ControlsProto): controls is OrbitControlsType => {
+  return controls && 'minPolarAngle' in (controls as OrbitControlsType)
+}
+
+/**********************************************************************************/
+/*                                                                                */
+/*                              Gizmo Helper Context                              */
+/*                                                                                */
+/**********************************************************************************/
 
 type GizmoHelperContext = {
   tweenCamera: (direction: Vector3) => void
 }
+const gizmoHelperContext = createContext<GizmoHelperContext>()
+export const useGizmoContext = () => useContext(gizmoHelperContext)
 
-const Context = createContext<GizmoHelperContext>({} as GizmoHelperContext)
-
-export const useGizmoContext = () => {
-  return useContext<GizmoHelperContext>(Context)
-}
+/**********************************************************************************/
+/*                                                                                */
+/*                                  Gizmo Helper                                  */
+/*                                                                                */
+/**********************************************************************************/
 
 const turnRate = 2 * Math.PI // turn rate in angles per second
 const dummy = new Object3D()
@@ -22,9 +50,7 @@ const [q1, q2] = [new Quaternion(), new Quaternion()]
 const target = new Vector3()
 const targetPosition = new Vector3()
 
-type ControlsProto = { update(): void; target: THREE.Vector3 }
-
-export type GizmoHelperProps = Parameters<typeof T.Group>[0] & {
+export interface GizmoHelperProps extends S3.Props<'Group'> {
   alignment?:
     | 'top-left'
     | 'top-right'
@@ -44,29 +70,29 @@ export type GizmoHelperProps = Parameters<typeof T.Group>[0] & {
   onTarget?: () => Vector3 // return the target to rotate around
 }
 
-const isOrbitControls = (controls: ControlsProto): controls is OrbitControlsType => {
-  return controls && 'minPolarAngle' in (controls as OrbitControlsType)
-}
-
-export const GizmoHelper = (_props: GizmoHelperProps): any => {
-  const props = mergeProps({ alignment: 'bottom-right', margin: [80, 80], renderPriority: 1 }, _props)
+export const GizmoHelper = (props: GizmoHelperProps): any => {
+  const config = defaultProps(props, {
+    alignment: 'bottom-right',
+    margin: [80, 80],
+    renderPriority: 1,
+  })
   const store = useThree()
 
-  let gizmoRef: Group
-  let virtualCam: THREE.OrthographicCamera = null!
+  let gizmo: Group
+  let camera: OrthographicCameraImpl = null!
 
   let animating = false
-  let radius = 0
-  let focusPoint = new Vector3(0, 0, 0)
   let defaultUp = new Vector3(0, 0, 0)
+  let focusPoint = new Vector3(0, 0, 0)
+  let radius = 0
 
-  createEffect(() => {
-    defaultUp.copy(store.camera.up)
-  })
-
-  const tweenCamera = (direction: Vector3) => {
+  function tweenCamera(direction: Vector3) {
     animating = true
-    if (store.controls || props.onTarget) focusPoint = store.controls?.target || props.onTarget?.()
+
+    if (store.controls || config.onTarget) {
+      focusPoint = store.controls?.target || config.onTarget?.()
+    }
+
     radius = store.camera.position.distanceTo(target)
 
     // Rotate from current camera orientation
@@ -80,72 +106,77 @@ export const GizmoHelper = (_props: GizmoHelperProps): any => {
 
     q2.copy(dummy.quaternion)
 
-    store.invalidate()
+    // store.invalidate()
   }
 
-  useFrame((_, delta) => {
-    if (virtualCam && gizmoRef) {
-      // Animate step
-      if (animating) {
-        if (q1.angleTo(q2) < 0.01) {
-          animating = false
-          // Orbit controls uses UP vector as the orbit axes,
-          // so we need to reset it after the animation is done
-          // moving it around for the controls to work correctly
-          if (isOrbitControls(store.controls as any as ControlsProto)) {
-            store.camera.up.copy(defaultUp)
-          }
-        } else {
-          const step = delta * turnRate
-          // animate position by doing a slerp and then scaling the position on the unit sphere
-          q1.rotateTowards(q2, step)
-          // animate orientation
-          store.camera.position.set(0, 0, 1).applyQuaternion(q1).multiplyScalar(radius).add(focusPoint)
-          store.camera.up.set(0, 1, 0).applyQuaternion(q1).normalize()
-          store.camera.quaternion.copy(q1)
-          if (props.onUpdate) props.onUpdate()
-          else if (store.controls) (store.controls as any as ControlsProto).update()
-          store.invalidate()
-        }
-      }
-
-      // Sync Gizmo with main camera orientation
-      matrix.copy(store.camera.matrix).invert()
-      gizmoRef?.quaternion.setFromRotationMatrix(matrix)
-    }
-  })
-
   // Position gizmo component within scene
-  const position = () => {
-    const [marginX, marginY] = props.margin
-    const x = props.alignment.endsWith('-center')
+  function position() {
+    const [marginX, marginY] = config.margin
+    const x = config.alignment.endsWith('-center')
       ? 0
-      : props.alignment.endsWith('-left')
-      ? -store.size.width / 2 + marginX
-      : store.size.width / 2 - marginX
-    const y = props.alignment.startsWith('center-')
+      : config.alignment.endsWith('-left')
+      ? -store.bounds.width / 2 + marginX
+      : store.bounds.width / 2 - marginX
+    const y = config.alignment.startsWith('center-')
       ? 0
-      : props.alignment.startsWith('top-')
-      ? store.size.height / 2 - marginY
-      : -store.size.height / 2 + marginY
+      : config.alignment.startsWith('top-')
+      ? store.bounds.height / 2 - marginY
+      : -store.bounds.height / 2 + marginY
 
     return [x, y, 0] as [number, number, number]
   }
 
-  onCleanup(() => console.log('cleanup gizmo'))
+  useFrame((_, delta) => {
+    if (!camera || !gizmo) return
+
+    // Animate step
+    if (animating) {
+      if (q1.angleTo(q2) < 0.01) {
+        animating = false
+        // Orbit controls uses UP vector as the orbit axes,
+        // so we need to reset it after the animation is done
+        // moving it around for the controls to work correctly
+        if (isOrbitControls(store.controls as any as ControlsProto)) {
+          store.camera.up.copy(defaultUp)
+        }
+      } else {
+        const step = delta * turnRate
+        // animate position by doing a slerp and then scaling the position on the unit sphere
+        q1.rotateTowards(q2, step)
+        // animate orientation
+        store.camera.position
+          .set(0, 0, 1)
+          .applyQuaternion(q1)
+          .multiplyScalar(radius)
+          .add(focusPoint)
+        store.camera.up.set(0, 1, 0).applyQuaternion(q1).normalize()
+        store.camera.quaternion.copy(q1)
+        if (config.onUpdate) config.onUpdate()
+        else if (store.controls) (store.controls as any as ControlsProto).update()
+      }
+    }
+
+    // Sync Gizmo with main camera orientation
+    matrix.copy(store.camera.matrix).invert()
+    gizmo?.quaternion.setFromRotationMatrix(matrix)
+  })
+
+  createEffect(() => {
+    defaultUp.copy(store.camera.up)
+  })
 
   return (
-    <Hud renderPriority={props.renderPriority}>
-      <Context.Provider
+    <Hud renderPriority={config.renderPriority}>
+      <gizmoHelperContext.Provider
         value={{
           tweenCamera,
         }}
       >
-        <OrthographicCamera makeDefault ref={virtualCam!} position={[0, 0, 200]} />
-        <T.Group ref={gizmoRef!} position={position()}>
-          {props.children}
+        <OrthographicCamera makeDefault ref={camera!} position={[0, 0, 200]} />
+        <T.Group ref={gizmo!} position={position()}>
+          {config.children}
         </T.Group>
-      </Context.Provider>
+      </gizmoHelperContext.Provider>
     </Hud>
   )
 }

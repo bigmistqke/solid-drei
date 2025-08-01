@@ -1,6 +1,6 @@
 import { useArgs, useEffect } from '@storybook/client-api'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { Component, splitProps } from 'solid-js'
 import { MathUtils, NoToneMapping, Vector3 } from 'three'
 import { Svg, SvgProps } from '../../src'
@@ -56,10 +56,10 @@ export default {
   title: 'Abstractions/Svg',
   component: Svg,
   decorators: [
-    (storyFn) => (
+    storyFn => (
       <Setup
         gl={{ toneMapping: NoToneMapping }}
-        onCreated={(st) => st.gl.setClearColor('#ccc')}
+        onCreated={st => st.gl.setClearColor('#ccc')}
         cameraPosition={new Vector3(0, 0, 200)}
         lights={false}
       >
@@ -78,7 +78,7 @@ export default {
   },
 }
 
-export const SvgSt: Component<SvgStoryProps> = (_props) => {
+export const SvgSt: Component<SvgStoryProps> = _props => {
   const [props, rest] = splitProps(_props, ['svg', 'fillWireframe', 'strokesWireframe'])
 
   const [args, updateArgs] = useArgs()

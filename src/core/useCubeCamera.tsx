@@ -1,9 +1,8 @@
-import { useThree } from '@solid-three/fiber'
 import { createMemo, onCleanup } from 'solid-js'
+import { useThree } from 'solid-three'
 import * as THREE from 'three'
 import { Fog, FogExp2, HalfFloatType, WebGLCubeRenderTarget } from 'three'
-import { defaultProps } from '../helpers/defaultProps'
-import { when } from '../helpers/when'
+import { defaultProps } from '../utils/default-props'
 
 export type CubeCameraOptions = {
   /** Resolution of the FBO, 256 */
@@ -34,20 +33,19 @@ export function useCubeCamera(_props: CubeCameraOptions = {}) {
     return fbo
   })
 
-  const camera = createMemo(() => when(fbo)((fbo) => new THREE.CubeCamera(props.near, props.far, fbo)))
+  const camera = createMemo(() => new THREE.CubeCamera(props.near, props.far, fbo()))
 
   let originalFog
   let originalBackground
-  const update = () =>
-    when(camera)((camera) => {
-      originalFog = store.scene.fog
-      originalBackground = store.scene.background
-      store.scene.background = props.envMap || originalBackground
-      store.scene.fog = props.fog || originalFog
-      camera.update(store.gl, store.scene)
-      store.scene.fog = originalFog
-      store.scene.background = originalBackground
-    })
+  const update = () => {
+    originalFog = store.scene.fog
+    originalBackground = store.scene.background
+    store.scene.background = props.envMap || originalBackground
+    store.scene.fog = props.fog || originalFog
+    camera().update(store.gl, store.scene)
+    store.scene.fog = originalFog
+    store.scene.background = originalBackground
+  }
 
   return {
     fbo,

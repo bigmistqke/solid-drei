@@ -1,14 +1,17 @@
 import { withKnobs } from '@storybook/addon-knobs'
 import { IcosahedronGeometry, Vector3 } from 'three'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { Environment, Wireframe } from '../../src'
 import { Setup } from '../Setup'
 
 export default {
   title: 'Staging/Wireframe',
   component: Wireframe,
-  decorators: [withKnobs, (storyFn) => <Setup cameraPosition={new Vector3(2, 2, 2)}>{storyFn()}</Setup>],
+  decorators: [
+    withKnobs,
+    storyFn => <Setup cameraPosition={new Vector3(2, 2, 2)}>{storyFn()}</Setup>,
+  ],
 }
 
 function WireframeScene() {
@@ -31,7 +34,15 @@ function WireframeScene() {
       </T.Mesh>
 
       <T.Group position={[-2.5, 0, -2.5]}>
-        <Wireframe fill="blue" geometry={geom} stroke="white" squeeze dash fillMix={1} fillOpacity={0.2} />
+        <Wireframe
+          fill="blue"
+          geometry={geom}
+          stroke="white"
+          squeeze
+          dash
+          fillMix={1}
+          fillOpacity={0.2}
+        />
       </T.Group>
 
       <T.Mesh position={[-2.5, 0, 0]}>

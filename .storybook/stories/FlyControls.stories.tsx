@@ -1,6 +1,6 @@
 import { Setup } from '../Setup'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { Box, FlyControls } from '../../src'
 
 export const FlyControlsStory = ({ ...args }) => (
@@ -24,5 +24,5 @@ FlyControlsStory.storyName = 'Default'
 export default {
   title: 'Controls/FlyControls',
   component: FlyControls,
-  decorators: [(storyFn) => <Setup controls={false}>{storyFn()}</Setup>],
+  decorators: [storyFn => <Setup controls={false}>{storyFn()}</Setup>],
 }

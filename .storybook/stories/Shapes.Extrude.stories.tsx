@@ -3,13 +3,15 @@ import * as THREE from 'three'
 import { Setup } from '../Setup'
 import { useTurntable } from '../useTurntable'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { Extrude } from '../../src'
 
 export default {
   title: 'Shapes/Extrude',
   component: Extrude,
-  decorators: [(storyFn) => <Setup cameraPosition={new THREE.Vector3(-30, 30, 30)}>{storyFn()}</Setup>],
+  decorators: [
+    storyFn => <Setup cameraPosition={new THREE.Vector3(-30, 30, 30)}>{storyFn()}</Setup>,
+  ],
 }
 
 function ExtrudeScene() {

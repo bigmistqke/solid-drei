@@ -1,47 +1,47 @@
-import { T } from '@solid-three/fiber'
 import { JSXElement, createEffect, mergeProps, splitProps } from 'solid-js'
-import { BufferAttribute } from 'three'
+import { S3, T } from 'solid-three'
+import { BufferAttribute, PlaneGeometry } from 'three'
 
-const easeInExpo = (x) => (x === 0 ? 0 : Math.pow(2, 10 * x - 10))
+const easeInExpo = (x: number) => (x === 0 ? 0 : Math.pow(2, 10 * x - 10))
 
-export type BackdropProps = Parameters<typeof T.Group>[0] & {
+export interface BackdropProps extends S3.Props<'Group'> {
   floor?: number
   segments?: number
   receiveShadow?: boolean
   children?: JSXElement
 }
 
-export function Backdrop(_props) {
-  const [props, rest] = splitProps(mergeProps({ floor: 0.25, segments: 20 }, _props), [
+export function Backdrop(props: BackdropProps) {
+  const [config, rest] = splitProps(mergeProps({ floor: 0.25, segments: 20 }, props), [
     'children',
     'floor',
     'segments',
     'receiveShadow',
   ])
 
-  let ref: THREE.PlaneGeometry = null!
+  let planeGeometry: PlaneGeometry = null!
   createEffect(() => {
     let i = 0
-    const offset = props.segments / props.segments / 2
-    const position = ref.attributes.position as BufferAttribute
-    for (let x = 0; x < props.segments + 1; x++) {
-      for (let y = 0; y < props.segments + 1; y++) {
+    const offset = config.segments / config.segments / 2
+    const position = planeGeometry.attributes.position as BufferAttribute
+    for (let x = 0; x < config.segments + 1; x++) {
+      for (let y = 0; y < config.segments + 1; y++) {
         position.setXYZ(
           i++,
-          x / props.segments - offset + (x === 0 ? -props.floor : 0),
-          y / props.segments - offset,
-          easeInExpo(x / props.segments)
+          x / config.segments - offset + (x === 0 ? -config.floor : 0),
+          y / config.segments - offset,
+          easeInExpo(x / config.segments),
         )
       }
     }
     position.needsUpdate = true
-    ref.computeVertexNormals()
+    planeGeometry.computeVertexNormals()
   })
   return (
     <T.Group {...rest}>
-      <T.Mesh receiveShadow={props.receiveShadow} rotation={[-Math.PI / 2, 0, Math.PI / 2]}>
-        <T.PlaneGeometry ref={ref} args={[1, 1, props.segments, props.segments]} />
-        {props.children}
+      <T.Mesh receiveShadow={config.receiveShadow} rotation={[-Math.PI / 2, 0, Math.PI / 2]}>
+        <T.PlaneGeometry ref={planeGeometry} args={[1, 1, config.segments, config.segments]} />
+        {config.children}
       </T.Mesh>
     </T.Group>
   )

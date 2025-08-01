@@ -1,12 +1,12 @@
 import { Setup } from '../Setup'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { Box, useKTX2 } from '../../src'
 
 export default {
   title: 'Loaders/KTX2',
   component: useKTX2,
-  decorators: [(storyFn) => <Setup>{storyFn()}</Setup>],
+  decorators: [storyFn => <Setup>{storyFn()}</Setup>],
 }
 
 function TexturedMeshes() {

@@ -1,15 +1,18 @@
 // The author of the original code is @mrdoob https://twitter.com/mrdoob
 // https://threejs.org/examples/?q=con#webgl_shadow_contact
 
-import { T, ThreeProps, useFrame, useThree } from '@solid-three/fiber'
-import { createMemo } from 'solid-js'
+import { Ref, createEffect, createMemo } from 'solid-js'
+import { S3, T, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { HorizontalBlurShader, VerticalBlurShader } from 'three-stdlib'
-import { processProps } from '../helpers/processProps'
-import { RefComponent } from '../helpers/typeHelpers'
-import { createImperativeHandle } from '../helpers/useImperativeHandle'
+import { processProps } from '../utils/process-props'
 
-export type ContactShadowsProps = {
+function transform(value: number, scale: [number, number] | number | undefined) {
+  return value * (Array.isArray(scale) ? scale[1] : scale ?? 1)
+}
+
+export interface ContactShadowsProps extends Omit<S3.Props<'Group'>, 'scale'> {
+  ref?: Ref<THREE.Group>
   opacity?: number
   width?: number
   height?: number
@@ -24,11 +27,9 @@ export type ContactShadowsProps = {
   depthWrite?: boolean
 }
 
-export const ContactShadows: RefComponent<any, Omit<ThreeProps<'Group'>, 'scale'> & ContactShadowsProps> = (
-  _props: Omit<ThreeProps<'Group'>, 'scale'> & ContactShadowsProps
-) => {
-  const [props, rest] = processProps(
-    _props,
+export function ContactShadows(props: ContactShadowsProps) {
+  const [config, rest] = processProps(
+    props,
     {
       scale: 10,
       frames: Infinity,
@@ -58,45 +59,51 @@ export const ContactShadows: RefComponent<any, Omit<ThreeProps<'Group'>, 'scale'
       'color',
       'depthWrite',
       'renderOrder',
-    ]
+    ],
   )
 
-  let ref: THREE.Group
+  let group: THREE.Group
   let shadowCamera: THREE.OrthographicCamera
   const store = useThree()
 
-  const width = () => props.width * (Array.isArray(props.scale) ? props.scale[0] : props.scale || 1)
-  const height = () => props.height * (Array.isArray(props.scale) ? props.scale[1] : props.scale || 1)
+  const width = () => transform(config.width, config.scale)
+  const height = () => transform(config.height, config.scale)
 
-  const memo = createMemo(() => {
-    const renderTarget = new THREE.WebGLRenderTarget(props.resolution, props.resolution)
-    const renderTargetBlur = new THREE.WebGLRenderTarget(props.resolution, props.resolution)
+  const shadow = createMemo(() => {
+    const renderTarget = new THREE.WebGLRenderTarget(config.resolution, config.resolution)
+    const renderTargetBlur = new THREE.WebGLRenderTarget(config.resolution, config.resolution)
     renderTargetBlur.texture.generateMipmaps = renderTarget.texture.generateMipmaps = false
-    const planeGeometry = new THREE.PlaneGeometry(width(), height()).rotateX(Math.PI / 2)
+
+    const planeGeometry = new THREE.PlaneGeometry(
+      transform(config.width, config.scale),
+      height(),
+    ).rotateX(Math.PI / 2)
     const blurPlane = new THREE.Mesh(planeGeometry)
+
     const depthMaterial = new THREE.MeshDepthMaterial()
     depthMaterial.depthTest = depthMaterial.depthWrite = false
-    depthMaterial.onBeforeCompile = (shader) => {
+    depthMaterial.onBeforeCompile = shader => {
       shader.uniforms = {
         ...shader.uniforms,
-        ucolor: { value: new THREE.Color(props.color) },
+        ucolor: { value: new THREE.Color(config.color) },
       }
       shader.fragmentShader = shader.fragmentShader.replace(
         `void main() {`, //
         `uniform vec3 ucolor;
            void main() {
-          `
+          `,
       )
       shader.fragmentShader = shader.fragmentShader.replace(
         'vec4( vec3( 1.0 - fragCoordZ ), opacity );',
         // Colorize the shadow, multiply by the falloff so that the center can remain darker
-        'vec4( ucolor * fragCoordZ * 2.0, ( 1.0 - fragCoordZ ) * 1.0 );'
+        'vec4( ucolor * fragCoordZ * 2.0, ( 1.0 - fragCoordZ ) * 1.0 );',
       )
     }
 
     const horizontalBlurMaterial = new THREE.ShaderMaterial(HorizontalBlurShader)
     const verticalBlurMaterial = new THREE.ShaderMaterial(VerticalBlurShader)
     verticalBlurMaterial.depthTest = horizontalBlurMaterial.depthTest = false
+
     return {
       renderTarget,
       planeGeometry,
@@ -108,74 +115,77 @@ export const ContactShadows: RefComponent<any, Omit<ThreeProps<'Group'>, 'scale'
     }
   })
 
-  const blurShadows = (blur) => {
-    memo().blurPlane.visible = true
+  function blurShadows(blur: number) {
+    shadow().blurPlane.visible = true
 
-    memo().blurPlane.material = memo().horizontalBlurMaterial
-    memo().horizontalBlurMaterial.uniforms.tDiffuse.value = memo().renderTarget.texture
-    memo().horizontalBlurMaterial.uniforms.h.value = (blur * 1) / 256
+    shadow().blurPlane.material = shadow().horizontalBlurMaterial
+    shadow().horizontalBlurMaterial.uniforms.tDiffuse!.value = shadow().renderTarget.texture
+    shadow().horizontalBlurMaterial.uniforms.h!.value = (blur * 1) / 256
 
-    store.gl.setRenderTarget(memo().renderTargetBlur)
-    store.gl.render(memo().blurPlane, shadowCamera)
+    store.gl.setRenderTarget(shadow().renderTargetBlur)
+    store.gl.render(shadow().blurPlane, shadowCamera)
 
-    memo().blurPlane.material = memo().verticalBlurMaterial
-    memo().verticalBlurMaterial.uniforms.tDiffuse.value = memo().renderTargetBlur.texture
-    memo().verticalBlurMaterial.uniforms.v.value = (blur * 1) / 256
+    shadow().blurPlane.material = shadow().verticalBlurMaterial
+    shadow().verticalBlurMaterial.uniforms.tDiffuse!.value = shadow().renderTargetBlur.texture
+    shadow().verticalBlurMaterial.uniforms.v!.value = (blur * 1) / 256
 
-    store.gl.setRenderTarget(memo().renderTarget)
-    store.gl.render(memo().blurPlane, shadowCamera)
+    store.gl.setRenderTarget(shadow().renderTarget)
+    store.gl.render(shadow().blurPlane, shadowCamera)
 
-    memo().blurPlane.visible = false
+    shadow().blurPlane.visible = false
   }
 
   let count = 0
   let initialBackground: THREE.Color | THREE.Texture | null
   let initialOverrideMaterial: THREE.Material | null
   useFrame(() => {
-    if (shadowCamera && (props.frames === Infinity || count < props.frames)) {
+    if (config.frames === Infinity || count < config.frames) {
       // console.log('this happens?')
       count++
 
       initialBackground = store.scene.background
       initialOverrideMaterial = store.scene.overrideMaterial
 
-      ref.visible = false
+      group.visible = false
       store.scene.background = null
-      store.scene.overrideMaterial = memo().depthMaterial
+      store.scene.overrideMaterial = shadow().depthMaterial
 
-      store.gl.setRenderTarget(memo().renderTarget)
+      store.gl.setRenderTarget(shadow().renderTarget)
       store.gl.render(store.scene, shadowCamera)
 
-      blurShadows(props.blur)
-      if (props.smooth) blurShadows(props.blur * 0.4)
+      blurShadows(config.blur)
+      if (config.smooth) blurShadows(config.blur * 0.4)
       store.gl.setRenderTarget(null)
 
-      ref.visible = true
+      group.visible = true
       store.scene.overrideMaterial = initialOverrideMaterial
       store.scene.background = initialBackground
     }
   })
 
-  createImperativeHandle(props, () => ref)
+  createEffect(() => {
+    if (typeof config.ref === 'function') config.ref(group)
+    else config.ref = group
+  })
 
   return (
-    <T.Group rotation-x={Math.PI / 2} {...rest} ref={ref!}>
+    <T.Group ref={group!} rotation-x={Math.PI / 2} {...rest}>
       <T.Mesh
-        renderOrder={props.renderOrder}
-        geometry={memo().planeGeometry}
+        renderOrder={config.renderOrder}
+        geometry={shadow().planeGeometry}
         scale={[1, -1, 1]}
         rotation={[-Math.PI / 2, 0, 0]}
       >
         <T.MeshBasicMaterial
           transparent
-          map={memo().renderTarget.texture}
-          opacity={props.opacity}
-          depthWrite={props.depthWrite}
+          map={shadow().renderTarget.texture}
+          opacity={config.opacity}
+          depthWrite={config.depthWrite}
         />
       </T.Mesh>
       <T.OrthographicCamera
         ref={shadowCamera!}
-        args={[-width() / 2, width() / 2, height() / 2, -height() / 2, props.near, props.far]}
+        args={[-width() / 2, width() / 2, height() / 2, -height() / 2, config.near, config.far]}
       />
     </T.Group>
   )

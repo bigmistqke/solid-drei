@@ -1,20 +1,15 @@
-import { Primitive, ThreeProps, useFrame } from '@solid-three/fiber'
-import { MeshPhysicalMaterial, MeshPhysicalMaterialParameters, Shader } from 'three'
+import { Ref } from 'solid-js'
+import { S3, T, useFrame } from 'solid-three'
+import { MeshPhysicalMaterial, MeshPhysicalMaterialParameters } from 'three'
 // eslint-disable-next-line
 // @ts-ignore
-import distort from '../helpers/glsl/distort.vert.glsl'
-import { processProps } from '../helpers/processProps'
-import { RefComponent } from '../helpers/typeHelpers'
+import distort from '../../utils/glsl/distort.vert.glsl'
+import { processProps } from '../../utils/process-props'
 
-type DistortMaterialType = ThreeProps<'MeshPhysicalMaterial'> & {
+interface DistortMaterialType extends S3.Props<'MeshPhysicalMaterial'> {
   time?: number
   distort?: number
   radius?: number
-}
-
-type Props = DistortMaterialType & {
-  speed?: number
-  factor?: number
 }
 
 declare global {
@@ -25,27 +20,33 @@ declare global {
   }
 }
 
+/**********************************************************************************/
+/*                                                                                */
+/*                              Distort Material Impl                             */
+/*                                                                                */
+/**********************************************************************************/
+
 interface Uniform<T> {
   value: T
 }
 
 class DistortMaterialImpl extends MeshPhysicalMaterial {
-  _time: Uniform<number>
-  _distort: Uniform<number>
-  _radius: Uniform<number>
+  #time: Uniform<number>
+  #distort: Uniform<number>
+  #radius: Uniform<number>
 
   constructor(parameters: MeshPhysicalMaterialParameters = {}) {
     super(parameters)
     this.setValues(parameters)
-    this._time = { value: 0 }
-    this._distort = { value: 0.4 }
-    this._radius = { value: 1 }
+    this.#time = { value: 0 }
+    this.#distort = { value: 0.4 }
+    this.#radius = { value: 1 }
   }
 
-  onBeforeCompile(shader: Shader) {
-    shader.uniforms.time = this._time
-    shader.uniforms.radius = this._radius
-    shader.uniforms.distort = this._distort
+  onBeforeCompile(shader) {
+    shader.uniforms.time = this.#time
+    shader.uniforms.radius = this.#radius
+    shader.uniforms.distort = this.#distort
 
     shader.vertexShader = `
       uniform float time;
@@ -60,38 +61,50 @@ class DistortMaterialImpl extends MeshPhysicalMaterial {
         float updateTime = time / 50.0;
         float noise = snoise(vec3(position / 2.0 + updateTime * 5.0));
         vec3 transformed = vec3(position * (noise * pow(distort, 2.0) + radius));
-        `
+        `,
     )
   }
 
   get time() {
-    return this._time.value
+    return this.#time.value
   }
 
   set time(v) {
-    this._time.value = v
+    this.#time.value = v
   }
 
   get distort() {
-    return this._distort.value
+    return this.#distort.value
   }
 
   set distort(v) {
-    this._distort.value = v
+    this.#distort.value = v
   }
 
   get radius() {
-    return this._radius.value
+    return this.#radius.value
   }
 
   set radius(v) {
-    this._radius.value = v
+    this.#radius.value = v
   }
 }
 
-export const MeshDistortMaterial: RefComponent<any, Props> = (_props: Props) => {
-  const [props, rest] = processProps(_props, { speed: 1 }, ['speed'])
+/**********************************************************************************/
+/*                                                                                */
+/*                              Mesh Distort Material                             */
+/*                                                                                */
+/**********************************************************************************/
+
+interface MeshDistortMaterialProps extends DistortMaterialType {
+  ref?: Ref<MeshPhysicalMaterial>
+  speed?: number
+  factor?: number
+}
+
+export function MeshDistortMaterial(props: MeshDistortMaterialProps) {
+  const [config, rest] = processProps(props, { speed: 1 }, ['speed'])
   const material = new DistortMaterialImpl()
-  useFrame((state) => material && (material.time = state.clock.getElapsedTime() * props.speed))
-  return <Primitive object={material} attach="material" {...rest} />
+  useFrame(state => material && (material.time = state.clock.getElapsedTime() * config.speed))
+  return <T.Primitive object={material} attach="material" {...rest} />
 }

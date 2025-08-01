@@ -1,4 +1,4 @@
-import { ThreeProps } from '@solid-three/fiber'
+import { S3 } from 'solid-three'
 import { Matrix4, MeshStandardMaterial, Texture } from 'three'
 
 type UninitializedUniform<Value> = { value: Value | null }
@@ -51,7 +51,7 @@ export class MeshReflectorMaterial extends MeshStandardMaterial {
       '#include <project_vertex>',
       `#include <project_vertex>
         my_vUv = textureMatrix * vec4( position, 1.0 );
-        gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );`
+        gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );`,
     )
     shader.fragmentShader = `
         uniform sampler2D tDiffuse;
@@ -137,7 +137,7 @@ export class MeshReflectorMaterial extends MeshStandardMaterial {
       newMerge.b = (merge.b - 0.5) * mixContrast + 0.5;
 
       diffuseColor.rgb = diffuseColor.rgb * ((1.0 - min(1.0, mirror)) + newMerge.rgb * mixStrength);
-      `
+      `,
     )
   }
   get tDiffuse(): Texture | null {
@@ -232,7 +232,7 @@ export class MeshReflectorMaterial extends MeshStandardMaterial {
   }
 }
 
-export type MeshReflectorMaterialProps = {
+export interface MeshReflectorMaterialProps extends S3.Props<'MeshStandardMaterial'> {
   mixBlur: number
   mixStrength: number
   mirror: number
@@ -247,4 +247,4 @@ export type MeshReflectorMaterialProps = {
   depthToBlurRatioBias: number
   distortion: number
   mixContrast: number
-} & ThreeProps<'MeshStandardMaterial'>
+}

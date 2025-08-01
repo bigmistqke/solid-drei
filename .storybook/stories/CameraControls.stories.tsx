@@ -1,4 +1,4 @@
-import { Portal, T, useFrame } from '@solid-three/fiber'
+import { Portal, T, useFrame } from 'solid-three'
 import { Scene } from 'three'
 
 import { Box, CameraControls, PerspectiveCamera, Plane, useFBO } from '../../src'
@@ -31,7 +31,7 @@ CameraControlsStory.storyName = 'Default'
 export default {
   title: 'Controls/CameraControls',
   component: CameraControls,
-  decorators: [(storyFn) => <Setup controls={false}>{storyFn()}</Setup>],
+  decorators: [storyFn => <Setup controls={false}>{storyFn()}</Setup>],
 }
 
 // s3f:   this story currently fails.

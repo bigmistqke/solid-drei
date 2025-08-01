@@ -2,14 +2,14 @@ import { Vector3 } from 'three'
 
 import { Setup } from '../Setup'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { Billboard, Box, Cone, OrbitControls, Plane, Text } from '../../src'
 
 export default {
   title: 'Abstractions/Billboard',
   component: Billboard,
   decorators: [
-    (storyFn) => (
+    storyFn => (
       <Setup controls={false} cameraPosition={new Vector3(0, 0, 10)}>
         {storyFn()}
       </Setup>
@@ -50,7 +50,13 @@ BillboardStory.storyName = 'Planes'
 
 export const BillboardTextStory = ({ follow, lockX, lockY, lockZ }) => (
   <>
-    <Billboard follow={follow} lockX={lockX} lockY={lockY} lockZ={lockZ} position={[0.5, 2.05, 0.5]}>
+    <Billboard
+      follow={follow}
+      lockX={lockX}
+      lockY={lockY}
+      lockZ={lockZ}
+      position={[0.5, 2.05, 0.5]}
+    >
       <Text fontSize={1} outlineWidth={'5%'} outlineColor="#000000" outlineOpacity={1}>
         box
       </Text>

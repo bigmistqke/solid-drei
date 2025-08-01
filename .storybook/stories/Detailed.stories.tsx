@@ -2,14 +2,14 @@ import { Vector3 } from 'three'
 
 import { Setup } from '../Setup'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { Detailed, Icosahedron, OrbitControls } from '../../src'
 
 export default {
   title: 'Abstractions/Detailed',
   component: Detailed,
   decorators: [
-    (storyFn) => (
+    storyFn => (
       <Setup controls={false} cameraPosition={new Vector3(0, 0, 100)}>
         {storyFn()}
       </Setup>

@@ -1,11 +1,10 @@
-import { T, ThreeProps, useFrame } from '@solid-three/fiber'
-import type { JSX } from 'solid-js'
-import * as THREE from 'three'
-import { createRef } from '../helpers/createRef'
-import { mergeRefs } from '../helpers/mergeRefs'
-import { processProps } from '../helpers/processProps'
+import { createEffect, type JSX, type Ref } from 'solid-js'
+import { S3, T, useFrame } from 'solid-three'
+import { Group, MathUtils } from 'three'
+import { processProps } from '../../utils/process-props'
 
-export type FloatProps = Omit<ThreeProps<'Group'>, 'children'> & {
+export interface FloatProps extends Omit<S3.Props<'Group'>, 'children'> {
+  ref?: Ref<Group>
   enabled?: boolean
   speed?: number
   rotationIntensity?: number
@@ -14,9 +13,9 @@ export type FloatProps = Omit<ThreeProps<'Group'>, 'children'> & {
   floatingRange?: [number?, number?]
 }
 
-export const Float = (_props: FloatProps) => {
-  const [props, rest] = processProps(
-    _props,
+export const Float = (props: FloatProps) => {
+  const [config, rest] = processProps(
+    props,
     {
       enabled: true,
       speed: 1,
@@ -24,32 +23,39 @@ export const Float = (_props: FloatProps) => {
       floatIntensity: 1,
       floatingRange: [-0.1, 0.1],
     },
-    ['ref', 'children', 'enabled', 'speed', 'rotationIntensity', 'floatIntensity', 'floatingRange']
+    ['ref', 'children', 'enabled', 'speed', 'rotationIntensity', 'floatIntensity', 'floatingRange'],
   )
+  let group: Group
 
-  const groupRef = createRef<THREE.Group>(null!)
   let offset = Math.random() * 10000
-  useFrame((state) => {
-    if (!props.enabled || props.speed === 0) return
+  useFrame(state => {
+    if (!config.enabled || config.speed === 0) return
+    // TODO: implement state.clock
     const t = offset + state.clock.getElapsedTime()
-    groupRef.ref.rotation.x = (Math.cos((t / 4) * props.speed) / 8) * props.rotationIntensity
-    groupRef.ref.rotation.y = (Math.sin((t / 4) * props.speed) / 8) * props.rotationIntensity
-    groupRef.ref.rotation.z = (Math.sin((t / 4) * props.speed) / 20) * props.rotationIntensity
-    let yPosition = Math.sin((t / 4) * props.speed) / 10
-    yPosition = THREE.MathUtils.mapLinear(
+    group.rotation.x = (Math.cos((t / 4) * config.speed) / 8) * config.rotationIntensity
+    group.rotation.y = (Math.sin((t / 4) * config.speed) / 8) * config.rotationIntensity
+    group.rotation.z = (Math.sin((t / 4) * config.speed) / 20) * config.rotationIntensity
+    let yPosition = Math.sin((t / 4) * config.speed) / 10
+    yPosition = MathUtils.mapLinear(
       yPosition,
       -0.1,
       0.1,
-      props.floatingRange?.[0] ?? -0.1,
-      props.floatingRange?.[1] ?? 0.1
+      config.floatingRange?.[0] ?? -0.1,
+      config.floatingRange?.[1] ?? 0.1,
     )
-    groupRef.ref.position.y = yPosition * props.floatIntensity
-    groupRef.ref.updateMatrix()
+    group.position.y = yPosition * config.floatIntensity
+    group.updateMatrix()
   })
+
+  createEffect(() => {
+    if (typeof props.ref === 'function') props.ref(group)
+    else props.ref = group
+  })
+
   return (
     <T.Group {...rest}>
-      <T.Group ref={mergeRefs(props, groupRef)} matrixAutoUpdate={false}>
-        {props.children}
+      <T.Group ref={group!} matrixAutoUpdate={false}>
+        {config.children}
       </T.Group>
     </T.Group>
   )

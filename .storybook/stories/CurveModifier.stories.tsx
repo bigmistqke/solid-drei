@@ -1,4 +1,4 @@
-import { Primitive, T, ThreeProps, extend, useFrame, useLoader } from '@solid-three/fiber'
+import { Primitive, T, ThreeProps, extend, useFrame, useLoader } from 'solid-three'
 import { BufferGeometry, CatmullRomCurve3, LineBasicMaterial, LineLoop, Vector3 } from 'three'
 import { FontLoader, TextGeometry, TextGeometryParameters } from 'three-stdlib'
 
@@ -25,7 +25,7 @@ const cameraPosition = new Vector3(0, 10, 20)
 export default {
   title: 'Modifiers/CurveModifier',
   component: CurveModifier,
-  decorators: [(storyFn) => <Setup cameraPosition={cameraPosition}>{storyFn()}</Setup>],
+  decorators: [storyFn => <Setup cameraPosition={cameraPosition}>{storyFn()}</Setup>],
 }
 
 function CurveModifierScene() {
@@ -39,7 +39,7 @@ function CurveModifierScene() {
       { x: 10, y: 0, z: 10 },
       { x: -10, y: 0, z: 10 },
       { x: -10, y: 0, z: -10 },
-    ].map((hand) => new Vector3(...Object.values(hand)))
+    ].map(hand => new Vector3(...Object.values(hand))),
   )
 
   const curve = createMemo(() => new CatmullRomCurve3(handlePos(), true, 'centripetal'))
@@ -48,8 +48,8 @@ function CurveModifierScene() {
     () =>
       new LineLoop(
         new BufferGeometry().setFromPoints(curve().getPoints(50)),
-        new LineBasicMaterial({ color: 0x00ff00 })
-      )
+        new LineBasicMaterial({ color: 0x00ff00 }),
+      ),
   )
 
   useFrame(() => {

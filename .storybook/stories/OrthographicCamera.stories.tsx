@@ -1,4 +1,4 @@
-import { Canvas, T } from '@solid-three/fiber'
+import { Canvas, T } from 'solid-three'
 import { For } from 'solid-js'
 
 import { Icosahedron, OrthographicCamera } from '../../src'

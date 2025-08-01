@@ -1,6 +1,6 @@
 import { Setup } from '../Setup'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { Box, DeviceOrientationControls } from '../../src'
 
 export function DeviceOrientationControlsStory() {
@@ -22,7 +22,7 @@ export default {
   title: 'Controls/DeviceOrientationControls',
   component: DeviceOrientationControls,
   decorators: [
-    (storyFn) => (
+    storyFn => (
       <Setup camera={{ near: 1, far: 1100, fov: 75 }} controls={false}>
         {storyFn()}
       </Setup>

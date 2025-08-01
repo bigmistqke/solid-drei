@@ -1,5 +1,5 @@
-import { useThree } from '@solid-three/fiber'
 import { createEffect, onCleanup } from 'solid-js'
+import { useThree } from 'solid-three'
 
 export function BakeShadows() {
   const store = useThree()

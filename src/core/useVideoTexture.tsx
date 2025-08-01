@@ -1,7 +1,7 @@
-import { createThreeResource, useThree } from '@solid-three/fiber'
-import { createEffect } from 'solid-js'
+import { createEffect, createResource } from 'solid-js'
+import { useThree } from 'solid-three'
 import * as THREE from 'three'
-import { processProps } from '../helpers/processProps'
+import { processProps } from '../utils/process-props'
 
 interface VideoTextureProps extends HTMLVideoElement {
   unsuspend?: 'canplay' | 'canplaythrough' | 'loadstart' | 'loadedmetadata'
@@ -19,14 +19,14 @@ export function useVideoTexture(src: string | MediaStream, _props?: Partial<Vide
       start: true,
       playsInline: true,
     },
-    ['unsuspend', 'crossOrigin', 'muted', 'loop', 'start', 'playsInline']
+    ['unsuspend', 'crossOrigin', 'muted', 'loop', 'start', 'playsInline'],
   )
 
   const store = useThree()
-  const [texture] = createThreeResource(
+  const [texture] = createResource(
     [src],
     () =>
-      new Promise<THREE.VideoTexture>((res, rej) => {
+      new Promise<THREE.VideoTexture>(resolve => {
         const video = Object.assign(document.createElement('video'), {
           src: (typeof src === 'string' && src) || undefined,
           srcObject: (src instanceof MediaStream && src) || undefined,
@@ -36,12 +36,16 @@ export function useVideoTexture(src: string | MediaStream, _props?: Partial<Vide
           ...rest,
         })
         const texture = new THREE.VideoTexture(video)
-        if ('colorSpace' in texture) (texture as any).colorSpace = (store.gl as any).outputColorSpace
-        else texture.encoding = store.gl.outputEncoding
+        if ('colorSpace' in texture) {
+          texture.colorSpace = store.gl.outputColorSpace
+        } else {
+          // @ts-expect-error
+          texture.encoding = store.gl.outputEncoding
+        }
 
-        video.addEventListener(props.unsuspend, () => res(texture))
-      })
+        video.addEventListener(props.unsuspend, () => resolve(texture))
+      }),
   )
-  createEffect(() => void (props.start && texture()?.image.play()))
+  createEffect(() => props.start && texture()?.image.play())
   return texture
 }

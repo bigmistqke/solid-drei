@@ -3,14 +3,14 @@ import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 
 import { Setup } from '../Setup'
 
-import { T } from '@solid-three/fiber'
+import { T } from 'solid-three'
 import { Accessor } from 'solid-js'
 import { useGLTF } from '../../src'
 
 export default {
   title: 'Loaders/GLTF',
   component: useGLTF,
-  decorators: [(storyFn) => <Setup cameraPosition={new Vector3(0, 0, 5)}>{storyFn()}</Setup>],
+  decorators: [storyFn => <Setup cameraPosition={new Vector3(0, 0, 5)}>{storyFn()}</Setup>],
 }
 
 type GLTFResult = GLTF & {
@@ -25,7 +25,12 @@ type GLTFResult = GLTF & {
 function Suzanne() {
   const resource = useGLTF('suzanne.glb', true) as Accessor<GLTFResult | undefined>
 
-  return <T.Mesh material={resource()?.materials['Material.001']} geometry={resource()?.nodes.Suzanne.geometry} />
+  return (
+    <T.Mesh
+      material={resource()?.materials['Material.001']}
+      geometry={resource()?.nodes.Suzanne.geometry}
+    />
+  )
 }
 
 function UseGLTFScene() {
@@ -47,7 +52,10 @@ function SuzanneWithLocal() {
 
   return (
     <T.Group dispose={null}>
-      <T.Mesh material={resource()?.materials['Material.001']} geometry={resource()?.nodes.Suzanne.geometry} />
+      <T.Mesh
+        material={resource()?.materials['Material.001']}
+        geometry={resource()?.nodes.Suzanne.geometry}
+      />
     </T.Group>
   )
 }

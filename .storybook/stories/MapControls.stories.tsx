@@ -1,4 +1,4 @@
-import { Canvas, T, useLoader } from '@solid-three/fiber'
+import { Canvas, T, useLoader } from 'solid-three'
 import { For, Suspense, createMemo, createSignal, onMount } from 'solid-js'
 import { Box3, Sphere, Vector3 } from 'three'
 import { SVGLoader } from 'three-stdlib'
@@ -14,7 +14,12 @@ export default {
 const Cell = (props: { color; shape; fillOpacity }) => {
   return (
     <T.Mesh>
-      <T.MeshBasicMaterial color={'black'} opacity={props.fillOpacity} depthWrite={false} transparent />
+      <T.MeshBasicMaterial
+        color={'black'}
+        opacity={props.fillOpacity}
+        depthWrite={false}
+        transparent
+      />
       <T.ShapeGeometry args={[props.shape]} />
     </T.Mesh>
   )
@@ -28,20 +33,20 @@ function Svg() {
 
   const shapes = createMemo(() =>
     when(resource)(({ paths }) =>
-      paths.flatMap((p) =>
-        p.toShapes(true).map((shape) =>
+      paths.flatMap(p =>
+        p.toShapes(true).map(shape =>
           //@ts-expect-error this issue has been raised https://github.com/mrdoob/three.js/pull/21059
-          ({ shape, color: p.color, fillOpacity: p.userData.style.fillOpacity })
-        )
-      )
-    )
+          ({ shape, color: p.color, fillOpacity: p.userData.style.fillOpacity }),
+        ),
+      ),
+    ),
   )
 
   onMount(() => {
     const box = new Box3().setFromObject(ref)
     const sphere = new Sphere()
     box.getBoundingSphere(sphere)
-    setCenter((vec) => vec.set(-sphere.center.x, -sphere.center.y, 0))
+    setCenter(vec => vec.set(-sphere.center.x, -sphere.center.y, 0))
   })
 
   return (
@@ -49,7 +54,7 @@ function Svg() {
       <For each={shapes()}>
         {
           // @ts-expect-error this issue has been raised https://github.com/mrdoob/three.js/pull/21058
-          (props) => <Cell key={props.shape.uuid} {...props} />
+          props => <Cell key={props.shape.uuid} {...props} />
         }
       </For>
     </T.Group>

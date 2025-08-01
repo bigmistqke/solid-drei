@@ -1,4 +1,4 @@
-import { T, useFrame } from '@solid-three/fiber'
+import { T, useFrame } from 'solid-three'
 import { Mesh } from 'three'
 
 import { Setup } from '../Setup'
@@ -8,7 +8,7 @@ import { ContactShadows, Plane, Sphere } from '../../src'
 export default {
   title: 'Staging/ContactShadows',
   component: ContactShadows,
-  decorators: [(storyFn) => <Setup> {storyFn()}</Setup>],
+  decorators: [storyFn => <Setup> {storyFn()}</Setup>],
 }
 
 function ContactShadowScene({ colorized }: any) {

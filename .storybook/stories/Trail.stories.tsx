@@ -2,14 +2,14 @@ import { createSignal } from 'solid-js'
 
 import { Setup } from '../Setup'
 
-import { T, useFrame } from '@solid-three/fiber'
+import { T, useFrame } from 'solid-three'
 import { Group, InstancedMesh, Mesh, Object3D, Vector3 } from 'three'
 import { Float, Sphere, Trail, useTrail } from '../../src'
 
 export default {
   title: 'Misc/Trail',
   component: Trail,
-  decorators: [(storyFn) => <Setup cameraPosition={new Vector3(0, 0, 5)}> {storyFn()}</Setup>],
+  decorators: [storyFn => <Setup cameraPosition={new Vector3(0, 0, 5)}> {storyFn()}</Setup>],
 }
 
 function TrailScene() {
