@@ -3,17 +3,17 @@
   <img width="100%" src="https://assets.solidjs.com/banner?type=solid-drei&background=tiles&project=%20" alt="solid-drei">
 </p>
 
-[![Version](https://img.shields.io/npm/v/@solid-three/drei?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/@solid-three/drei)
-[![Downloads](https://img.shields.io/npm/dt/@solid-three/drei.svg?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/@solid-three/drei)
+[![Version](https://img.shields.io/npm/v/solid-drei?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/solid-drei)
+[![Downloads](https://img.shields.io/npm/dt/solid-drei.svg?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/solid-drei)
 [![Discord Shield](https://img.shields.io/discord/740090768164651008?style=flat&colorA=000000&colorB=000000&label=discord&logo=discord&logoColor=ffffff)](https://discord.com/channels/740090768164651008/741751532592038022)
 [![Open in GitHub Codespaces](https://img.shields.io/static/v1?&message=Open%20in%20%20Codespaces&style=flat&colorA=000000&colorB=000000&label=GitHub&logo=github&logoColor=ffffff)](https://github.com/codespaces/new?template_repository=pmndrs%2Fdrei)
 
-> `solid-three`: This is a WIP port of [drei](https://github.com/pmndrs/drei). Not published yet.
+> `solid-drei`: This is a WIP port of [drei](https://github.com/pmndrs/drei). Not published yet.
 
-A growing collection of useful helpers and fully functional, ready-made abstractions for [@solid-three/fiber](https://github.com/solidjs-community/solid-three). If you make a component that is generic enough to be useful to others, think about [CONTRIBUTING](CONTRIBUTING.md)!
+A growing collection of useful helpers and fully functional, ready-made abstractions for [solid-three](https://github.com/solidjs-community/solid-three). If you make a component that is generic enough to be useful to others, think about [CONTRIBUTING](CONTRIBUTING.md)!
 
 ```bash
-npm install @solid-three/drei
+npm install solid-drei
 ```
 
 :point_right: this package is using the stand-alone [`three-stdlib`](https://github.com/pmndrs/three-stdlib) instead of [`three/examples/jsm`](https://github.com/mrdoob/three.js/tree/master/examples/jsm). :point_left:
@@ -21,7 +21,7 @@ npm install @solid-three/drei
 ### Basic usage:
 
 ```jsx
-import { PerspectiveCamera, PositionalAudio, ... } from '@solid-three/drei'
+import { PerspectiveCamera, PositionalAudio, ... } from 'solid-drei'
 ```
 
 ### Index
@@ -351,7 +351,7 @@ If you have moving objects, unset the prop and use a smaller `resolution` instea
 
 If available controls have damping enabled by default, they manage their own updates, remove themselves on unmount, are compatible with the `frameloop="demand"` canvas-flag. They inherit all props from their underlying [THREE controls](https://github.com/mrdoob/three.js/tree/master/examples/jsm/controls). They are the first effects to run before all other useFrames, to ensure that other components may mutate the camera on top of them.
 
-[Some controls](https://github.com/search?q=repo%3Apmndrs%2Fdrei+language%3ATSX+path%3A%2F%5Esrc%5C%2Fcore%5C%2F.*Controls%5C.tsx%2F+makeDefault&type=code) allow you to set `makeDefault`, similar to, for instance, `PerspectiveCamera`. This will set [@solid-three/fiber](https://docs.pmnd.rs/solid-three-fiber/api/hooks#usethree)'s `controls` field in the root store. This can make it easier in situations where you want controls to be known and other parts of the app could respond to it. Some drei controls already take it into account, like `CameraShake`, `Gizmo` and `TransformControls`.
+[Some controls](https://github.com/search?q=repo%3Apmndrs%2Fdrei+language%3ATSX+path%3A%2F%5Esrc%5C%2Fcore%5C%2F.*Controls%5C.tsx%2F+makeDefault&type=code) allow you to set `makeDefault`, similar to, for instance, `PerspectiveCamera`. This will set [solid-three](https://docs.pmnd.rs/solid-three-fiber/api/hooks#usethree)'s `controls` field in the root store. This can make it easier in situations where you want controls to be known and other parts of the app could respond to it. Some drei controls already take it into account, like `CameraShake`, `Gizmo` and `TransformControls`.
 
 ```tsx
 <CameraControls makeDefault />
@@ -1986,7 +1986,7 @@ Injects percent closer soft shadows (pcss) into threes shader chunk. Mounting an
 Creates a THREE.ShaderMaterial for you with easier handling of uniforms, which are automatically declared as setter/getters on the object and allowed as constructor arguments.
 
 ```jsx
-import { extend } from '@solid-three/fiber'
+import { extend } from 'solid-three'
 
 const ColorShiftMaterial = shaderMaterial(
   { time: 0, color: new THREE.Color(0.2, 0.0, 0.1) },
@@ -2519,7 +2519,7 @@ const { fbo, camera, update } = useCubeCamera()
 
 This hook uses [DetectGPU by @TimvanScherpenzeel](https://github.com/TimvanScherpenzeel/detect-gpu), wrapped into suspense, to determine what tier should be assigned to the user's GPU.
 
-👉 This hook CAN be used outside the @solid-three/fiber `Canvas`.
+👉 This hook CAN be used outside the solid-three `Canvas`.
 
 ```jsx
 function App() {
@@ -2677,7 +2677,7 @@ $ curl https://storage.googleapis.com/mediapipe-models/face_landmarker/face_land
 ```
 
 ```tsx
-import { FaceLandmarkerDefaults } from '@solid-three/drei'
+import { FaceLandmarkerDefaults } from 'solid-drei'
 
 const visionBasePath = new URL("/tasks-vision-wasm", import.meta.url).toString()
 const modelAssetPath = new URL("/face_landmarker.task", import.meta.url).toString()
@@ -3358,9 +3358,9 @@ It is advisable to re-connect the event system to a parent that contains both th
 This ensures that both are accessible/selectable and even allows you to mount controls or other deeper
 integrations into your view.
 
-> Note that `@solid-three/fiber` newer than `^8.1.0` is required for `View` to work correctly if the
+> Note that `solid-three` newer than `^8.1.0` is required for `View` to work correctly if the
 > canvas/react three fiber root is not fullscreen. A warning will be logged if drei is used with older
-> versions of `@solid-three/fiber`.
+> versions of `solid-three`.
 
 ```tsx
 <View
