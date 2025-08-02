@@ -1,7 +1,7 @@
 import { Accessor, createEffect, onCleanup } from 'solid-js'
 import { S3, useFrame } from 'solid-three'
 import { Event } from 'three'
-import { whenever } from '../utils/conditionals'
+import { whenever } from '../utils/conditionals.ts'
 
 type ControlProtoBase = {
   update: (delta: number) => void

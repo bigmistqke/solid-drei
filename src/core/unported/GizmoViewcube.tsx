@@ -1,7 +1,7 @@
 import { For, Index, createMemo, createSignal, onMount, type JSX } from 'solid-js'
 import { T, ThreeEvent, useThree } from 'solid-three'
 import { CanvasTexture, Vector3 } from 'three'
-import { useGizmoContext } from '../GizmoHelper'
+import { useGizmoContext } from '../GizmoHelper.tsx'
 import { defaultProps } from '../utils/default-props'
 
 type XYZ = [number, number, number]

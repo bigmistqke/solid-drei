@@ -1,7 +1,7 @@
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T } from 'solid-three'
-import { Icosahedron, useCubeTexture } from '../../src'
+import { Icosahedron, useCubeTexture } from '../../src/index.ts'
 
 export default {
   title: 'Loaders/CubeTexture',

@@ -1,12 +1,12 @@
 import { createSignal, type JSX } from 'solid-js'
 import * as THREE from 'three'
 
-import { Setup } from '../Setup'
-import { useTurntable } from '../useTurntable'
+import { Setup } from '../Setup.tsx'
+import { useTurntable } from '../useTurntable.ts'
 
 import { T, useFrame, useThree } from 'solid-three'
 import { Object3D } from 'three'
-import { Html, Icosahedron, OrthographicCamera } from '../../src'
+import { Html, Icosahedron, OrthographicCamera } from '../../src/index.ts'
 import { processProps } from '../../src/helpers/processProps'
 import { CalculatePosition, HtmlProps } from '../../src/web/Html'
 
@@ -100,7 +100,7 @@ function HTMLOrthographicScene() {
 
   return (
     <>
-      <OrthographicCamera makeDefault={true} applyMatrix4={undefined} {...initialCamera} />
+      <OrthographicCamera makeDefault applyMatrix4={undefined} {...initialCamera} />
       <Icosahedron args={[200, 5]} position={[0, 0, 0]}>
         <T.MeshBasicMaterial color="hotpink" wireframe />
         {

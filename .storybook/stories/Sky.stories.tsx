@@ -2,9 +2,9 @@ import { T, useFrame } from 'solid-three'
 import { number, withKnobs } from '@storybook/addon-knobs'
 import { createSignal } from 'solid-js'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
-import { Plane, Sky } from '../../src'
+import { Plane, Sky } from '../../src/index.ts'
 
 export default {
   title: 'Staging/Sky',

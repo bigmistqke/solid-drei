@@ -1,9 +1,9 @@
 import { Component, createMemo, createSignal, useContext } from 'solid-js'
 import { T, ThreeEvent, useThree } from 'solid-three'
 import * as THREE from 'three'
-import { Line } from '../../../core/Line'
-import { Html } from '../Html'
-import { context } from './context'
+import { Line } from '../../../core/Line.tsx'
+import { Html } from '../Html.tsx'
+import { context } from './context.ts'
 
 const decomposeIntoBasis = (e1: THREE.Vector3, e2: THREE.Vector3, offset: THREE.Vector3) => {
   const i1 =
@@ -193,7 +193,7 @@ export const PlaneSlider: Component<{
       )}
       <T.Group position={[pos1 * 1.7, pos1 * 1.7, 0]}>
         <T.Mesh
-          visible={true}
+          visible
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}

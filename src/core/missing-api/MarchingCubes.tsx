@@ -3,7 +3,7 @@ import { S3, T, useFrame } from 'solid-three'
 import * as THREE from 'three'
 import { Color, Group } from 'three'
 import { MarchingCubes as MarchingCubesImpl } from 'three-stdlib'
-import { processProps } from '../../utils/process-props'
+import { processProps } from '../../utils/process-props.ts'
 
 type Api = {
   getParent: () => MarchingCubesImpl

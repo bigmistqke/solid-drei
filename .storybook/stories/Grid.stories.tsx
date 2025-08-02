@@ -1,8 +1,8 @@
 import { Vector3 } from 'three'
 
 import { T } from 'solid-three'
-import { Box, Grid } from '../../src'
-import { Setup } from '../Setup'
+import { Box, Grid } from '../../src/index.ts'
+import { Setup } from '../Setup.tsx'
 
 export default {
   title: 'Gizmos/Grid',

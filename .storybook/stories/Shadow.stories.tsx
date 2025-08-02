@@ -1,9 +1,9 @@
 import { T, useFrame } from 'solid-three'
 import { Mesh } from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
-import { Icosahedron, Plane, Shadow } from '../../src'
+import { Icosahedron, Plane, Shadow } from '../../src/index.ts'
 
 export default {
   title: 'Misc/Shadow',

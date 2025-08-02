@@ -10,8 +10,8 @@ import {
   Vector3,
 } from 'three'
 import { OrbitControls as OrbitControlsType } from 'three-stdlib'
-import { OrthographicCamera } from './OrthographicCamera'
-import { Hud } from './missing-api/Hud'
+import { OrthographicCamera } from './OrthographicCamera.tsx'
+import { Hud } from './missing-api/Hud.tsx'
 
 /**********************************************************************************/
 /*                                                                                */

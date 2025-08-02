@@ -1,10 +1,10 @@
 import { For, createMemo } from 'solid-js'
 import { Vector3 } from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T } from 'solid-three'
-import { Icosahedron, TrackballControls } from '../../src'
+import { Icosahedron, TrackballControls } from '../../src/index.ts'
 
 export default {
   title: 'Controls/TrackballControls',

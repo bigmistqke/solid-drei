@@ -9,8 +9,8 @@ import {
   OrbitControls,
   TrackballControls,
   useGLTF,
-} from '../../src'
-import { Setup } from '../Setup'
+} from '../../src/index.ts'
+import { Setup } from '../Setup.tsx'
 
 export default {
   title: 'Gizmos/GizmoHelper',

@@ -1,10 +1,10 @@
 import { Vector3 } from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { Primitive, T } from 'solid-three'
 import { boolean, withKnobs } from '@storybook/addon-knobs'
-import { Environment, Html, Loader, useGLTF, useProgress } from '../../src'
+import { Environment, Html, Loader, useGLTF, useProgress } from '../../src/index.ts'
 
 export default {
   title: 'Misc/useProgress',
@@ -43,7 +43,7 @@ function CustomLoader() {
 function LoadExtras() {
   return (
     <T.Suspense fallback={<CustomLoader />}>
-      <Environment preset={'studio'} />
+      <Environment preset="studio" />
       <Shoe />
     </T.Suspense>
   )

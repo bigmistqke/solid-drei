@@ -1,8 +1,8 @@
 import { createRenderEffect, createResource } from 'solid-js'
 import { RepeatWrapping, Texture, Vector2 } from 'three'
-import { every, whenever } from '../utils/conditionals'
-import { defaultProps } from '../utils/default-props'
-import { useTexture } from './useTexture'
+import { every, whenever } from '../utils/conditionals.ts'
+import { defaultProps } from '../utils/default-props.ts'
+import { useTexture } from './useTexture.tsx'
 
 const NORMAL_ROOT =
   'https://rawcdn.githack.com/pmndrs/drei-assets/7a3104997e1576f83472829815b00880d88b32fb'

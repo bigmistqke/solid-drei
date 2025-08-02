@@ -3,7 +3,7 @@
 
 import * as THREE from 'three'
 import { MeshBVHUniformStruct, shaderIntersectFunction, shaderStructs } from 'three-mesh-bvh'
-import { shaderMaterial } from './shaderMaterial'
+import { shaderMaterial } from './shaderMaterial.ts'
 
 export const MeshRefractionMaterial = shaderMaterial(
   {

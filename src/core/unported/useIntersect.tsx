@@ -1,7 +1,7 @@
 import { createEffect, createSignal, onCleanup } from 'solid-js'
 import { addAfterEffect, addEffect } from 'solid-three'
 import { Object3D } from 'three'
-import { whenever } from '../../utils/conditionals'
+import { whenever } from '../../utils/conditionals.ts'
 
 export function useIntersect<T extends Object3D>(onChange: (visible: boolean) => void) {
   const [ref, setRef] = createSignal<T>()

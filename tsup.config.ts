@@ -1,6 +1,7 @@
 import fs from 'fs/promises'
 import { defineConfig } from 'tsup'
 import * as preset from 'tsup-preset-solid'
+import process from "node:process";
 
 const preset_options: preset.PresetOptions = {
   entries: {

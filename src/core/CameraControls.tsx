@@ -16,7 +16,7 @@ import {
   Vector3,
   Vector4,
 } from 'three'
-import { ControlUtils } from './control-utils'
+import { ControlUtils } from './control-utils.ts'
 
 export type CameraControls = ThreeCameraControls
 

@@ -1,7 +1,7 @@
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T } from 'solid-three'
-import { Box, FirstPersonControls } from '../../src'
+import { Box, FirstPersonControls } from '../../src/index.ts'
 
 export const FirstPersonControlsStory = ({ ...args }) => (
   <>

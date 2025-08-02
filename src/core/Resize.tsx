@@ -1,7 +1,7 @@
 import { Ref, createEffect } from 'solid-js'
 import { S3, T } from 'solid-three'
 import * as THREE from 'three'
-import { processProps } from '../utils/process-props'
+import { processProps } from '../utils/process-props.ts'
 
 export interface ResizeProps extends S3.Props<'Group'> {
   ref?: Ref<THREE.Group>

@@ -1,10 +1,10 @@
 import { createMemo, splitProps } from 'solid-js'
 import { Vector3 } from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T } from 'solid-three'
-import { OrbitControls, PerspectiveCamera, Sparkles } from '../../src'
+import { OrbitControls, PerspectiveCamera, Sparkles } from '../../src/index.ts'
 
 export default {
   title: 'Staging/Sparkles',

@@ -1,7 +1,7 @@
 import { createEffect, type JSX, type Ref } from 'solid-js'
 import { S3, T, useFrame } from 'solid-three'
 import { Group, MathUtils } from 'three'
-import { processProps } from '../../utils/process-props'
+import { processProps } from '../utils/process-props.ts'
 
 export interface FloatProps extends Omit<S3.Props<'Group'>, 'children'> {
   ref?: Ref<Group>

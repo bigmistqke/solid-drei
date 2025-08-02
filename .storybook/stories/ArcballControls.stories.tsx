@@ -1,11 +1,11 @@
 import { Portal, T, useFrame } from 'solid-three'
 import { Scene } from 'three'
 
-import { ArcballControls, Box, PerspectiveCamera, Plane, useFBO } from '../../src'
-import { Setup } from '../Setup'
+import { ArcballControls, Box, PerspectiveCamera, Plane, useFBO } from '../../src/index.ts'
+import { Setup } from '../Setup.tsx'
 
 import type { OrthographicCamera, PerspectiveCamera as PerspectiveCameraType } from 'three'
-import type { ArcballControlsProps } from '../../src'
+import type { ArcballControlsProps } from '../../src/index.ts'
 
 const args = {
   enablePan: true,

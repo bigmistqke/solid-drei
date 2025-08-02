@@ -1,12 +1,12 @@
 import { For, createEffect, createSignal } from 'solid-js'
 
 import { MeshBVHVisualizer } from 'three-mesh-bvh'
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T, useFrame, useThree } from 'solid-three'
 import { boolean, select, withKnobs } from '@storybook/addon-knobs'
 import { Mesh, Raycaster, Vector3 } from 'three'
-import { OrbitControls, TorusKnot, useBVH, useHelper } from '../../src'
+import { OrbitControls, TorusKnot, useBVH, useHelper } from '../../src/index.ts'
 
 export default {
   title: 'Performance/useBVH',

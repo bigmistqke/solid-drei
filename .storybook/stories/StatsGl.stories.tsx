@@ -1,7 +1,7 @@
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T } from 'solid-three'
-import { StatsGl } from '../../src'
+import { StatsGl } from '../../src/index.ts'
 
 export default {
   title: 'Misc/StatsGl',

@@ -1,8 +1,8 @@
 import { createMemo } from 'solid-js'
 import { CatmullRomCurve3, Color, Vector3 } from 'three'
 import { Line2 } from 'three-stdlib'
-import { processProps } from '../utils/process-props'
-import { Line, LineProps } from './Line'
+import { processProps } from '../utils/process-props.ts'
+import { Line, LineProps } from './Line.tsx'
 
 interface Props extends Omit<LineProps, 'ref' | 'segments'> {
   ref: Line2

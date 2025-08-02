@@ -3,8 +3,8 @@ import { Texture } from 'three'
 
 import { number, withKnobs } from '@storybook/addon-knobs'
 
-import { Box, MeshDistortMaterial, shaderMaterial, useTexture } from '../../src'
-import { Setup } from '../Setup'
+import { Box, MeshDistortMaterial, shaderMaterial, useTexture } from '../../src/index.ts'
+import { Setup } from '../Setup.tsx'
 
 export default {
   title: 'Shaders/shaderMaterial',

@@ -2,9 +2,9 @@ import { T, useFrame } from 'solid-three'
 import * as THREE from 'three'
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
-import { CameraShake, OrbitControls } from '../../src'
+import { CameraShake, OrbitControls } from '../../src/index.ts'
 
 const frequencyArgType = {
   control: {

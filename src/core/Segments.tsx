@@ -10,7 +10,7 @@ import {
 import { S3, T, extend, useFrame } from 'solid-three'
 import { Color, Vector2, Vector3 } from 'three'
 import { Line2, LineMaterial, LineSegmentsGeometry } from 'three-stdlib'
-import { processProps } from '../utils/process-props'
+import { processProps } from '../utils/process-props.ts'
 
 declare global {
   namespace SolidThree {
@@ -118,7 +118,7 @@ export function Segments(props: SegmentsProps) {
       <T.Primitive
         object={material}
         attach="material"
-        vertexColors={true}
+        vertexColors
         resolution={resolution}
         linewidth={config.lineWidth}
         {...rest}

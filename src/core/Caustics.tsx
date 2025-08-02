@@ -31,11 +31,11 @@ import {
   Vector3,
 } from 'three'
 import { FullScreenQuad } from 'three-stdlib'
-import { shaderMaterial } from '../../materials/shaderMaterial'
-import { processProps } from '../../utils/process-props'
-import { Edges } from '../Edges'
-import { useFBO } from '../unported/useFBO'
-import { useHelper } from '../useHelper'
+import { shaderMaterial } from '../materials/shaderMaterial.ts'
+import { processProps } from '../utils/process-props.ts'
+import { Edges } from '../core/Edges.tsx'
+import { useFBO } from '../core/unported/useFBO.tsx'
+import { useHelper } from '../core/useHelper.tsx'
 
 declare global {
   namespace SolidThree {

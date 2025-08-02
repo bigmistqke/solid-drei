@@ -16,7 +16,7 @@
 import { createEffect, onCleanup } from 'solid-js'
 import { useThree } from 'solid-three'
 import { Camera, Material, Scene, ShaderChunk, WebGLRenderer } from 'three'
-import { defaultProps } from '../../utils/default-props'
+import { defaultProps } from '../utils/default-props.ts'
 
 /**********************************************************************************/
 /*                                                                                */

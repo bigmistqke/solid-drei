@@ -8,7 +8,7 @@ import { defaultProps } from '../utils/default-props'
 import { processProps } from '../utils/process-props'
 import { RefComponent } from '../utils/type-utils'
 import { createImperativeHandle } from '../utils/use-imperative-handle'
-import { Line } from '../Line'
+import { Line } from '../Line.tsx'
 
 export type MediaPipeFaceMesh = typeof FacemeshDatas.SAMPLE_FACE
 

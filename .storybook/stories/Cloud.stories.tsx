@@ -1,9 +1,9 @@
 import { Vector3 } from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T } from 'solid-three'
-import { Cloud, OrbitControls } from '../../src'
+import { Cloud, OrbitControls } from '../../src/index.ts'
 
 export default {
   title: 'Staging/Cloud',

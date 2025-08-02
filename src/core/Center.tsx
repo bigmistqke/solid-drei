@@ -1,7 +1,7 @@
 import { Ref, createEffect } from 'solid-js'
 import { S3, T } from 'solid-three'
 import { Box3, Group, Object3D, Sphere, Vector3 } from 'three'
-import { processProps } from '../utils/process-props'
+import { processProps } from '../utils/process-props.ts'
 
 export interface OnCenterCallbackProps {
   /** The next parent above <Center> */

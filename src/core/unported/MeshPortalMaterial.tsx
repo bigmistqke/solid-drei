@@ -7,13 +7,13 @@ import { createEffect, createMemo, createRenderEffect, createSignal } from 'soli
 import { SolidThreeCore, T, ThreeProps, extend, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { FullScreenQuad } from 'three-stdlib'
-import { shaderMaterial } from '../../materials/shaderMaterial'
-import { RenderTexture } from '../missing-api/RenderTexture'
+import { shaderMaterial } from '../../materials/shaderMaterial.ts'
+import { RenderTexture } from '../missing-api/RenderTexture.tsx'
 import { processProps } from '../utils/process-props'
 import { RefComponent } from '../utils/type-utils'
 import { createImperativeHandle } from '../utils/use-imperative-handle'
-import { useFBO } from './useFBO'
-import { useIntersect } from './useIntersect'
+import { useFBO } from './useFBO.tsx'
+import { useIntersect } from './useIntersect.tsx'
 
 const PortalMaterialImpl = shaderMaterial(
   {

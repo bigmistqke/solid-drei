@@ -1,9 +1,9 @@
 import { Vector3 } from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T } from 'solid-three'
-import { Detailed, Icosahedron, OrbitControls } from '../../src'
+import { Detailed, Icosahedron, OrbitControls } from '../../src/index.ts'
 
 export default {
   title: 'Abstractions/Detailed',

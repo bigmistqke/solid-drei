@@ -76,7 +76,7 @@ export function CycleRaycast(_props: CycleRaycastProps) {
     const wheelEvent = (event: WheelEvent) => {
       if (props.preventDefault) event.preventDefault()
       let delta = 0
-      if (!event) event = window.event as WheelEvent
+      if (!event) event = globalThis.event as WheelEvent
       if ((event as any).wheelDelta) delta = (event as any).wheelDelta / 120
       else if (event.detail) delta = -event.detail / 3
       if (hits.length > 1) refresh(current => Math.abs(current - delta))

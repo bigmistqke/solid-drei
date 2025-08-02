@@ -13,9 +13,9 @@ import {
   SpotLightShadow,
   useDepthBuffer,
   useTexture,
-} from '../../src'
+} from '../../src/index.ts'
 import { when } from '../../src/helpers/when'
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 export default {
   title: 'Staging/Spotlight',
@@ -102,7 +102,7 @@ function SpotLightShadowsScene({ debug, wind }: { debug: boolean; wind: boolean 
     <>
       <OrbitControls
         makeDefault //
-        autoRotate={true}
+        autoRotate
         autoRotateSpeed={0.5}
         minDistance={2}
         maxDistance={10}
@@ -133,7 +133,7 @@ function SpotLightShadowsScene({ debug, wind }: { debug: boolean; wind: boolean 
         distance={20}
         intensity={5}
         angle={MathUtils.degToRad(45)}
-        color={'#fadcb9'}
+        color="#fadcb9"
         position={[5, 7, -2]}
         volumetric={false}
         debug={debug}

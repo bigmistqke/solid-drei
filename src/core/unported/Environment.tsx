@@ -9,10 +9,10 @@ import {
   WebGLCubeRenderTarget,
 } from 'three'
 import { GroundProjectedEnv as GroundProjectedEnvImpl } from 'three-stdlib'
-import { whenever } from '../../utils/conditionals'
-import { defaultProps } from '../../utils/default-props'
-import { PresetsType } from '../../utils/environment-assets'
-import { processProps } from '../../utils/process-props'
+import { whenever } from '../../utils/conditionals.ts'
+import { defaultProps } from '../../utils/default-props.ts'
+import { PresetsType } from '../../utils/environment-assets.ts'
+import { processProps } from '../../utils/process-props.ts'
 import { EnvironmentLoaderProps, useEnvironment } from './useEnvironment'
 
 declare global {

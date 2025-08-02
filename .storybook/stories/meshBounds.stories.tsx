@@ -1,11 +1,11 @@
 import { createSignal } from 'solid-js'
 import { Vector3 } from 'three'
 
-import { Setup } from '../Setup'
-import { useTurntable } from '../useTurntable'
+import { Setup } from '../Setup.tsx'
+import { useTurntable } from '../useTurntable.ts'
 
 import { T } from 'solid-three'
-import { meshBounds } from '../../src'
+import { meshBounds } from '../../src/index.ts'
 
 export default {
   title: 'Misc/meshBounds',

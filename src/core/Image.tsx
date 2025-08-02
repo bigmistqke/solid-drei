@@ -1,9 +1,9 @@
 import { Ref, Show, splitProps } from 'solid-js'
 import { S3, T, extend } from 'solid-three'
 import { Color, Mesh, Texture } from 'three'
-import { shaderMaterial } from '../materials/shaderMaterial'
-import { processProps } from '../utils/process-props'
-import { useTexture } from './useTexture'
+import { shaderMaterial } from '../materials/shaderMaterial.ts'
+import { processProps } from '../utils/process-props.ts'
+import { useTexture } from './useTexture.tsx'
 
 interface ImagePropsBase extends Omit<S3.Props<'Mesh'>, 'scale'> {
   ref?: Ref<Mesh>

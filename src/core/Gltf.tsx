@@ -1,7 +1,7 @@
 import { JSX, Ref, Show, splitProps } from 'solid-js'
 import { S3, T } from 'solid-three'
 import * as THREE from 'three'
-import { useGLTF } from './useGLTF'
+import { useGLTF } from './useGLTF.tsx'
 
 interface GltfProps extends S3.Props<'Group'> {
   ref: Ref<THREE.Group>

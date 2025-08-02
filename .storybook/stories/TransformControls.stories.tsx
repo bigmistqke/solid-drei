@@ -6,10 +6,10 @@ import {
   TransformControls as TransformControlsImpl,
 } from 'three-stdlib'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T } from 'solid-three'
-import { Box, OrbitControls, Select, TransformControls } from '../../src'
+import { Box, OrbitControls, Select, TransformControls } from '../../src/index.ts'
 
 export function TransformControlsStory() {
   let ref: TransformControlsImpl

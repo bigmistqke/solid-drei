@@ -2,8 +2,8 @@ import { Ref, createMemo, createRenderEffect } from 'solid-js'
 import { S3, T } from 'solid-three'
 import { ExtrudeGeometry, Mesh, Shape } from 'three'
 import { toCreasedNormals } from 'three-stdlib'
-import { processProps } from '../utils/process-props'
-import { NamedArrayTuple } from '../utils/type-utils'
+import { processProps } from '../utils/process-props.ts'
+import { NamedArrayTuple } from '../utils/type-utils.ts'
 
 const eps = 0.00001
 

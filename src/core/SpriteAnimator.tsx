@@ -146,7 +146,7 @@ export function SpriteAnimator(props: SpriteAnimatorProps) {
 
   let currentFrame: number = config.startFrame || 0
   let currentFrameName: string = config.frameName || ''
-  let timerOffset = window.performance.now()
+  let timerOffset = globalThis.performance.now()
 
   const fpsInterval = () => 1000 / (config.fps || 30)
   const flipOffset = () => (config.flipX ? -1 : 1)
@@ -303,7 +303,7 @@ export function SpriteAnimator(props: SpriteAnimatorProps) {
       if (config.autoPlay || config.play) {
         // run the animation on each frame
 
-        const now = window.performance.now()
+        const now = globalThis.performance.now()
         const diff = now - timerOffset
 
         const { w: frameW, h: frameH } = getFirstItem(frames).sourceSize
@@ -380,7 +380,7 @@ export function SpriteAnimator(props: SpriteAnimatorProps) {
               alphaTest={config.alphaTest ?? 0.0}
               map={spriteTexture()}
               toneMapped={false}
-              transparent={true}
+              transparent
             />
           </T.Sprite>
         )}

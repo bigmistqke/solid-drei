@@ -17,8 +17,8 @@ import {
   Uniform,
   Vector3,
 } from 'three'
-import { shaderMaterial } from '../materials/shaderMaterial'
-import { processProps } from '../utils/process-props'
+import { shaderMaterial } from '../materials/shaderMaterial.ts'
+import { processProps } from '../utils/process-props.ts'
 
 export interface GridMaterialType {
   /** Cell size, default: 0.5 */

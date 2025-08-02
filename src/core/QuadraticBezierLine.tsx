@@ -2,8 +2,8 @@ import { Ref, createEffect, createMemo } from 'solid-js'
 import { S3 } from 'solid-three'
 import { QuadraticBezierCurve3, Vector3 } from 'three'
 import { Line2 } from 'three-stdlib'
-import { processProps } from '../utils/process-props'
-import { Line, LineProps } from './Line'
+import { processProps } from '../utils/process-props.ts'
+import { Line, LineProps } from './Line.tsx'
 
 const VECTOR = new Vector3()
 

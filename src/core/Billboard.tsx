@@ -1,7 +1,7 @@
-import { Ref, createEffect } from 'solid-js'
+import { type Ref, createEffect } from 'solid-js'
 import { S3, T, useFrame } from 'solid-three'
 import { Group } from 'three'
-import { processProps } from '../utils/process-props'
+import { processProps } from '../utils/process-props.ts'
 
 export interface BillboardProps extends S3.Props<'Group'> {
   ref?: Ref<Group>

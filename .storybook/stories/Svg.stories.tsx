@@ -3,8 +3,8 @@ import { useArgs, useEffect } from '@storybook/client-api'
 import { T } from 'solid-three'
 import { Component, splitProps } from 'solid-js'
 import { MathUtils, NoToneMapping, Vector3 } from 'three'
-import { Svg, SvgProps } from '../../src'
-import { Setup } from '../Setup'
+import { Svg, SvgProps } from '../../src/index.ts'
+import { Setup } from '../Setup.tsx'
 
 const svgRecord = {
   Tiger: 'models/svg/tiger.svg',

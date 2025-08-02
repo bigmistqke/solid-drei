@@ -1,7 +1,7 @@
 import { JSX } from 'solid-js'
 import { T, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
-import { defaultProps } from '../../utils/default-props'
+import { defaultProps } from '../../utils/default-props.ts'
 
 /**********************************************************************************/
 /*                                                                                */

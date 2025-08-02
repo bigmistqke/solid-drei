@@ -1,10 +1,10 @@
 /* eslint react-hooks/exhaustive-deps: 1 */
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T } from 'solid-three'
 import { Suspense } from 'solid-js'
-import { Box, FaceControls, FaceLandmarker } from '../../src'
+import { Box, FaceControls, FaceLandmarker } from '../../src/index.ts'
 
 export default {
   title: 'Controls/FaceControls',

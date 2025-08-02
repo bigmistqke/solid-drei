@@ -2,8 +2,8 @@ import { ThreeProps, useFrame } from 'solid-three'
 
 import { number, withKnobs } from '@storybook/addon-knobs'
 
-import { Icosahedron, MeshDistortMaterial } from '../../src'
-import { Setup } from '../Setup'
+import { Icosahedron, MeshDistortMaterial } from '../../src/index.ts'
+import { Setup } from '../Setup.tsx'
 
 export default {
   title: 'Shaders/MeshDistortMaterial',

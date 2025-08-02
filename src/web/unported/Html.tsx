@@ -25,8 +25,8 @@ import {
   Vector3,
 } from 'three'
 import { Assign } from 'utility-types'
-import { when, whenever } from '../../utils/conditionals'
-import { processProps } from '../../utils/process-props'
+import { when, whenever } from '../../utils/conditionals.ts'
+import { processProps } from '../../utils/process-props.ts'
 
 const v1 = new Vector3()
 const v2 = new Vector3()

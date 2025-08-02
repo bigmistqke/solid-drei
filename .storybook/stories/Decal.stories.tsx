@@ -1,8 +1,8 @@
 import { T } from 'solid-three'
 import { For, JSX, createMemo, createSignal } from 'solid-js'
 import { Euler, InstancedBufferAttribute, Matrix4, Mesh, Quaternion, Vector3 } from 'three'
-import { Decal, PerspectiveCamera, Sampler, useSurfaceSampler, useTexture } from '../../src'
-import { Setup } from '../Setup'
+import { Decal, PerspectiveCamera, Sampler, useSurfaceSampler, useTexture } from '../../src/index.ts'
+import { Setup } from '../Setup.tsx'
 
 function LoopOverInstancedBufferAttribute(props: {
   buffer?: InstancedBufferAttribute
@@ -67,7 +67,7 @@ function DecalScene() {
 
       <T.Mesh ref={setRef}>
         <T.SphereGeometry args={[3, 32, 32]} />
-        <T.MeshPhysicalMaterial color={'tomato'} roughness={0.5} />
+        <T.MeshPhysicalMaterial color="tomato" roughness={0.5} />
       </T.Mesh>
 
       <LoopOverInstancedBufferAttribute buffer={bufferAttribute()}>
@@ -79,7 +79,7 @@ function DecalScene() {
               depthTest={false}
               map={Math.random() > 0.5 ? resource()?.[0] : resource()?.[1]}
               alphaTest={0}
-              polygonOffset={true}
+              polygonOffset
               polygonOffsetFactor={-10}
             />
           </Decal>

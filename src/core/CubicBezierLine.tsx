@@ -1,8 +1,8 @@
 import { createMemo } from 'solid-js'
 import { CubicBezierCurve3, Vector3 } from 'three'
 import { Line2 } from 'three-stdlib'
-import { processProps } from '../utils/process-props'
-import { Line, LineProps } from './Line'
+import { processProps } from '../utils/process-props.ts'
+import { Line, LineProps } from './Line.tsx'
 
 interface Props extends Omit<LineProps, 'points' | 'ref' | 'segments'> {
   ref: Line2

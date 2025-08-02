@@ -1,7 +1,7 @@
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T } from 'solid-three'
-import { Box, DeviceOrientationControls } from '../../src'
+import { Box, DeviceOrientationControls } from '../../src/index.ts'
 
 export function DeviceOrientationControlsStory() {
   // s3f:   something going wrong with the args-prop: should be a | and not &

@@ -1,14 +1,14 @@
 import { T, useFrame } from 'solid-three'
 import { createMemo, createSignal } from 'solid-js'
 import { MathUtils, Vector3 } from 'three'
-import { Cone, KeyboardControls, KeyboardControlsEntry, useKeyboardControls } from '../../src'
-import { Setup } from '../Setup'
+import { Cone, KeyboardControls, KeyboardControlsEntry, useKeyboardControls } from '../../src/index.ts'
+import { Setup } from '../Setup.tsx'
 
 export default {
   title: 'Controls/KeyboardControls',
   decorators: [
     storyFn => (
-      <Setup cameraPosition={new Vector3(0, 10, 0)} lights={true}>
+      <Setup cameraPosition={new Vector3(0, 10, 0)} lights>
         {storyFn()}
       </Setup>
     ),

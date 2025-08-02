@@ -2,7 +2,7 @@ import { Ref, createEffect, createMemo, splitProps } from 'solid-js'
 import { S3, T, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { TrackballControls as TrackballControlsImpl } from 'three-stdlib'
-import { ControlUtils } from './control-utils'
+import { ControlUtils } from './control-utils.ts'
 
 type TrackballControlsPropsBase = Omit<S3.ClassProps<typeof TrackballControlsImpl>, 'object'>
 export interface TrackballControlsProps extends TrackballControlsPropsBase {

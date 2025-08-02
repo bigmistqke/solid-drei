@@ -1,8 +1,8 @@
 import { JSX } from 'solid-js'
 import { S3, T, useFrame } from 'solid-three'
 import { Group, Texture } from 'three'
-import { processProps } from '../utils/process-props'
-import { CubeCameraOptions, useCubeCamera } from './useCubeCamera'
+import { processProps } from '../utils/process-props.ts'
+import { CubeCameraOptions, useCubeCamera } from './useCubeCamera.tsx'
 
 type CameraPropsBase = Omit<S3.Props<'Group'>, 'children'> & CubeCameraOptions
 interface CameraProps extends CameraPropsBase {

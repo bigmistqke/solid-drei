@@ -1,9 +1,9 @@
 import { withKnobs } from '@storybook/addon-knobs'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T } from 'solid-three'
-import { Box, Resize, ResizeProps } from '../../src'
+import { Box, Resize, ResizeProps } from '../../src/index.ts'
 
 export default {
   title: 'Staging/Resize',

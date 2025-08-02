@@ -1,10 +1,10 @@
 import { number, withKnobs } from '@storybook/addon-knobs'
 import { Vector3 } from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T } from 'solid-three'
-import { useGLTF, useMatcapTexture } from '../../src'
+import { useGLTF, useMatcapTexture } from '../../src/index.ts'
 
 export default {
   title: 'Staging/useMatcapTexture',

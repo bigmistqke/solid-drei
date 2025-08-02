@@ -1,10 +1,10 @@
 import { Portal, T, useFrame } from 'solid-three'
 import { Scene } from 'three'
 
-import { Box, CameraControls, PerspectiveCamera, Plane, useFBO } from '../../src'
-import { Setup } from '../Setup'
+import { Box, CameraControls, PerspectiveCamera, Plane, useFBO } from '../../src/index.ts'
+import { Setup } from '../Setup.tsx'
 
-import type { CameraControlsProps } from '../../src'
+import type { CameraControlsProps } from '../../src/index.ts'
 
 const args = {}
 

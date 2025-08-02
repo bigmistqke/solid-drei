@@ -2,7 +2,7 @@ import { Show, Suspense, createEffect } from 'solid-js'
 import { T, applyProps } from 'solid-three'
 import * as THREE from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { FlakesTexture } from 'three-stdlib'
 import {
@@ -11,7 +11,7 @@ import {
   OrbitControls,
   RandomizedLight,
   useGLTF,
-} from '../../src'
+} from '../../src/index.ts'
 import { when } from '../../src/helpers/when'
 
 export default {
@@ -36,7 +36,7 @@ function AccumulativeShadowScene() {
       >
         <RandomizedLight amount={8} radius={4} ambient={0.5} bias={0.001} position={[5, 5, -10]} />
       </AccumulativeShadows>
-      <OrbitControls autoRotate={true} />
+      <OrbitControls autoRotate />
       <Environment preset="city" />
     </Suspense>
   )

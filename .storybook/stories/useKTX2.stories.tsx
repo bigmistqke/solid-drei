@@ -1,7 +1,7 @@
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T } from 'solid-three'
-import { Box, useKTX2 } from '../../src'
+import { Box, useKTX2 } from '../../src/index.ts'
 
 export default {
   title: 'Loaders/KTX2',

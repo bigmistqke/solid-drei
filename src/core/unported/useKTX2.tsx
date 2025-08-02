@@ -2,7 +2,7 @@ import { Accessor, createEffect } from 'solid-js'
 import { useLoader, useThree } from 'solid-three'
 import { Texture } from 'three'
 import { KTX2Loader } from 'three-stdlib'
-import { IsObject } from '../useTexture'
+import { IsObject } from '../useTexture.tsx'
 import { when } from '../utils/conditionals'
 
 const cdn = 'https://cdn.jsdelivr.net/gh/pmndrs/drei-assets@master'

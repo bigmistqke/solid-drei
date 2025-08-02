@@ -1,7 +1,7 @@
 import { Ref, createMemo, onMount } from 'solid-js'
 import { S3, T } from 'solid-three'
 import { Color, DoubleSide, Mesh, MeshBasicMaterial } from 'three'
-import { processProps } from '../utils/process-props'
+import { processProps } from '../utils/process-props.ts'
 
 interface ShadowProps extends S3.Props<'Mesh'> {
   ref?: Ref<Mesh>
@@ -46,7 +46,7 @@ export function Shadow(props: ShadowProps) {
     <T.Mesh renderOrder={config.renderOrder} ref={config.ref} rotation-x={-Math.PI / 2} {...rest}>
       <T.PlaneGeometry />
       <T.MeshBasicMaterial
-        transparent={true}
+        transparent
         opacity={config.opacity}
         fog={config.fog}
         depthWrite={config.depthWrite}

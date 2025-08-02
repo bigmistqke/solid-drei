@@ -1,3 +1,4 @@
+import process from "node:process";
 var $jscomp = $jscomp || {}
 $jscomp.scope = {}
 $jscomp.ASSUME_ES5 = !1
@@ -10,7 +11,7 @@ $jscomp.defineProperty =
         d != Array.prototype && d != Object.prototype && (d[k] = f.value)
       }
 $jscomp.getGlobal = function (d) {
-  return 'undefined' != typeof window && window === d ? d : 'undefined' != typeof global && null != global ? global : d
+  return 'undefined' != typeof window && window === d ? d : 'undefined' != typeof globalThis && null != globalThis ? globalThis : d
 }
 $jscomp.global = $jscomp.getGlobal(this)
 $jscomp.polyfill = function (d, k, f, u) {

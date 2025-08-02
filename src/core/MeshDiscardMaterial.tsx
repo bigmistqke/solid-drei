@@ -1,7 +1,7 @@
 import { Ref } from 'solid-js'
 import { extend, S3, T } from 'solid-three'
 import { ShaderMaterial } from 'three'
-import { DiscardMaterial as DiscardMaterialImpl } from '../materials/DiscardMaterial'
+import { DiscardMaterial as DiscardMaterialImpl } from '../materials/DiscardMaterial.tsx'
 
 declare global {
   namespace SolidThree {

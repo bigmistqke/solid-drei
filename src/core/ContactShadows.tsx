@@ -5,7 +5,7 @@ import { Ref, createEffect, createMemo } from 'solid-js'
 import { S3, T, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { HorizontalBlurShader, VerticalBlurShader } from 'three-stdlib'
-import { processProps } from '../utils/process-props'
+import { processProps } from '../utils/process-props.ts'
 
 function transform(value: number, scale: [number, number] | number | undefined) {
   return value * (Array.isArray(scale) ? scale[1] : scale ?? 1)

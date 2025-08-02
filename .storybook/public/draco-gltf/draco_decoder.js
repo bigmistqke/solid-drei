@@ -1,3 +1,5 @@
+import process from "node:process";
+import { Buffer } from "node:buffer";
 var DracoDecoderModule = function (DracoDecoderModule) {
   DracoDecoderModule = DracoDecoderModule || {}
 

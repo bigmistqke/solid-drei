@@ -1,7 +1,7 @@
 import { createMemo, createSignal } from 'solid-js'
 import { T, ThreeEvent, ThreeProps, useThree } from 'solid-three'
 import { CanvasTexture, Sprite } from 'three'
-import { useGizmoContext } from '../GizmoHelper'
+import { useGizmoContext } from '../GizmoHelper.tsx'
 import { defaultProps } from '../utils/default-props'
 import { processProps } from '../utils/process-props'
 

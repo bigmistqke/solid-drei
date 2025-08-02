@@ -14,12 +14,12 @@ import {
   Vector4,
   WebGLRenderTarget,
 } from 'three'
-import { BlurPass } from '../materials/BlurPass'
+import { BlurPass } from '../materials/BlurPass.tsx'
 import {
   MeshReflectorMaterial as MeshReflectorMaterialImpl,
   MeshReflectorMaterialProps as MeshReflectorMaterialImplProps,
-} from '../materials/MeshReflectorMaterial'
-import { processProps } from '../utils/process-props'
+} from '../materials/MeshReflectorMaterial.tsx'
+import { processProps } from '../utils/process-props.ts'
 
 extend({ MeshReflectorMaterialImpl })
 

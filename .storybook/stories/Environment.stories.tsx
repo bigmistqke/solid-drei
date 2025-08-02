@@ -1,8 +1,8 @@
 import { Vector3 } from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
-import { ContactShadows, Environment, OrbitControls } from '../../src'
+import { ContactShadows, Environment, OrbitControls } from '../../src/index.ts'
 
 import { T } from 'solid-three'
 import { presetsObj } from '../../src/helpers/environment-assets'

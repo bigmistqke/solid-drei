@@ -3,10 +3,10 @@ import { Resource, Show, createEffect, createSignal } from 'solid-js'
 import { Vector3 } from 'three'
 import { GLTF } from 'three-stdlib'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { Primitive, T, ThreeProps } from 'solid-three'
-import { useAnimations, useGLTF, useMatcapTexture } from '../../src'
+import { useAnimations, useGLTF, useMatcapTexture } from '../../src/index.ts'
 
 export default {
   title: 'Abstractions/useAnimations',

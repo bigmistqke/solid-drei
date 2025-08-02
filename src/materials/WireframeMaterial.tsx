@@ -1,6 +1,6 @@
 import { Accessor, createEffect } from 'solid-js'
 import * as THREE from 'three'
-import { shaderMaterial } from './shaderMaterial'
+import { shaderMaterial } from './shaderMaterial.ts'
 
 export interface WireframeMaterialProps extends THREE.ShaderMaterialParameters {
   fillOpacity?: number

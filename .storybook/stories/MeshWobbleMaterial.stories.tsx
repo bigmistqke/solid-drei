@@ -2,8 +2,8 @@ import { ThreeProps, useFrame } from 'solid-three'
 
 import { number, withKnobs } from '@storybook/addon-knobs'
 
-import { MeshWobbleMaterial, Torus } from '../../src'
-import { Setup } from '../Setup'
+import { MeshWobbleMaterial, Torus } from '../../src/index.ts'
+import { Setup } from '../Setup.tsx'
 
 export default {
   title: 'Shaders/MeshWobbleMaterial',

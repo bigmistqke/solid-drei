@@ -1,7 +1,7 @@
 import { createMemo } from 'solid-js'
 import { useFrame, useThree } from 'solid-three'
 import { DepthFormat, DepthTexture, UnsignedShortType } from 'three'
-import { useFBO } from './unported/useFBO'
+import { useFBO } from './unported/useFBO.tsx'
 
 export function useDepthBuffer({
   size = 256,
