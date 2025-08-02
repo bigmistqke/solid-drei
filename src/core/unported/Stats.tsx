@@ -1,7 +1,7 @@
 import { createEffect, onCleanup } from 'solid-js'
 import { addAfterEffect, addEffect } from 'solid-three'
 import StatsImpl from 'stats.js'
-import { defaultProps } from '../utils/default-props'
+import { defaultProps } from '@/utils/default-props'
 
 type Props = {
   showPanel?: number

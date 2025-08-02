@@ -1,7 +1,7 @@
-import { Ref, createMemo } from 'solid-js'
+import { type Ref, createMemo } from 'solid-js'
 import { T, useFrame } from 'solid-three'
 import { AdditiveBlending, Color, Points, ShaderMaterial, Spherical, Vector3 } from 'three'
-import { defaultProps } from '../../utils/default-props'
+import { defaultProps } from '@/utils/default-props'
 
 declare global {
   namespace SolidThree {

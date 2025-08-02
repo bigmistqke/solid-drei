@@ -1,7 +1,7 @@
 import { createRenderEffect, createResource } from 'solid-js'
 import { RepeatWrapping, Texture, Vector2 } from 'three'
-import { every, whenever } from '../utils/conditionals'
-import { defaultProps } from '../utils/default-props'
+import { every, whenever } from '@/utils/conditionals'
+import { defaultProps } from '@/utils/default-props'
 import { useTexture } from './useTexture'
 
 const NORMAL_ROOT =

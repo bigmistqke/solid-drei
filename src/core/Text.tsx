@@ -1,9 +1,11 @@
-import { createMemo, createResource, JSX, onCleanup, onMount, Show } from 'solid-js'
-import { S3, T } from 'solid-three'
+import { createMemo, createResource, onCleanup, onMount, Show } from 'solid-js'
+import type { JSX } from 'solid-js'
+import { T } from 'solid-three'
+import type { S3 } from 'solid-three'
 import { Font } from 'three-stdlib'
 import { preloadFont, Text as ThreeTextMesh } from 'troika-three-text'
-import { processProps } from '../utils/process-props'
-import { resolveAccessor } from '../utils/resolve-accessor'
+import { processProps } from '@/utils/process-props'
+import { resolveAccessor } from '@/utils/resolve-accessor'
 
 interface Props extends S3.Props<'Mesh'> {
   /** The text or elements to display */

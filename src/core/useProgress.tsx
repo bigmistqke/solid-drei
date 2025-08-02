@@ -1,4 +1,4 @@
-import { Accessor } from 'solid-js'
+import type { Accessor } from 'solid-js'
 import { createStore } from 'solid-js/store'
 import { DefaultLoadingManager } from 'three'
 

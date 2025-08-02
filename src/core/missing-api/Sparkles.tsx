@@ -1,8 +1,16 @@
-import { Accessor, Ref, Show, createEffect, createMemo } from 'solid-js'
-import { S3, T, extend, useFrame, useThree } from 'solid-three'
-import { Color, ColorRepresentation, MathUtils, Points, Vector2, Vector3, Vector4 } from 'three'
-import { shaderMaterial } from '../materials/shaderMaterial'
-import { processProps } from '../utils/process-props'
+import { type Accessor, type Ref, Show, createEffect, createMemo } from 'solid-js'
+import { type S3, T, extend, useFrame, useThree } from 'solid-three'
+import {
+  Color,
+  type ColorRepresentation,
+  MathUtils,
+  Points,
+  Vector2,
+  Vector3,
+  Vector4,
+} from 'three'
+import { shaderMaterial } from '../../materials/shaderMaterial'
+import { processProps } from '@/utils/process-props'
 
 declare global {
   namespace SolidThree {

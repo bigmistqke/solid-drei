@@ -1,4 +1,5 @@
-import { Accessor, createRenderEffect, createSignal } from 'solid-js'
+import { createMemo, createRenderEffect, createSignal } from 'solid-js'
+import type { Accessor } from 'solid-js'
 
 /**
  * Creates a writable signal from an accessor function.
@@ -16,8 +17,9 @@ import { Accessor, createRenderEffect, createSignal } from 'solid-js'
  *
  * // Now getValue() will return the value of props.value, and setValue can be used to update it.
  */
-export function createWritable<T>(accessor: Accessor<T>) {
-  const signal = createSignal(accessor())
-  createRenderEffect(() => signal[1](accessor()))
-  return signal
+export function createWritable<T>(fn: () => T) {
+  const signal = createMemo(() => createSignal(fn()))
+  const get = () => signal()[0]()
+  const set = (v: any) => signal()[1](v)
+  return [get, set] as ReturnType<typeof createSignal<T>>
 }

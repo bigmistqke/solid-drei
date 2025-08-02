@@ -1,4 +1,4 @@
-import { JSX } from 'solid-js'
+import type { JSX } from 'solid-js'
 
 export default function Composer(props: {
   children: (results) => JSX.Element | Array<JSX.Element>

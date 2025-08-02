@@ -1,10 +1,14 @@
-import { JSXElement, Ref, Show, createEffect, createMemo, mergeProps, splitProps } from 'solid-js'
-import { S3, T, extend } from 'solid-three'
+import { Show, createEffect, createMemo, mergeProps, splitProps } from 'solid-js'
+import type { JSXElement, Ref } from 'solid-js'
+import { T, extend } from 'solid-three'
+import type { S3 } from 'solid-three'
 import { Mesh } from 'three'
-import { TextGeometry, TextGeometryParameters, mergeVertices } from 'three-stdlib'
-import { processProps } from '../utils/process-props'
-import { resolveAccessor } from '../utils/resolve-accessor'
-import { FontData, useFont } from './useFont'
+import { TextGeometry, mergeVertices } from 'three-stdlib'
+import type { TextGeometryParameters } from 'three-stdlib'
+import { processProps } from '@/utils/process-props'
+import { resolveAccessor } from '@/utils/resolve-accessor'
+import { useFont } from './useFont'
+import type { FontData } from './useFont'
 
 declare global {
   namespace SolidThree {

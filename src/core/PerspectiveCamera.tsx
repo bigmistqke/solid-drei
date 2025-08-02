@@ -1,6 +1,8 @@
 import { processProps } from '@/utils/process-props'
-import { JSX, Ref, Show, createEffect, createMemo, onMount } from 'solid-js'
-import { S3, T, useFrame, useThree } from 'solid-three'
+import { Show, createEffect, createMemo, onMount } from 'solid-js'
+import type { JSX, Ref } from 'solid-js'
+import { T, useFrame, useThree } from 'solid-three'
+import type { S3 } from 'solid-three'
 import * as THREE from 'three'
 import { useFBO } from './unported/useFBO'
 

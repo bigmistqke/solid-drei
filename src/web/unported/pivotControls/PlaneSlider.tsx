@@ -1,5 +1,7 @@
-import { Component, createMemo, createSignal, useContext } from 'solid-js'
-import { T, ThreeEvent, useThree } from 'solid-three'
+import { createMemo, createSignal, useContext } from 'solid-js'
+import type { Component } from 'solid-js'
+import { T, useThree } from 'solid-three'
+import type { S3 } from 'solid-three'
 import * as THREE from 'three'
 import { Line } from '../../../core/Line'
 import { Html } from '../Html'
@@ -70,7 +72,7 @@ export const PlaneSlider: Component<{
   let offsetY0: number = 0
   const [isHovered, setIsHovered] = createSignal(false)
 
-  const onPointerDown = (e: ThreeEvent<PointerEvent>) => {
+  const onPointerDown = (e: S3.Event<PointerEvent>) => {
     if (annotations) {
       divRef.innerText = `${translation[(props.axis + 1) % 3].toFixed(2)}, ${translation[
         (props.axis + 2) % 3

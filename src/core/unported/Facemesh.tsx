@@ -3,11 +3,11 @@ import { createEffect, createMemo, createSignal } from 'solid-js'
 import { T, ThreeProps, useThree } from 'solid-three'
 import * as THREE from 'three'
 
-import { when } from '../utils/conditionals'
-import { defaultProps } from '../utils/default-props'
-import { processProps } from '../utils/process-props'
-import { RefComponent } from '../utils/type-utils'
-import { createImperativeHandle } from '../utils/use-imperative-handle'
+import { when } from '@/utils/conditionals'
+import { defaultProps } from '@/utils/default-props'
+import { processProps } from '@/utils/process-props'
+import { RefComponent } from '@/utils/type-utils'
+import { createImperativeHandle } from '@/utils/use-imperative-handle'
 import { Line } from '../Line'
 
 export type MediaPipeFaceMesh = typeof FacemeshDatas.SAMPLE_FACE

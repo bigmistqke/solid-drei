@@ -1,5 +1,7 @@
-import { JSXElement, createEffect, mergeProps, splitProps } from 'solid-js'
-import { S3, T } from 'solid-three'
+import { createEffect, mergeProps, splitProps } from 'solid-js'
+import type { JSXElement } from 'solid-js'
+import { T } from 'solid-three'
+import type { S3 } from 'solid-three'
 import { BufferAttribute, PlaneGeometry } from 'three'
 
 const easeInExpo = (x: number) => (x === 0 ? 0 : Math.pow(2, 10 * x - 10))

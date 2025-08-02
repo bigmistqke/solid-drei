@@ -1,5 +1,7 @@
-import { Ref, createEffect, createMemo, mergeProps, splitProps } from 'solid-js'
-import { $S3C, S3, T, extend, useFrame, useThree } from 'solid-three'
+import { createEffect, createMemo, mergeProps, splitProps } from 'solid-js'
+import type { Ref } from 'solid-js'
+import { $S3C, T, extend, useFrame, useThree } from 'solid-three'
+import type { S3 } from 'solid-three'
 import {
   DepthFormat,
   DepthTexture,
@@ -15,11 +17,9 @@ import {
   WebGLRenderTarget,
 } from 'three'
 import { BlurPass } from '../materials/BlurPass'
-import {
-  MeshReflectorMaterial as MeshReflectorMaterialImpl,
-  MeshReflectorMaterialProps as MeshReflectorMaterialImplProps,
-} from '../materials/MeshReflectorMaterial'
-import { processProps } from '../utils/process-props'
+import { MeshReflectorMaterial as MeshReflectorMaterialImpl } from '../materials/MeshReflectorMaterial'
+import type { MeshReflectorMaterialProps as MeshReflectorMaterialImplProps } from '../materials/MeshReflectorMaterial'
+import { processProps } from '@/utils/process-props'
 
 extend({ MeshReflectorMaterialImpl })
 

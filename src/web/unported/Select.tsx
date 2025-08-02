@@ -1,17 +1,10 @@
-import {
-  Accessor,
-  createContext,
-  createEffect,
-  createSignal,
-  onCleanup,
-  untrack,
-  useContext,
-} from 'solid-js'
+import { createContext, createEffect, createSignal, onCleanup, untrack, useContext } from 'solid-js'
+import type { Accessor } from 'solid-js'
 import { T, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { SelectionBox } from 'three-stdlib'
 import shallow from 'zustand/shallow'
-import { processProps } from '../utils/process-props'
+import { processProps } from '@/utils/process-props'
 
 const context = createContext<Accessor<THREE.Object3D[]>>(() => [])
 

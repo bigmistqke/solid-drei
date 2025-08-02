@@ -1,7 +1,7 @@
 import { createContext, createRenderEffect, onCleanup, useContext } from 'solid-js'
-import { T, ThreeProps, useFrame, useThree } from 'solid-three'
+import { T, type S3, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
-import { defaultProps } from '../../utils/default-props'
+import { defaultProps } from '@/utils/default-props'
 
 export type SizeProps = {
   box: THREE.Box3
@@ -24,7 +24,7 @@ export type BoundsApi = {
   }) => any
 }
 
-export type BoundsProps = ThreeProps<THREE.Group> & {
+export type BoundsProps = S3.ClassProps<THREE.Group> & {
   damping?: number
   fit?: boolean
   clip?: boolean
@@ -60,7 +60,7 @@ export function Bounds(_props: BoundsProps) {
 
   let onFitRef = props.onFit
 
-  function equals(a, b) {
+  function equals(a: THREE.Vector3, b: THREE.Vector3) {
     return (
       Math.abs(a.x - b.x) < props.eps &&
       Math.abs(a.y - b.y) < props.eps &&
@@ -68,7 +68,7 @@ export function Bounds(_props: BoundsProps) {
     )
   }
 
-  function damp(v, t, lambda, delta) {
+  function damp(v: THREE.Vector3, t: THREE.Vector3, lambda: number, delta: number) {
     v.x = THREE.MathUtils.damp(v.x, t.x, lambda, delta)
     v.y = THREE.MathUtils.damp(v.y, t.y, lambda, delta)
     v.z = THREE.MathUtils.damp(v.z, t.z, lambda, delta)

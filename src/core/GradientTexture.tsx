@@ -1,6 +1,7 @@
 import { createMemo } from 'solid-js'
-import { S3, T, useThree } from 'solid-three'
-import { processProps } from '../utils/process-props'
+import { T, useThree } from 'solid-three'
+import type { S3 } from 'solid-three'
+import { processProps } from '@/utils/process-props'
 
 interface GradientTextureProps extends Omit<S3.Props<'Texture'>, 'type'> {
   stops: Array<number>
@@ -71,7 +72,6 @@ export function GradientTexture(props: GradientTextureProps) {
   return (
     <T.CanvasTexture
       colorSpace={store.gl.outputColorSpace}
-      /* @ts-expect-error TODO: this fails when strict: false */
       args={[canvas()]}
       attach="map"
       {...rest}

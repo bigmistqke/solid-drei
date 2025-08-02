@@ -1,8 +1,8 @@
-import { Ref, createEffect, onCleanup, onMount } from 'solid-js'
-import { S3, T, useLoader, useThree } from 'solid-three'
+import { type Ref, createEffect, onCleanup, onMount } from 'solid-js'
+import { type S3, T, useLoader, useThree } from 'solid-three'
 import { AudioListener, AudioLoader, PositionalAudio as PositionalAudioImpl } from 'three'
-import { whenever } from '../utils/conditionals'
-import { processProps } from '../utils/process-props'
+import { whenever } from '@/utils/conditionals'
+import { processProps } from '@/utils/process-props'
 
 interface PositionalAudioProps extends S3.Props<'PositionalAudio'> {
   ref?: Ref<PositionalAudioImpl>

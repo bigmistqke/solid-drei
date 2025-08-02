@@ -1,7 +1,9 @@
-import { Ref } from 'solid-js'
-import { S3, T, useFrame } from 'solid-three'
-import { MeshStandardMaterial, MeshStandardMaterialParameters } from 'three'
-import { processProps } from '../../utils/process-props'
+import type { Ref } from 'solid-js'
+import { T, useFrame } from 'solid-three'
+import type { S3 } from 'solid-three'
+import { MeshStandardMaterial } from 'three'
+import type { MeshStandardMaterialParameters, WebGLProgramParametersWithUniforms } from 'three'
+import { processProps } from '@/utils/process-props'
 
 declare global {
   namespace SolidThree {
@@ -38,7 +40,7 @@ class WobbleMaterialImpl extends MeshStandardMaterial {
     this.#factor = { value: 1 }
   }
 
-  onBeforeCompile(shader: any) {
+  onBeforeCompile(shader: WebGLProgramParametersWithUniforms) {
     shader.uniforms.time = this.#time
     shader.uniforms.factor = this.#factor
 

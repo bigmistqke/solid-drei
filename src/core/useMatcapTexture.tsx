@@ -1,7 +1,7 @@
 import { Accessor, createResource } from 'solid-js'
 import { Texture } from 'three'
-import { whenever } from '../utils/conditionals'
-import { resolveAccessor } from '../utils/resolve-accessor'
+import { whenever } from '@/utils/conditionals'
+import { resolveAccessor } from '@/utils/resolve-accessor'
 import { useTexture } from './useTexture'
 
 function getFormatString(format: number) {

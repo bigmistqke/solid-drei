@@ -1,5 +1,4 @@
 import {
-  Accessor,
   createContext,
   createEffect,
   createRenderEffect,
@@ -8,6 +7,7 @@ import {
   useContext,
   type JSX,
 } from 'solid-js'
+import type { Accessor } from 'solid-js'
 import { createStore } from 'solid-js/store'
 
 type KeyboardControlsState<T extends string = string> = { [K in T]: boolean }

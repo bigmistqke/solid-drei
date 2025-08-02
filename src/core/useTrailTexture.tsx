@@ -1,4 +1,5 @@
-import { Accessor, createMemo } from 'solid-js'
+import { createMemo } from 'solid-js'
+import type { Accessor } from 'solid-js'
 import { useFrame } from 'solid-three'
 import { Texture } from 'three'
 

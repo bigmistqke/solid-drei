@@ -1,6 +1,8 @@
 import { ControlUtils } from '@/core/control-utils'
-import { Ref, createMemo, splitProps } from 'solid-js'
-import { S3, T, useThree } from 'solid-three'
+import { createMemo, splitProps } from 'solid-js'
+import type { Ref } from 'solid-js'
+import { T, useThree } from 'solid-three'
+import type { S3 } from 'solid-three'
 import { FirstPersonControls as ThreeFirstPersonControl } from 'three-stdlib'
 
 type FirstPersonControlsPropsBase = Omit<S3.ClassProps<typeof ThreeFirstPersonControl>, 'object'>

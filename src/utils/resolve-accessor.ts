@@ -1,4 +1,4 @@
-import { Accessor } from 'solid-js'
+import type { Accessor } from 'solid-js'
 
 /* <Show/> and <For/> return signals */
 export function resolveAccessor<T>(child: Accessor<T> | T, recursive = false): T {

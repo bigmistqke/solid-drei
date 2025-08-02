@@ -10,7 +10,7 @@ import {
   splitProps,
   untrack,
 } from 'solid-js'
-import { S3, T, useFrame } from 'solid-three'
+import { type S3, T, useFrame } from 'solid-three'
 import { RepeatWrapping, Sprite, SpriteMaterial, TextureLoader } from 'three'
 
 /**********************************************************************************/

@@ -1,10 +1,10 @@
 import pick from 'lodash.pick'
 import { For, Show, createMemo, splitProps, type JSX } from 'solid-js'
-import { Primitive, T, ThreeProps } from 'solid-three'
+import { T, ThreeProps } from 'solid-three'
 import * as THREE from 'three'
 import { SkeletonUtils } from 'three-stdlib'
-import { processProps } from '../utils/process-props'
-import { RefComponent } from '../utils/type-utils'
+import { processProps } from '@/utils/process-props'
+import { RefComponent } from '@/utils/type-utils'
 
 export type CloneProps = {
   /** Any pre-existing THREE.Object3D (groups, meshes, ...), or an array of objects */
@@ -128,14 +128,14 @@ export const Clone: RefComponent<
       >
         {v => {
           /* Singleton clones */
-          const obj = object() as THREE.Object3D<THREE.Event>
+          const obj = object() as unknown as THREE.Object3D
           const { children: injectChildren, ...spread } = createSpread(obj, config)
           const Element = obj.type[0].toLowerCase() + obj.type.slice(1)
           return (
             <Element {...spread} {...props} ref={props.ref}>
-              <For each={(obj as THREE.Object3D<THREE.Event>).children}>
+              <For each={obj.children}>
                 {child => {
-                  if (child.type === 'Bone') return <Primitive object={child} {...config} />
+                  if (child.type === 'Bone') return <T.Primitive object={child} {...config} />
                   return <Clone object={child} {...config} isChild />
                 }}
               </For>

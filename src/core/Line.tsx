@@ -1,16 +1,19 @@
-import { Ref, createMemo, createRenderEffect, onCleanup } from 'solid-js'
-import { S3, T, useThree } from 'solid-three'
-import { Color, ColorRepresentation, Vector2, Vector3 } from 'three'
+import { createMemo, createRenderEffect, onCleanup } from 'solid-js'
+import type { Ref } from 'solid-js'
+import { T, useThree } from 'solid-three'
+import type { S3 } from 'solid-three'
+import { Color, Vector2, Vector3 } from 'three'
+import type { ColorRepresentation } from 'three'
 import {
   Line2,
   LineGeometry,
   LineMaterial,
-  LineMaterialParameters,
   LineSegments2,
   LineSegmentsGeometry,
 } from 'three-stdlib'
-import { every, whenever } from '../utils/conditionals'
-import { processProps } from '../utils/process-props'
+import type { LineMaterialParameters } from 'three-stdlib'
+import { every, whenever } from '@/utils/conditionals'
+import { processProps } from '@/utils/process-props'
 
 type LinePropsBase = Omit<LineMaterialParameters, 'vertexColors' | 'color'> &
   Omit<S3.ClassProps<Line2>, 'args'> &

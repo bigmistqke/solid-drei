@@ -1,7 +1,9 @@
 import { whenever } from '@/utils/conditionals'
-import { createEffect, createMemo, JSX, on, Ref, Show } from 'solid-js'
+import { createEffect, createMemo, on, Show } from 'solid-js'
+import type { JSX, Ref } from 'solid-js'
 import { T } from 'solid-three'
-import { Curve, Mesh, Scene, Vector3 } from 'three'
+import { Mesh, Scene } from 'three'
+import type { Curve, Vector3 } from 'three'
 import { Flow } from 'three-stdlib'
 
 export type CurveModifierApi = Pick<Flow, 'moveAlongCurve'>

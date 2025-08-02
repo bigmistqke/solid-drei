@@ -8,9 +8,9 @@ import { createSignal } from 'solid-js'
 import { Instance, T, ThreeProps, extend, useFrame } from 'solid-three'
 import * as THREE from 'three'
 import { DiscardMaterial } from '../../materials/DiscardMaterial'
-import { processProps } from '../utils/process-props'
-import { RefComponent } from '../utils/type-utils'
-import { createImperativeHandle } from '../utils/use-imperative-handle'
+import { processProps } from '@/utils/process-props'
+import { RefComponent } from '@/utils/type-utils'
+import { createImperativeHandle } from '@/utils/use-imperative-handle'
 import { useFBO } from './useFBO'
 
 type MeshTransmissionMaterialType = Omit<

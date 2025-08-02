@@ -1,7 +1,9 @@
 // reference: https://medium.com/@luruke/simple-postprocessing-in-three-js-91936ecadfb7
 // and @gsimone ;)
-import { Ref, splitProps } from 'solid-js'
-import { S3, T } from 'solid-three'
+import { splitProps } from 'solid-js'
+import type { Ref } from 'solid-js'
+import { T } from 'solid-three'
+import type { S3 } from 'solid-three'
 import { BufferAttribute, BufferGeometry, Mesh } from 'three'
 
 interface Props extends Omit<S3.Props<'Mesh'>, 'args'> {

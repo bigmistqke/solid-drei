@@ -12,8 +12,8 @@ import {
   Object3D,
   Vector3,
 } from 'three'
-import { when } from '../utils/conditionals'
-import { processProps } from '../utils/process-props'
+import { when } from '@/utils/conditionals'
+import { processProps } from '@/utils/process-props'
 
 type SamplePayload = {
   /**

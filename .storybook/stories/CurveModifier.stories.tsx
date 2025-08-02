@@ -68,7 +68,7 @@ function CurveModifierScene() {
             attach="geometry"
             args={[
               // @ts-ignore
-              'hello @solid-three/drei',
+              'hello solid-drei',
               {
                 font: font()!,
                 size: 2,

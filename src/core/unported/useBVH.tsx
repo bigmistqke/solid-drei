@@ -1,5 +1,5 @@
-import { Accessor, createEffect, onCleanup } from 'solid-js'
-import { T, ThreeProps, useThree } from 'solid-three'
+import { type Accessor, createEffect, onCleanup } from 'solid-js'
+import { T, type ThreeProps, useThree } from 'solid-three'
 import { Group, Mesh } from 'three'
 import {
   SAH,
@@ -8,10 +8,10 @@ import {
   computeBoundsTree,
   disposeBoundsTree,
 } from 'three-mesh-bvh'
-import { when } from '../utils/conditionals'
-import { processProps } from '../utils/process-props'
-import { RefComponent } from '../utils/type-utils'
-import { createImperativeHandle } from '../utils/use-imperative-handle'
+import { when } from '@/utils/conditionals'
+import { processProps } from '@/utils/process-props'
+import { RefComponent } from '@/utils/type-utils'
+import { createImperativeHandle } from '@/utils/use-imperative-handle'
 
 export interface BVHOptions {
   /** Split strategy, default: SAH (slowest to construct, fastest runtime, least memory) */

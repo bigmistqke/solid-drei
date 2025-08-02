@@ -1,6 +1,7 @@
 import { createWritable } from '@/utils/create-writable'
 import { defaultProps } from '@/utils/default-props'
-import { Ref, createEffect, onCleanup } from 'solid-js'
+import { createEffect, onCleanup } from 'solid-js'
+import type { Ref } from 'solid-js'
 import { useFrame, useThree } from 'solid-three'
 import { Euler } from 'three'
 import { SimplexNoise } from 'three-stdlib'

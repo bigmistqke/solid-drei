@@ -1,7 +1,9 @@
-import { Ref, createEffect } from 'solid-js'
-import { S3, T, useFrame } from 'solid-three'
+import { createEffect } from 'solid-js'
+import type { Ref } from 'solid-js'
+import { T, useFrame } from 'solid-three'
+import type { S3 } from 'solid-three'
 import { LOD } from 'three'
-import { processProps } from '../utils/process-props'
+import { processProps } from '@/utils/process-props'
 
 interface DetailedProps extends S3.Props<'LOD'> {
   ref?: Ref<LOD>

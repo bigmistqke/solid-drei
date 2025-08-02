@@ -15,16 +15,16 @@ import {
   Vector4,
   WebGLRenderTarget,
 } from 'three'
-import { mergeRefs } from '../utils/merge-refs'
+import { mergeRefs } from '@/utils/merge-refs'
 
 import { BlurPass } from '../../materials/BlurPass'
 import {
   MeshReflectorMaterial,
   MeshReflectorMaterialProps,
 } from '../../materials/MeshReflectorMaterial'
-import { createRef } from '../utils/create-ref'
-import { processProps } from '../utils/process-props'
-import { RefComponent } from '../utils/type-utils'
+import { createRef } from '@/utils/create-ref'
+import { processProps } from '@/utils/process-props'
+import { RefComponent } from '@/utils/type-utils'
 
 export type ReflectorProps = Omit<ThreeProps<THREE.Mesh>, 'args' | 'children'> &
   Pick<ThreeProps<'PlaneGeometry'>, 'args'> & {

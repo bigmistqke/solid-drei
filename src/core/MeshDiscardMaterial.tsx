@@ -1,5 +1,6 @@
-import { Ref } from 'solid-js'
-import { extend, S3, T } from 'solid-three'
+import type { Ref } from 'solid-js'
+import { extend, T } from 'solid-three'
+import type { S3 } from 'solid-three'
 import { ShaderMaterial } from 'three'
 import { DiscardMaterial as DiscardMaterialImpl } from '../materials/DiscardMaterial'
 

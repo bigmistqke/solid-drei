@@ -1,5 +1,10 @@
-import { S3 } from 'solid-three'
-import { Matrix4, MeshStandardMaterial, Texture } from 'three'
+import type { S3 } from 'solid-three'
+import {
+  Matrix4,
+  MeshStandardMaterial,
+  Texture,
+  type WebGLProgramParametersWithUniforms,
+} from 'three'
 
 type UninitializedUniform<Value> = { value: Value | null }
 
@@ -24,8 +29,8 @@ export class MeshReflectorMaterial extends MeshStandardMaterial {
     super(parameters)
     this.setValues(parameters)
   }
-  onBeforeCompile(shader) {
-    if (!shader.defines?.USE_UV) {
+  onBeforeCompile(shader: WebGLProgramParametersWithUniforms) {
+    if (shader.defines && !shader.defines.USE_UV) {
       shader.defines.USE_UV = ''
     }
     shader.uniforms.hasBlur = this._hasBlur

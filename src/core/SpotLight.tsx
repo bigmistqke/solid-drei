@@ -1,8 +1,6 @@
 // SpotLight Inspired by http://john-chapman-graphics.blogspot.com/2013/01/good-enough-volumetrics-for-spotlights.html
 
 import {
-  ParentProps,
-  Ref,
   Show,
   createContext,
   createEffect,
@@ -12,7 +10,9 @@ import {
   onMount,
   useContext,
 } from 'solid-js'
-import { S3, T, useFrame, useThree } from 'solid-three'
+import type { ParentProps, Ref } from 'solid-js'
+import { T, useFrame, useThree } from 'solid-three'
+import type { S3 } from 'solid-three'
 import {
   CylinderGeometry,
   DepthTexture,
@@ -30,10 +30,10 @@ import {
   WebGLRenderTarget,
 } from 'three'
 import { FullScreenQuad } from 'three-stdlib'
-import { SpotLightMaterial } from '../../materials/SpotLightMaterial'
+import { SpotLightMaterial } from '../materials/SpotLightMaterial'
 // @ts-ignore
-import { processProps } from '../../utils/process-props'
-import SpotlightShadowShader from '../utils/glsl/DefaultSpotlightShadowShadows.glsl'
+import { processProps } from '@/utils/process-props'
+import SpotlightShadowShader from '@/utils/glsl/DefaultSpotlightShadowShadows.glsl?raw'
 
 /**********************************************************************************/
 /*                                                                                */

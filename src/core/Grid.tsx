@@ -4,21 +4,14 @@
         by https://github.com/grischaerbe and https://github.com/jerzakm
 */
 
-import { Ref, createEffect, splitProps } from 'solid-js'
-import { S3, T, extend, useFrame } from 'solid-three'
-import {
-  BackSide,
-  Color,
-  ColorRepresentation,
-  Mesh,
-  Plane,
-  ShaderMaterial,
-  Side,
-  Uniform,
-  Vector3,
-} from 'three'
+import { createEffect, splitProps } from 'solid-js'
+import type { Ref } from 'solid-js'
+import { T, extend, useFrame } from 'solid-three'
+import type { S3 } from 'solid-three'
+import { BackSide, Color, Mesh, Plane, ShaderMaterial, Uniform, Vector3 } from 'three'
+import type { ColorRepresentation, Side } from 'three'
 import { shaderMaterial } from '../materials/shaderMaterial'
-import { processProps } from '../utils/process-props'
+import { processProps } from '@/utils/process-props'
 
 export interface GridMaterialType {
   /** Cell size, default: 0.5 */

@@ -1,5 +1,7 @@
-import { Ref, createEffect, onCleanup, splitProps } from 'solid-js'
-import { S3, T, useFrame, useThree } from 'solid-three'
+import { createEffect, onCleanup, splitProps } from 'solid-js'
+import type { Ref } from 'solid-js'
+import { T, useFrame, useThree } from 'solid-three'
+import type { S3 } from 'solid-three'
 import * as THREE from 'three'
 import { DeviceOrientationControls as DeviceOrientationControlsImp } from 'three-stdlib'
 

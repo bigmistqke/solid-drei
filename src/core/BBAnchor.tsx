@@ -1,5 +1,6 @@
 import { onMount, splitProps } from 'solid-js'
-import { S3, T, useFrame } from 'solid-three'
+import { T, useFrame } from 'solid-three'
+import type { S3 } from 'solid-three'
 import * as THREE from 'three'
 
 const boundingBox = new THREE.Box3()

@@ -1,5 +1,6 @@
-import { Ref } from 'solid-js'
-import { S3, T } from 'solid-three'
+import type { Ref } from 'solid-js'
+import { T } from 'solid-three'
+import type { S3 } from 'solid-three'
 import * as THREE from 'three'
 
 declare global {

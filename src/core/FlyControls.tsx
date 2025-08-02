@@ -1,7 +1,9 @@
-import controlUtils from '@/core/control-utils'
-import { Ref, createEffect, createMemo, splitProps } from 'solid-js'
-import { S3, T, useThree } from 'solid-three'
-import { Event } from 'three'
+import { ControlUtils } from '@/core/control-utils'
+import { createEffect, createMemo, splitProps } from 'solid-js'
+import type { Ref } from 'solid-js'
+import { T, useThree } from 'solid-three'
+import type { S3 } from 'solid-three'
+import type { Event } from 'three'
 import { FlyControls as ThreeFlyControls } from 'three-stdlib'
 
 type FlyControlsPropsBase = Omit<S3.ClassProps<typeof ThreeFlyControls>, 'object'>
@@ -18,11 +20,11 @@ export function FlyControls(props: FlyControlsProps) {
   const element = () => config.domElement /* || store.events.connected */ || store.gl.domElement
   const controls = createMemo(() => new ThreeFlyControls(store.camera, element()))
 
-  controlUtils.initialize(controls, element, store, config)
+  ControlUtils.initialize(controls, element, store, config)
 
   createEffect(() => {
     if (!config.onChange) return
-    controlUtils.addEventHandler(controls, 'change', config.onChange)
+    ControlUtils.addEventHandler(controls, 'change', config.onChange)
   })
 
   return <T.Primitive ref={props.ref} object={controls()} {...rest} />

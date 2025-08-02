@@ -2,7 +2,7 @@ import { createEffect, createMemo, onCleanup, splitProps, untrack } from 'solid-
 import { Primitive, SolidThreeCore, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { MapControls as MapControlsImpl } from 'three-stdlib'
-import { RefComponent } from '../utils/type-utils'
+import { RefComponent } from '@/utils/type-utils'
 
 export type MapControlsProps = SolidThreeCore.Overwrite<
   SolidThreeCore.Object3DNode<MapControlsImpl>,

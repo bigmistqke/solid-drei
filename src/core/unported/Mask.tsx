@@ -1,9 +1,9 @@
 import { createMemo, createRenderEffect } from 'solid-js'
 import { T, ThreeProps } from 'solid-three'
 import * as THREE from 'three'
-import { processProps } from '../utils/process-props'
-import { RefComponent } from '../utils/type-utils'
-import { createImperativeHandle } from '../utils/use-imperative-handle'
+import { processProps } from '@/utils/process-props'
+import { RefComponent } from '@/utils/type-utils'
+import { createImperativeHandle } from '@/utils/use-imperative-handle'
 
 type Props = Omit<ThreeProps<THREE.Mesh>, 'id'> & {
   /** Each mask must have an id, you can have compound masks referring to the same id */

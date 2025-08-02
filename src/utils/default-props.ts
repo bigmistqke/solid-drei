@@ -1,5 +1,6 @@
-import { MergeProps, mergeProps } from 'solid-js'
-import { KeyOfOptionals } from './type-utils'
+import { mergeProps } from 'solid-js'
+import type { MergeProps } from 'solid-js'
+import type { KeyOfOptionals } from './type-utils'
 
 export function defaultProps<T, K extends KeyOfOptionals<T>>(
   props: T,

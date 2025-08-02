@@ -1,5 +1,7 @@
-import { ParentProps, createRenderEffect, createSignal, splitProps } from 'solid-js'
-import { $S3C, S3, T } from 'solid-three'
+import { createRenderEffect, createSignal, splitProps } from 'solid-js'
+import type { ParentProps } from 'solid-js'
+import { $S3C, T } from 'solid-three'
+import type { S3 } from 'solid-three'
 import { BufferAttribute, BufferGeometry } from 'three'
 
 interface ComputedAttributeProps extends ParentProps<S3.Props<'BufferAttribute'>> {
@@ -17,10 +19,10 @@ export function ComputedAttribute(props: ComputedAttributeProps) {
 
   const bufferAttribute = new BufferAttribute(new Float32Array(0), 1)
 
-  const [primitive, setPrimitive] = createSignal<BufferAttribute>()
+  const [primitive, setPrimitive] = createSignal<S3.Instance<BufferAttribute>>()
 
   createRenderEffect(() => {
-    const parent = primitive()[$S3C]?.parent?.object
+    const parent = primitive()?.[$S3C]?.parent?.object
     if (!parent) return
     const attr = config.compute(parent)
     primitive()!.copy(attr)

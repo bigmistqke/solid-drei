@@ -1,4 +1,5 @@
-import { Accessor, createEffect, onCleanup } from 'solid-js'
+import { createEffect, onCleanup } from 'solid-js'
+import type { Accessor } from 'solid-js'
 
 export function useCursor(hovered: Accessor<boolean>, onPointerOver = () => 'pointer', onPointerOut = () => 'auto') {
   createEffect(() => {

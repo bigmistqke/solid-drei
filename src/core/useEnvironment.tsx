@@ -9,9 +9,9 @@ import {
   TextureEncoding,
 } from 'three'
 import { EXRLoader, RGBELoader } from 'three-stdlib'
-import { when } from '../utils/conditionals'
-import { defaultProps } from '../utils/default-props'
-import { PresetsType, presetsObj } from '../utils/environment-assets'
+import { when } from '@/utils/conditionals'
+import { defaultProps } from '@/utils/default-props'
+import { type PresetsType, presetsObj } from '@/utils/environment-assets'
 
 const CUBEMAP_ROOT =
   'https://raw.githack.com/pmndrs/drei-assets/456060a26bbeb8fdf79326f224b6d99b8bcce736/hdri/'
@@ -40,10 +40,10 @@ export function useEnvironment(props: Partial<EnvironmentLoaderProps> = {}) {
       if (!(preset in presetsObj)) {
         throw new Error('Preset must be one of: ' + Object.keys(presetsObj).join(', '))
       }
-      files = presetsObj[config.preset]
+      files = presetsObj[preset]
       path = CUBEMAP_ROOT
     }
-    if (previous.files === files && path === path) {
+    if (previous && previous.files === files && path === path) {
       return previous
     }
     return { files, path }
@@ -51,23 +51,24 @@ export function useEnvironment(props: Partial<EnvironmentLoaderProps> = {}) {
 
   const [resource] = createResource(data, ({ files, path }) => {
     if (isArray(files)) {
-      return awaitLoader(CubeTextureLoader, files, loader => {
-        loader.setPath?.(path)
-        if (config.extensions) config.extensions(loader)
-      })
+      const loader = new CubeTextureLoader()
+      loader.setPath(path)
+      if (config.extensions) config.extensions(loader)
+      const result = loader.load(files)
+      return result
     }
 
-    const loader = files.startsWith('data:application/exr')
+    const Loader = files.startsWith('data:application/exr')
       ? EXRLoader
       : files.startsWith('data:application/hdr')
       ? RGBELoader
       : undefined
 
-    if (loader) {
-      return awaitLoader(loader, files, loader => {
-        loader.setPath?.(path)
-        if (config.extensions) config.extensions(loader)
-      })
+    if (Loader) {
+      const loader = new Loader()
+      loader.setPath?.(path)
+      if (config.extensions) config.extensions(loader)
+      return loader.load(files)
     }
   })
 

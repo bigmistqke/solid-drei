@@ -1,10 +1,12 @@
-import { Ref } from 'solid-js'
-import { S3, T, useFrame } from 'solid-three'
-import { MeshPhysicalMaterial, MeshPhysicalMaterialParameters } from 'three'
+import type { Ref } from 'solid-js'
+import { T, useFrame } from 'solid-three'
+import type { S3 } from 'solid-three'
+import { MeshPhysicalMaterial } from 'three'
+import type { MeshPhysicalMaterialParameters, WebGLProgramParametersWithUniforms } from 'three'
 // eslint-disable-next-line
 // @ts-ignore
-import distort from '../../utils/glsl/distort.vert.glsl'
-import { processProps } from '../../utils/process-props'
+import distort from '@/utils/glsl/distort.vert.glsl'
+import { processProps } from '@/utils/process-props'
 
 interface DistortMaterialType extends S3.Props<'MeshPhysicalMaterial'> {
   time?: number
@@ -43,7 +45,7 @@ class DistortMaterialImpl extends MeshPhysicalMaterial {
     this.#radius = { value: 1 }
   }
 
-  onBeforeCompile(shader) {
+  onBeforeCompile(shader: WebGLProgramParametersWithUniforms) {
     shader.uniforms.time = this.#time
     shader.uniforms.radius = this.#radius
     shader.uniforms.distort = this.#distort

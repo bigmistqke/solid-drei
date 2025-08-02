@@ -1,5 +1,12 @@
 import { resolveAccessor } from '@/utils/resolve-accessor'
-import { Accessor, createEffect, createMemo, createRenderEffect, on, onCleanup } from 'solid-js'
+import {
+  type Accessor,
+  createEffect,
+  createMemo,
+  createRenderEffect,
+  on,
+  onCleanup,
+} from 'solid-js'
 import { useFrame } from 'solid-three'
 import { AnimationAction, AnimationClip, AnimationMixer, Object3D } from 'three'
 

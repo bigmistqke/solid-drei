@@ -1,6 +1,6 @@
 import { createMemo, createRenderEffect, on } from 'solid-js'
 import * as THREE from 'three'
-import { resolveAccessor } from '../utils/resolve-accessor'
+import { resolveAccessor } from '@/utils/resolve-accessor'
 
 // credits for the box-projecting shader code go to codercat (https://codercat.tk)
 // and @0beqz https://gist.github.com/0beqz/8d51b4ae16d68021a09fb504af708fca

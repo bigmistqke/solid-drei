@@ -3,8 +3,8 @@ import * as SolidThree from 'solid-three'
 import { T, S3, applyProps } from 'solid-three'
 import * as THREE from 'three'
 import { DecalGeometry } from 'three-stdlib'
-import { processProps } from '../utils/process-props'
-import { RefComponent } from '../utils/type-utils'
+import { processProps } from '@/utils/process-props'
+import { RefComponent } from '@/utils/type-utils'
 
 export type DecalProps = Omit<S3.Props<'Mesh'>, 'children'> & {
   debug?: boolean

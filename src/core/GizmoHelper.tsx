@@ -1,6 +1,7 @@
 import { defaultProps } from '@/utils/default-props'
 import { createContext, createEffect, useContext } from 'solid-js'
-import { S3, T, useFrame, useThree } from 'solid-three'
+import { T, useFrame, useThree } from 'solid-three'
+import type { S3 } from 'solid-three'
 import {
   Group,
   Matrix4,

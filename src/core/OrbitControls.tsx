@@ -1,7 +1,9 @@
 import { ControlUtils } from '@/core/control-utils'
 import { processProps } from '@/utils/process-props'
-import { Ref, createEffect, createMemo } from 'solid-js'
-import { S3, T, useThree } from 'solid-three'
+import { createEffect, createMemo } from 'solid-js'
+import type { Ref } from 'solid-js'
+import { T, useThree } from 'solid-three'
+import type { S3 } from 'solid-three'
 import type { Event } from 'three'
 import { OrbitControls as ThreeOrbitControls } from 'three-stdlib'
 

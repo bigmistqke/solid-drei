@@ -1,4 +1,4 @@
-import { Accessor } from 'solid-js'
+import type { Accessor } from 'solid-js'
 import { useLoader } from 'solid-three'
 import { Loader } from 'three'
 // import { useLoader } from 'solid-three'

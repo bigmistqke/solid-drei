@@ -1,7 +1,7 @@
 import { Show, createEffect, createSignal, onCleanup, onMount, untrack, type JSX } from 'solid-js'
 import { T, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
-import { defaultProps } from '../utils/default-props'
+import { defaultProps } from '@/utils/default-props'
 
 const isOrthographicCamera = (def: any): def is THREE.OrthographicCamera =>
   def && (def as THREE.OrthographicCamera).isOrthographicCamera

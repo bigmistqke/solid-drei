@@ -1,5 +1,7 @@
-import { JSX, Ref, Show, splitProps } from 'solid-js'
-import { S3, T } from 'solid-three'
+import { Show, splitProps } from 'solid-js'
+import type { JSX, Ref } from 'solid-js'
+import { T } from 'solid-three'
+import type { S3 } from 'solid-three'
 import * as THREE from 'three'
 import { useGLTF } from './useGLTF'
 

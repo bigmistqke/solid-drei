@@ -1,16 +1,10 @@
-import {
-  Ref,
-  createContext,
-  createEffect,
-  createSignal,
-  onMount,
-  useContext,
-  type JSX,
-} from 'solid-js'
-import { S3, T, extend, useFrame } from 'solid-three'
+import { createContext, createEffect, createSignal, onMount, useContext } from 'solid-js'
+import type { Ref, JSX } from 'solid-js'
+import { T, extend, useFrame } from 'solid-three'
+import type { S3 } from 'solid-three'
 import { Color, Vector2, Vector3 } from 'three'
 import { Line2, LineMaterial, LineSegmentsGeometry } from 'three-stdlib'
-import { processProps } from '../utils/process-props'
+import { processProps } from '@/utils/process-props'
 
 declare global {
   namespace SolidThree {

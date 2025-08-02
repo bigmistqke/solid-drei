@@ -1,6 +1,8 @@
-import { Args } from '@/utils/type-utils'
-import { Ref, onMount, splitProps, type JSX } from 'solid-js'
-import { S3, T } from 'solid-three'
+import type { Args } from '@/utils/type-utils'
+import { onMount, splitProps, type JSX } from 'solid-js'
+import type { Ref } from 'solid-js'
+import { T } from 'solid-three'
+import type { S3 } from 'solid-three'
 import * as THREE from 'three'
 
 export interface ShapeProps<T> extends Omit<S3.Props<'Mesh'>, 'children' | 'args'> {

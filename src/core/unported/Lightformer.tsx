@@ -1,11 +1,11 @@
 import { createRenderEffect } from 'solid-js'
 import { applyProps, Primitive, SolidThreeCore, T, ThreeProps } from 'solid-three'
 import * as THREE from 'three'
-import { capitalize } from '../utils/capitalize'
-import { createRef } from '../utils/create-ref'
-import { mergeRefs } from '../utils/merge-refs'
-import { processProps } from '../utils/process-props'
-import { RefComponent } from '../utils/type-utils'
+import { capitalize } from '@/utils/capitalize'
+import { createRef } from '@/utils/create-ref'
+import { mergeRefs } from '@/utils/merge-refs'
+import { processProps } from '@/utils/process-props'
+import { RefComponent } from '@/utils/type-utils'
 
 export type LightProps = ThreeProps<THREE.Mesh> & {
   args?: any[]

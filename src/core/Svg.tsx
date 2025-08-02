@@ -1,8 +1,9 @@
 import { For, Show, createMemo, onCleanup, splitProps } from 'solid-js'
-import { S3, T, useLoader } from 'solid-three'
+import { T, useLoader } from 'solid-three'
+import type { S3 } from 'solid-three'
 import { DoubleSide, Object3D } from 'three'
 import { SVGLoader } from 'three-stdlib'
-import { when } from '../utils/conditionals'
+import { when } from '@/utils/conditionals'
 
 export interface SvgProps extends Omit<S3.Props<'Object3D'>, 'ref'> {
   ref: Object3D

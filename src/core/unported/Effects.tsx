@@ -2,10 +2,10 @@ import { createEffect, createMemo, type JSX } from 'solid-js'
 import { SolidThreeCore, T, extend, useFrame, useThree } from 'solid-three'
 import { HalfFloatType, RGBAFormat, UnsignedByteType, WebGLRenderTarget } from 'three'
 import { EffectComposer, GammaCorrectionShader, RenderPass, ShaderPass } from 'three-stdlib'
-import { createRef } from '../utils/create-ref'
-import { mergeRefs } from '../utils/merge-refs'
-import { processProps } from '../utils/process-props'
-import { RefComponent } from '../utils/type-utils'
+import { createRef } from '@/utils/create-ref'
+import { mergeRefs } from '@/utils/merge-refs'
+import { processProps } from '@/utils/process-props'
+import { RefComponent } from '@/utils/type-utils'
 
 type Props = SolidThreeCore.Node<EffectComposer> & {
   multisamping?: number

@@ -26,7 +26,7 @@ import {
 } from 'solid-js'
 import { Dynamic, render } from 'solid-js/web'
 import { Group } from 'three'
-import { defaultProps } from '../utils/default-props'
+import { defaultProps } from '@/utils/default-props'
 
 /**********************************************************************************/
 /*                                                                                */

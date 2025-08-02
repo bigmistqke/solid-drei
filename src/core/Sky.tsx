@@ -1,8 +1,10 @@
-import { Ref, createRenderEffect } from 'solid-js'
-import { S3, T } from 'solid-three'
+import { createRenderEffect } from 'solid-js'
+import type { Ref } from 'solid-js'
+import { T } from 'solid-three'
+import type { S3 } from 'solid-three'
 import { Vector3 } from 'three'
 import { Sky as SkyImpl } from 'three-stdlib'
-import { processProps } from '../utils/process-props'
+import { processProps } from '@/utils/process-props'
 
 /**********************************************************************************/
 /*                                                                                */

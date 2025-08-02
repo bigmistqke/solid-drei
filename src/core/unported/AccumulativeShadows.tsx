@@ -1,5 +1,5 @@
 import {
-  Accessor,
+  type Accessor,
   createContext,
   createEffect,
   createMemo,
@@ -7,13 +7,13 @@ import {
   onMount,
   useContext,
 } from 'solid-js'
-import { S3, T, extend, useFrame, useThree } from 'solid-three'
+import { type S3, T, extend, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
-import { DiscardMaterial } from '../../materials/DiscardMaterial'
-import { shaderMaterial } from '../../materials/shaderMaterial'
-import { processProps } from '../utils/process-props'
-import { RefComponent } from '../utils/type-utils'
-import { createImperativeHandle } from '../utils/use-imperative-handle'
+import { DiscardMaterial } from '@/materials/DiscardMaterial'
+import { shaderMaterial } from '@/materials/shaderMaterial'
+import { processProps } from '@/utils/process-props'
+import { type RefComponent } from '@/utils/type-utils'
+import { createImperativeHandle } from '@/utils/use-imperative-handle'
 
 function isLight(object: any): object is THREE.Light {
   return object.isLight

@@ -14,8 +14,9 @@
     "noEmitOnError": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "strict": false,
+    "strict": true,
     "target": "ESNext",
+    "verbatimModuleSyntax": true,
     "paths": {
       "@/*": ["./src/*"]
     }

@@ -1,10 +1,12 @@
 import { For, createMemo } from 'solid-js'
-import { S3, T, useFrame } from 'solid-three'
-import { ColorRepresentation, Group } from 'three'
-import { processProps } from '../../utils/process-props'
-import { Billboard } from '../Billboard'
-import { Plane } from '../shapes'
-import { useTexture } from '../useTexture'
+import { T, useFrame } from 'solid-three'
+import type { S3 } from 'solid-three'
+import { Group } from 'three'
+import type { ColorRepresentation } from 'three'
+import { Plane } from './shapes'
+import { useTexture } from './useTexture'
+import { processProps } from '@/utils/process-props'
+import { Billboard } from './Billboard'
 
 const CLOUD_URL =
   'https://rawcdn.githack.com/pmndrs/drei-assets/9225a9f1fbd449d9411125c2f419b843d0308c9f/cloud.png'

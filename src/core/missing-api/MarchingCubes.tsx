@@ -1,9 +1,11 @@
-import { Ref, createContext, createEffect, createMemo, useContext } from 'solid-js'
-import { S3, T, useFrame } from 'solid-three'
+import { createContext, createEffect, createMemo, useContext } from 'solid-js'
+import type { Ref } from 'solid-js'
+import { T, useFrame } from 'solid-three'
+import type { S3 } from 'solid-three'
 import * as THREE from 'three'
 import { Color, Group } from 'three'
 import { MarchingCubes as MarchingCubesImpl } from 'three-stdlib'
-import { processProps } from '../../utils/process-props'
+import { processProps } from '@/utils/process-props'
 
 type Api = {
   getParent: () => MarchingCubesImpl

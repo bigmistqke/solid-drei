@@ -1,13 +1,12 @@
 import ThreeCameraControls from 'camera-controls'
-import { Ref, createEffect, createMemo, splitProps } from 'solid-js'
-import { S3, T, useThree } from 'solid-three'
+import { createEffect, createMemo, splitProps } from 'solid-js'
+import type { Ref } from 'solid-js'
+import { T, useThree } from 'solid-three'
+import type { S3 } from 'solid-three'
 import {
   Box3,
-  Event,
   MathUtils,
   Matrix4,
-  OrthographicCamera,
-  PerspectiveCamera,
   Quaternion,
   Raycaster,
   Sphere,
@@ -16,6 +15,7 @@ import {
   Vector3,
   Vector4,
 } from 'three'
+import type { Event, OrthographicCamera, PerspectiveCamera } from 'three'
 import { ControlUtils } from './control-utils'
 
 export type CameraControls = ThreeCameraControls

@@ -17,10 +17,10 @@ import {
   useContext,
 } from 'solid-js'
 import { useVideoTexture } from '../useVideoTexture'
-import { when } from '../utils/conditionals'
-import { defaultProps } from '../utils/default-props'
-import { RefComponent } from '../utils/type-utils'
-import { createImperativeHandle } from '../utils/use-imperative-handle'
+import { when } from '@/utils/conditionals'
+import { defaultProps } from '@/utils/default-props'
+import { RefComponent } from '@/utils/type-utils'
+import { createImperativeHandle } from '@/utils/use-imperative-handle'
 import { useFaceLandmarker } from './FaceLandmarker'
 import { Facemesh, FacemeshApi, FacemeshProps } from './Facemesh'
 

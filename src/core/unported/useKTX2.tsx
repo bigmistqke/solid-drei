@@ -3,7 +3,7 @@ import { useLoader, useThree } from 'solid-three'
 import { Texture } from 'three'
 import { KTX2Loader } from 'three-stdlib'
 import { IsObject } from '../useTexture'
-import { when } from '../utils/conditionals'
+import { when } from '@/utils/conditionals'
 
 const cdn = 'https://cdn.jsdelivr.net/gh/pmndrs/drei-assets@master'
 export function useKTX2<Url extends string[] | string | Record<string, string>>(

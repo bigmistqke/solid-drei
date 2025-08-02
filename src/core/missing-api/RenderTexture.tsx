@@ -1,5 +1,7 @@
-import { JSX, Ref, createEffect, mergeProps, on, splitProps } from 'solid-js'
-import { S3, T, useFrame, useThree } from 'solid-three'
+import { createEffect, mergeProps, on, splitProps } from 'solid-js'
+import type { JSX, Ref } from 'solid-js'
+import { T, useFrame, useThree } from 'solid-three'
+import type { S3 } from 'solid-three'
 import { Object3D, Scene, Texture, WebGLRenderTarget } from 'three'
 import { useFBO } from '../unported/useFBO'
 
@@ -61,8 +63,8 @@ export const RenderTexture = (props: Props) => {
 
   const context = useThree()
   const fbo = useFBO(
-    (config.width || context.size.width) * context.dpr,
-    (config.height || context.size.height) * context.dpr,
+    (config.width || context.bounds.width) * context.dpr,
+    (config.height || context.bounds.height) * context.dpr,
     {
       samples: config.samples,
       stencilBuffer: config.stencilBuffer,

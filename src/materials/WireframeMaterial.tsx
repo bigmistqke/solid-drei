@@ -1,4 +1,5 @@
-import { Accessor, createEffect } from 'solid-js'
+import { createEffect } from 'solid-js'
+import type { Accessor } from 'solid-js'
 import * as THREE from 'three'
 import { shaderMaterial } from './shaderMaterial'
 

@@ -1,6 +1,6 @@
 import { Show, createEffect, createSignal, onCleanup } from 'solid-js'
 import { useProgress } from '../core/useProgress'
-import { defaultProps } from '../utils/default-props'
+import { defaultProps } from '@/utils/default-props'
 
 interface LoaderOptions {
   containerStyles: any

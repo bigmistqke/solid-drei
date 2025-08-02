@@ -2,8 +2,10 @@
  *    https://github.com/N8python/caustics
  */
 
-import { Ref, Show, createEffect, createEffect as onMount } from 'solid-js'
-import { S3, T, extend, useFrame, useThree } from 'solid-three'
+import { Show, createEffect, createEffect as onMount } from 'solid-js'
+import type { Ref } from 'solid-js'
+import { T, extend, useFrame, useThree } from 'solid-three'
+import type { S3 } from 'solid-three'
 import {
   BackSide,
   Box3,
@@ -29,13 +31,14 @@ import {
   Texture,
   UnsignedByteType,
   Vector3,
+  type WebGLProgramParametersWithUniforms,
 } from 'three'
 import { FullScreenQuad } from 'three-stdlib'
-import { shaderMaterial } from '../../materials/shaderMaterial'
-import { processProps } from '../../utils/process-props'
-import { Edges } from '../Edges'
-import { useFBO } from '../unported/useFBO'
-import { useHelper } from '../useHelper'
+import { shaderMaterial } from '../materials/shaderMaterial'
+import { processProps } from '@/utils/process-props'
+import { Edges } from './Edges'
+import { useFBO } from './unported/useFBO'
+import { useHelper } from './useHelper'
 
 declare global {
   namespace SolidThree {
@@ -75,7 +78,7 @@ function createNormalMaterial(side = FrontSide) {
   const viewMatrix = { value: new Matrix4() }
   return Object.assign(new MeshNormalMaterial({ side }) as CausticsProjectionMaterialType, {
     viewMatrix,
-    onBeforeCompile: shader => {
+    onBeforeCompile(shader: WebGLProgramParametersWithUniforms) {
       shader.uniforms.viewMatrix = viewMatrix
       shader.fragmentShader =
         `vec3 inverseTransformDirection( in vec3 dir, in mat4 matrix ) {

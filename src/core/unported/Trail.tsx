@@ -12,10 +12,10 @@ import {
 } from 'solid-js'
 import { Portal, T, useFrame, useThree } from 'solid-three'
 import { ColorRepresentation, Group, Object3D, Vector2, Vector3 } from 'three'
-import { when } from '../utils/conditionals'
-import { defaultProps } from '../utils/default-props'
-import { resolveAccessor } from '../utils/resolve-accessor'
-import { RefComponent } from '../utils/type-utils'
+import { when } from '@/utils/conditionals'
+import { defaultProps } from '@/utils/default-props'
+import { resolveAccessor } from '@/utils/resolve-accessor'
+import { RefComponent } from '@/utils/type-utils'
 
 type Settings = {
   width: number

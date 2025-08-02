@@ -1,17 +1,18 @@
+import * as THREE from 'three'
 import { Show, createEffect, createSignal, on } from 'solid-js'
-import { T, ThreeProps } from 'solid-three'
-import { Center, CenterProps } from '../Center'
-import { ContactShadows, ContactShadowsProps } from '../ContactShadows'
-import { PresetsType } from '../utils/environment-assets'
-import { processProps } from '../utils/process-props'
+import { T, type S3 } from 'solid-three'
+import { Center, type CenterProps } from '../Center'
+import { ContactShadows, type ContactShadowsProps } from '../ContactShadows'
+import { type PresetsType } from '@/utils/environment-assets'
+import { processProps } from '@/utils/process-props'
 import {
   AccumulativeShadows,
-  AccumulativeShadowsProps,
+  type AccumulativeShadowsProps,
   RandomizedLight,
-  RandomizedLightProps,
+  type RandomizedLightProps,
 } from './AccumulativeShadows'
 import { Bounds, useBounds } from './Bounds'
-import { Environment, EnvironmentProps } from './Environment'
+import { Environment, type EnvironmentProps } from './Environment'
 
 const presets = {
   rembrandt: {
@@ -79,7 +80,7 @@ function Refit(props: { radius: number; adjustCamera: number | boolean }) {
   return null
 }
 
-export function Stage(_props: ThreeProps<THREE.Group> & StageProps) {
+export function Stage(_props: S3.ClassProps<THREE.Group> & StageProps) {
   const [props, rest] = processProps(
     _props,
     {

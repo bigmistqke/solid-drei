@@ -1,7 +1,9 @@
-import { Accessor, createEffect, onCleanup } from 'solid-js'
-import { S3, useFrame } from 'solid-three'
-import { Event } from 'three'
-import { whenever } from '../utils/conditionals'
+import { createEffect, onCleanup } from 'solid-js'
+import type { Accessor } from 'solid-js'
+import { useFrame } from 'solid-three'
+import type { S3 } from 'solid-three'
+import type { Event } from 'three'
+import { whenever } from '@/utils/conditionals'
 
 type ControlProtoBase = {
   update: (delta: number) => void
@@ -19,7 +21,7 @@ export type ControlProto =
 function initialize(
   controls: Accessor<ControlProto>,
   element: Accessor<HTMLElement>,
-  store: S3.ThreeContext,
+  store: any,
   config: { makeDefault?: boolean },
 ) {
   connect(controls, element)
@@ -34,7 +36,7 @@ function connect(controls: Accessor<ControlProto>, element: Accessor<HTMLElement
 }
 function makeDefault(
   controls: Accessor<ControlProto>,
-  store: S3.ThreeContext,
+  store: any,
   config: { makeDefault?: boolean },
 ) {
   createEffect(() => config.makeDefault && store.setControls(controls()))
@@ -50,10 +52,10 @@ function update(controls: Accessor<ControlProto>) {
     }),
   )
 }
-function getDomElement(store: S3.ThreeContext, config: { domElement?: HTMLElement }) {
+function getDomElement(store: any, config: { domElement?: HTMLElement }) {
   return config.domElement /* || store.events.connected */ || store.gl.domElement
 }
-function getCamera(store: S3.ThreeContext, config: { camera?: S3.CameraType }) {
+function getCamera(store: any, config: { camera?: any }) {
   return config.camera || store.camera
 }
 function addEventHandler<

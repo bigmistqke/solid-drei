@@ -1,7 +1,7 @@
-import { Ref, createMemo, onMount } from 'solid-js'
-import { S3, T } from 'solid-three'
+import { type Ref, createMemo, onMount } from 'solid-js'
+import { type S3, T } from 'solid-three'
 import { Color, DoubleSide, Mesh, MeshBasicMaterial } from 'three'
-import { processProps } from '../utils/process-props'
+import { processProps } from '@/utils/process-props'
 
 interface ShadowProps extends S3.Props<'Mesh'> {
   ref?: Ref<Mesh>

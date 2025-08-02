@@ -1,4 +1,5 @@
-import { Accessor, Resource, createResource } from 'solid-js'
+import { createResource } from 'solid-js'
+import type { Accessor, Resource } from 'solid-js'
 
 export function createAsync<T>(callback: () => T): Resource<Awaited<T>>
 export function createAsync<TKey, T>(
