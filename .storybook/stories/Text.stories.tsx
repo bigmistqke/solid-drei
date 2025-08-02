@@ -1,11 +1,11 @@
 import { color as colorKnob, number, withKnobs } from '@storybook/addon-knobs'
 import { DoubleSide, Vector3 } from 'three'
 
-import { Setup } from '../Setup'
-import { useTurntable } from '../useTurntable'
+import { Setup } from '../Setup.tsx'
+import { useTurntable } from '../useTurntable.ts'
 
 import { T } from 'solid-three'
-import { Text } from '../../src'
+import { Text } from '../../src/index.ts'
 
 export default {
   title: 'Abstractions/Text',
@@ -23,12 +23,12 @@ function TextScene() {
     <T.Suspense fallback={null}>
       <Text
         ref={turntable}
-        color={'#EC2D2D'}
+        color="#EC2D2D"
         fontSize={12}
         maxWidth={200}
         lineHeight={1}
         letterSpacing={0.02}
-        textAlign={'left'}
+        textAlign="left"
         font="https://fonts.gstatic.com/s/raleway/v14/1Ptrg8zYS_SKggPNwK4vaqI.woff"
         anchorX="center"
         anchorY="middle"
@@ -53,12 +53,12 @@ function TextOutlineScene() {
     <T.Suspense fallback={null}>
       <Text
         ref={turntable}
-        color={'#EC2D2D'}
+        color="#EC2D2D"
         fontSize={12}
         maxWidth={200}
         lineHeight={1}
         letterSpacing={0.02}
-        textAlign={'left'}
+        textAlign="left"
         font="https://fonts.gstatic.com/s/raleway/v14/1Ptrg8zYS_SKggPNwK4vaqI.woff"
         anchorX="center"
         anchorY="middle"
@@ -86,12 +86,12 @@ function TextStrokeScene() {
         maxWidth={200}
         lineHeight={1}
         letterSpacing={0.02}
-        textAlign={'left'}
+        textAlign="left"
         font="https://fonts.gstatic.com/s/raleway/v14/1Ptrg8zYS_SKggPNwK4vaqI.woff"
         anchorX="center"
         anchorY="middle"
         fillOpacity={0}
-        strokeWidth={'2.5%'}
+        strokeWidth="2.5%"
         strokeColor="#ffffff"
       >
         LOREM IPSUM DOLOR SIT AMET, CONSECTETUR ADIPISCING ELIT, SED DO EIUSMOD TEMPOR INCIDIDUNT UT
@@ -111,18 +111,18 @@ function TextShadowScene() {
     <T.Suspense fallback={null}>
       <Text
         ref={turntable}
-        color={'#EC2D2D'}
+        color="#EC2D2D"
         fontSize={12}
         maxWidth={200}
         lineHeight={1}
         letterSpacing={0.02}
-        textAlign={'left'}
+        textAlign="left"
         font="https://fonts.gstatic.com/s/raleway/v14/1Ptrg8zYS_SKggPNwK4vaqI.woff"
         anchorX="center"
         anchorY="middle"
-        outlineOffsetX={'10%'}
-        outlineOffsetY={'10%'}
-        outlineBlur={'30%'}
+        outlineOffsetX="10%"
+        outlineOffsetY="10%"
+        outlineBlur="30%"
         outlineOpacity={0.3}
         outlineColor="#EC2D2D"
       >
@@ -143,13 +143,13 @@ function TextRtlScene() {
     <T.Suspense fallback={null}>
       <Text
         ref={turntable}
-        color={'#EC2D2D'}
+        color="#EC2D2D"
         fontSize={12}
         maxWidth={200}
         lineHeight={1}
         letterSpacing={0.02}
-        textAlign={'right'}
-        direction={'auto'}
+        textAlign="right"
+        direction="auto"
         font="https://fonts.gstatic.com/s/scheherazade/v20/YA9Ur0yF4ETZN60keViq1kQgtA.woff"
         anchorX="center"
         anchorY="middle"
@@ -174,7 +174,7 @@ function CustomMaterialTextScene() {
         maxWidth={200}
         lineHeight={1}
         letterSpacing={0.02}
-        textAlign={'left'}
+        textAlign="left"
         font="https://fonts.gstatic.com/s/raleway/v14/1Ptrg8zYS_SKggPNwK4vaqI.woff"
         anchorX="center"
         anchorY="middle"

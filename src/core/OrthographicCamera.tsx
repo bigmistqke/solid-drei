@@ -3,8 +3,8 @@ import { JSX, Ref, Show, createEffect, createMemo, onMount } from 'solid-js'
 import { S3, T, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { OrthographicCamera as ThreeOrthographicCamera } from 'three'
-import { processProps } from '../utils/process-props'
-import { useFBO } from './unported/useFBO'
+import { processProps } from '../utils/process-props.ts'
+import { useFBO } from './unported/useFBO.tsx'
 
 type OrthographicCameraProps = S3.ClassProps<typeof ThreeOrthographicCamera> & {
   ref: Ref<THREE.Camera>

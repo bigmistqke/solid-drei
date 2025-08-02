@@ -16,13 +16,13 @@ import {
   onCleanup,
   useContext,
 } from 'solid-js'
-import { useVideoTexture } from '../useVideoTexture'
+import { useVideoTexture } from '../useVideoTexture.tsx'
 import { when } from '../utils/conditionals'
 import { defaultProps } from '../utils/default-props'
 import { RefComponent } from '../utils/type-utils'
 import { createImperativeHandle } from '../utils/use-imperative-handle'
-import { useFaceLandmarker } from './FaceLandmarker'
-import { Facemesh, FacemeshApi, FacemeshProps } from './Facemesh'
+import { useFaceLandmarker } from './FaceLandmarker.tsx'
+import { Facemesh, FacemeshApi, FacemeshProps } from './Facemesh.tsx'
 
 type VideoTextureSrc = Parameters<typeof useVideoTexture>[0] // useVideoTexture 1st arg `src` type
 

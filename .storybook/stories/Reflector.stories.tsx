@@ -2,9 +2,9 @@ import { T, useFrame } from 'solid-three'
 import { createEffect, createMemo } from 'solid-js'
 import { Mesh, RepeatWrapping, Vector2, Vector3 } from 'three'
 
-import { Box, Environment, MeshReflectorMaterial, TorusKnot, useTexture } from '../../src'
+import { Box, Environment, MeshReflectorMaterial, TorusKnot, useTexture } from '../../src/index.ts'
 import { when } from '../../src/helpers/when'
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 export default {
   title: 'Shaders/MeshReflectorMaterial',

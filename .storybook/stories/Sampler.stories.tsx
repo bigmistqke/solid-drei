@@ -1,8 +1,8 @@
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T } from 'solid-three'
 import { BufferAttribute, Vector3 } from 'three'
-import { ComputedAttribute, Sampler, TransformFn } from '../../src'
+import { ComputedAttribute, Sampler, TransformFn } from '../../src/index.ts'
 
 export default {
   title: 'Misc/Sampler',

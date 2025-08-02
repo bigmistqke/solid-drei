@@ -2,7 +2,7 @@ import { createMemo, onCleanup } from 'solid-js'
 import { useThree } from 'solid-three'
 import * as THREE from 'three'
 import { Fog, FogExp2, HalfFloatType, WebGLCubeRenderTarget } from 'three'
-import { defaultProps } from '../utils/default-props'
+import { defaultProps } from '../utils/default-props.ts'
 
 export type CubeCameraOptions = {
   /** Resolution of the FBO, 256 */

@@ -1,10 +1,10 @@
 import { T, createPortal, useFrame } from 'solid-three'
 import { Scene } from 'three'
-import { Box, OrbitControls, PerspectiveCamera, Plane, useFBO } from '../../src'
-import { Setup } from '../Setup'
+import { Box, OrbitControls, PerspectiveCamera, Plane, useFBO } from '../../src/index.ts'
+import { Setup } from '../Setup.tsx'
 
 import type { Camera } from 'three'
-import type { OrbitControlsProps } from '../../src'
+import type { OrbitControlsProps } from '../../src/index.ts'
 
 const args = {
   enableDamping: true,

@@ -8,7 +8,7 @@ import {
 } from 'solid-js'
 import { useLoader, useThree } from 'solid-three'
 import { Texture, TextureLoader } from 'three'
-import { when } from '../utils/conditionals'
+import { when } from '../utils/conditionals.ts'
 
 export const IsObject = (url: any): url is Record<string, string> =>
   url === Object(url) && !Array.isArray(url) && typeof url !== 'function'

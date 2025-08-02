@@ -1,10 +1,10 @@
 import { Vector3 } from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T } from 'solid-three'
 import { splitProps } from 'solid-js'
-import { Image, useTexture } from '../../src'
+import { Image, useTexture } from '../../src/index.ts'
 
 export default {
   title: 'Abstractions/Image',

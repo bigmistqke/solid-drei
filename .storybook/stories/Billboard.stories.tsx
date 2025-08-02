@@ -1,9 +1,9 @@
 import { Vector3 } from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T } from 'solid-three'
-import { Billboard, Box, Cone, OrbitControls, Plane, Text } from '../../src'
+import { Billboard, Box, Cone, OrbitControls, Plane, Text } from '../../src/index.ts'
 
 export default {
   title: 'Abstractions/Billboard',
@@ -35,7 +35,7 @@ export const BillboardStory = ({ follow, lockX, lockY, lockZ }) => (
       <Plane args={[3, 2]} material-color="yellow" />
     </Billboard>
 
-    <OrbitControls enablePan={true} zoomSpeed={0.5} />
+    <OrbitControls enablePan zoomSpeed={0.5} />
   </>
 )
 
@@ -57,7 +57,7 @@ export const BillboardTextStory = ({ follow, lockX, lockY, lockZ }) => (
       lockZ={lockZ}
       position={[0.5, 2.05, 0.5]}
     >
-      <Text fontSize={1} outlineWidth={'5%'} outlineColor="#000000" outlineOpacity={1}>
+      <Text fontSize={1} outlineWidth="5%" outlineColor="#000000" outlineOpacity={1}>
         box
       </Text>
     </Billboard>
@@ -66,7 +66,7 @@ export const BillboardTextStory = ({ follow, lockX, lockY, lockZ }) => (
     </Box>
     <T.Group position={[-2.5, -3, -1]}>
       <Billboard follow={follow} lockX={lockX} lockY={lockY} lockZ={lockZ} position={[0, 1.05, 0]}>
-        <Text fontSize={1} outlineWidth={'5%'} outlineColor="#000000" outlineOpacity={1}>
+        <Text fontSize={1} outlineWidth="5%" outlineColor="#000000" outlineOpacity={1}>
           cone
         </Text>
       </Billboard>
@@ -81,7 +81,7 @@ export const BillboardTextStory = ({ follow, lockX, lockY, lockZ }) => (
       </Plane>
     </Billboard>
 
-    <OrbitControls enablePan={true} zoomSpeed={0.5} />
+    <OrbitControls enablePan zoomSpeed={0.5} />
   </>
 )
 

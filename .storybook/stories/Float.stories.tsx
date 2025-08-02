@@ -2,10 +2,10 @@ import { number, withKnobs } from '@storybook/addon-knobs'
 
 import * as THREE from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T } from 'solid-three'
-import { Float } from '../../src'
+import { Float } from '../../src/index.ts'
 
 export default {
   title: 'Staging/Float',

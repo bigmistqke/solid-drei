@@ -9,9 +9,9 @@ import {
   TextureEncoding,
 } from 'three'
 import { EXRLoader, RGBELoader } from 'three-stdlib'
-import { when } from '../utils/conditionals'
-import { defaultProps } from '../utils/default-props'
-import { PresetsType, presetsObj } from '../utils/environment-assets'
+import { when } from '../utils/conditionals.ts'
+import { defaultProps } from '../utils/default-props.ts'
+import { PresetsType, presetsObj } from '../utils/environment-assets.ts'
 
 const CUBEMAP_ROOT =
   'https://raw.githack.com/pmndrs/drei-assets/456060a26bbeb8fdf79326f224b6d99b8bcce736/hdri/'

@@ -11,7 +11,7 @@ import {
   WebGLRenderer,
 } from 'three'
 
-import { ConvolutionMaterial } from './ConvolutionMaterial'
+import { ConvolutionMaterial } from './ConvolutionMaterial.tsx'
 
 export interface BlurPassProps {
   gl: WebGLRenderer

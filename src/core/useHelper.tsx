@@ -1,8 +1,8 @@
 import { Accessor, createMemo, onCleanup } from 'solid-js'
 import { useFrame, useThree } from 'solid-three'
 import { Object3D } from 'three'
-import { whenever } from '../utils/conditionals'
-import { resolveAccessor } from '../utils/resolve-accessor'
+import { whenever } from '../utils/conditionals.ts'
+import { resolveAccessor } from '../utils/resolve-accessor.ts'
 
 type Helper = Object3D & { update: () => void; dispose: () => void }
 type Constructor = new (...args: any[]) => any

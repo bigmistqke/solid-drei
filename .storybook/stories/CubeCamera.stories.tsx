@@ -1,10 +1,10 @@
 import { T, useFrame } from 'solid-three'
 import * as THREE from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { Show, createSignal } from 'solid-js'
-import { Box, CubeCamera } from '../../src'
+import { Box, CubeCamera } from '../../src/index.ts'
 
 export default {
   title: 'Camera/CubeCamera',

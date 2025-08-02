@@ -1,6 +1,6 @@
 import { createMemo } from 'solid-js'
 import { S3, T, useThree } from 'solid-three'
-import { processProps } from '../utils/process-props'
+import { processProps } from '../utils/process-props.ts'
 
 interface GradientTextureProps extends Omit<S3.Props<'Texture'>, 'type'> {
   stops: Array<number>

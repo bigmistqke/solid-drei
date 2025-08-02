@@ -1,9 +1,9 @@
 import { Component, createMemo, createSignal, useContext } from 'solid-js'
 import { T, ThreeEvent, useThree } from 'solid-three'
 import * as THREE from 'three'
-import { Line } from '../../../core/Line'
-import { Html } from '../Html'
-import { context as pivotContext } from './context'
+import { Line } from '../../../core/Line.tsx'
+import { Html } from '../Html.tsx'
+import { context as pivotContext } from './context.ts'
 
 const vec1 = new THREE.Vector3()
 const vec2 = new THREE.Vector3()

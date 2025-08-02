@@ -1,7 +1,7 @@
 import { Ref } from 'solid-js'
 import { S3, T, useFrame } from 'solid-three'
 import { MeshStandardMaterial, MeshStandardMaterialParameters } from 'three'
-import { processProps } from '../../utils/process-props'
+import { processProps } from '../utils/process-props.ts'
 
 declare global {
   namespace SolidThree {

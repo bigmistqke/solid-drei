@@ -1,9 +1,9 @@
 import { T, ThreeProps, extend, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
-import { ScreenQuad, shaderMaterial } from '../../src'
+import { ScreenQuad, shaderMaterial } from '../../src/index.ts'
 
 export default {
   title: 'Shapes/ScreenQuad',

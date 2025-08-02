@@ -1,10 +1,10 @@
 import { For, createEffect, createSignal, onCleanup, splitProps } from 'solid-js'
 import { MathUtils, Quaternion, Vector3 } from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T, extend, useFrame, useThree } from 'solid-three'
-import { Point, PointMaterial, Points, shaderMaterial } from '../../src'
+import { Point, PointMaterial, Points, shaderMaterial } from '../../src/index.ts'
 
 import * as buffer from 'maath/buffer'
 import * as misc from 'maath/misc'

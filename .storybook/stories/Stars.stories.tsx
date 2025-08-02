@@ -1,7 +1,7 @@
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T } from 'solid-three'
-import { Plane, Stars } from '../../src'
+import { Plane, Stars } from '../../src/index.ts'
 
 export default {
   title: 'Staging/Stars',

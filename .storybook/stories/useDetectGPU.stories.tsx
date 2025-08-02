@@ -1,10 +1,10 @@
 import { Vector3 } from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T } from 'solid-three'
 import { Show } from 'solid-js'
-import { Text, useDetectGPU } from '../../src'
+import { Text, useDetectGPU } from '../../src/index.ts'
 
 export default {
   title: 'Misc/useDetectGPU',

@@ -1,7 +1,7 @@
 import { Canvas, T } from 'solid-three'
 import { For, createMemo } from 'solid-js'
 
-import { Icosahedron, OrbitControls, PerspectiveCamera } from '../../src'
+import { Icosahedron, OrbitControls, PerspectiveCamera } from '../../src/index.ts'
 
 export default {
   title: 'Camera/PerspectiveCamera',

@@ -1,11 +1,11 @@
 import { ParentProps, Ref, createEffect, createRenderEffect } from 'solid-js'
 import { Size, T, useFrame } from 'solid-three'
 import * as THREE from 'three'
-import { processProps } from '../../../utils/process-props'
-import { AxisArrow } from './AxisArrow'
-import { AxisRotator } from './AxisRotator'
-import { PlaneSlider } from './PlaneSlider'
-import { OnDragStartProps, context } from './context'
+import { processProps } from '../../../utils/process-props.ts'
+import { AxisArrow } from './AxisArrow.tsx'
+import { AxisRotator } from './AxisRotator.tsx'
+import { PlaneSlider } from './PlaneSlider.tsx'
+import { OnDragStartProps, context } from './context.ts'
 
 const tV0 = new THREE.Vector3()
 const tV1 = new THREE.Vector3()

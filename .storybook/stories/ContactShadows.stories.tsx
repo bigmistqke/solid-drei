@@ -1,9 +1,9 @@
 import { T, useFrame } from 'solid-three'
 import { Mesh } from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
-import { ContactShadows, Plane, Sphere } from '../../src'
+import { ContactShadows, Plane, Sphere } from '../../src/index.ts'
 
 export default {
   title: 'Staging/ContactShadows',

@@ -1,7 +1,7 @@
 import { Canvas, T } from 'solid-three'
 import { For } from 'solid-js'
 
-import { Icosahedron, OrthographicCamera } from '../../src'
+import { Icosahedron, OrthographicCamera } from '../../src/index.ts'
 
 export default {
   title: 'Camera/OrthographicCamera',

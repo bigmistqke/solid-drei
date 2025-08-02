@@ -1,4 +1,4 @@
-import { ControlUtils } from '@/core/control-utils'
+import { ControlUtils } from './control-utils.ts'
 import { Ref, createMemo, splitProps } from 'solid-js'
 import { S3, T, useThree } from 'solid-three'
 import type { Event, OrthographicCamera, PerspectiveCamera } from 'three'

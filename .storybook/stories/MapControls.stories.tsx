@@ -3,7 +3,7 @@ import { For, Suspense, createMemo, createSignal, onMount } from 'solid-js'
 import { Box3, Sphere, Vector3 } from 'three'
 import { SVGLoader } from 'three-stdlib'
 
-import { MapControls } from '../../src'
+import { MapControls } from '../../src/index.ts'
 import { when } from '../../src/helpers/when'
 
 export default {
@@ -15,7 +15,7 @@ const Cell = (props: { color; shape; fillOpacity }) => {
   return (
     <T.Mesh>
       <T.MeshBasicMaterial
-        color={'black'}
+        color="black"
         opacity={props.fillOpacity}
         depthWrite={false}
         transparent

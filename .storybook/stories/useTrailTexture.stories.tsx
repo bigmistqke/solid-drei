@@ -1,9 +1,9 @@
 import { number, withKnobs } from '@storybook/addon-knobs'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T } from 'solid-three'
-import { useTrailTexture } from '../../src'
+import { useTrailTexture } from '../../src/index.ts'
 
 export default {
   title: 'misc/useTrailTexture',

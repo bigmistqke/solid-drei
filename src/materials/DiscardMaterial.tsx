@@ -1,4 +1,4 @@
-import { shaderMaterial } from './shaderMaterial'
+import { shaderMaterial } from './shaderMaterial.ts'
 
 export const DiscardMaterial = shaderMaterial(
   {},

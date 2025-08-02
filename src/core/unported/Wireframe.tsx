@@ -16,8 +16,8 @@ import {
   WireframeMaterialShaders,
   setWireframeOverride,
   useWireframeUniforms,
-} from '../../materials/WireframeMaterial'
-import { processProps } from '../../utils/process-props'
+} from '../../materials/WireframeMaterial.tsx'
+import { processProps } from '../../utils/process-props.ts'
 
 declare global {
   namespace SolidThree {
@@ -152,7 +152,7 @@ function WireframeWithCustomGeo(props: WireframeProps & WireframeMaterialProps) 
             attach="material"
             transparent
             side={THREE.DoubleSide}
-            polygonOffset={true} //
+            polygonOffset //
             polygonOffsetFactor={-4}
             {...rest}
             extensions={{

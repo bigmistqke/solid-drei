@@ -2,9 +2,9 @@ import clamp from 'lodash.clamp'
 import { Component, createMemo, createSignal, useContext } from 'solid-js'
 import { T, ThreeEvent, useThree } from 'solid-three'
 import * as THREE from 'three'
-import { Line } from '../../../core/Line'
-import { Html } from '../Html'
-import { context } from './context'
+import { Line } from '../../../core/Line.tsx'
+import { Html } from '../Html.tsx'
+import { context } from './context.ts'
 
 const clickDir = new THREE.Vector3()
 const intersectionDir = new THREE.Vector3()

@@ -1,11 +1,11 @@
 import { number, withKnobs } from '@storybook/addon-knobs'
 import { Vector3 } from 'three'
 
-import { Setup } from '../Setup'
-import { useTurntable } from '../useTurntable'
+import { Setup } from '../Setup.tsx'
+import { useTurntable } from '../useTurntable.ts'
 
 import { T } from 'solid-three'
-import { RoundedBox } from '../../src'
+import { RoundedBox } from '../../src/index.ts'
 
 export default {
   title: 'Shapes/RoundedBox',

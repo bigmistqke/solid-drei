@@ -2,9 +2,9 @@ import { useFrame } from 'solid-three'
 import { withKnobs } from '@storybook/addon-knobs'
 import { Vector3 } from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
-import { OrbitControls, Segment, SegmentObject, Segments } from '../../src'
+import { OrbitControls, Segment, SegmentObject, Segments } from '../../src/index.ts'
 
 export default {
   title: 'Performance/Segments',
@@ -15,9 +15,9 @@ export function BasicSegments() {
   return (
     <>
       <Segments limit={6} lineWidth={2.0}>
-        <Segment start={[0, 0, 0]} end={[10, 0, 0]} color={'red'} />
-        <Segment start={[0, 0, 0]} end={[0, 10, 0]} color={'blue'} />
-        <Segment start={[0, 0, 0]} end={[0, 0, 10]} color={'green'} />
+        <Segment start={[0, 0, 0]} end={[10, 0, 0]} color="red" />
+        <Segment start={[0, 0, 0]} end={[0, 10, 0]} color="blue" />
+        <Segment start={[0, 0, 0]} end={[0, 0, 10]} color="green" />
         <Segment start={[0, 0, 0]} end={[-10, 0, 0]} color={[1, 0, 0]} />
         <Segment start={[0, 0, 0]} end={[0, -10, 0]} color={[0, 1, 0]} />
         <Segment start={[0, 0, 0]} end={[0, 0, -10]} color={[1, 1, 0]} />

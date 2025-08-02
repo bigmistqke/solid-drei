@@ -2,8 +2,8 @@ import * as THREE from 'three'
 
 import { T } from 'solid-three'
 import { onMount, splitProps, type JSX } from 'solid-js'
-import { BBAnchor, Html, Icosahedron, OrbitControls, Sphere, useHelper } from '../../src'
-import { Setup } from '../Setup'
+import { BBAnchor, Html, Icosahedron, OrbitControls, Sphere, useHelper } from '../../src/index.ts'
+import { Setup } from '../Setup.tsx'
 
 export default {
   title: 'Staging/BBAnchor',

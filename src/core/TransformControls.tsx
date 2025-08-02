@@ -1,9 +1,9 @@
-import { whenever } from '@/utils/conditionals'
+import { whenever } from '../utils/conditionals.ts'
 import { Accessor, JSX, Ref, createEffect, createMemo, onCleanup, splitProps } from 'solid-js'
 import { S3, T, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { TransformControls as ThreeTransformControls } from 'three-stdlib'
-import { ControlUtils } from '../control-utils'
+import { ControlUtils } from '../core/control-utils.ts'
 
 type TransformControlsPropsBase = Omit<
   S3.Props<'Group'> & S3.ClassProps<typeof ThreeTransformControls>,

@@ -1,10 +1,10 @@
 import * as THREE from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T } from 'solid-three'
 import { createSignal } from 'solid-js'
-import { Plane, useTexture, useVideoTexture } from '../../src'
+import { Plane, useTexture, useVideoTexture } from '../../src/index.ts'
 
 export default {
   title: 'Misc/useVideoTexture',

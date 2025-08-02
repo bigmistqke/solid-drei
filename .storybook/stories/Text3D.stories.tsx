@@ -1,10 +1,10 @@
 import { withKnobs } from '@storybook/addon-knobs'
 import { Vector3 } from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T } from 'solid-three'
-import { Center, Float, Text, Text3D } from '../../src'
+import { Center, Float, Text, Text3D } from '../../src/index.ts'
 
 export default {
   title: 'Abstractions/Text3D',
@@ -21,7 +21,7 @@ function Text3DScene() {
       <T.Color args={[0, 0, 0]} attach="background" />
       <Center>
         <Float floatIntensity={5} speed={2}>
-          <Text3D font={'/fonts/helvetiker_regular.typeface.json'} bevelEnabled bevelSize={0.05}>
+          <Text3D font="/fonts/helvetiker_regular.typeface.json" bevelEnabled bevelSize={0.05}>
             Text 3D
             <T.MeshNormalMaterial />
           </Text3D>

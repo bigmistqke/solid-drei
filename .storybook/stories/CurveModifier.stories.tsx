@@ -3,8 +3,8 @@ import { BufferGeometry, CatmullRomCurve3, LineBasicMaterial, LineLoop, Vector3 
 import { FontLoader, TextGeometry, TextGeometryParameters } from 'three-stdlib'
 
 import { createMemo, onMount } from 'solid-js'
-import { CurveModifier, CurveModifierRef } from '../../src'
-import { Setup } from '../Setup'
+import { CurveModifier, CurveModifierRef } from '../../src/index.ts'
+import { Setup } from '../Setup.tsx'
 
 extend({ StdText: TextGeometry })
 

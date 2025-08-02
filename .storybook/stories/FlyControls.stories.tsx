@@ -1,7 +1,7 @@
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T } from 'solid-three'
-import { Box, FlyControls } from '../../src'
+import { Box, FlyControls } from '../../src/index.ts'
 
 export const FlyControlsStory = ({ ...args }) => (
   <>

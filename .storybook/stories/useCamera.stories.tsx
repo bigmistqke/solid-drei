@@ -2,9 +2,9 @@ import { Portal, T, useFrame, useThree } from 'solid-three'
 import { For, createMemo, createSignal } from 'solid-js'
 import * as THREE from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
-import { OrthographicCamera, useCamera } from '../../src'
+import { OrthographicCamera, useCamera } from '../../src/index.ts'
 
 export default {
   title: 'Misc/useCamera',

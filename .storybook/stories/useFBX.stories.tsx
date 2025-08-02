@@ -1,8 +1,8 @@
 import { Vector3 } from 'three'
 
 import { T } from 'solid-three'
-import { useCubeTexture, useFBX } from '../../src'
-import { Setup } from '../Setup'
+import { useCubeTexture, useFBX } from '../../src/index.ts'
+import { Setup } from '../Setup.tsx'
 
 export default {
   title: 'Loaders/FBX',

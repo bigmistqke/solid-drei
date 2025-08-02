@@ -2,7 +2,7 @@ import { For, Show, createMemo, onCleanup, splitProps } from 'solid-js'
 import { S3, T, useLoader } from 'solid-three'
 import { DoubleSide, Object3D } from 'three'
 import { SVGLoader } from 'three-stdlib'
-import { when } from '../utils/conditionals'
+import { when } from '../utils/conditionals.ts'
 
 export interface SvgProps extends Omit<S3.Props<'Object3D'>, 'ref'> {
   ref: Object3D
@@ -121,7 +121,7 @@ export function Svg(props: SvgProps) {
                       <T.MeshBasicMaterial
                         color={path.userData!.style.fill}
                         opacity={path.userData!.style.fillOpacity}
-                        transparent={true}
+                        transparent
                         side={DoubleSide}
                         depthWrite={false}
                         {...config.fillMaterial}
@@ -143,7 +143,7 @@ export function Svg(props: SvgProps) {
                       <T.MeshBasicMaterial
                         color={path.userData!.style.stroke}
                         opacity={path.userData!.style.strokeOpacity}
-                        transparent={true}
+                        transparent
                         side={DoubleSide}
                         depthWrite={false}
                         {...config.strokeMaterial}

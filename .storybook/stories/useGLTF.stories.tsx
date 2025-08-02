@@ -1,11 +1,11 @@
 import { Vector3 } from 'three'
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T } from 'solid-three'
 import { Accessor } from 'solid-js'
-import { useGLTF } from '../../src'
+import { useGLTF } from '../../src/index.ts'
 
 export default {
   title: 'Loaders/GLTF',

@@ -2,7 +2,7 @@ import { Canvas, Props as CanvasProps, T } from 'solid-three'
 import { Vector3 } from 'three'
 
 import { ParentComponent } from 'solid-js'
-import { OrbitControls } from '../src'
+import { OrbitControls } from '../src/index.ts'
 import { processProps } from '../src/helpers/processProps'
 
 type Props = CanvasProps & {

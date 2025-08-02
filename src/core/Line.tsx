@@ -9,8 +9,8 @@ import {
   LineSegments2,
   LineSegmentsGeometry,
 } from 'three-stdlib'
-import { every, whenever } from '../utils/conditionals'
-import { processProps } from '../utils/process-props'
+import { every, whenever } from '../utils/conditionals.ts'
+import { processProps } from '../utils/process-props.ts'
 
 type LinePropsBase = Omit<LineMaterialParameters, 'vertexColors' | 'color'> &
   Omit<S3.ClassProps<Line2>, 'args'> &

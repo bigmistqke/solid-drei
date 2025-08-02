@@ -1,11 +1,11 @@
 import { BoxHelper, Camera, CameraHelper } from 'three'
 import { VertexNormalsHelper } from 'three-stdlib'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T, useFrame } from 'solid-three'
 import { Component, createSignal } from 'solid-js'
-import { PerspectiveCamera, Sphere, useHelper } from '../../src'
+import { PerspectiveCamera, Sphere, useHelper } from '../../src/index.ts'
 import { when } from '../../src/helpers/when'
 
 export default {

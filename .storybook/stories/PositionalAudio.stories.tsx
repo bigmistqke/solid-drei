@@ -2,8 +2,8 @@ import { For } from 'solid-js'
 import { Vector3 } from 'three'
 
 import { T } from 'solid-three'
-import { OrbitControls, PositionalAudio } from '../../src'
-import { Setup } from '../Setup'
+import { OrbitControls, PositionalAudio } from '../../src/index.ts'
+import { Setup } from '../Setup.tsx'
 
 export default {
   title: 'Abstractions/PositionalAudio',

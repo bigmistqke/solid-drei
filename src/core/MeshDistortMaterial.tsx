@@ -3,8 +3,8 @@ import { S3, T, useFrame } from 'solid-three'
 import { MeshPhysicalMaterial, MeshPhysicalMaterialParameters } from 'three'
 // eslint-disable-next-line
 // @ts-ignore
-import distort from '../../utils/glsl/distort.vert.glsl'
-import { processProps } from '../../utils/process-props'
+import distort from '../utils/glsl/distort.vert.glsl'
+import { processProps } from '../utils/process-props.ts'
 
 interface DistortMaterialType extends S3.Props<'MeshPhysicalMaterial'> {
   time?: number

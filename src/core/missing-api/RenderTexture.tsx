@@ -1,7 +1,7 @@
 import { JSX, Ref, createEffect, mergeProps, on, splitProps } from 'solid-js'
 import { S3, T, useFrame, useThree } from 'solid-three'
 import { Object3D, Scene, Texture, WebGLRenderTarget } from 'three'
-import { useFBO } from '../unported/useFBO'
+import { useFBO } from '../unported/useFBO.tsx'
 
 type Props = S3.Props<'Texture'> & {
   ref?: Ref<Texture>

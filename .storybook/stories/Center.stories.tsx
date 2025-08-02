@@ -1,10 +1,10 @@
 import { Vector3 } from 'three'
 
-import { Setup } from '../Setup'
-import { useTurntable } from '../useTurntable'
+import { Setup } from '../Setup.tsx'
+import { useTurntable } from '../useTurntable.ts'
 
 import { Primitive, T } from 'solid-three'
-import { Box, Center, useGLTF } from '../../src'
+import { Box, Center, useGLTF } from '../../src/index.ts'
 
 export default {
   title: 'Staging/Center',

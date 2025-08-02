@@ -1,10 +1,10 @@
 import { createSignal } from 'solid-js'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T, useFrame } from 'solid-three'
 import { Group, InstancedMesh, Mesh, Object3D, Vector3 } from 'three'
-import { Float, Sphere, Trail, useTrail } from '../../src'
+import { Float, Sphere, Trail, useTrail } from '../../src/index.ts'
 
 export default {
   title: 'Misc/Trail',
@@ -29,7 +29,7 @@ function TrailScene() {
         <Trail
           width={1}
           length={4}
-          color={'#F8D628'}
+          color="#F8D628"
           attenuation={(t: number) => {
             return t * t
           }}
@@ -112,7 +112,7 @@ function UseTrailFloat() {
       <Trail
         width={1}
         length={4}
-        color={'#F8D628'}
+        color="#F8D628"
         attenuation={(t: number) => {
           return t * t
         }}

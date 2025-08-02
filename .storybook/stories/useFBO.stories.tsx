@@ -2,9 +2,9 @@ import { Portal, T, useFrame } from 'solid-three'
 import { createMemo } from 'solid-js'
 import * as THREE from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
-import { Box, PerspectiveCamera, TorusKnot, useFBO } from '../../src'
+import { Box, PerspectiveCamera, TorusKnot, useFBO } from '../../src/index.ts'
 
 export default {
   title: 'Misc/useFBO',

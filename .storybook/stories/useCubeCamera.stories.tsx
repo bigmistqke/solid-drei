@@ -1,10 +1,10 @@
 import { Primitive, T, useFrame } from 'solid-three'
 import * as THREE from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { Show, createSignal } from 'solid-js'
-import { Box, useCubeCamera } from '../../src'
+import { Box, useCubeCamera } from '../../src/index.ts'
 import { processProps } from '../../src/helpers/processProps'
 
 export default {

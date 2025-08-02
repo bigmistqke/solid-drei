@@ -2,9 +2,9 @@ import { boolean, color, number, select, withKnobs } from '@storybook/addon-knob
 import { Vector3 } from 'three'
 import { GeometryUtils } from 'three-stdlib'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
-import { CatmullRomLine, CubicBezierLine, Line, OrbitControls, QuadraticBezierLine } from '../../src'
+import { CatmullRomLine, CubicBezierLine, Line, OrbitControls, QuadraticBezierLine } from '../../src/index.ts'
 
 export default {
   title: 'Shapes/Line',

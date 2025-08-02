@@ -2,7 +2,7 @@ import { processProps } from '@/utils/process-props'
 import { JSX, Ref, Show, createEffect, createMemo, onMount } from 'solid-js'
 import { S3, T, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
-import { useFBO } from './unported/useFBO'
+import { useFBO } from './unported/useFBO.tsx'
 
 interface PerspectiveCameraProps extends Omit<S3.Props<'PerspectiveCamera'>, 'children'> {
   ref: Ref<THREE.PerspectiveCamera>

@@ -1,10 +1,10 @@
 import * as THREE from 'three'
 
-import { Setup } from '../Setup'
-import { useTurntable } from '../useTurntable'
+import { Setup } from '../Setup.tsx'
+import { useTurntable } from '../useTurntable.ts'
 
 import { T } from 'solid-three'
-import { Extrude } from '../../src'
+import { Extrude } from '../../src/index.ts'
 
 export default {
   title: 'Shapes/Extrude',

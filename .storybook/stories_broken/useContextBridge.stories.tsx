@@ -2,7 +2,7 @@ import { Canvas } from 'solid-three'
 import { withKnobs } from '@storybook/addon-knobs'
 import { Suspense, createContext, createSignal, useContext } from 'solid-js'
 
-import { Box, OrbitControls, Text, useContextBridge } from '../../src'
+import { Box, OrbitControls, Text, useContextBridge } from '../../src/index.ts'
 
 export default {
   title: 'Misc/useContextBridge',

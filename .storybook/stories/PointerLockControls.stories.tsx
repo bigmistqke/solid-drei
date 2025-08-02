@@ -1,9 +1,9 @@
 import { For, createMemo } from 'solid-js'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T } from 'solid-three'
-import { Icosahedron, PointerLockControls } from '../../src'
+import { Icosahedron, PointerLockControls } from '../../src/index.ts'
 
 export default {
   title: 'Controls/PointerLockControls',

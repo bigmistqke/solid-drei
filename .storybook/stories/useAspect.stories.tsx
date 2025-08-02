@@ -1,9 +1,9 @@
 import { T, useLoader } from 'solid-three'
 import { TextureLoader, Vector3 } from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
-import { Plane, useAspect } from '../../src'
+import { Plane, useAspect } from '../../src/index.ts'
 
 export default {
   title: 'Misc/useAspect',

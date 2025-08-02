@@ -1,7 +1,7 @@
 import { Show, createEffect, createSignal, on } from 'solid-js'
 import { T, ThreeProps } from 'solid-three'
-import { Center, CenterProps } from '../Center'
-import { ContactShadows, ContactShadowsProps } from '../ContactShadows'
+import { Center, CenterProps } from '../Center.tsx'
+import { ContactShadows, ContactShadowsProps } from '../ContactShadows.tsx'
 import { PresetsType } from '../utils/environment-assets'
 import { processProps } from '../utils/process-props'
 import {
@@ -9,9 +9,9 @@ import {
   AccumulativeShadowsProps,
   RandomizedLight,
   RandomizedLightProps,
-} from './AccumulativeShadows'
-import { Bounds, useBounds } from './Bounds'
-import { Environment, EnvironmentProps } from './Environment'
+} from './AccumulativeShadows.tsx'
+import { Bounds, useBounds } from './Bounds.tsx'
+import { Environment, EnvironmentProps } from './Environment.tsx'
 
 const presets = {
   rembrandt: {
@@ -166,7 +166,7 @@ export function Stage(_props: ThreeProps<THREE.Group> & StageProps) {
             temporal
             frames={100}
             alphaTest={0.9}
-            toneMapped={true}
+            toneMapped
             scale={dimensions().radius * 4}
             {...(shadowSpread() as AccumulativeShadowsProps)}
           >

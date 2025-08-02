@@ -1,9 +1,9 @@
 import { T, useFrame } from 'solid-three'
 import { Mesh } from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
-import * as shapes from '../../src/core/shapes'
+import * as shapes from '../../src/core/shapes.tsx'
 
 export default {
   title: 'Shapes',

@@ -2,8 +2,8 @@ import { withKnobs } from '@storybook/addon-knobs'
 import { IcosahedronGeometry, Vector3 } from 'three'
 
 import { T } from 'solid-three'
-import { Environment, Wireframe } from '../../src'
-import { Setup } from '../Setup'
+import { Environment, Wireframe } from '../../src/index.ts'
+import { Setup } from '../Setup.tsx'
 
 export default {
   title: 'Staging/Wireframe',

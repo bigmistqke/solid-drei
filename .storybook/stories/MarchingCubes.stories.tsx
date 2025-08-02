@@ -1,9 +1,9 @@
 import { Color, Group, Vector3 } from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T, useFrame } from 'solid-three'
-import { MarchingCube, MarchingCubes, MarchingPlane, OrbitControls } from '../../src'
+import { MarchingCube, MarchingCubes, MarchingPlane, OrbitControls } from '../../src/index.ts'
 
 export default {
   title: 'Abstractions/MarchingCubes',
@@ -32,7 +32,7 @@ const MarchingCubesScene = ({ resolution, maxPolyCount, planeX, planeY, planeZ }
     <MarchingCubes
       resolution={resolution}
       maxPolyCount={maxPolyCount}
-      enableColors={true}
+      enableColors
       scale={2}
     >
       <MarchingCube ref={cubeRefOne!} color={new Color('#f0f')} position={[0.5, 0.6, 0.5]} />
@@ -42,7 +42,7 @@ const MarchingCubesScene = ({ resolution, maxPolyCount, planeX, planeY, planeZ }
       {planeY && <MarchingPlane planeType="y" />}
       {planeZ && <MarchingPlane planeType="z" />}
 
-      <T.MeshPhongMaterial specular={0xffffff} shininess={2} vertexColors={true} />
+      <T.MeshPhongMaterial specular={0xffffff} shininess={2} vertexColors />
     </MarchingCubes>
   )
 }

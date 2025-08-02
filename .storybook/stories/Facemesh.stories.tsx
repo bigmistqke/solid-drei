@@ -2,10 +2,10 @@ import { withKnobs } from '@storybook/addon-knobs'
 import * as THREE from 'three'
 import { Vector3 } from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T } from 'solid-three'
-import { Facemesh, FacemeshDatas } from '../../src'
+import { Facemesh, FacemeshDatas } from '../../src/index.ts'
 
 export default {
   title: 'Shapes/Facemesh',
@@ -42,7 +42,7 @@ export const FacemeshSt = ({ depth, origin, eyes, eyesAsOrigin, offset, offsetSc
       <T.MeshStandardMaterial
         side={THREE.DoubleSide}
         color="#cbcbcb"
-        flatShading={true}
+        flatShading
         transparent
         opacity={0.98}
       />

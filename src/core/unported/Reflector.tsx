@@ -17,11 +17,11 @@ import {
 } from 'three'
 import { mergeRefs } from '../utils/merge-refs'
 
-import { BlurPass } from '../../materials/BlurPass'
+import { BlurPass } from '../../materials/BlurPass.tsx'
 import {
   MeshReflectorMaterial,
   MeshReflectorMaterialProps,
-} from '../../materials/MeshReflectorMaterial'
+} from '../../materials/MeshReflectorMaterial.tsx'
 import { createRef } from '../utils/create-ref'
 import { processProps } from '../utils/process-props'
 import { RefComponent } from '../utils/type-utils'

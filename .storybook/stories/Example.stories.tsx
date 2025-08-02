@@ -1,10 +1,10 @@
 import { withKnobs } from '@storybook/addon-knobs'
 import { Vector3 } from 'three'
 
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 import { T } from 'solid-three'
-import { Example, ExampleApi } from '../../src'
+import { Example, ExampleApi } from '../../src/index.ts'
 
 export default {
   title: 'Misc/Example',

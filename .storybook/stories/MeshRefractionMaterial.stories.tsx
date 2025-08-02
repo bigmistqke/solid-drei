@@ -12,9 +12,9 @@ import {
   OrbitControls,
   RandomizedLight,
   useGLTF,
-} from '../../src'
+} from '../../src/index.ts'
 import { all } from '../../src/helpers/when'
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 export default {
   title: 'Shaders/MeshRefractionMaterial',
@@ -115,7 +115,7 @@ export const RefractionSt = () => (
       frames={100}
       color="orange"
       colorBlend={2}
-      toneMapped={true}
+      toneMapped
       alphaTest={0.8}
       opacity={1}
       scale={12}

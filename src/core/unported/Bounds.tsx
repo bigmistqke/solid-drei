@@ -1,7 +1,7 @@
 import { createContext, createRenderEffect, onCleanup, useContext } from 'solid-js'
 import { T, ThreeProps, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
-import { defaultProps } from '../../utils/default-props'
+import { defaultProps } from '../../utils/default-props.ts'
 
 export type SizeProps = {
   box: THREE.Box3

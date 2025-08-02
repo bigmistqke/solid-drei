@@ -2,9 +2,9 @@ import { number, select, withKnobs } from '@storybook/addon-knobs'
 import { Vector3 } from 'three'
 
 import { T } from 'solid-three'
-import { Sphere, Stage } from '../../src'
+import { Sphere, Stage } from '../../src/index.ts'
 import { PresetsType, presetsObj } from '../../src/helpers/environment-assets'
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 export default {
   title: 'Staging/Stage',

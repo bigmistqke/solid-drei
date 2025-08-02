@@ -7,11 +7,11 @@
 import { createSignal } from 'solid-js'
 import { Instance, T, ThreeProps, extend, useFrame } from 'solid-three'
 import * as THREE from 'three'
-import { DiscardMaterial } from '../../materials/DiscardMaterial'
+import { DiscardMaterial } from '../../materials/DiscardMaterial.tsx'
 import { processProps } from '../utils/process-props'
 import { RefComponent } from '../utils/type-utils'
 import { createImperativeHandle } from '../utils/use-imperative-handle'
-import { useFBO } from './useFBO'
+import { useFBO } from './useFBO.tsx'
 
 type MeshTransmissionMaterialType = Omit<
   ThreeProps<'MeshPhysicalMaterial'>,

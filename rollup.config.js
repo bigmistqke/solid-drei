@@ -5,6 +5,7 @@ import path from 'path'
 import glslify from 'rollup-plugin-glslify'
 import multiInput from 'rollup-plugin-multi-input'
 import { terser } from 'rollup-plugin-terser'
+import process from "node:process";
 
 const root = process.platform === 'win32' ? path.resolve('/') : '/'
 const external = (id) => !id.startsWith('.') && !id.startsWith(root)

@@ -2,9 +2,9 @@ import { T, useFrame, useThree } from 'solid-three'
 import { createSignal } from 'solid-js'
 import * as THREE from 'three'
 
-import { Scroll, ScrollControls, useCursor, useGLTF, useIntersect } from '../../src'
+import { Scroll, ScrollControls, useCursor, useGLTF, useIntersect } from '../../src/index.ts'
 import { when } from '../../src/helpers/when'
-import { Setup } from '../Setup'
+import { Setup } from '../Setup.tsx'
 
 export default {
   title: 'Controls/ScrollControls',

@@ -30,9 +30,9 @@ import {
   WebGLRenderTarget,
 } from 'three'
 import { FullScreenQuad } from 'three-stdlib'
-import { SpotLightMaterial } from '../../materials/SpotLightMaterial'
+import { SpotLightMaterial } from '../materials/SpotLightMaterial.tsx'
 // @ts-ignore
-import { processProps } from '../../utils/process-props'
+import { processProps } from '../utils/process-props.ts'
 import SpotlightShadowShader from '../utils/glsl/DefaultSpotlightShadowShadows.glsl'
 
 /**********************************************************************************/
