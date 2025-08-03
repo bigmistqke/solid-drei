@@ -81,6 +81,9 @@ export function Line(props: LineProps) {
 
   onCleanup(() => lineGeometry().dispose())
 
+  const dpr = store.dpr ?? 1
+  const lineWidth = dpr * (config.linewidth ?? config.lineWidth ?? 1)
+  
   return (
     <>
       <T.Primitive object={line2()} ref={config.ref} {...rest}>
@@ -91,7 +94,7 @@ export function Line(props: LineProps) {
           color={config.color}
           vertexColors={Boolean(config.vertexColors)}
           resolution={[store.bounds.width, store.bounds.height]}
-          linewidth={config.linewidth ?? config.lineWidth}
+          linewidth={lineWidth}
           dashed={config.dashed}
           {...rest}
         />
