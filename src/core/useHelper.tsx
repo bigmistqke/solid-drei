@@ -1,9 +1,9 @@
-import { createMemo, onCleanup } from 'solid-js'
+import { when } from '@/utils/conditionals'
+import { resolveAccessor } from '@/utils/resolve-accessor'
 import type { Accessor } from 'solid-js'
+import { createMemo, onCleanup } from 'solid-js'
 import { useFrame, useThree } from 'solid-three'
 import { Object3D } from 'three'
-import { whenever } from '@/utils/conditionals'
-import { resolveAccessor } from '@/utils/resolve-accessor'
 
 type Helper = Object3D & { update: () => void; dispose: () => void }
 type Constructor = new (...args: any[]) => any
@@ -17,7 +17,7 @@ export function useHelper<T extends Constructor>(
   const store = useThree()
 
   const helper = createMemo(
-    whenever(
+    when(
       () => resolveAccessor(object3D),
       object3D => {
         const helper = new (helperConstructor as any)(object3D, ...args)

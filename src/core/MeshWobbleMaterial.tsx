@@ -1,17 +1,9 @@
-import type { Ref } from 'solid-js'
-import { T, useFrame } from 'solid-three'
-import type { S3 } from 'solid-three'
-import { MeshStandardMaterial } from 'three'
-import type { MeshStandardMaterialParameters, WebGLProgramParametersWithUniforms } from 'three'
 import { processProps } from '@/utils/process-props'
-
-declare global {
-  namespace SolidThree {
-    interface IntrinsicElements {
-      WobbleMaterialImpl: WobbleMaterialType
-    }
-  }
-}
+import type { Ref } from 'solid-js'
+import type { S3 } from 'solid-three'
+import { Entity, useFrame } from 'solid-three'
+import type { MeshStandardMaterialParameters, WebGLProgramParametersWithUniforms } from 'three'
+import { MeshStandardMaterial } from 'three'
 
 /**********************************************************************************/
 /*                                                                                */
@@ -23,7 +15,7 @@ interface Uniform<T> {
   value: T
 }
 
-interface WobbleMaterialType extends S3.Props<'MeshStandardMaterial'> {
+interface WobbleMaterialType extends S3.Props<MeshStandardMaterial> {
   time?: number
   factor?: number
   speed?: number
@@ -102,5 +94,5 @@ export function MeshWobbleMaterial(props: MeshWobbleMaterialProps) {
 
   useFrame(state => material && (material.time = state.clock.getElapsedTime() * config.speed))
 
-  return <T.Primitive object={material} ref={config.ref!} attach="material" {...rest} />
+  return <Entity from={material} ref={config.ref!} attach="material" {...rest} />
 }

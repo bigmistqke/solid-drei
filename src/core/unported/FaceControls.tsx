@@ -4,6 +4,10 @@ import { easing } from 'maath'
 import { T, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
 
+import { check } from '@/utils/conditionals'
+import { defaultProps } from '@/utils/default-props'
+import { RefComponent } from '@/utils/type-utils'
+import { createImperativeHandle } from '@/utils/use-imperative-handle'
 import {
   Accessor,
   ResourceReturn,
@@ -17,10 +21,6 @@ import {
   useContext,
 } from 'solid-js'
 import { useVideoTexture } from '../useVideoTexture'
-import { when } from '@/utils/conditionals'
-import { defaultProps } from '@/utils/default-props'
-import { RefComponent } from '@/utils/type-utils'
-import { createImperativeHandle } from '@/utils/use-imperative-handle'
 import { useFaceLandmarker } from './FaceLandmarker'
 import { Facemesh, FacemeshApi, FacemeshProps } from './Facemesh'
 
@@ -404,7 +404,7 @@ const VideoTexture: RefComponent<VideoTextureApi, VideoTextureProps> = props => 
 
   // ref-api
   const api = createMemo<VideoTextureApi | undefined>(() =>
-    when(texture)(texture => ({
+    check(texture)(texture => ({
       texture,
     })),
   )

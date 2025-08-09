@@ -8,7 +8,8 @@ import {
   type DomEvent,
 } from 'solid-three'
 // import * as ReactDOM from 'react-dom/client'
-import { whenever } from '@/utils/conditionals'
+import { when } from '@/utils/conditionals'
+import { defaultProps } from '@/utils/default-props'
 import {
   ParentProps,
   Ref,
@@ -26,7 +27,6 @@ import {
 } from 'solid-js'
 import { Dynamic, render } from 'solid-js/web'
 import { Group } from 'three'
-import { defaultProps } from '@/utils/default-props'
 
 /**********************************************************************************/
 /*                                                                                */
@@ -320,7 +320,7 @@ function ScrollHtml(props: ScrollHtmlProps) {
   const fiberState = useContext(fiberContext)
 
   createEffect(
-    whenever(ref, ref => {
+    when(ref, ref => {
       createEffect(() => {
         if (typeof props.ref === 'function') props.ref(ref)
         else props.ref = ref

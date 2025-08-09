@@ -1,12 +1,13 @@
-import { createEffect, createMemo, splitProps } from 'solid-js'
+import { useRef } from '@/utils/use-refs'
 import type { Ref } from 'solid-js'
-import { T, useThree } from 'solid-three'
+import { createEffect, createMemo, splitProps } from 'solid-js'
 import type { S3 } from 'solid-three'
+import { Entity, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { TrackballControls as TrackballControlsImpl } from 'three-stdlib'
 import { ControlUtils } from './control-utils'
 
-type TrackballControlsPropsBase = Omit<S3.ClassProps<typeof TrackballControlsImpl>, 'object'>
+type TrackballControlsPropsBase = Omit<S3.Props<typeof TrackballControlsImpl>, 'object'>
 export interface TrackballControlsProps extends TrackballControlsPropsBase {
   ref?: Ref<TrackballControlsImpl>
   target?: S3.Vector3
@@ -50,5 +51,7 @@ export function TrackballControls(props: TrackballControlsProps) {
   })
   createEffect(() => controls().handleResize())
 
-  return <T.Primitive ref={props.ref} object={controls()} {...rest} />
+  useRef(props, controls)
+
+  return <Entity from={controls()} {...rest} />
 }

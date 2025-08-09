@@ -1,3 +1,7 @@
+import { when } from '@/utils/conditionals'
+import { defaultProps } from '@/utils/default-props'
+import { PresetsType } from '@/utils/environment-assets'
+import { processProps } from '@/utils/process-props'
 import { Accessor, JSXElement, Show, createMemo, createRenderEffect, onCleanup } from 'solid-js'
 import { T, extend, useFrame, useThree } from 'solid-three'
 import {
@@ -9,10 +13,6 @@ import {
   WebGLCubeRenderTarget,
 } from 'three'
 import { GroundProjectedEnv as GroundProjectedEnvImpl } from 'three-stdlib'
-import { whenever } from '@/utils/conditionals'
-import { defaultProps } from '@/utils/default-props'
-import { PresetsType } from '@/utils/environment-assets'
-import { processProps } from '@/utils/process-props'
 import { EnvironmentLoaderProps, useEnvironment } from './useEnvironment'
 
 declare global {
@@ -109,7 +109,7 @@ export function EnvironmentCube(props: EnvironmentProps) {
   const store = useThree()
 
   createRenderEffect(
-    whenever(texture, texture => {
+    when(texture, texture => {
       const cleanup = setEnvProps(
         config.background,
         config.scene,

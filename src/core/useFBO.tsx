@@ -26,14 +26,14 @@ export function useFBO(
       ? width
       : typeof width === 'function'
       ? width()
-      : store.bounds.width * store.viewport.dpr
+      : store.bounds.width * (store.viewport?.dpr ?? 1)
   const _height = () =>
     typeof height === 'number'
       ? height
       : typeof height === 'function'
       ? height()
-      : store.bounds?.height && store.viewport?.dpr
-      ? store.bounds.height * store.viewport.dpr
+      : store.bounds?.height && (store.viewport?.dpr ?? 1)
+      ? store.bounds.height * (store.viewport?.dpr ?? 1)
       : 0
 
   const _settings = () =>
@@ -59,7 +59,7 @@ export function useFBO(
     if (samples) target.samples = samples
   })
   onCleanup(() => {
-    target.dispose
+    target.dispose()
   })
   return target
 }

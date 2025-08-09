@@ -1,29 +1,32 @@
 // SpotLight Inspired by http://john-chapman-graphics.blogspot.com/2013/01/good-enough-volumetrics-for-spotlights.html
 
+import type { ParentProps, Ref } from 'solid-js'
 import {
   Show,
   createContext,
-  createEffect,
   createMemo,
   createRenderEffect,
   onCleanup,
   onMount,
   useContext,
 } from 'solid-js'
-import type { ParentProps, Ref } from 'solid-js'
-import { T, useFrame, useThree } from 'solid-three'
 import type { S3 } from 'solid-three'
+import { Entity, createT, useFrame, useThree } from 'solid-three'
+import * as THREE from 'three'
 import {
   CylinderGeometry,
   DepthTexture,
   DoubleSide,
-  LinearEncoding,
+  Group,
   Matrix4,
   Mesh,
+  MeshBasicMaterial,
   Object3D,
+  PlaneGeometry,
   RGBAFormat,
   RepeatWrapping,
   ShaderMaterial,
+  SpotLightHelper,
   SpotLight as SpotLightImpl,
   Texture,
   Vector3,
@@ -32,8 +35,18 @@ import {
 import { FullScreenQuad } from 'three-stdlib'
 import { SpotLightMaterial } from '../materials/SpotLightMaterial'
 // @ts-ignore
-import { processProps } from '@/utils/process-props'
 import SpotlightShadowShader from '@/utils/glsl/DefaultSpotlightShadowShadows.glsl?raw'
+import { processProps } from '@/utils/process-props'
+import { useRef } from '@/utils/use-refs'
+
+const T = createT({
+  Group,
+  SpotLight: SpotLightImpl,
+  Mesh,
+  PlaneGeometry,
+  MeshBasicMaterial,
+  SpotLightHelper,
+})
 
 /**********************************************************************************/
 /*                                                                                */
@@ -100,7 +113,7 @@ const useSpotLightContext = () => {
 /*                                                                                */
 /**********************************************************************************/
 
-interface VolumetricMeshProps extends S3.Props<'SpotLight'> {
+interface VolumetricMeshProps extends S3.Props<typeof SpotLight> {
   depthBuffer?: DepthTexture
   attenuation?: number
   anglePower?: number
@@ -154,7 +167,7 @@ function VolumetricMesh(props: VolumetricMeshProps) {
   return (
     <>
       <T.Mesh ref={mesh} geometry={geometry()} raycast={() => null}>
-        <T.Primitive
+        <Entity
           object={material}
           attach="material"
           uniforms-opacity-value={config.opacity}
@@ -241,7 +254,7 @@ function SpotlightShadowWithShader(props: SpotlightShadowWithShaderProps) {
     const renderTarget = new WebGLRenderTarget(config.width, config.height, {
       format: RGBAFormat,
       // TODO: alias encoding
-      encoding: LinearEncoding,
+      encoding: 'LinearEncoding' in THREE ? THREE.LinearEncoding : null,
       stencilBuffer: false,
       // depthTexture: null!
     })
@@ -416,17 +429,15 @@ function SpotLight(props: SpotlightProps) {
       'children',
     ],
   )
-  let ref: SpotLightImpl = null!
 
-  createEffect(() => {
-    if (typeof config.ref === 'function') config.ref(ref)
-    else config.ref = ref
-  })
+  const spotLight = new SpotLightImpl()
+
+  useRef(config, spotLight)
 
   return (
     <T.Group>
-      <T.SpotLight
-        ref={ref}
+      <Entity
+        from={spotLight}
         angle={config.angle}
         color={config.color}
         distance={config.distance}
@@ -447,10 +458,10 @@ function SpotLight(props: SpotlightProps) {
             anglePower={config.anglePower}
           />
         </Show>
-      </T.SpotLight>
+      </Entity>
       <spotLightContext.Provider
         value={{
-          spotlight: ref,
+          spotlight: spotLight,
           get debug() {
             return config.debug
           },
@@ -458,7 +469,7 @@ function SpotLight(props: SpotlightProps) {
       >
         {config.children}
       </spotLightContext.Provider>
-      <T.SpotLightHelper args={[ref]} />
+      <T.SpotLightHelper args={[spotLight]} />
     </T.Group>
   )
 }

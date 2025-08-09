@@ -1,14 +1,12 @@
-import { createEffect, onCleanup, splitProps } from 'solid-js'
+import { useRef } from '@/utils/use-refs'
 import type { Ref } from 'solid-js'
-import { T, useFrame, useThree } from 'solid-three'
+import { createEffect, onCleanup, splitProps } from 'solid-js'
 import type { S3 } from 'solid-three'
+import { Entity, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { DeviceOrientationControls as DeviceOrientationControlsImp } from 'three-stdlib'
 
-type DeviceOrientationControlsPropsBase = Omit<
-  S3.ClassProps<DeviceOrientationControlsImp>,
-  'object'
->
+type DeviceOrientationControlsPropsBase = Omit<S3.Props<DeviceOrientationControlsImp>, 'object'>
 export interface DeviceOrientationControlsProps extends DeviceOrientationControlsPropsBase {
   ref?: Ref<DeviceOrientationControlsImp>
   camera?: THREE.Camera
@@ -49,5 +47,7 @@ export function DeviceOrientationControls(props: DeviceOrientationControlsProps)
     }
   })
 
-  return <T.Primitive ref={config.ref} object={controls} {...rest} />
+  useRef(config, controls)
+
+  return <Entity from={controls} {...rest} />
 }

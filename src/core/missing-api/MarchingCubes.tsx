@@ -1,11 +1,12 @@
-import { createContext, createEffect, createMemo, useContext } from 'solid-js'
+import { processProps } from '@/utils/process-props'
+import { useRef } from '@/utils/use-refs'
 import type { Ref } from 'solid-js'
-import { T, useFrame } from 'solid-three'
+import { createContext, createMemo, useContext } from 'solid-js'
 import type { S3 } from 'solid-three'
+import { Entity, useFrame } from 'solid-three'
 import * as THREE from 'three'
 import { Color, Group } from 'three'
 import { MarchingCubes as MarchingCubesImpl } from 'three-stdlib'
-import { processProps } from '@/utils/process-props'
 
 type Api = {
   getParent: () => MarchingCubesImpl
@@ -13,7 +14,7 @@ type Api = {
 
 const globalContext = createContext<Api>(null!)
 
-export interface MarchingCubesProps extends S3.Props<'Group'> {
+export interface MarchingCubesProps extends S3.Props<Group> {
   resolution?: number
   maxPolyCount?: number
   enableUvs?: boolean
@@ -51,16 +52,16 @@ export function MarchingCubes(_props: MarchingCubesProps) {
 
   return (
     <>
-      <T.Primitive object={marchingCubes()} {...rest} ref={marchingCubesRef}>
+      <Entity from={marchingCubes()} {...rest} ref={marchingCubesRef}>
         <globalContext.Provider value={{ getParent: () => marchingCubesRef }}>
           {props.children}
         </globalContext.Provider>
-      </T.Primitive>
+      </Entity>
     </>
   )
 }
 
-interface MarchingCubeProps extends S3.Props<'Group'> {
+interface MarchingCubeProps extends S3.Props<Group> {
   ref?: Ref<Group>
   strength?: number
   subtract?: number
@@ -79,12 +80,13 @@ export const MarchingCube = (_props: MarchingCubeProps) => {
 
   const context = useContext(globalContext)
   const vector = new THREE.Vector3()
-  let cubeRef: Group
+  // let cubeRef: Group
+  const cube = new Group()
 
   useFrame(() => {
     const parent = context?.getParent()
     if (!parent) return
-    cubeRef.getWorldPosition(vector)
+    cube.getWorldPosition(vector)
     parent.addBall(
       0.5 + vector.x * 0.5,
       0.5 + vector.y * 0.5,
@@ -94,14 +96,13 @@ export const MarchingCube = (_props: MarchingCubeProps) => {
       props.color,
     )
   })
-  createEffect(() => {
-    if (typeof props.ref === 'function') props.ref(cubeRef)
-    else props.ref = cubeRef
-  })
-  return <T.Group ref={cubeRef} {...rest} />
+
+  useRef(props, cube)
+
+  return <Entity from={cube} {...rest} />
 }
 
-interface MarchingPlaneProps extends S3.Props<'Group'> {
+interface MarchingPlaneProps extends S3.Props<Group> {
   ref?: Ref<Group>
   planeType?: 'x' | 'y' | 'z'
   strength?: number
@@ -120,22 +121,18 @@ export function MarchingPlane(_props: MarchingPlaneProps) {
   )
 
   const context = useContext(globalContext)
-
-  let wallRef: Group
+  const group = new Group()
 
   const planeType = createMemo(() =>
     props.planeType === 'x' ? 'addPlaneX' : props.planeType === 'y' ? 'addPlaneY' : 'addPlaneZ',
   )
 
   useFrame(() => {
-    if (!context?.getParent() || !wallRef) return
+    if (!context?.getParent() || !group) return
     context.getParent()![planeType()](props.strength, props.subtract)
   })
 
-  createEffect(() => {
-    if (typeof props.ref === 'function') props.ref(wallRef)
-    else props.ref = wallRef
-  })
+  useRef(props, group)
 
-  return <T.Group ref={wallRef} {...rest} />
+  return <Entity from={group} {...rest} />
 }

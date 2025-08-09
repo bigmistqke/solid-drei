@@ -1,10 +1,8 @@
+import { Entity } from 'solid-three'
 import * as THREE from 'three'
-
+import { Lathe } from '../../src'
 import { Setup } from '../Setup'
 import { useTurntable } from '../useTurntable'
-
-import { T } from 'solid-three'
-import { Lathe } from '../../src'
 
 export default {
   title: 'Shapes/Lathe',
@@ -28,7 +26,7 @@ function LatheScene() {
 
   return (
     <Lathe ref={turntable} args={[points]}>
-      <T.MeshPhongMaterial color="#f3f3f3" wireframe />
+      <Entity from={new THREE.MeshPhongMaterial()} color="#f3f3f3" wireframe />
     </Lathe>
   )
 }

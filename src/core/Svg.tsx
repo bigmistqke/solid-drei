@@ -1,11 +1,13 @@
+import { check } from '@/utils/conditionals'
 import { For, Show, createMemo, onCleanup, splitProps } from 'solid-js'
-import { T, useLoader } from 'solid-three'
 import type { S3 } from 'solid-three'
-import { DoubleSide, Object3D } from 'three'
+import { createT, useLoader } from 'solid-three'
+import { DoubleSide, Mesh, MeshBasicMaterial, Object3D, ShapeGeometry } from 'three'
 import { SVGLoader } from 'three-stdlib'
-import { when } from '@/utils/conditionals'
 
-export interface SvgProps extends Omit<S3.Props<'Object3D'>, 'ref'> {
+const T = createT({ Object3D, Mesh, ShapeGeometry, MeshBasicMaterial })
+
+export interface SvgProps extends Omit<S3.Props<Object3D>, 'ref'> {
   ref: Object3D
   /** src can be a URL or SVG data */
   src: string
@@ -14,13 +16,13 @@ export interface SvgProps extends Omit<S3.Props<'Object3D'>, 'ref'> {
   /** Skip rendering the strokes of the SVG paths */
   skipStrokes?: boolean
   /** Material properties for the fill of the SVG paths */
-  fillMaterial?: S3.Props<'MeshBasicMaterial'>
+  fillMaterial?: S3.Props<MeshBasicMaterial>
   /** Material properties for the strokes of the SVG paths */
-  strokeMaterial?: S3.Props<'MeshBasicMaterial'>
+  strokeMaterial?: S3.Props<MeshBasicMaterial>
   /** Additional properties for the fill meshes */
-  fillMeshProps?: S3.Props<'Mesh'>
+  fillMeshProps?: S3.Props<Mesh>
   /** Additional properties for the stroke meshes */
-  strokeMeshProps?: S3.Props<'Mesh'>
+  strokeMeshProps?: S3.Props<Mesh>
 }
 
 /**
@@ -87,7 +89,7 @@ export function Svg(props: SvgProps) {
   )
 
   const strokeGeometries = createMemo(() => {
-    return when(resource, svg =>
+    return check(resource, svg =>
       config.skipStrokes
         ? []
         : svg.paths.map(path =>

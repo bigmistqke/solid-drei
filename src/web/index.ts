@@ -1,4 +1,4 @@
-export * from '../core'
+export * from '../core/index'
 export * from './KeyboardControls'
 export { Loader } from './Loader'
 export { useCursor } from './useCursor'

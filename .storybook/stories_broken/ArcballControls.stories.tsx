@@ -1,17 +1,17 @@
-import { Portal, T, useFrame } from 'solid-three'
-import { Scene } from 'three'
-
+import { createT, Portal, useFrame } from 'solid-three'
+import type { OrthographicCamera, PerspectiveCamera as PerspectiveCameraType } from 'three'
+import { Color, MeshBasicMaterial, Scene } from 'three'
+import type { ArcballControlsProps } from '../../src'
 import { ArcballControls, Box, PerspectiveCamera, Plane, useFBO } from '../../src'
 import { Setup } from '../Setup'
-
-import type { OrthographicCamera, PerspectiveCamera as PerspectiveCameraType } from 'three'
-import type { ArcballControlsProps } from '../../src'
 
 const args = {
   enablePan: true,
   enableRotate: true,
   enableZoom: true,
 }
+
+const T = createT({ MeshBasicMaterial, Color })
 
 export const ArcballControlsStory = (props: ArcballControlsProps) => (
   <>

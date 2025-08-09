@@ -1,12 +1,13 @@
 import { ControlUtils } from '@/core/control-utils'
-import { createMemo, splitProps } from 'solid-js'
+import { useRef } from '@/utils/use-refs'
 import type { Ref } from 'solid-js'
-import { T, useThree } from 'solid-three'
+import { createMemo, splitProps } from 'solid-js'
 import type { S3 } from 'solid-three'
+import { Entity, useThree } from 'solid-three'
 import type { Event, OrthographicCamera, PerspectiveCamera } from 'three'
 import { ArcballControls as ThreeArcballControls } from 'three-stdlib'
 
-export interface ArcballControlsProps extends S3.ClassProps<ThreeArcballControls> {
+export interface ArcballControlsProps extends S3.Props<ThreeArcballControls> {
   ref?: Ref<ThreeArcballControls>
   camera?: OrthographicCamera | PerspectiveCamera
   domElement?: HTMLElement
@@ -39,5 +40,7 @@ export function ArcballControls(props: ArcballControlsProps) {
   ControlUtils.addEventHandler(controls, 'start', event => config.onStart?.(event))
   ControlUtils.addEventHandler(controls, 'end', event => config.onEnd?.(event))
 
-  return <T.Primitive ref={config.ref} object={controls()} {...rest} />
+  useRef(props, controls)
+
+  return <Entity from={controls()} {...rest} />
 }

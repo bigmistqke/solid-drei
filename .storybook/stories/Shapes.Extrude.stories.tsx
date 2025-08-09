@@ -1,10 +1,8 @@
+import { Entity } from 'solid-three'
 import * as THREE from 'three'
-
+import { Extrude } from '../../src'
 import { Setup } from '../Setup'
 import { useTurntable } from '../useTurntable'
-
-import { T } from 'solid-three'
-import { Extrude } from '../../src'
 
 export default {
   title: 'Shapes/Extrude',
@@ -45,7 +43,7 @@ function ExtrudeScene() {
   return (
     <>
       <Extrude ref={turntable} args={[shape, extrudeSettings]}>
-        <T.MeshPhongMaterial color="#f3f3f3" wireframe />
+        <Entity from={new THREE.MeshPhongMaterial()} color="#f3f3f3" wireframe />
       </Extrude>
     </>
   )

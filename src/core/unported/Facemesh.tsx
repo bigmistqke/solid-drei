@@ -3,7 +3,7 @@ import { createEffect, createMemo, createSignal } from 'solid-js'
 import { T, ThreeProps, useThree } from 'solid-three'
 import * as THREE from 'three'
 
-import { when } from '@/utils/conditionals'
+import { check } from '@/utils/conditionals'
 import { defaultProps } from '@/utils/default-props'
 import { processProps } from '@/utils/process-props'
 import { RefComponent } from '@/utils/type-utils'
@@ -396,7 +396,7 @@ export const FacemeshEye: RefComponent<FacemeshEyeApi, FacemeshEyeProps> = _prop
   const rotation = new THREE.Euler()
   const _update: FacemeshEyeApi['_update'] = (faceGeometry, faceBlendshapes, sphere) => {
     // A.
-    when(eyeMeshRef)(eyeMeshRef => {
+    check(eyeMeshRef)(eyeMeshRef => {
       sphere ??= _computeSphere(faceGeometry) // compute sphere dims (if not passed)
       eyeMeshRef.position.copy(sphere!.center)
       eyeMeshRef.scale.setScalar(sphere!.radius)
@@ -426,7 +426,7 @@ export const FacemeshEye: RefComponent<FacemeshEyeApi, FacemeshEyeProps> = _prop
   //
 
   const api = createMemo<FacemeshEyeApi | undefined>(() =>
-    when(
+    check(
       eyeMeshRef,
       irisDirRef,
     )((eyeMeshRef, irisDirRef) => ({

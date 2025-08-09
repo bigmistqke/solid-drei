@@ -1,10 +1,9 @@
-import { createRenderEffect } from 'solid-js'
+import { processProps } from '@/utils/process-props'
 import type { Ref } from 'solid-js'
-import { T } from 'solid-three'
+import { createRenderEffect } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { Vector3 } from 'three'
 import { Sky as SkyImpl } from 'three-stdlib'
-import { processProps } from '@/utils/process-props'
 
 /**********************************************************************************/
 /*                                                                                */
@@ -75,7 +74,7 @@ export function Sky(props: SkyProps) {
   createRenderEffect(() => scale.setScalar(config.distance))
 
   return (
-    <T.Primitive
+    <Entity
       object={sky}
       ref={config.ref}
       material-uniforms-mieCoefficient-value={config.mieCoefficient}

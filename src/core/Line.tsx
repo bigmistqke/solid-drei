@@ -1,9 +1,12 @@
-import { createMemo, createRenderEffect, onCleanup } from 'solid-js'
+import { every, when } from '@/utils/conditionals'
+import { processProps } from '@/utils/process-props'
 import type { Ref } from 'solid-js'
-import { T, useThree } from 'solid-three'
+import { createEffect, createMemo, createRenderEffect, onCleanup } from 'solid-js'
 import type { S3 } from 'solid-three'
-import { Color, Vector2, Vector3 } from 'three'
+import { Entity, useThree } from 'solid-three'
 import type { ColorRepresentation } from 'three'
+import { Color, Vector2, Vector3, Vector4 } from 'three'
+import type { LineMaterialParameters } from 'three-stdlib'
 import {
   Line2,
   LineGeometry,
@@ -11,25 +14,22 @@ import {
   LineSegments2,
   LineSegmentsGeometry,
 } from 'three-stdlib'
-import type { LineMaterialParameters } from 'three-stdlib'
-import { every, whenever } from '@/utils/conditionals'
-import { processProps } from '@/utils/process-props'
 
 type LinePropsBase = Omit<LineMaterialParameters, 'vertexColors' | 'color'> &
-  Omit<S3.ClassProps<Line2>, 'args'> &
-  Omit<S3.ClassProps<LineMaterial>, 'color' | 'vertexColors' | 'args'>
+  Omit<S3.Props<Line2>, 'args'> &
+  Omit<S3.Props<LineMaterial>, 'color' | 'vertexColors' | 'args'>
 
 export interface LineProps extends LinePropsBase {
   ref?: Ref<LineSegments2 | Line2>
-  points: Array<Vector3 | Vector2 | [number, number, number] | [number, number] | number>
-  vertexColors?: Array<Color | [number, number, number]>
+  points: ReadonlyArray<Vector3 | Vector2 | [number, number, number] | [number, number] | number>
+  vertexColors?: ReadonlyArray<Color | [number, number, number] | [number, number, number, number]>
   lineWidth?: number
   segments?: boolean
   color?: ColorRepresentation
 }
 
 export function Line(props: LineProps) {
-  const [config, rest] = processProps(props, { color: 'black' }, [
+  const [config, rest] = processProps(props, { color: 0xffffff }, [
     'ref',
     'points',
     'color',
@@ -45,32 +45,35 @@ export function Line(props: LineProps) {
     config.segments ? new LineSegments2() : new Line2(),
   )
   const lineMaterial = new LineMaterial()
+  const itemSize = (config.vertexColors?.[0] as number[] | undefined)?.length
   const lineGeometry = createMemo(() => {
     const geometry = config.segments ? new LineSegmentsGeometry() : new LineGeometry()
+    let localColor = config.color
 
-    const positions = config.points.map(p => {
-      const isArray = Array.isArray(p)
-      return p instanceof Vector3
-        ? [p.x, p.y, p.z]
-        : p instanceof Vector2
-        ? [p.x, p.y, 0]
-        : isArray && p.length === 3
-        ? [p[0], p[1], p[2]]
-        : isArray && p.length === 2
-        ? [p[0], p[1], 0]
-        : p
+    const positions = config.points.map(point => {
+      return point instanceof Vector3 || point instanceof Vector4
+        ? point.toArray()
+        : point instanceof Vector2
+        ? [point.x, point.y, 0]
+        : Array.isArray(point)
+        ? point.length === 3
+          ? [point[0], point[1], point[2]]
+          : [point[0], point[1], 0]
+        : point
     })
     geometry.setPositions(positions.flat())
 
     if (config.vertexColors) {
+      // using vertexColors requires the color value to be white see #1813
+      localColor = 0xffffff
       const colors = config.vertexColors.map(c => (c instanceof Color ? c.toArray() : c))
-      geometry.setColors(colors.flat())
+      geometry.setColors(colors.flat(), itemSize)
     }
 
-    return geometry
+    return { geometry, color: localColor }
   })
 
-  createRenderEffect(whenever(every(line2, config.points), ([line]) => line.computeLineDistances()))
+  createEffect(when(every(line2, config.points), ([line]) => line.computeLineDistances()))
 
   createRenderEffect(() => {
     if (config.dashed) {
@@ -82,23 +85,25 @@ export function Line(props: LineProps) {
     lineMaterial.needsUpdate = true
   })
 
-  onCleanup(() => lineGeometry().dispose())
+  onCleanup(() => {
+    lineGeometry().geometry.dispose()
+    lineMaterial.dispose()
+  })
 
   return (
-    <>
-      <T.Primitive object={line2()} ref={config.ref} {...rest}>
-        <T.Primitive object={lineGeometry()} attach="geometry" />
-        <T.Primitive
-          object={lineMaterial}
-          attach="material"
-          color={config.color}
-          vertexColors={Boolean(config.vertexColors)}
-          resolution={[store.bounds.width, store.bounds.height]}
-          linewidth={config.linewidth ?? config.lineWidth}
-          dashed={config.dashed}
-          {...rest}
-        />
-      </T.Primitive>
-    </>
+    <Entity from={line2()} ref={config.ref}>
+      <Entity from={lineGeometry().geometry} attach="geometry" />
+      <Entity
+        from={lineMaterial}
+        attach="material"
+        color={lineGeometry().color}
+        vertexColors={Boolean(config.vertexColors)}
+        resolution={[store.bounds.width, store.bounds.height]}
+        linewidth={config.linewidth ?? config.lineWidth ?? 1}
+        dashed={config.dashed}
+        transparent={itemSize === 4}
+        {...rest}
+      />
+    </Entity>
   )
 }

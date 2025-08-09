@@ -4,14 +4,15 @@
         by https://github.com/grischaerbe and https://github.com/jerzakm
 */
 
-import { createEffect, splitProps } from 'solid-js'
-import type { Ref } from 'solid-js'
-import { T, extend, useFrame } from 'solid-three'
-import type { S3 } from 'solid-three'
-import { BackSide, Color, Mesh, Plane, ShaderMaterial, Uniform, Vector3 } from 'three'
-import type { ColorRepresentation, Side } from 'three'
-import { shaderMaterial } from '../materials/shaderMaterial'
 import { processProps } from '@/utils/process-props'
+import { useRef } from '@/utils/use-refs'
+import type { Ref } from 'solid-js'
+import { splitProps } from 'solid-js'
+import type { S3 } from 'solid-three'
+import { createT, Entity, useFrame } from 'solid-three'
+import type { ColorRepresentation, ShaderMaterial, Side, Uniform } from 'three'
+import { BackSide, Color, Mesh, Plane, PlaneGeometry, Vector3 } from 'three'
+import { shaderMaterial } from '../materials/shaderMaterial'
 
 export interface GridMaterialType {
   /** Cell size, default: 0.5 */
@@ -36,14 +37,6 @@ export interface GridMaterialType {
   fadeStrength?: number
   /** Material side, default: BackSide */
   side?: Side
-}
-
-declare global {
-  namespace SolidThree {
-    interface Elements {
-      GridMaterial: S3.Props<'ShaderMaterial'> & GridMaterialType
-    }
-  }
 }
 
 /**********************************************************************************/
@@ -124,10 +117,12 @@ const GridMaterial = shaderMaterial(
       if (gl_FragColor.a <= 0.0) discard;
 
       #include <tonemapping_fragment>
-      #include <encodings_fragment>
+      #include <colorspace_fragment>
     }
   `,
 )
+
+const T = createT({ GridMaterial, PlaneGeometry })
 
 /**********************************************************************************/
 /*                                                                                */
@@ -135,15 +130,13 @@ const GridMaterial = shaderMaterial(
 /*                                                                                */
 /**********************************************************************************/
 
-type GridPropsBase = Omit<S3.Props<'Mesh'>, 'args'> & GridMaterialType
+type GridPropsBase = Omit<S3.Props<typeof Mesh>, 'args'> & GridMaterialType
 export interface GridProps extends GridPropsBase {
   ref?: Ref<Mesh>
-  args?: S3.Props<'PlaneGeometry'>['args']
+  args?: S3.Props<typeof PlaneGeometry>['args']
 }
 
 export function Grid(props: GridProps) {
-  extend({ GridMaterial })
-
   const [config, rest] = processProps(
     props,
     {
@@ -190,7 +183,7 @@ export function Grid(props: GridProps) {
     'followCamera',
   ])
 
-  let mesh: Mesh
+  const mesh = new Mesh()
   const plane = new Plane()
   const upVector = new Vector3(0, 1, 0)
   const zeroVector = new Vector3(0, 0, 0)
@@ -199,21 +192,28 @@ export function Grid(props: GridProps) {
     plane.setFromNormalAndCoplanarPoint(upVector, zeroVector).applyMatrix4(mesh.matrixWorld)
 
     const gridMaterial = mesh.material as ShaderMaterial
+
+    if (!gridMaterial) {
+      return
+    }
+
     const worldCamProjPosition = gridMaterial.uniforms.worldCamProjPosition as Uniform<Vector3>
     const worldPlanePosition = gridMaterial.uniforms.worldPlanePosition as Uniform<Vector3>
+
+    if (!worldCamProjPosition || !worldPlanePosition) {
+      return
+    }
 
     plane.projectPoint(state.camera.position, worldCamProjPosition.value)
     worldPlanePosition.value.set(0, 0, 0).applyMatrix4(mesh.matrixWorld)
   })
 
-  createEffect(() => {
-    if (typeof config.ref === 'function') config.ref(mesh)
-    else config.ref = mesh
-  })
+  useRef(config, mesh)
 
   return (
-    <T.Mesh ref={mesh!} frustumCulled={false} {...rest}>
-      <T.GridMaterial
+    <Entity from={mesh} frustumCulled={false} {...rest}>
+      <Entity
+        from={new GridMaterial()}
         transparent
         extensions-derivatives
         side={config.side}
@@ -221,6 +221,6 @@ export function Grid(props: GridProps) {
         {...uniforms2}
       />
       <T.PlaneGeometry args={config.args} />
-    </T.Mesh>
+    </Entity>
   )
 }

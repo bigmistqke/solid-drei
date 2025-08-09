@@ -1,10 +1,10 @@
-import { type Ref, createEffect, onCleanup, onMount } from 'solid-js'
-import { type S3, T, useLoader, useThree } from 'solid-three'
-import { AudioListener, AudioLoader, PositionalAudio as PositionalAudioImpl } from 'three'
-import { whenever } from '@/utils/conditionals'
+import { when } from '@/utils/conditionals'
 import { processProps } from '@/utils/process-props'
+import { type Ref, createEffect, onCleanup, onMount } from 'solid-js'
+import { type S3, useLoader, useThree } from 'solid-three'
+import { AudioListener, AudioLoader, PositionalAudio as PositionalAudioImpl } from 'three'
 
-interface PositionalAudioProps extends S3.Props<'PositionalAudio'> {
+interface PositionalAudioProps extends S3.Props<typeof PositionalAudioImpl> {
   ref?: Ref<PositionalAudioImpl>
   url: string
   distance?: number
@@ -18,16 +18,17 @@ export function PositionalAudio(props: PositionalAudioProps) {
       distance: 1,
       loop: true,
     },
-    ['ref', 'url', 'distance', 'loop', 'autoplay'],
+    ['args', 'autoplay', 'distance', 'loop', 'ref', 'url'],
   )
-  let positionalAudio: PositionalAudioImpl
+
+  const listener = new AudioListener()
+  const positionalAudio = new PositionalAudioImpl(listener)
 
   const store = useThree()
   const buffer = useLoader(AudioLoader, () => config.url)
-  const listener = new AudioListener()
 
   createEffect(
-    whenever(buffer, buffer => {
+    when(buffer, buffer => {
       positionalAudio.setBuffer(buffer)
       positionalAudio.setRefDistance(config.distance)
       positionalAudio.setLoop(config.loop)
@@ -46,5 +47,5 @@ export function PositionalAudio(props: PositionalAudioProps) {
       positionalAudio.disconnect()
   })
 
-  return <T.PositionalAudio ref={positionalAudio!} args={[listener]} {...rest} />
+  return <Entity from={positionalAudio} ref={positionalAudio!} {...rest} />
 }

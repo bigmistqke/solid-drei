@@ -1,18 +1,11 @@
-import { createContext, createEffect, createSignal, onMount, useContext } from 'solid-js'
-import type { Ref, JSX } from 'solid-js'
-import { T, extend, useFrame } from 'solid-three'
+import { processProps } from '@/utils/process-props'
+import { useRef } from '@/utils/use-refs'
+import type { JSX, Ref } from 'solid-js'
+import { createContext, createSignal, onMount, useContext } from 'solid-js'
 import type { S3 } from 'solid-three'
+import { Entity, useFrame } from 'solid-three'
 import { Color, Vector2, Vector3 } from 'three'
 import { Line2, LineMaterial, LineSegmentsGeometry } from 'three-stdlib'
-import { processProps } from '@/utils/process-props'
-
-declare global {
-  namespace SolidThree {
-    interface Elements {
-      SegmentObject: SegmentObject
-    }
-  }
-}
 
 /**********************************************************************************/
 /*                                                                                */
@@ -61,8 +54,6 @@ interface SegmentsProps {
 }
 
 export function Segments(props: SegmentsProps) {
-  extend({ SegmentObject })
-
   const [config, rest] = processProps(
     props,
     {
@@ -107,10 +98,10 @@ export function Segments(props: SegmentsProps) {
   })
 
   return (
-    <T.Primitive object={line} ref={config.ref}>
-      <T.Primitive object={geometry} attach="geometry" />
-      <T.Primitive
-        object={material}
+    <Entity from={line} ref={config.ref}>
+      <Entity from={geometry} attach="geometry" />
+      <Entity
+        from={material}
         attach="material"
         vertexColors={true}
         resolution={resolution}
@@ -127,7 +118,7 @@ export function Segments(props: SegmentsProps) {
       >
         {config.children}
       </segmentsContext.Provider>
-    </T.Primitive>
+    </Entity>
   )
 }
 
@@ -147,7 +138,7 @@ function normalizePosition(position: SegmentProps['start']): Vector3 {
   return new Vector3(...position)
 }
 
-interface SegmentProps extends Omit<S3.Props<'SegmentObject'>, 'start' | 'end' | 'color'> {
+interface SegmentProps extends Omit<S3.Props<SegmentObject>, 'start' | 'end' | 'color'> {
   ref?: Ref<SegmentObject>
   start: S3.Vector3
   end: S3.Vector3
@@ -156,20 +147,17 @@ interface SegmentProps extends Omit<S3.Props<'SegmentObject'>, 'start' | 'end' |
 
 export function Segment(props: SegmentProps) {
   const api = useSegments()
-  let segmentObject: SegmentObject
+  const segmentObject = new SegmentObject()
 
   onMount(() => {
     api.subscribe(segmentObject)
   })
 
-  createEffect(() => {
-    if (typeof props.ref === 'function') props.ref(segmentObject)
-    else props.ref = segmentObject
-  })
+  useRef(props, segmentObject)
 
   return (
-    <T.SegmentObject
-      ref={segmentObject!}
+    <Entity
+      from={segmentObject}
       color={props.color}
       start={normalizePosition(props.start)}
       end={normalizePosition(props.end)}

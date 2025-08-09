@@ -1,11 +1,11 @@
-import { createEffect } from 'solid-js'
-import type { JSX, Ref } from 'solid-js'
-import { T, useFrame } from 'solid-three'
-import type { S3 } from 'solid-three'
-import { Group, MathUtils } from 'three'
 import { processProps } from '@/utils/process-props'
+import { useRef } from '@/utils/use-refs'
+import type { JSX, Ref } from 'solid-js'
+import type { S3 } from 'solid-three'
+import { Entity, useFrame } from 'solid-three'
+import { Group, MathUtils } from 'three'
 
-export interface FloatProps extends Omit<S3.Props<'Group'>, 'children'> {
+export interface FloatProps extends Omit<S3.Props<Group>, 'children'> {
   ref?: Ref<Group>
   enabled?: boolean
   speed?: number
@@ -27,7 +27,7 @@ export const Float = (props: FloatProps) => {
     },
     ['ref', 'children', 'enabled', 'speed', 'rotationIntensity', 'floatIntensity', 'floatingRange'],
   )
-  let group: Group
+  const group = new Group()
 
   let offset = Math.random() * 10000
   useFrame(state => {
@@ -49,16 +49,13 @@ export const Float = (props: FloatProps) => {
     group.updateMatrix()
   })
 
-  createEffect(() => {
-    if (typeof props.ref === 'function') props.ref(group)
-    else props.ref = group
-  })
+  useRef(props, group)
 
   return (
-    <T.Group {...rest}>
-      <T.Group ref={group!} matrixAutoUpdate={false}>
+    <Entity from={new Group()} {...rest}>
+      <Entity from={group} matrixAutoUpdate={false}>
         {config.children}
-      </T.Group>
-    </T.Group>
+      </Entity>
+    </Entity>
   )
 }

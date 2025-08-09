@@ -1,7 +1,7 @@
 import { defaultProps } from '@/utils/default-props'
 import { createContext, createEffect, useContext } from 'solid-js'
-import { T, useFrame, useThree } from 'solid-three'
 import type { S3 } from 'solid-three'
+import { Entity, useFrame, useThree } from 'solid-three'
 import {
   Group,
   Matrix4,
@@ -51,7 +51,7 @@ const [q1, q2] = [new Quaternion(), new Quaternion()]
 const target = new Vector3()
 const targetPosition = new Vector3()
 
-export interface GizmoHelperProps extends S3.Props<'Group'> {
+export interface GizmoHelperProps extends S3.Props<Group> {
   alignment?:
     | 'top-left'
     | 'top-right'
@@ -174,9 +174,9 @@ export const GizmoHelper = (props: GizmoHelperProps): any => {
         }}
       >
         <OrthographicCamera makeDefault ref={camera!} position={[0, 0, 200]} />
-        <T.Group ref={gizmo!} position={position()}>
+        <Entity from={new Group()} ref={gizmo!} position={position()}>
           {config.children}
-        </T.Group>
+        </Entity>
       </gizmoHelperContext.Provider>
     </Hud>
   )

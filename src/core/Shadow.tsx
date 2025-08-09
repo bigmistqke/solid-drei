@@ -1,9 +1,16 @@
-import { type Ref, createMemo, onMount } from 'solid-js'
-import { type S3, T } from 'solid-three'
-import { Color, DoubleSide, Mesh, MeshBasicMaterial } from 'three'
 import { processProps } from '@/utils/process-props'
+import { createMemo, onMount, type Ref } from 'solid-js'
+import { createT, type S3 } from 'solid-three'
+import { CanvasTexture, Color, DoubleSide, Mesh, MeshBasicMaterial, PlaneGeometry } from 'three'
 
-interface ShadowProps extends S3.Props<'Mesh'> {
+const T = createT({
+  Mesh,
+  PlaneGeometry,
+  MeshBasicMaterial,
+  CanvasTexture,
+})
+
+interface ShadowProps extends S3.Props<Mesh> {
   ref?: Ref<Mesh>
   colorStop?: number
   fog?: boolean
@@ -18,7 +25,7 @@ export function Shadow(props: ShadowProps) {
     { fog: false, depthWrite: false, colorStop: 0.0, color: 'black', opacity: 0.5 },
     ['ref', 'fog', 'renderOrder', 'depthWrite', 'colorStop', 'color', 'opacity'],
   )
-  let mat: MeshBasicMaterial
+  const mat = new MeshBasicMaterial()
 
   const canvas = createMemo(() => {
     const canvas = document.createElement('canvas')
@@ -43,9 +50,10 @@ export function Shadow(props: ShadowProps) {
   onMount(() => (mat.needsUpdate = true))
 
   return (
-    <T.Mesh renderOrder={config.renderOrder} ref={config.ref} rotation-x={-Math.PI / 2} {...rest}>
+    <T.Mesh ref={config.ref} renderOrder={config.renderOrder} rotation-x={-Math.PI / 2} {...rest}>
       <T.PlaneGeometry />
-      <T.MeshBasicMaterial
+      <Entity
+        object={mat}
         transparent={true}
         opacity={config.opacity}
         fog={config.fog}
@@ -54,7 +62,7 @@ export function Shadow(props: ShadowProps) {
         ref={mat!}
       >
         <T.CanvasTexture attach="map" args={[canvas()]} />
-      </T.MeshBasicMaterial>
+      </Entity>
     </T.Mesh>
   )
 }

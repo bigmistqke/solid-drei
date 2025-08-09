@@ -1,15 +1,18 @@
-import { type Ref, createMemo } from 'solid-js'
-import { T, useFrame } from 'solid-three'
-import { AdditiveBlending, Color, Points, ShaderMaterial, Spherical, Vector3 } from 'three'
 import { defaultProps } from '@/utils/default-props'
+import { type Ref, createMemo } from 'solid-js'
+import { createT, Entity, useFrame } from 'solid-three'
+import {
+  AdditiveBlending,
+  BufferAttribute,
+  BufferGeometry,
+  Color,
+  Points,
+  ShaderMaterial,
+  Spherical,
+  Vector3,
+} from 'three'
 
-declare global {
-  namespace SolidThree {
-    interface Elements {
-      StarfieldMaterial: typeof StarfieldMaterial
-    }
-  }
-}
+const T = createT({ Points, BufferGeometry, BufferAttribute })
 
 /**********************************************************************************/
 /*                                                                                */
@@ -89,7 +92,8 @@ export function Stars(props: StarProps) {
     fade: false,
     speed: 1,
   })
-  let material: StarfieldMaterial
+
+  const starfieldMaterial = new StarfieldMaterial()
 
   const memo = createMemo(() => {
     const positions: any[] = []
@@ -115,11 +119,8 @@ export function Stars(props: StarProps) {
   })
 
   useFrame(state => {
-    if (!material) return
-    material.uniforms.time!.value = state.clock.getElapsedTime() * config.speed
+    starfieldMaterial.uniforms.time!.value = state.clock.getElapsedTime() * config.speed
   })
-
-  const starfieldMaterial = new StarfieldMaterial()
 
   return (
     <T.Points ref={config.ref}>
@@ -128,9 +129,8 @@ export function Stars(props: StarProps) {
         <T.BufferAttribute attach="attributes-color" args={[memo().color, 3]} />
         <T.BufferAttribute attach="attributes-size" args={[memo().size, 1]} />
       </T.BufferGeometry>
-      <T.Primitive
-        ref={material!}
-        object={starfieldMaterial}
+      <Entity
+        from={starfieldMaterial}
         attach="material"
         blending={AdditiveBlending}
         uniforms-fade-value={config.fade}

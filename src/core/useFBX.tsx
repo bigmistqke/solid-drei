@@ -18,7 +18,7 @@ import { FBXLoader } from 'three-stdlib'
  *   const model = useFBX(fbxPath);
  *   return (
  *     <Suspense>
- *       <T.Primitive object={model()} />
+ *       <T.Entity from={model()} />
  *     </Suspense>
  *   );
  * }

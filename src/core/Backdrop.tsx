@@ -1,12 +1,12 @@
-import { createEffect, mergeProps, splitProps } from 'solid-js'
 import type { JSXElement } from 'solid-js'
-import { T } from 'solid-three'
-import type { S3 } from 'solid-three'
-import { BufferAttribute, PlaneGeometry } from 'three'
+import { createEffect, mergeProps, splitProps } from 'solid-js'
+import { createT, type S3 } from 'solid-three'
+import { BufferAttribute, Group, Mesh, PlaneGeometry } from 'three'
 
 const easeInExpo = (x: number) => (x === 0 ? 0 : Math.pow(2, 10 * x - 10))
+const T = createT({ Group, Mesh, PlaneGeometry })
 
-export interface BackdropProps extends S3.Props<'Group'> {
+export interface BackdropProps extends S3.Props<typeof Group> {
   floor?: number
   segments?: number
   receiveShadow?: boolean

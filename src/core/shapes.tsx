@@ -1,60 +1,87 @@
+import { processProps } from '@/utils/process-props'
 import type { Args } from '@/utils/type-utils'
-import { onMount, splitProps, type JSX } from 'solid-js'
+import { useRef } from '@/utils/use-refs'
 import type { Ref } from 'solid-js'
-import { T } from 'solid-three'
-import type { S3 } from 'solid-three'
-import * as THREE from 'three'
+import { onMount, type JSX } from 'solid-js'
+import { Entity, type S3 } from 'solid-three'
+import {
+  Box3,
+  BoxGeometry,
+  BufferAttribute,
+  CapsuleGeometry,
+  CircleGeometry,
+  ConeGeometry,
+  CylinderGeometry,
+  DodecahedronGeometry,
+  ExtrudeGeometry,
+  Float32BufferAttribute,
+  IcosahedronGeometry,
+  LatheGeometry,
+  Mesh,
+  OctahedronGeometry,
+  PlaneGeometry,
+  PolyhedronGeometry,
+  RingGeometry,
+  ShapeGeometry,
+  SphereGeometry,
+  TetrahedronGeometry,
+  TorusGeometry,
+  TorusKnotGeometry,
+  TubeGeometry,
+  Vector3,
+} from 'three'
 
-export interface ShapeProps<T> extends Omit<S3.Props<'Mesh'>, 'children' | 'args'> {
+type GeometryKind =
+  | typeof BoxGeometry
+  | typeof CircleGeometry
+  | typeof ConeGeometry
+  | typeof CylinderGeometry
+  | typeof SphereGeometry
+  | typeof PlaneGeometry
+  | typeof TubeGeometry
+  | typeof TorusGeometry
+  | typeof TorusKnotGeometry
+  | typeof TetrahedronGeometry
+  | typeof RingGeometry
+  | typeof PolyhedronGeometry
+  | typeof IcosahedronGeometry
+  | typeof OctahedronGeometry
+  | typeof DodecahedronGeometry
+  | typeof ExtrudeGeometry
+  | typeof LatheGeometry
+  | typeof CapsuleGeometry
+  | typeof ShapeGeometry
+
+export interface ShapeProps<T> extends Omit<S3.Props<typeof Mesh>, 'children' | 'args'> {
   args?: Args<T>
   children?: JSX.Element | JSX.Element[]
 }
-interface GeometryProps<TKind extends ShapeKinds> extends S3.Props<'Mesh'> {
-  ref?: Ref<(typeof THREE)[`${TKind}Geometry`]>
+interface GeometryProps<T extends GeometryKind> extends S3.Props<typeof Mesh> {
+  ref?: Ref<Mesh>
+  args?: S3.Props<T>['args']
 }
 
-function create<TKind extends ShapeKinds>(type: TKind, effect?: (mesh: THREE.Mesh) => void) {
-  return (props: GeometryProps<TKind>) => {
-    const [config, rest] = splitProps(props, ['args', 'children', 'ref'])
-    let mesh: THREE.Mesh
+function create<TKind extends GeometryKind>(Geometry: GeometryKind, effect?: (mesh: Mesh) => void) {
+  return function Shape(props: GeometryProps<TKind>) {
+    const [config, rest] = processProps(props, { args: [] }, ['args', 'children', 'ref'])
+
+    const mesh = new Mesh()
 
     onMount(() => effect?.(mesh))
 
-    const Component = T[`${type}Geometry`]
+    useRef(props, mesh)
 
     return (
-      <T.Mesh ref={mesh!} {...rest}>
-        {/* @ts-expect-error */}
-        <Component attach="geometry" args={config.args as any} />
+      <Entity from={mesh} {...rest}>
+        <Entity from={new Geometry(...config.args)} attach="geometry" />
         {config.children}
-      </T.Mesh>
+      </Entity>
     )
   }
 }
 
-type ShapeKinds =
-  | 'Box'
-  | 'Circle'
-  | 'Cone'
-  | 'Cylinder'
-  | 'Sphere'
-  | 'Plane'
-  | 'Tube'
-  | 'Torus'
-  | 'TorusKnot'
-  | 'Tetrahedron'
-  | 'Ring'
-  | 'Polyhedron'
-  | 'Icosahedron'
-  | 'Octahedron'
-  | 'Dodecahedron'
-  | 'Extrude'
-  | 'Lathe'
-  | 'Capsule'
-  | 'Shape'
-
 /**
- * Creates a box-shaped mesh using `THREE.BoxGeometry`.
+ * Creates a box-shaped mesh using `BoxGeometry`.
  *
  * @example
  * export default () => {
@@ -73,10 +100,10 @@ type ShapeKinds =
  *
  * @link https://threejs.org/docs/#api/en/geometries/BoxGeometry
  */
-export const Box = create('Box')
+export const Box = create(BoxGeometry)
 
 /**
- * Creates a circle-shaped mesh using `THREE.CircleGeometry`.
+ * Creates a circle-shaped mesh using `CircleGeometry`.
  *
  * @example
  * export default () => {
@@ -94,10 +121,10 @@ export const Box = create('Box')
  *
  * @link https://threejs.org/docs/#api/en/geometries/CircleGeometry
  */
-export const Circle = create('Circle')
+export const Circle = create(CircleGeometry)
 
 /**
- * Creates a cone-shaped mesh using `THREE.ConeGeometry`.
+ * Creates a cone-shaped mesh using `ConeGeometry`.
  *
  * @example
  * export default () => {
@@ -116,10 +143,10 @@ export const Circle = create('Circle')
  *
  * @link https://threejs.org/docs/#api/en/geometries/ConeGeometry
  */
-export const Cone = create('Cone')
+export const Cone = create(ConeGeometry)
 
 /**
- * Creates a cylinder-shaped mesh using `THREE.CylinderGeometry`.
+ * Creates a cylinder-shaped mesh using `CylinderGeometry`.
  *
  * @example
  * export default () => {
@@ -139,10 +166,10 @@ export const Cone = create('Cone')
  *
  * @link https://threejs.org/docs/#api/en/geometries/CylinderGeometry
  */
-export const Cylinder = create('Cylinder')
+export const Cylinder = create(CylinderGeometry)
 
 /**
- * Creates a sphere-shaped mesh using `THREE.SphereGeometry`.
+ * Creates a sphere-shaped mesh using `SphereGeometry`.
  *
  * @example
  * export default () => {
@@ -161,10 +188,10 @@ export const Cylinder = create('Cylinder')
  *
  * @link https://threejs.org/docs/#api/en/geometries/SphereGeometry
  */
-export const Sphere = create('Sphere')
+export const Sphere = create(SphereGeometry)
 
 /**
- * Creates a plane-shaped mesh using `THREE.PlaneGeometry`.
+ * Creates a plane-shaped mesh using `PlaneGeometry`.
  *
  * @example
  * export default () => {
@@ -182,14 +209,14 @@ export const Sphere = create('Sphere')
  *
  * @link https://threejs.org/docs/#api/en/geometries/PlaneGeometry
  */
-export const Plane = create('Plane')
+export const Plane = create(PlaneGeometry)
 
 /**
- * Creates a tube-shaped mesh using `THREE.TubeGeometry`.
+ * Creates a tube-shaped mesh using `TubeGeometry`.
  *
  * @example
  * export default () => {
- *   const path = new THREE.CurvePath();
+ *   const path = new CurvePath();
  *   const tubularSegments = 20;
  *   const radius = 2;
  *   const radialSegments = 8;
@@ -206,10 +233,10 @@ export const Plane = create('Plane')
  *
  * @link https://threejs.org/docs/#api/en/geometries/TubeGeometry
  */
-export const Tube = create('Tube')
+export const Tube = create(TubeGeometry)
 
 /**
- * Creates a torus-shaped mesh using `THREE.TorusGeometry`.
+ * Creates a torus-shaped mesh using `TorusGeometry`.
  *
  * @example
  * export default () => {
@@ -229,10 +256,10 @@ export const Tube = create('Tube')
  *
  * @link https://threejs.org/docs/#api/en/geometries/TorusGeometry
  */
-export const Torus = create('Torus')
+export const Torus = create(TorusGeometry)
 
 /**
- * Creates a torus knot-shaped mesh using `THREE.TorusKnotGeometry`.
+ * Creates a torus knot-shaped mesh using `TorusKnotGeometry`.
  *
  * @example
  * export default () => {
@@ -252,10 +279,10 @@ export const Torus = create('Torus')
  *
  * @link https://threejs.org/docs/#api/en/geometries/TorusKnotGeometry
  */
-export const TorusKnot = create('TorusKnot')
+export const TorusKnot = create(TorusKnotGeometry)
 
 /**
- * Creates a tetrahedron-shaped mesh using `THREE.TetrahedronGeometry`.
+ * Creates a tetrahedron-shaped mesh using `TetrahedronGeometry`.
  *
  * @example
  * export default () => {
@@ -273,10 +300,10 @@ export const TorusKnot = create('TorusKnot')
  *
  * @link https://threejs.org/docs/#api/en/geometries/TetrahedronGeometry
  */
-export const Tetrahedron = create('Tetrahedron')
+export const Tetrahedron = create(TetrahedronGeometry)
 
 /**
- * Creates a ring-shaped mesh using `THREE.RingGeometry`.
+ * Creates a ring-shaped mesh using `RingGeometry`.
  *
  * @example
  * export default () => {
@@ -295,10 +322,10 @@ export const Tetrahedron = create('Tetrahedron')
  *
  * @link https://threejs.org/docs/#api/en/geometries/RingGeometry
  */
-export const Ring = create('Ring')
+export const Ring = create(RingGeometry)
 
 /**
- * Creates a polyhedron-shaped mesh using `THREE.PolyhedronGeometry`.
+ * Creates a polyhedron-shaped mesh using `PolyhedronGeometry`.
  *
  * @example
  * export default () => {
@@ -325,10 +352,10 @@ export const Ring = create('Ring')
  *
  * @link https://threejs.org/docs/#api/en/geometries/PolyhedronGeometry
  */
-export const Polyhedron = create('Polyhedron')
+export const Polyhedron = create(PolyhedronGeometry)
 
 /**
- * Creates an icosahedron-shaped mesh using `THREE.IcosahedronGeometry`.
+ * Creates an icosahedron-shaped mesh using `IcosahedronGeometry`.
  *
  * @example
  * export default () => {
@@ -346,10 +373,10 @@ export const Polyhedron = create('Polyhedron')
  *
  * @link https://threejs.org/docs/#api/en/geometries/IcosahedronGeometry
  */
-export const Icosahedron = create('Icosahedron')
+export const Icosahedron = create(IcosahedronGeometry)
 
 /**
- * Creates an octahedron-shaped mesh using `THREE.OctahedronGeometry`.
+ * Creates an octahedron-shaped mesh using `OctahedronGeometry`.
  *
  * @example
  * export default () => {
@@ -367,10 +394,10 @@ export const Icosahedron = create('Icosahedron')
  *
  * @link https://threejs.org/docs/#api/en/geometries/OctahedronGeometry
  */
-export const Octahedron = create('Octahedron')
+export const Octahedron = create(OctahedronGeometry)
 
 /**
- * Creates a dodecahedron-shaped mesh using `THREE.DodecahedronGeometry`.
+ * Creates a dodecahedron-shaped mesh using `DodecahedronGeometry`.
  *
  * @example
  * export default () => {
@@ -388,14 +415,14 @@ export const Octahedron = create('Octahedron')
  *
  * @link https://threejs.org/docs/#api/en/geometries/DodecahedronGeometry
  */
-export const Dodecahedron = create('Dodecahedron')
+export const Dodecahedron = create(DodecahedronGeometry)
 
 /**
- * Creates an extrude-shaped mesh using `THREE.ExtrudeGeometry`.
+ * Creates an extrude-shaped mesh using `ExtrudeGeometry`.
  *
  * @example
  * export default () => {
- *   const shape = new THREE.Shape();
+ *   const shape = new Shape();
  *   shape.moveTo(0, 0);
  *   shape.lineTo(0, 1);
  *   shape.lineTo(1, 1);
@@ -424,15 +451,15 @@ export const Dodecahedron = create('Dodecahedron')
  *
  * @link https://threejs.org/docs/#api/en/geometries/ExtrudeGeometry
  */
-export const Extrude = create('Extrude')
+export const Extrude = create(ExtrudeGeometry)
 
 /**
- * Creates a lathe-shaped mesh using `THREE.LatheGeometry`.
+ * Creates a lathe-shaped mesh using `LatheGeometry`.
  *
  * @example
  * export default () => {
  *   const points = Array.from({ length: 10 }, (_, i) => (
- *     new THREE.Vector2(Math.sin(i * 0.2) * 10 + 10, (i - 5) * 2)
+ *     new Vector2(Math.sin(i * 0.2) * 10 + 10, (i - 5) * 2)
  *   ));
  *   return (
  *     <Lathe args={[points]} position={[0, 0, 0]}>
@@ -446,10 +473,10 @@ export const Extrude = create('Extrude')
  *
  * @link https://threejs.org/docs/#api/en/geometries/LatheGeometry
  */
-export const Lathe = create('Lathe')
+export const Lathe = create(LatheGeometry)
 
 /**
- * Creates a capsule-shaped mesh using `THREE.CapsuleGeometry`.
+ * Creates a capsule-shaped mesh using `CapsuleGeometry`.
  *
  * @example
  * export default () => {
@@ -469,14 +496,14 @@ export const Lathe = create('Lathe')
  *
  * @link https://threejs.org/docs/#api/en/geometries/CapsuleGeometry
  */
-export const Capsule = create('Capsule')
+export const Capsule = create(CapsuleGeometry)
 
 /**
- * Creates a custom shape mesh using `THREE.ShapeGeometry`.
+ * Creates a custom shape mesh using `ShapeGeometry`.
  *
  * @example
  * export default () => {
- *   const shape = new THREE.Shape();
+ *   const shape = new Shape();
  *   shape.moveTo(0, 0);
  *   shape.lineTo(0, 1);
  *   shape.lineTo(1, 1);
@@ -494,12 +521,12 @@ export const Capsule = create('Capsule')
  *
  * @link https://threejs.org/docs/#api/en/geometries/ShapeGeometry
  */
-export const Shape = create('Shape', ({ geometry }) => {
+export const Shape = create(ShapeGeometry, ({ geometry }) => {
   // Calculate UVs (by https://discourse.threejs.org/u/prisoner849)
   // https://discourse.threejs.org/t/custom-shape-in-image-not-working/49348/10
-  const pos = geometry.attributes.position as THREE.BufferAttribute
-  const b3 = new THREE.Box3().setFromBufferAttribute(pos)
-  const b3size = new THREE.Vector3()
+  const pos = geometry.attributes.position as BufferAttribute
+  const b3 = new Box3().setFromBufferAttribute(pos)
+  const b3size = new Vector3()
   b3.getSize(b3size)
   const uv: number[] = []
   let x = 0,
@@ -513,5 +540,5 @@ export const Shape = create('Shape', ({ geometry }) => {
     v = (y - b3.min.y) / b3size.y
     uv.push(u, v)
   }
-  geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2))
+  geometry.setAttribute('uv', new Float32BufferAttribute(uv, 2))
 })

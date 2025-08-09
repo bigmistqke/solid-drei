@@ -1,7 +1,7 @@
-import { Accessor, createResource } from 'solid-js'
-import { Texture } from 'three'
-import { whenever } from '@/utils/conditionals'
+import { when } from '@/utils/conditionals'
 import { resolveAccessor } from '@/utils/resolve-accessor'
+import { type Accessor, createResource } from 'solid-js'
+import { Texture } from 'three'
 import { useTexture } from './useTexture'
 
 function getFormatString(format: number) {
@@ -32,7 +32,7 @@ export function useMatcapTexture(
     fetch(LIST_URL).then(res => res.json()),
   )
 
-  const numTot = whenever(matcapList, matcapList => Object.keys(matcapList).length)
+  const numTot = when(matcapList, matcapList => Object.keys(matcapList).length)
 
   const fileHash = () => {
     const _id = resolveAccessor(id)

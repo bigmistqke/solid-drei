@@ -1,11 +1,11 @@
-import { createEffect } from 'solid-js'
-import type { Ref } from 'solid-js'
-import { T, useFrame } from 'solid-three'
-import type { S3 } from 'solid-three'
-import { Group } from 'three'
 import { processProps } from '@/utils/process-props'
+import { useRef } from '@/utils/use-refs'
+import type { Ref } from 'solid-js'
+import type { S3 } from 'solid-three'
+import { Entity, useFrame } from 'solid-three'
+import { Group } from 'three'
 
-export interface BillboardProps extends S3.Props<'Group'> {
+export interface BillboardProps extends S3.Props<Group> {
   ref?: Ref<Group>
   follow?: boolean
   lockX?: boolean
@@ -28,7 +28,7 @@ export function Billboard(props: BillboardProps) {
     { follow: true, lockX: false, lockY: false, lockZ: false },
     ['follow', 'lockX', 'lockY', 'lockZ', 'ref'],
   )
-  let group: Group
+  const group = new Group()
 
   useFrame(({ camera }) => {
     if (!config.follow) return
@@ -45,10 +45,7 @@ export function Billboard(props: BillboardProps) {
     if (config.lockZ) group.rotation.z = prevRotation.z
   })
 
-  createEffect(() => {
-    if (typeof config.ref === 'function') config.ref(group)
-    else config.ref = group
-  })
+  useRef(props, group)
 
-  return <T.Group ref={group!} {...rest} />
+  return <Entity from={group} {...rest} />
 }

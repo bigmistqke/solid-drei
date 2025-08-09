@@ -1,11 +1,12 @@
-import { createEffect } from 'solid-js'
-import type { Ref } from 'solid-js'
-import { T, useFrame } from 'solid-three'
-import type { S3 } from 'solid-three'
-import { LOD } from 'three'
 import { processProps } from '@/utils/process-props'
+import { useRef } from '@/utils/use-refs'
+import type { Ref } from 'solid-js'
+import { createEffect } from 'solid-js'
+import type { S3 } from 'solid-three'
+import { Entity, useFrame } from 'solid-three'
+import { LOD } from 'three'
 
-interface DetailedProps extends S3.Props<'LOD'> {
+interface DetailedProps extends S3.Props<LOD> {
   ref?: Ref<LOD>
   hysteresis?: number
   distances: number[]
@@ -17,10 +18,10 @@ export function Detailed(props: DetailedProps) {
     {
       hysteresis: 0,
     },
-    ['ref', 'children', 'hysteresis', 'distances'],
+    ['ref', 'children', 'hysteresis', 'distances', 'args'],
   )
 
-  let lod: LOD
+  const lod = new LOD()
 
   createEffect(() => {
     lod.levels.length = 0
@@ -35,14 +36,11 @@ export function Detailed(props: DetailedProps) {
 
   useFrame(state => lod.update(state.camera))
 
-  createEffect(() => {
-    if (typeof props.ref === 'function') props.ref(lod)
-    else props.ref = lod
-  })
+  useRef(props, lod)
 
   return (
-    <T.LOD ref={lod!} {...rest}>
+    <Entity from={lod} ref={lod!} {...rest}>
       {config.children}
-    </T.LOD>
+    </Entity>
   )
 }

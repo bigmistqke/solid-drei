@@ -1,14 +1,13 @@
-import { Primitive, T, ThreeProps, extend, useFrame, useLoader } from 'solid-three'
+import { T, extend, useFrame, useLoader, type S3 } from 'solid-three'
 import { BufferGeometry, CatmullRomCurve3, LineBasicMaterial, LineLoop, Vector3 } from 'three'
-import { FontLoader, TextGeometry, TextGeometryParameters } from 'three-stdlib'
-
-import { createMemo, onMount } from 'solid-js'
-import { CurveModifier, CurveModifierRef } from '../../src'
+import { FontLoader, TextGeometry, type TextGeometryParameters } from 'three-stdlib'
+import { createMemo, onMount, Suspense } from 'solid-js'
+import { CurveModifier, type CurveModifierRef } from '@/src'
 import { Setup } from '../Setup'
 
 extend({ StdText: TextGeometry })
 
-type TextGeometryImpl = ThreeProps<'ExtrudeGeometry'> & {
+type TextGeometryImpl = S3.Props<'ExtrudeGeometry'> & {
   args: [string, TextGeometryParameters]
 }
 
@@ -86,14 +85,14 @@ function CurveModifierScene() {
           <T.MeshNormalMaterial attach="material" />
         </T.Mesh>
       </CurveModifier>
-      <Primitive object={line()} />
+      <T.Primitive object={line()} />
     </>
   )
 }
 
 export const CurveModifierSt = () => (
-  <T.Suspense fallback={null}>
+  <Suspense>
     <CurveModifierScene />
-  </T.Suspense>
+  </Suspense>
 )
 CurveModifierSt.storyName = 'Default'

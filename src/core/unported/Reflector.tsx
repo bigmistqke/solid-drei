@@ -1,3 +1,4 @@
+import { mergeRefs } from '@/utils/merge-refs'
 import { createEffect, createMemo, type Component, type JSX } from 'solid-js'
 import { T, ThreeProps, extend, useFrame, useThree } from 'solid-three'
 import {
@@ -15,16 +16,15 @@ import {
   Vector4,
   WebGLRenderTarget,
 } from 'three'
-import { mergeRefs } from '@/utils/merge-refs'
 
+import { createRef } from '@/utils/create-ref'
+import { processProps } from '@/utils/process-props'
+import { RefComponent } from '@/utils/type-utils'
 import { BlurPass } from '../../materials/BlurPass'
 import {
   MeshReflectorMaterial,
   MeshReflectorMaterialProps,
 } from '../../materials/MeshReflectorMaterial'
-import { createRef } from '@/utils/create-ref'
-import { processProps } from '@/utils/process-props'
-import { RefComponent } from '@/utils/type-utils'
 
 export type ReflectorProps = Omit<ThreeProps<THREE.Mesh>, 'args' | 'children'> &
   Pick<ThreeProps<'PlaneGeometry'>, 'args'> & {

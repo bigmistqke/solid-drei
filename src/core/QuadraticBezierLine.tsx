@@ -1,11 +1,11 @@
-import { createEffect, createMemo } from 'solid-js'
+import { processProps } from '@/utils/process-props'
+import { useRef } from '@/utils/use-refs'
 import type { Ref } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { QuadraticBezierCurve3, Vector3 } from 'three'
 import { Line2 } from 'three-stdlib'
-import { processProps } from '@/utils/process-props'
-import { Line } from './Line'
 import type { LineProps } from './Line'
+import { Line } from './Line'
 
 const VECTOR = new Vector3()
 
@@ -13,7 +13,7 @@ interface QuadraticBezierLineRef extends Line2 {
   setPoints: (start: S3.Vector3, end: S3.Vector3, mid: S3.Vector3) => void
 }
 interface QuadraticBezierLineProps extends Omit<LineProps, 'points' | 'ref' | 'segments'> {
-  ref: Ref<QuadraticBezierLineRef>
+  ref?: Ref<QuadraticBezierLineRef>
   start?: S3.Vector3
   end?: S3.Vector3
   mid?: S3.Vector3
@@ -32,10 +32,19 @@ export function QuadraticBezierLine(props: QuadraticBezierLineProps) {
     ['ref', 'start', 'end', 'mid', 'segments'],
   )
 
-  let quadraticBezierLine: QuadraticBezierLineRef
   const curve = new QuadraticBezierCurve3(undefined as any, undefined as any, undefined as any)
 
-  function getPoints(start: S3.Vector3, end: S3.Vector3, mid: S3.Vector3, segments = 20) {
+  function getPoints({
+    start,
+    end,
+    mid,
+    segments = 20,
+  }: {
+    start: S3.Vector3
+    end: S3.Vector3
+    mid: S3.Vector3
+    segments?: number
+  }) {
     if (start instanceof Vector3) curve.v0.copy(start)
     else curve.v0.set(...(start as [number, number, number]))
     if (end instanceof Vector3) curve.v2.copy(end)
@@ -55,19 +64,19 @@ export function QuadraticBezierLine(props: QuadraticBezierLineProps) {
     return curve.getPoints(segments)
   }
 
-  const points = createMemo(() => getPoints(config.start, config.end, config.mid, config.segments))
-
-  createEffect(() => {
-    quadraticBezierLine.setPoints = (start: S3.Vector3, end: S3.Vector3, mid: S3.Vector3) => {
-      const points = getPoints(start, end, mid)
-      if (quadraticBezierLine.geometry)
-        quadraticBezierLine.geometry.setPositions(points.map(p => p.toArray()).flat())
-    }
-    createEffect(() => {
-      if (typeof config.ref === 'function') config.ref(quadraticBezierLine)
-      else config.ref = quadraticBezierLine
-    })
-  })
-
-  return <Line ref={quadraticBezierLine!} points={points()} {...rest} />
+  return (
+    <Line
+      ref={line => {
+        const quadraticLine = Object.assign(line, {
+          setPoints(start: S3.Vector3, end: S3.Vector3, mid: S3.Vector3) {
+            const points = getPoints({ start, end, mid })
+            if (line.geometry) line.geometry.setPositions(points.map(p => p.toArray()).flat())
+          },
+        })
+        useRef(props, quadraticLine)
+      }}
+      points={getPoints(config)}
+      {...rest}
+    />
+  )
 }

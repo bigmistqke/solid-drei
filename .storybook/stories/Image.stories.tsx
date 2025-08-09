@@ -1,64 +1,71 @@
+import { splitProps, Suspense } from 'solid-js'
+import type { Meta, StoryObj } from 'storybook-solidjs-vite'
 import { Vector3 } from 'three'
-
+import { Image, useTexture } from '../../src'
 import { Setup } from '../Setup'
 
-import { T } from 'solid-three'
-import { splitProps } from 'solid-js'
-import { Image, useTexture } from '../../src'
-
-export default {
+const meta = {
   title: 'Abstractions/Image',
   component: Image,
   decorators: [
-    storyFn => (
+    Story => (
       <Setup controls={false} cameraPosition={new Vector3(0, 0, 10)}>
-        {storyFn()}
+        <Story />
       </Setup>
     ),
   ],
-}
+  parameters: {
+    docs: {
+      description: {
+        component: 'Image component that displays textures in 3D space',
+      },
+    },
+  },
+} satisfies Meta<typeof Image>
 
-function TextureWrapper({ ...args }) {
+export default meta
+type Story = StoryObj<typeof meta>
+
+function TextureWrapper(props: any) {
   const texture = useTexture('/images/living-room-1.jpg')
   const texture2 = useTexture('/images/living-room-3.jpg')
 
   return (
     <>
-      <Image texture={texture()} scale={[4, 4]} position={[-2, -2, -1.5]} {...args} />
-      <Image texture={texture2()} scale={[4, 4]} position={[2, 2, -1]} {...args} />
+      <Image texture={texture()} scale={[4, 4]} position={[-2, -2, -1.5]} {...props} />
+      <Image texture={texture2()} scale={[4, 4]} position={[2, 2, -1]} {...props} />
     </>
   )
 }
 
-export const ImageStory = _props => {
-  const [props, args] = splitProps(_props, ['url'])
+export const ImageBasic: Story = {
+  render: props => {
+    const [localProps, args] = splitProps(props, ['url'])
 
-  return (
-    <T.Suspense>
-      <TextureWrapper {...args} />
-      <Image
-        url={props.url?.[0] || '/images/living-room-2.jpg'}
-        scale={[6, 4]}
-        position={[0, 0, 0]}
-        {...args}
-      />
-    </T.Suspense>
-  )
-}
-
-ImageStory.args = {
-  transparent: true,
-  opacity: 0.5,
-  url: null,
-}
-
-ImageStory.argTypes = {
-  url: {
-    control: {
-      type: 'file',
-      accept: ['.png', '.jpg'],
+    return (
+      <Suspense>
+        <TextureWrapper {...args} />
+        <Image
+          url={localProps.url?.[0] || '/images/living-room-2.jpg'}
+          scale={[6, 4]}
+          position={[0, 0, 0]}
+          {...args}
+        />
+      </Suspense>
+    )
+  },
+  name: 'Image Basic',
+  args: {
+    transparent: true,
+    opacity: 0.5,
+    url: null,
+  },
+  argTypes: {
+    url: {
+      control: {
+        type: 'file',
+        accept: ['.png', '.jpg'],
+      },
     },
   },
 }
-
-ImageStory.storyName = 'Image Basic'

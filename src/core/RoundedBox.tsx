@@ -1,9 +1,10 @@
-import { type Ref, createMemo, createRenderEffect } from 'solid-js'
-import { type S3, T } from 'solid-three'
-import { ExtrudeGeometry, Mesh, Shape } from 'three'
-import { toCreasedNormals } from 'three-stdlib'
+import { when } from '@/utils/conditionals'
 import { processProps } from '@/utils/process-props'
 import { type NamedArrayTuple } from '@/utils/type-utils'
+import { type Ref, createMemo, createRenderEffect } from 'solid-js'
+import { Entity, type S3 } from 'solid-three'
+import { ExtrudeGeometry, Mesh, Shape } from 'three'
+import { toCreasedNormals } from 'three-stdlib'
 
 const eps = 0.00001
 
@@ -17,7 +18,7 @@ function createShape(width: number, height: number, radius0: number) {
   return shape
 }
 
-interface RoundedBoxProps extends Omit<S3.Props<'Mesh'>, 'args'> {
+interface RoundedBoxProps extends Omit<S3.Props<Mesh>, 'args'> {
   ref?: Ref<Mesh>
   args?: NamedArrayTuple<(width?: number, height?: number, depth?: number) => void>
   radius?: number
@@ -39,8 +40,6 @@ export function RoundedBox(props: RoundedBoxProps) {
     ['args', 'radius', 'steps', 'smoothness', 'creaseAngle', 'children'],
   )
 
-  let geometry: ExtrudeGeometry
-
   const args = () => {
     const [width = 1, height = 1, depth = 1] = config.args
     return { width, height, depth }
@@ -57,17 +56,19 @@ export function RoundedBox(props: RoundedBoxProps) {
     curveSegments: config.smoothness,
   }))
 
-  createRenderEffect(() => {
-    if (geometry) {
+  const geometry = createMemo(() => new ExtrudeGeometry(shape(), params()))
+
+  createRenderEffect(
+    when(geometry, geometry => {
       geometry.center()
       toCreasedNormals(geometry, config.creaseAngle)
-    }
-  })
+    }),
+  )
 
   return (
-    <T.Mesh {...rest}>
-      <T.ExtrudeGeometry ref={geometry!} args={[shape(), params()]} />
+    <Entity from={new Mesh()} {...rest}>
+      <Entity from={geometry()} />
       {config.children}
-    </T.Mesh>
+    </Entity>
   )
 }

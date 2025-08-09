@@ -1,9 +1,9 @@
-import { createEffect } from 'solid-js'
-import type { Ref } from 'solid-js'
-import { T } from 'solid-three'
-import type { S3 } from 'solid-three'
-import { Box3, Group, Object3D, Sphere, Vector3 } from 'three'
 import { processProps } from '@/utils/process-props'
+import { useRef } from '@/utils/use-refs'
+import type { Ref } from 'solid-js'
+import { createEffect } from 'solid-js'
+import { Entity, type S3 } from 'solid-three'
+import { Box3, Group, Object3D, Sphere, Vector3 } from 'three'
 
 export interface OnCenterCallbackProps {
   /** The next parent above <Center> */
@@ -21,7 +21,7 @@ export interface OnCenterCallbackProps {
   depthAlignment: number
 }
 
-export interface CenterProps extends S3.Props<'Group'> {
+export interface CenterProps extends S3.Props<Group> {
   ref?: Ref<Group>
   top?: boolean
   right?: boolean
@@ -71,7 +71,7 @@ export function Center(props: CenterProps) {
     ],
   )
 
-  let ref: Group = null!
+  const group = new Group()
   let outer: Group = null!
   let inner: Group = null!
 
@@ -98,8 +98,8 @@ export function Center(props: CenterProps) {
     // Only fire onCentered if the bounding box has changed
     if (typeof config.onCentered !== 'undefined') {
       config.onCentered({
-        parent: ref.parent!,
-        container: ref,
+        parent: group.parent!,
+        container: group,
         width,
         height,
         depth,
@@ -113,16 +113,15 @@ export function Center(props: CenterProps) {
     }
   })
 
-  createEffect(() => {
-    if (typeof config.ref === 'function') config.ref(ref)
-    else config.ref = ref
-  })
+  useRef(config, group)
 
   return (
-    <T.Group ref={ref} {...rest}>
-      <T.Group ref={outer}>
-        <T.Group ref={inner}>{config.children}</T.Group>
-      </T.Group>
-    </T.Group>
+    <Entity from={group} {...rest}>
+      <Entity from={new Group()} ref={outer}>
+        <Entity from={new Group()} ref={inner}>
+          {config.children}
+        </Entity>
+      </Entity>
+    </Entity>
   )
 }

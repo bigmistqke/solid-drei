@@ -1,8 +1,8 @@
-import { createEffect, createMemo, createRenderEffect, createResource } from 'solid-js'
+import { check } from '@/utils/conditionals'
 import type { Accessor, Resource } from 'solid-js'
+import { createEffect, createMemo, createRenderEffect, createResource } from 'solid-js'
 import { useLoader, useThree } from 'solid-three'
 import { Texture, TextureLoader } from 'three'
-import { when } from '@/utils/conditionals'
 
 export const IsObject = (url: any): url is Record<string, string> =>
   url === Object(url) && !Array.isArray(url) && typeof url !== 'function'
@@ -26,12 +26,12 @@ export function useTexture<Url extends string[] | string | Record<string, string
       : (resolvedInput as string | string[])
   }) as Resource<ResolveTexture<Url>>
 
-  createRenderEffect(() => when(textures, textures => onLoad?.(textures)))
+  createRenderEffect(() => check(textures, textures => onLoad?.(textures)))
 
   // https://github.com/mrdoob/three.js/issues/22696
   // Upload the texture to the GPU immediately instead of waiting for the first render
   createEffect(() =>
-    when(textures, textures => {
+    check(textures, textures => {
       const array: Texture[] = Array.isArray(textures) ? textures : [textures]
       array.forEach(store.gl.initTexture)
     }),
@@ -39,7 +39,7 @@ export function useTexture<Url extends string[] | string | Record<string, string
 
   const memo = createMemo(() => {
     if (IsObject(typeof input === 'function' ? input() : input)) {
-      return when(textures, textures => {
+      return check(textures, textures => {
         const keys = Object.keys(input)
         const keyed = {} as Record<string, Texture>
         keys.forEach(key => {
@@ -56,7 +56,7 @@ export function useTexture<Url extends string[] | string | Record<string, string
     memo,
     memo =>
       new Promise(resolve => {
-        createRenderEffect(() => when(memo, resolve))
+        createRenderEffect(() => check(memo, resolve))
       }),
   )[0] as Resource<
     Url extends string[] | Accessor<string[]>

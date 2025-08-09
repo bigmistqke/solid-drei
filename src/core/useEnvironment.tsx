@@ -1,17 +1,15 @@
 import { createMemo, createRenderEffect, createResource } from 'solid-js'
 // import { useLoader } from 'solid-three'
-import { awaitLoader } from 'solid-three'
+import { check } from '@/utils/conditionals'
+import { defaultProps } from '@/utils/default-props'
+import { type PresetsType, presetsObj } from '@/utils/environment-assets'
 import {
   CubeReflectionMapping,
   CubeTextureLoader,
   EquirectangularReflectionMapping,
   Loader,
-  TextureEncoding,
 } from 'three'
 import { EXRLoader, RGBELoader } from 'three-stdlib'
-import { when } from '@/utils/conditionals'
-import { defaultProps } from '@/utils/default-props'
-import { type PresetsType, presetsObj } from '@/utils/environment-assets'
 
 const CUBEMAP_ROOT =
   'https://raw.githack.com/pmndrs/drei-assets/456060a26bbeb8fdf79326f224b6d99b8bcce736/hdri/'
@@ -22,7 +20,7 @@ export type EnvironmentLoaderProps = {
   path?: string
   preset?: PresetsType
   extensions?: (loader: Loader) => void
-  encoding?: TextureEncoding
+  encoding?: /* THREE.TextureEncoding */ unknown
 }
 
 export function useEnvironment(props: Partial<EnvironmentLoaderProps> = {}) {
@@ -73,7 +71,7 @@ export function useEnvironment(props: Partial<EnvironmentLoaderProps> = {}) {
   })
 
   createRenderEffect(() =>
-    when(resource, texture => {
+    check(resource, texture => {
       if (Array.isArray(config.files)) {
         texture[0].mapping = CubeReflectionMapping
         if ('colorSpace' in texture) {

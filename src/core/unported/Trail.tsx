@@ -1,3 +1,7 @@
+import { check } from '@/utils/conditionals'
+import { defaultProps } from '@/utils/default-props'
+import { resolveAccessor } from '@/utils/resolve-accessor'
+import { RefComponent } from '@/utils/type-utils'
 import { MeshLineGeometry as MeshLineGeometryImpl, MeshLineMaterial } from 'meshline'
 import {
   Accessor,
@@ -12,10 +16,6 @@ import {
 } from 'solid-js'
 import { Portal, T, useFrame, useThree } from 'solid-three'
 import { ColorRepresentation, Group, Object3D, Vector2, Vector3 } from 'three'
-import { when } from '@/utils/conditionals'
-import { defaultProps } from '@/utils/default-props'
-import { resolveAccessor } from '@/utils/resolve-accessor'
-import { RefComponent } from '@/utils/type-utils'
 
 type Settings = {
   width: number
@@ -60,7 +60,7 @@ export function useTrail(target: Object3D | Accessor<Object3D>, settings: Partia
   const worldPosition = new Vector3()
 
   createRenderEffect(() =>
-    when(resolveAccessor(target))(target =>
+    check(resolveAccessor(target))(target =>
       setPoints(
         Float32Array.from({ length: completeSettings.length * 10 * 3 }, (_, i) =>
           target.position.getComponent(i % 3),
@@ -73,7 +73,7 @@ export function useTrail(target: Object3D | Accessor<Object3D>, settings: Partia
   let frameCount = 0
 
   useFrame(() => {
-    when(
+    check(
       points,
       resolveAccessor(target),
     )((points, target) => {
@@ -159,7 +159,7 @@ export const Trail: RefComponent<
 
     // Get and apply first <T.MeshLineMaterial /> from children
     let matOverride
-    when(resolvedChildren)(children => {
+    check(resolvedChildren)(children => {
       if (children) {
         if (Array.isArray(children)) {
           matOverride = children.find((child: any) => {
@@ -191,7 +191,7 @@ export const Trail: RefComponent<
   })
 
   useFrame(() => {
-    when(points)(points => {
+    check(points)(points => {
       geo.setPoints(points, props.attenuation)
     })
   })

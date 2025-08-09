@@ -3,7 +3,7 @@ import { MathUtils, Quaternion, Vector3 } from 'three'
 
 import { Setup } from '../Setup'
 
-import { T, extend, useFrame, useThree } from 'solid-three'
+import { Entity, useFrame, useThree } from 'solid-three'
 import { Point, PointMaterial, Points, shaderMaterial } from '../../src'
 
 import * as buffer from 'maath/buffer'
@@ -47,8 +47,6 @@ const MyPointsMaterial = shaderMaterial(
   `,
 )
 
-extend({ MyPointsMaterial })
-
 // @ts-ignore
 const makeBuffer = (...args) => Float32Array.from(...args)
 
@@ -73,12 +71,9 @@ function BasicPointsBufferScene() {
   })
 
   return (
-    <>
-      <Points positions={positionFinal} colors={color} sizes={size}>
-        {/* @ts-ignore */}
-        <T.MyPointsMaterial />
-      </Points>
-    </>
+    <Points positions={positionFinal} colors={color} sizes={size}>
+      <Entity from={new MyPointsMaterial()} />
+    </Points>
   )
 }
 
@@ -140,8 +135,7 @@ function BasicPointsInstancesScene() {
             />
           )}
         </For>
-        {/* @ts-ignore */}
-        <T.MyPointsMaterial />
+        <Entity from={new MyPointsMaterial()} />
       </Points>
     </>
   )

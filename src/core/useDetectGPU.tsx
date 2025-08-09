@@ -1,4 +1,4 @@
-import { getGPUTier, GetGPUTier } from 'detect-gpu'
+import { getGPUTier, type GetGPUTier } from 'detect-gpu'
 import { createResource } from 'solid-js'
 
 export function useDetectGPU(props?: GetGPUTier) {

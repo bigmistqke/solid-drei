@@ -1,20 +1,36 @@
 // The author of the original code is @mrdoob https://twitter.com/mrdoob
 // https://threejs.org/examples/?q=con#webgl_shadow_contact
 
-import { createEffect, createMemo } from 'solid-js'
-import type { Ref } from 'solid-js'
-import { T, useFrame, useThree } from 'solid-three'
-import type { S3 } from 'solid-three'
-import * as THREE from 'three'
-import { HorizontalBlurShader, VerticalBlurShader } from 'three-stdlib'
 import { processProps } from '@/utils/process-props'
+import { useRef } from '@/utils/use-refs'
+import type { Ref } from 'solid-js'
+import { createMemo } from 'solid-js'
+import type { S3 } from 'solid-three'
+import { createT, Entity, useFrame, useThree } from 'solid-three'
+import {
+  Color,
+  Group,
+  Material,
+  Mesh,
+  MeshBasicMaterial,
+  MeshDepthMaterial,
+  OrthographicCamera,
+  PlaneGeometry,
+  ShaderMaterial,
+  Texture,
+  WebGLRenderTarget,
+  type ColorRepresentation,
+} from 'three'
+import { HorizontalBlurShader, VerticalBlurShader } from 'three-stdlib'
+
+const T = createT({ Group, Mesh, OrthographicCamera, MeshBasicMaterial })
 
 function transform(value: number, scale: [number, number] | number | undefined) {
   return value * (Array.isArray(scale) ? scale[1] : scale ?? 1)
 }
 
-export interface ContactShadowsProps extends Omit<S3.Props<'Group'>, 'scale'> {
-  ref?: Ref<THREE.Group>
+export interface ContactShadowsProps extends Omit<S3.Props<Group>, 'scale'> {
+  ref?: Ref<Group>
   opacity?: number
   width?: number
   height?: number
@@ -25,7 +41,7 @@ export interface ContactShadowsProps extends Omit<S3.Props<'Group'>, 'scale'> {
   resolution?: number
   frames?: number
   scale?: number | [x: number, y: number]
-  color?: THREE.ColorRepresentation
+  color?: ColorRepresentation
   depthWrite?: boolean
 }
 
@@ -64,30 +80,31 @@ export function ContactShadows(props: ContactShadowsProps) {
     ],
   )
 
-  let group: THREE.Group
-  let shadowCamera: THREE.OrthographicCamera
+  const group = new Group()
+
+  let shadowCamera: OrthographicCamera
   const store = useThree()
 
   const width = () => transform(config.width, config.scale)
   const height = () => transform(config.height, config.scale)
 
   const shadow = createMemo(() => {
-    const renderTarget = new THREE.WebGLRenderTarget(config.resolution, config.resolution)
-    const renderTargetBlur = new THREE.WebGLRenderTarget(config.resolution, config.resolution)
+    const renderTarget = new WebGLRenderTarget(config.resolution, config.resolution)
+    const renderTargetBlur = new WebGLRenderTarget(config.resolution, config.resolution)
     renderTargetBlur.texture.generateMipmaps = renderTarget.texture.generateMipmaps = false
 
-    const planeGeometry = new THREE.PlaneGeometry(
+    const planeGeometry = new PlaneGeometry(
       transform(config.width, config.scale),
       height(),
     ).rotateX(Math.PI / 2)
-    const blurPlane = new THREE.Mesh(planeGeometry)
+    const blurPlane = new Mesh(planeGeometry)
 
-    const depthMaterial = new THREE.MeshDepthMaterial()
+    const depthMaterial = new MeshDepthMaterial()
     depthMaterial.depthTest = depthMaterial.depthWrite = false
     depthMaterial.onBeforeCompile = shader => {
       shader.uniforms = {
         ...shader.uniforms,
-        ucolor: { value: new THREE.Color(config.color) },
+        ucolor: { value: new Color(config.color) },
       }
       shader.fragmentShader = shader.fragmentShader.replace(
         `void main() {`, //
@@ -102,8 +119,8 @@ export function ContactShadows(props: ContactShadowsProps) {
       )
     }
 
-    const horizontalBlurMaterial = new THREE.ShaderMaterial(HorizontalBlurShader)
-    const verticalBlurMaterial = new THREE.ShaderMaterial(VerticalBlurShader)
+    const horizontalBlurMaterial = new ShaderMaterial(HorizontalBlurShader)
+    const verticalBlurMaterial = new ShaderMaterial(VerticalBlurShader)
     verticalBlurMaterial.depthTest = horizontalBlurMaterial.depthTest = false
 
     return {
@@ -138,8 +155,8 @@ export function ContactShadows(props: ContactShadowsProps) {
   }
 
   let count = 0
-  let initialBackground: THREE.Color | THREE.Texture | null
-  let initialOverrideMaterial: THREE.Material | null
+  let initialBackground: Color | Texture | null
+  let initialOverrideMaterial: Material | null
   useFrame(() => {
     if (config.frames === Infinity || count < config.frames) {
       // console.log('this happens?')
@@ -165,13 +182,10 @@ export function ContactShadows(props: ContactShadowsProps) {
     }
   })
 
-  createEffect(() => {
-    if (typeof config.ref === 'function') config.ref(group)
-    else config.ref = group
-  })
+  useRef(config, group)
 
   return (
-    <T.Group ref={group!} rotation-x={Math.PI / 2} {...rest}>
+    <Entity from={group} rotation-x={Math.PI / 2} {...rest}>
       <T.Mesh
         renderOrder={config.renderOrder}
         geometry={shadow().planeGeometry}
@@ -189,6 +203,6 @@ export function ContactShadows(props: ContactShadowsProps) {
         ref={shadowCamera!}
         args={[-width() / 2, width() / 2, height() / 2, -height() / 2, config.near, config.far]}
       />
-    </T.Group>
+    </Entity>
   )
 }

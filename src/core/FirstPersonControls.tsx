@@ -1,11 +1,12 @@
 import { ControlUtils } from '@/core/control-utils'
-import { createMemo, splitProps } from 'solid-js'
+import { useRef } from '@/utils/use-refs'
 import type { Ref } from 'solid-js'
-import { T, useThree } from 'solid-three'
+import { createMemo, splitProps } from 'solid-js'
 import type { S3 } from 'solid-three'
+import { Entity, useThree } from 'solid-three'
 import { FirstPersonControls as ThreeFirstPersonControl } from 'three-stdlib'
 
-type FirstPersonControlsPropsBase = Omit<S3.ClassProps<typeof ThreeFirstPersonControl>, 'object'>
+type FirstPersonControlsPropsBase = Omit<S3.Props<typeof ThreeFirstPersonControl>, 'object'>
 export interface FirstPersonControlsProps extends FirstPersonControlsPropsBase {
   ref?: Ref<ThreeFirstPersonControl>
   domElement?: HTMLElement
@@ -20,5 +21,7 @@ export function FirstPersonControls(props: FirstPersonControlsProps) {
 
   ControlUtils.initialize(controls, element, store, config)
 
-  return <T.Primitive ref={props.ref} object={controls()} {...rest} />
+  useRef(props, controls)
+
+  return <Entity from={controls()} {...rest} />
 }

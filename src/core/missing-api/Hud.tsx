@@ -1,7 +1,7 @@
-import type { JSX } from 'solid-js'
-import { T, useFrame, useThree } from 'solid-three'
-import * as THREE from 'three'
 import { defaultProps } from '@/utils/default-props'
+import type { JSX } from 'solid-js'
+import { Portal, useFrame, useThree } from 'solid-three'
+import { Camera, Group, Scene } from 'three'
 
 /**********************************************************************************/
 /*                                                                                */
@@ -10,8 +10,8 @@ import { defaultProps } from '@/utils/default-props'
 /**********************************************************************************/
 
 interface RenderHudProps {
-  defaultScene: THREE.Scene
-  defaultCamera: THREE.Camera
+  defaultScene: Scene
+  defaultCamera: Camera
   renderPriority?: number
 }
 
@@ -43,7 +43,7 @@ function RenderHud(props: RenderHudProps) {
   )
 
   // Without an element that receives pointer events state.pointer will always be 0/0
-  return <T.Group onPointerOver={() => null} />
+  return <Entity from={new Group()} onPointerOver={() => null} />
 }
 
 /**********************************************************************************/
@@ -61,10 +61,9 @@ type HudProps = {
 
 export function Hud(props: HudProps) {
   const store = useThree()
-  const hudScene = new THREE.Scene()
   return (
-    <T.Portal
-      element={hudScene} /* state={{ events: { priority: (props.renderPriority || 1) + 1 } }} */
+    <Portal
+      element={new Scene()} /* state={{ events: { priority: (props.renderPriority || 1) + 1 } }} */
     >
       {props.children}
       <RenderHud
@@ -72,6 +71,6 @@ export function Hud(props: HudProps) {
         defaultCamera={store.camera}
         renderPriority={props.renderPriority || 1}
       />
-    </T.Portal>
+    </Portal>
   )
 }

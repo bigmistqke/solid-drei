@@ -6,7 +6,7 @@ import { Line } from './Line'
 import type { LineProps } from './Line'
 
 interface Props extends Omit<LineProps, 'points' | 'ref' | 'segments'> {
-  ref: Line2
+  ref?: Line2
   start: Vector3 | [number, number, number]
   end: Vector3 | [number, number, number]
   midA: Vector3 | [number, number, number]

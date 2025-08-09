@@ -237,7 +237,7 @@ export class MeshReflectorMaterial extends MeshStandardMaterial {
   }
 }
 
-export interface MeshReflectorMaterialProps extends S3.Props<'MeshStandardMaterial'> {
+export interface MeshReflectorMaterialProps extends S3.Props<MeshStandardMaterial> {
   mixBlur: number
   mixStrength: number
   mirror: number

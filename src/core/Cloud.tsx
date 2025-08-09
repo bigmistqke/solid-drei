@@ -1,17 +1,19 @@
-import { For, createMemo } from 'solid-js'
-import { T, useFrame } from 'solid-three'
+import { processProps } from '@/utils/process-props'
+import { createMemo, For } from 'solid-js'
 import type { S3 } from 'solid-three'
-import { Group } from 'three'
+import { createT, Entity, useFrame } from 'solid-three'
 import type { ColorRepresentation } from 'three'
+import { Group, MeshStandardMaterial } from 'three'
+import { Billboard } from './Billboard'
 import { Plane } from './shapes'
 import { useTexture } from './useTexture'
-import { processProps } from '@/utils/process-props'
-import { Billboard } from './Billboard'
+
+const T = createT({ Group, MeshStandardMaterial })
 
 const CLOUD_URL =
   'https://rawcdn.githack.com/pmndrs/drei-assets/9225a9f1fbd449d9411125c2f419b843d0308c9f/cloud.png'
 
-interface CloudProps extends S3.Props<'Group'> {
+interface CloudProps extends S3.Props<Group> {
   opacity?: number
   speed?: number
   width?: number
@@ -38,7 +40,7 @@ export function Cloud(props: CloudProps) {
     ['opacity', 'speed', 'width', 'depth', 'segments', 'texture', 'color', 'depthTest'],
   )
 
-  let ref: Group
+  const group = new Group()
   const cloudTexture = useTexture(config.texture)
 
   const clouds = createMemo(() =>
@@ -52,20 +54,19 @@ export function Cloud(props: CloudProps) {
     })),
   )
 
-  useFrame(
-    state =>
-      ref?.children.forEach((cloud, index) => {
-        cloud.children[0]!.rotation.z += clouds()[index]!.rotation
-        cloud.children[0]!.scale.setScalar(
-          clouds()[index]!.scale +
-            (((1 + Math.sin(state.clock.getElapsedTime() / 10)) / 2) * index) / 10,
-        )
-      }),
+  useFrame(state =>
+    group.children.forEach((cloud, index) => {
+      cloud.children[0]!.rotation.z += clouds()[index]!.rotation
+      cloud.children[0]!.scale.setScalar(
+        clouds()[index]!.scale +
+          (((1 + Math.sin(state.clock.getElapsedTime() / 10)) / 2) * index) / 10,
+      )
+    }),
   )
 
   return (
     <T.Group {...rest}>
-      <T.Group position={[0, 0, (config.segments / 2) * config.depth]} ref={ref!}>
+      <Entity from={group} position={[0, 0, (config.segments / 2) * config.depth]}>
         <For each={clouds()}>
           {(cloud, index) => (
             <Billboard position={[cloud.x, cloud.y, -index() * config.depth]}>
@@ -81,7 +82,7 @@ export function Cloud(props: CloudProps) {
             </Billboard>
           )}
         </For>
-      </T.Group>
+      </Entity>
     </T.Group>
   )
 }

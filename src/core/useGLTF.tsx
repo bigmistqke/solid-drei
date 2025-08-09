@@ -87,7 +87,7 @@ function extensions(
  *   const model = useGLTF(gltfPath);
  *   return (
  *     <Suspense>
- *       <T.Primitive object={model()} />
+ *       <T.Entity from={model()} />
  *     </Suspense>
  *   );
  * }

@@ -1,11 +1,12 @@
-import { createEffect, mergeProps, on, splitProps } from 'solid-js'
+import { useRef } from '@/utils/use-refs'
 import type { JSX, Ref } from 'solid-js'
-import { T, useFrame, useThree } from 'solid-three'
+import { mergeProps, splitProps } from 'solid-js'
 import type { S3 } from 'solid-three'
-import { Object3D, Scene, Texture, WebGLRenderTarget } from 'three'
+import { Entity, Portal, useFrame, useThree } from 'solid-three'
+import { Group, Object3D, Scene, Texture, WebGLRenderTarget } from 'three'
 import { useFBO } from '../unported/useFBO'
 
-type Props = S3.Props<'Texture'> & {
+type Props = S3.Props<Texture> & {
   ref?: Ref<Texture>
   /** Optional width of the texture, defaults to viewport bounds */
   width?: number
@@ -95,25 +96,19 @@ export const RenderTexture = (props: Props) => {
     state.raycaster.setFromCamera(state.pointer.set(uv.x * 2 - 1, uv.y * 2 - 1), state.camera)
   }
 
-  createEffect(
-    on(
-      () => [config.ref, fbo],
-      () => {
-        config.ref = fbo.texture
-      },
-    ),
-  )
+  useRef(config, fbo.texture)
+
   return (
     <>
-      <T.Portal element={vScene}>
+      <Portal element={vScene}>
         {/* { events: { compute: props.compute || uvCompute, priority: props.eventPriority } } */}
         <Container renderPriority={config.renderPriority} frames={config.frames} fbo={fbo}>
-          <T.Group onPointerEnter={() => null} />
+          <Entity from={new Group()} onPointerEnter={() => null} />
           {config.children}
           {/* Without an element that receives pointer events state.pointer will always be 0/0 */}
         </Container>
-      </T.Portal>
-      <T.Primitive object={fbo.texture} {...rest} />
+      </Portal>
+      <Entity from={fbo.texture} {...rest} />
     </>
   )
 }

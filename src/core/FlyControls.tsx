@@ -1,12 +1,13 @@
 import { ControlUtils } from '@/core/control-utils'
-import { createEffect, createMemo, splitProps } from 'solid-js'
+import { useRef } from '@/utils/use-refs'
 import type { Ref } from 'solid-js'
-import { T, useThree } from 'solid-three'
+import { createEffect, createMemo, splitProps } from 'solid-js'
 import type { S3 } from 'solid-three'
+import { Entity, useThree } from 'solid-three'
 import type { Event } from 'three'
 import { FlyControls as ThreeFlyControls } from 'three-stdlib'
 
-type FlyControlsPropsBase = Omit<S3.ClassProps<typeof ThreeFlyControls>, 'object'>
+type FlyControlsPropsBase = Omit<S3.Props<typeof ThreeFlyControls>, 'object'>
 export interface FlyControlsProps extends FlyControlsPropsBase {
   ref?: Ref<ThreeFlyControls>
   onChange?: (e: Event<'change', ThreeFlyControls>) => void
@@ -27,5 +28,7 @@ export function FlyControls(props: FlyControlsProps) {
     ControlUtils.addEventHandler(controls, 'change', config.onChange)
   })
 
-  return <T.Primitive ref={props.ref} object={controls()} {...rest} />
+  useRef(props, controls)
+
+  return <Entity from={controls()} {...rest} />
 }

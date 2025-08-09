@@ -12,6 +12,8 @@ import {
 import { render } from 'solid-js/web'
 import { S3, T, useFrame, useThree } from 'solid-three'
 
+import { check, when } from '@/utils/conditionals'
+import { processProps } from '@/utils/process-props'
 import {
   Camera,
   DoubleSide,
@@ -25,8 +27,6 @@ import {
   Vector3,
 } from 'three'
 import { Assign } from 'utility-types'
-import { when, whenever } from '@/utils/conditionals'
-import { processProps } from '@/utils/process-props'
 
 const v1 = new Vector3()
 const v2 = new Vector3()
@@ -338,7 +338,7 @@ export function Html(props: HtmlProps) {
 
   // s3f:   should we have group be a signal and return it back to a renderEffect?
   createEffect(
-    whenever(group, group => {
+    when(group, group => {
       store.scene.updateMatrixWorld()
       if (config.transform) {
         element().style.cssText = `position:absolute;top:0;left:0;pointer-events:none;overflow:hidden;`
@@ -350,7 +350,7 @@ export function Html(props: HtmlProps) {
         if (config.prepend) target().prepend(element())
         else target().appendChild(element())
       }
-      onCleanup(() => when(target, target => target.removeChild(element())))
+      onCleanup(() => check(target, target => target.removeChild(element())))
     }),
   )
 
@@ -392,7 +392,7 @@ export function Html(props: HtmlProps) {
   let visible = true
 
   useFrame(gl => {
-    when(group, group => {
+    check(group, group => {
       store.camera.updateMatrixWorld()
       group.updateWorldMatrix(true, false)
       const vector = config.transform

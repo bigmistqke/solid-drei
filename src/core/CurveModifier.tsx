@@ -1,9 +1,10 @@
-import { whenever } from '@/utils/conditionals'
-import { createEffect, createMemo, on, Show } from 'solid-js'
+import { when } from '@/utils/conditionals'
+import { useRef } from '@/utils/use-refs'
 import type { JSX, Ref } from 'solid-js'
-import { T } from 'solid-three'
-import { Mesh, Scene } from 'three'
+import { createEffect, createMemo, on, Show } from 'solid-js'
+import { Entity, Portal } from 'solid-three'
 import type { Curve, Vector3 } from 'three'
+import { Mesh, Scene } from 'three'
 import { Flow } from 'three-stdlib'
 
 export type CurveModifierApi = Pick<Flow, 'moveAlongCurve'>
@@ -27,13 +28,10 @@ export const CurveModifier = (props: CurveModifierProps) => {
     ),
   )
 
-  createEffect(() => {
-    if (typeof props.ref === 'function') props.ref(api)
-    else props.ref = api
-  })
+  useRef(props, api)
 
   createEffect(
-    whenever(modifier, modifier => {
+    when(modifier, modifier => {
       if (props.curve) {
         modifier.updateCurve(0, props.curve)
       }
@@ -42,8 +40,8 @@ export const CurveModifier = (props: CurveModifierProps) => {
 
   return (
     <>
-      <T.Portal>{props.children}</T.Portal>
-      <Show when={modifier()?.object3D}>{obj => <T.Primitive object={obj()} />}</Show>
+      <Portal>{props.children}</Portal>
+      <Show when={modifier()?.object3D}>{obj => <Entity from={obj()} />}</Show>
     </>
   )
 }

@@ -1,20 +1,20 @@
 import { onMount, splitProps } from 'solid-js'
-import { T, useFrame } from 'solid-three'
 import type { S3 } from 'solid-three'
-import * as THREE from 'three'
+import { Entity, useFrame } from 'solid-three'
+import { Box3, Group, Object3D, Vector3 } from 'three'
 
-const boundingBox = new THREE.Box3()
-const boundingBoxSize = new THREE.Vector3()
+const boundingBox = new Box3()
+const boundingBoxSize = new Vector3()
 
-export interface BBAnchorProps extends S3.Props<'Group'> {
+export interface BBAnchorProps extends S3.Props<Group> {
   anchor: [number, number, number]
 }
 
 export function BBAnchor(props: BBAnchorProps) {
   const [config, rest] = splitProps(props, ['anchor'])
 
-  let group: THREE.Group
-  let parentRef: THREE.Object3D | null = null
+  const group = new Group()
+  let parentRef: Object3D | null = null
 
   // Reattach group created by this component to the parent's parent,
   // so it becomes a sibling of its initial parent.
@@ -39,5 +39,5 @@ export function BBAnchor(props: BBAnchorProps) {
     }
   })
 
-  return <T.Group ref={group!} {...rest} />
+  return <Entity from={group} {...rest} />
 }

@@ -1,4 +1,4 @@
-import { every, when, whenever } from '@/utils/conditionals'
+import { check, every, when } from '@/utils/conditionals'
 import {
   Show,
   createEffect,
@@ -10,8 +10,10 @@ import {
   splitProps,
   untrack,
 } from 'solid-js'
-import { type S3, T, useFrame } from 'solid-three'
-import { RepeatWrapping, Sprite, SpriteMaterial, TextureLoader } from 'three'
+import { createT, useFrame, type S3 } from 'solid-three'
+import { Group, RepeatWrapping, Sprite, SpriteMaterial, TextureLoader } from 'three'
+
+const T = createT({ Group, Sprite, SpriteMaterial })
 
 /**********************************************************************************/
 /*                                                                                */
@@ -97,7 +99,7 @@ interface SpriteData {
   }
 }
 
-export interface SpriteAnimatorProps extends S3.Props<'Group'> {
+export interface SpriteAnimatorProps extends S3.Props<Group> {
   startFrame?: number
   endFrame?: number
   fps?: number
@@ -210,13 +212,13 @@ export function SpriteAnimator(props: SpriteAnimatorProps) {
   })
 
   const sprites = createMemo(
-    whenever(spriteData, spriteData => {
+    when(spriteData, spriteData => {
       if (Array.isArray(spriteData.frames)) return spriteData.frames
       return spriteDataToSprites(spriteData, config.animationNames)
     }),
   )
 
-  const aspect = whenever(
+  const aspect = when(
     sprites,
     sprites => {
       const { w, h } = getFirstItem(sprites).sourceSize
@@ -226,18 +228,18 @@ export function SpriteAnimator(props: SpriteAnimatorProps) {
   )
 
   createEffect(
-    whenever(every(aspect, sprite), ([aspect, spriteRef]) => spriteRef.scale.set(1, aspect[1], 1)),
+    when(every(aspect, sprite), ([aspect, spriteRef]) => spriteRef.scale.set(1, aspect[1], 1)),
   )
 
   createEffect(
-    whenever(
+    when(
       every(spriteMaterial, spriteTexture),
       ([spriteMaterial, spriteTexture]) => (spriteMaterial.map = spriteTexture),
     ),
   )
 
   createRenderEffect(
-    whenever(
+    when(
       every(spriteMaterial, spriteData),
       ([
         spriteMaterial,
@@ -289,7 +291,7 @@ export function SpriteAnimator(props: SpriteAnimatorProps) {
   })
 
   // *** Warning! It runs on every frame! ***
-  const tick = whenever(
+  const tick = when(
     every(spriteData, spriteMaterial),
     ([
       {
@@ -336,7 +338,7 @@ export function SpriteAnimator(props: SpriteAnimatorProps) {
         if (diff <= fpsInterval()) return
         timerOffset = now - (diff % fpsInterval())
 
-        when(sprite, sprite => {
+        check(sprite, sprite => {
           const aspect = calculateAspectRatio(frameW, frameH)
           sprite.scale.set(1, aspect[1], 1)
         })

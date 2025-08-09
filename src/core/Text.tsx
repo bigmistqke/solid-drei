@@ -1,13 +1,12 @@
-import { createMemo, createResource, onCleanup, onMount, Show } from 'solid-js'
+import { processProps } from '@/utils/process-props'
+import { resolveAccessor } from '@/utils/resolve-accessor'
 import type { JSX } from 'solid-js'
-import { T } from 'solid-three'
+import { createMemo, createResource, onCleanup, onMount, Show } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { Font } from 'three-stdlib'
 import { preloadFont, Text as ThreeTextMesh } from 'troika-three-text'
-import { processProps } from '@/utils/process-props'
-import { resolveAccessor } from '@/utils/resolve-accessor'
 
-interface Props extends S3.Props<'Mesh'> {
+interface Props extends S3.Props<Mesh> {
   /** The text or elements to display */
   children: JSX.Element | JSX.Element[]
   /** Characters to preload */
@@ -152,7 +151,7 @@ export function Text(props: Props) {
   return (
     <Show when={font()}>
       {resource => (
-        <T.Primitive
+        <Entity
           object={troikaMesh}
           /* @ts-expect-error */
           font={resource()}
@@ -164,7 +163,7 @@ export function Text(props: Props) {
           {...rest}
         >
           {memo().nodes}
-        </T.Primitive>
+        </Entity>
       )}
     </Show>
   )

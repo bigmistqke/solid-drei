@@ -1,25 +1,33 @@
+import { processProps } from '@/utils/process-props'
+import { useRef } from '@/utils/use-refs'
+import type { Ref } from 'solid-js'
 import {
-  Show,
   createContext,
   createEffect,
   createSignal,
   onMount,
+  Show,
   splitProps,
   useContext,
 } from 'solid-js'
-import type { Ref } from 'solid-js'
-import { T, extend, useFrame } from 'solid-three'
 import type { S3 } from 'solid-three'
-import * as THREE from 'three'
-import { processProps } from '@/utils/process-props'
+import { createT, Entity, useFrame } from 'solid-three'
+import {
+  BufferAttribute,
+  BufferGeometry,
+  Color,
+  DynamicDrawUsage,
+  Group,
+  Matrix4,
+  Ray,
+  Raycaster,
+  Sphere,
+  Points as ThreePoints,
+  Vector3,
+  type Intersection,
+} from 'three'
 
-declare global {
-  namespace SolidThree {
-    interface Elements {
-      PositionPoint: PositionPoint
-    }
-  }
-}
+const T = createT({ BufferAttribute, BufferGeometry })
 
 /**********************************************************************************/
 /*                                                                                */
@@ -27,20 +35,20 @@ declare global {
 /*                                                                                */
 /**********************************************************************************/
 
-const _inverseMatrix = /*@__PURE__*/ new THREE.Matrix4()
-const _ray = /*@__PURE__*/ new THREE.Ray()
-const _sphere = /*@__PURE__*/ new THREE.Sphere()
-const _position = /*@__PURE__*/ new THREE.Vector3()
+const _inverseMatrix = /*@__PURE__*/ new Matrix4()
+const _ray = /*@__PURE__*/ new Ray()
+const _sphere = /*@__PURE__*/ new Sphere()
+const _position = /*@__PURE__*/ new Vector3()
 
-export class PositionPoint extends THREE.Group {
+export class PositionPoint extends Group {
   size: number
-  color: THREE.Color
-  instance: THREE.Points | undefined
-  instanceKey: Parameters<typeof T.PositionPoint> | undefined
+  color: Color
+  instance: ThreePoints | undefined
+  instanceKey: S3.Props<typeof PositionPoint> | undefined
   constructor() {
     super()
     this.size = 0
-    this.color = new THREE.Color('white')
+    this.color = new Color('white')
     this.instance = undefined
     this.instanceKey = undefined
   }
@@ -50,7 +58,7 @@ export class PositionPoint extends THREE.Group {
     return this.instance?.geometry
   }
 
-  raycast(raycaster: THREE.Raycaster, intersects: THREE.Intersection[]) {
+  raycast(raycaster: Raycaster, intersects: Intersection[]) {
     const parent = this.instance
     if (!parent || !parent.geometry) return
     const instanceId = parent.userData.instances.indexOf(this.instanceKey)
@@ -69,7 +77,7 @@ export class PositionPoint extends THREE.Group {
     const rayPointDistanceSq = _ray.distanceSqToPoint(this.position)
 
     if (rayPointDistanceSq < localThresholdSq) {
-      const intersectPoint = new THREE.Vector3()
+      const intersectPoint = new Vector3()
       _ray.closestPointToPoint(this.position, intersectPoint)
       intersectPoint.applyMatrix4(this.matrixWorld)
       const distance = raycaster.ray.origin.distanceTo(intersectPoint)
@@ -93,7 +101,7 @@ export class PositionPoint extends THREE.Group {
 /**********************************************************************************/
 
 interface PointContext {
-  getParent: () => THREE.Points
+  getParent: () => ThreePoints
   subscribe: (ref: any) => void
 }
 
@@ -110,20 +118,26 @@ const usePointContext = () => {
 /*                                                                                */
 /**********************************************************************************/
 
-interface PointsInstancesProps extends S3.Props<'Points'> {
-  ref?: Ref<THREE.Points>
+interface PointsInstancesProps extends S3.Props<typeof Points> {
+  ref?: Ref<ThreePoints>
   range?: number
   limit?: number
 }
 
-const parentMatrix = /*@__PURE__*/ new THREE.Matrix4()
-const position = /*@__PURE__*/ new THREE.Vector3()
+const parentMatrix = /*@__PURE__*/ new Matrix4()
+const position = /*@__PURE__*/ new Vector3()
 
 /**
  * Instance implementation, relies on react + context to update the attributes based on the children of this component
  */
 function PointsInstances(props: PointsInstancesProps) {
-  const [config, rest] = processProps(props, { limit: 1000 }, ['ref', 'children', 'range', 'limit'])
+  const [config, rest] = processProps(props, { limit: 1000 }, [
+    'args',
+    'children',
+    'limit',
+    'range',
+    'ref',
+  ])
   const [refs, setRefs] = createSignal<PositionPoint[]>([])
   const [positions, colors, sizes] = [
     new Float32Array(config.limit * 3),
@@ -131,7 +145,7 @@ function PointsInstances(props: PointsInstancesProps) {
     Float32Array.from({ length: config.limit }, () => 1),
   ]
 
-  let parent: THREE.Points
+  const parent = new ThreePoints()
 
   createEffect(() => {
     if (!parent.geometry.attributes.position) return
@@ -168,14 +182,11 @@ function PointsInstances(props: PointsInstancesProps) {
     }
   })
 
-  createEffect(() => {
-    if (typeof config.ref === 'function') config.ref(parent)
-    else config.ref = parent
-  })
+  useRef(config, parent)
 
   return (
-    <T.Points
-      ref={parent!}
+    <Entity
+      from={parent}
       userData={{
         get instances() {
           return refs()
@@ -191,21 +202,21 @@ function PointsInstances(props: PointsInstancesProps) {
           count={positions.length / 3}
           array={positions}
           itemSize={3}
-          usage={THREE.DynamicDrawUsage}
+          usage={DynamicDrawUsage}
         />
         <T.BufferAttribute
           attach="attributes-color"
           count={colors.length / 3}
           array={colors}
           itemSize={3}
-          usage={THREE.DynamicDrawUsage}
+          usage={DynamicDrawUsage}
         />
         <T.BufferAttribute
           attach="attributes-size"
           count={sizes.length}
           array={sizes}
           itemSize={1}
-          usage={THREE.DynamicDrawUsage}
+          usage={DynamicDrawUsage}
         />
       </T.BufferGeometry>
       <pointContext.Provider
@@ -220,7 +231,7 @@ function PointsInstances(props: PointsInstancesProps) {
       >
         {config.children}
       </pointContext.Provider>
-    </T.Points>
+    </Entity>
   )
 }
 
@@ -230,30 +241,26 @@ function PointsInstances(props: PointsInstancesProps) {
 /*                                                                                */
 /**********************************************************************************/
 
-interface PointProps extends S3.Props<'PositionPoint'> {
+interface PointProps extends S3.Props<PositionPoint> {
   ref?: Ref<unknown>
 }
 
 export function Point(props: PointProps) {
-  extend({ PositionPoint })
-
   const [config, rest] = splitProps(props, ['ref', 'children'])
 
-  let positionPoint: PositionPoint
+  const positionPoint = new PositionPoint()
   const pointContext = usePointContext()
 
   onMount(() => {
     pointContext.subscribe(positionPoint)
   })
-  createEffect(() => {
-    if (typeof config.ref === 'function') config.ref(positionPoint)
-    else config.ref = positionPoint
-  })
+
+  useRef(config, positionPoint)
 
   return (
-    <T.PositionPoint instance={pointContext.getParent()} ref={positionPoint!} {...rest}>
+    <Entity from={positionPoint} instance={pointContext.getParent()} {...rest}>
       {config.children}
-    </T.PositionPoint>
+    </Entity>
   )
 }
 
@@ -267,8 +274,8 @@ export function Point(props: PointProps) {
  * Buffer implementation, relies on complete buffers of the correct number,
  * leaves it to the user to update them
  */
-interface PointsBufferProps extends S3.Props<'Points'> {
-  ref?: Ref<THREE.Points>
+interface PointsBufferProps extends S3.Props<typeof ThreePoints> {
+  ref?: Ref<ThreePoints>
   // a buffer containing all points position
   positions: Float32Array
   colors?: Float32Array
@@ -287,7 +294,7 @@ export function PointsBuffer(props: PointsBufferProps) {
     'stride',
   ])
 
-  let points: THREE.Points
+  const points = new ThreePoints()
 
   useFrame(() => {
     if (!points) return
@@ -300,20 +307,17 @@ export function PointsBuffer(props: PointsBufferProps) {
     if (config.sizes && attr.size) attr.size.needsUpdate = true
   })
 
-  createEffect(() => {
-    if (typeof config.ref === 'function') config.ref(points)
-    else config.ref = points
-  })
+  useRef(config, points)
 
   return (
-    <T.Points ref={points!} {...rest}>
+    <Entity from={points} {...rest}>
       <T.BufferGeometry>
         <T.BufferAttribute
           attach="attributes-position"
           count={config.positions.length / config.stride}
           array={config.positions}
           itemSize={config.stride}
-          usage={THREE.DynamicDrawUsage}
+          usage={DynamicDrawUsage}
         />
         <Show when={config.colors}>
           <T.BufferAttribute
@@ -321,7 +325,7 @@ export function PointsBuffer(props: PointsBufferProps) {
             count={config.colors!.length / config.stride}
             array={config.colors}
             itemSize={3}
-            usage={THREE.DynamicDrawUsage}
+            usage={DynamicDrawUsage}
           />
         </Show>
         <Show when={config.sizes}>
@@ -330,12 +334,12 @@ export function PointsBuffer(props: PointsBufferProps) {
             count={config.sizes!.length / config.stride}
             array={config.sizes}
             itemSize={1}
-            usage={THREE.DynamicDrawUsage}
+            usage={DynamicDrawUsage}
           />
         </Show>
       </T.BufferGeometry>
       {config.children}
-    </T.Points>
+    </Entity>
   )
 }
 
@@ -346,7 +350,7 @@ export function PointsBuffer(props: PointsBufferProps) {
 /**********************************************************************************/
 
 type PointsPropsBase = PointsBufferProps | PointsInstancesProps
-type PointsProps = PointsPropsBase & { ref?: Ref<THREE.Points> }
+type PointsProps = PointsPropsBase & { ref?: Ref<ThreePoints> }
 
 export function Points(props: PointsProps) {
   return (

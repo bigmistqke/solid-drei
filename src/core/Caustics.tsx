@@ -2,10 +2,12 @@
  *    https://github.com/N8python/caustics
  */
 
-import { Show, createEffect, createEffect as onMount } from 'solid-js'
+import { processProps } from '@/utils/process-props'
+import { useRef } from '@/utils/use-refs'
 import type { Ref } from 'solid-js'
-import { T, extend, useFrame, useThree } from 'solid-three'
+import { createEffect as onMount, Show } from 'solid-js'
 import type { S3 } from 'solid-three'
+import { createT, useFrame, useThree } from 'solid-three'
 import {
   BackSide,
   Box3,
@@ -15,8 +17,10 @@ import {
   FloatType,
   FrontSide,
   Frustum,
+  Group,
   LinearFilter,
   LinearMipmapLinearFilter,
+  LineBasicMaterial,
   Matrix4,
   Mesh,
   MeshNormalMaterial,
@@ -35,25 +39,9 @@ import {
 } from 'three'
 import { FullScreenQuad } from 'three-stdlib'
 import { shaderMaterial } from '../materials/shaderMaterial'
-import { processProps } from '@/utils/process-props'
 import { Edges } from './Edges'
 import { useFBO } from './unported/useFBO'
 import { useHelper } from './useHelper'
-
-declare global {
-  namespace SolidThree {
-    interface Elements {
-      CausticsProjectionMaterial: S3.Props<'MeshNormalMaterial'> & {
-        viewMatrix?: { value: Matrix4 }
-        color?: S3.Color
-        causticsTexture?: Texture
-        causticsTextureB?: Texture
-        lightProjMatrix?: Matrix4
-        lightViewMatrix?: Matrix4
-      }
-    }
-  }
-}
 
 /**********************************************************************************/
 /*                                                                                */
@@ -273,6 +261,22 @@ const CausticsMaterial = shaderMaterial(
 
 /**********************************************************************************/
 /*                                                                                */
+/*                                  Create Local T                                */
+/*                                                                                */
+/**********************************************************************************/
+
+const T = createT({
+  CausticsProjectionMaterial,
+  Group,
+  LineBasicMaterial,
+  Mesh,
+  OrthographicCamera,
+  PlaneGeometry,
+  Scene,
+})
+
+/**********************************************************************************/
+/*                                                                                */
 /*                                    Caustics                                    */
 /*                                                                                */
 /**********************************************************************************/
@@ -296,7 +300,7 @@ interface CausticsMaterialType extends ShaderMaterial {
   intensity?: number
 }
 
-interface CausticsProps extends S3.Props<'Group'> {
+interface CausticsProps extends S3.Props<Group> {
   ref?: Ref<Scene>
   /** How many frames it will render, set it to Infinity for runtime, default: 1 */
   frames?: number
@@ -337,8 +341,6 @@ const CAUSTICPROPS = {
 }
 
 export function Caustics(props: CausticsProps) {
-  extend({ CausticsProjectionMaterial })
-
   const [config, rest] = processProps(
     props,
     {
@@ -568,10 +570,7 @@ export function Caustics(props: CausticsProps) {
 
   onMount(() => scene?.updateWorldMatrix(false, true))
 
-  createEffect(() => {
-    if (typeof config.ref === 'function') config.ref(scene)
-    else config.ref = scene
-  })
+  useRef(config, scene)
 
   return (
     <T.Group {...rest}>

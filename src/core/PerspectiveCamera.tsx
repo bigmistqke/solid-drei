@@ -1,12 +1,14 @@
 import { processProps } from '@/utils/process-props'
-import { Show, createEffect, createMemo, onMount } from 'solid-js'
+import { useRef } from '@/utils/use-refs'
 import type { JSX, Ref } from 'solid-js'
-import { T, useFrame, useThree } from 'solid-three'
+import { Show, createEffect, createMemo, onMount } from 'solid-js'
 import type { S3 } from 'solid-three'
+import { Entity, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { useFBO } from './unported/useFBO'
 
-interface PerspectiveCameraProps extends Omit<S3.Props<'PerspectiveCamera'>, 'children'> {
+interface PerspectiveCameraProps
+  extends Omit<S3.Props<typeof THREE.PerspectiveCamera>, 'children'> {
   ref: Ref<THREE.PerspectiveCamera>
   /** Registers the camera as the system default, fiber will start rendering with it */
   makeDefault?: boolean
@@ -70,8 +72,8 @@ export function PerspectiveCamera(props: PerspectiveCameraProps) {
     ['ref', 'envMap', 'resolution', 'frames', 'makeDefault', 'children', 'manual'],
   )
 
-  let camera: THREE.PerspectiveCamera
-  let group: THREE.Group = null!
+  const camera = new THREE.PerspectiveCamera()
+  const group = new THREE.Group()
   let frameCount = 0
   let previousEnvMap: THREE.Color | THREE.Texture | null = null
 
@@ -112,21 +114,18 @@ export function PerspectiveCamera(props: PerspectiveCameraProps) {
 
   createEffect(() => config.makeDefault && store.setCamera(camera))
 
-  createEffect(() => {
-    if (typeof props.ref === 'function') props.ref(camera)
-    else props.ref = camera
-  })
-
   onMount(() => camera.updateProjectionMatrix())
+
+  useRef(props, camera)
 
   return (
     <>
-      <T.PerspectiveCamera ref={camera!} {...rest}>
+      <Entity from={camera!} {...rest}>
         <Show when={!offspring().isFunctional}>{offspring().elements()}</Show>
-      </T.PerspectiveCamera>
-      <T.Group ref={group}>
+      </Entity>
+      <Entity from={group}>
         <Show when={offspring().isFunctional}>{offspring().elements()}</Show>
-      </T.Group>
+      </Entity>
     </>
   )
 }

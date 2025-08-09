@@ -37,7 +37,7 @@ export * from './TrackballControls'
 export * from './TransformControls'
 // export * from './unported/DeviceOrientationControls'
 // export * from './unported/FaceControls'
-// export * from './unported/MapControls'
+// export * fro./unported/MapControlsols'
 // export * from './unported/PointerLockControls'
 
 // Gizmos
@@ -74,7 +74,7 @@ export * from './useTrailTexture'
 // export * from './unported/useBVH'
 // export * from './unported/useCamera'
 // export * from './unported/useContextBridge'
-// export * from './unported/useFBO'
+export * from './useFBO'
 // export * from './unported/useIntersect'
 
 // Modifiers

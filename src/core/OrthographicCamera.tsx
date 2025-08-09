@@ -1,14 +1,15 @@
-import { whenever } from '@/utils/conditionals'
-import { Show, createEffect, createMemo, onMount } from 'solid-js'
+import { when } from '@/utils/conditionals'
+import { processProps } from '@/utils/process-props'
+import { useRef } from '@/utils/use-refs'
 import type { JSX, Ref } from 'solid-js'
-import { T, useFrame, useThree } from 'solid-three'
+import { Show, createEffect, createMemo } from 'solid-js'
 import type { S3 } from 'solid-three'
+import { Entity, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { OrthographicCamera as ThreeOrthographicCamera } from 'three'
-import { processProps } from '@/utils/process-props'
 import { useFBO } from './unported/useFBO'
 
-type OrthographicCameraProps = S3.ClassProps<typeof ThreeOrthographicCamera> & {
+type OrthographicCameraProps = S3.Props<typeof ThreeOrthographicCamera> & {
   ref: Ref<THREE.Camera>
   /** Registers the camera as the system default, fiber will start rendering with it */
   makeDefault?: boolean
@@ -69,13 +70,13 @@ export function OrthographicCamera(props: OrthographicCameraProps) {
       resolution: 256,
       frames: Infinity,
     },
-    ['ref', 'envMap', 'resolution', 'frames', 'children', 'makeDefault', 'manual'],
+    ['args', 'children', 'envMap', 'frames', 'makeDefault', 'manual', 'ref', 'resolution'],
   )
 
   const store = useThree()
   const fbo = useFBO(config.resolution)
-  let ref: THREE.OrthographicCamera
-  let group: THREE.Group
+  const camera = createMemo(() => new ThreeOrthographicCamera(...props.args))
+  const group = new THREE.Group()
   let count = 0
   let previousEnvMap: THREE.Color | THREE.Texture | null = null
 
@@ -88,7 +89,7 @@ export function OrthographicCamera(props: OrthographicCameraProps) {
     }
   })
 
-  onMount(() => config.makeDefault && store.setCamera(ref))
+  createEffect(() => config.makeDefault && store.setCamera(camera()))
 
   createEffect(() => {
     if (!children().isFunctional) return
@@ -100,7 +101,7 @@ export function OrthographicCamera(props: OrthographicCameraProps) {
         state.gl.setRenderTarget(fbo)
         previousEnvMap = scene.background
         if (config.envMap) scene.background = config.envMap
-        state.gl.render(scene, ref)
+        state.gl.render(scene, camera())
         scene.background = previousEnvMap
         state.gl.setRenderTarget(null)
         group.visible = true
@@ -110,35 +111,32 @@ export function OrthographicCamera(props: OrthographicCameraProps) {
   })
 
   createEffect(
-    whenever(
+    when(
       () => config.manual,
       () => {
         store.bounds
-        ref.updateProjectionMatrix()
+        camera().updateProjectionMatrix()
       },
     ),
   )
 
-  createEffect(() => {
-    if (typeof props.ref === 'function') props.ref(ref)
-    else props.ref = ref
-  })
+  useRef(props, camera)
 
   return (
     <>
-      <T.OrthographicCamera
+      <Entity
+        from={camera()}
         left={store.bounds.width / -2}
         right={store.bounds.width / 2}
         top={store.bounds.height / 2}
         bottom={store.bounds.height / -2}
-        ref={ref!}
         {...rest}
       >
         <Show when={!children().isFunctional}>{children().elements()}</Show>
-      </T.OrthographicCamera>
-      <T.Group ref={group!}>
+      </Entity>
+      <Entity from={group}>
         <Show when={children().isFunctional}>{children().elements()}</Show>
-      </T.Group>
+      </Entity>
     </>
   )
 }

@@ -1,13 +1,13 @@
-import { Setup } from '../Setup'
-
-import { T } from 'solid-three'
+import { Entity } from 'solid-three'
+import { MeshBasicMaterial } from 'three'
 import { Box, FlyControls } from '../../src'
+import { Setup } from '../Setup'
 
 export const FlyControlsStory = ({ ...args }) => (
   <>
     <FlyControls {...args} />
     <Box>
-      <T.MeshBasicMaterial wireframe />
+      <Entity from={new MeshBasicMaterial()} wireframe />
     </Box>
   </>
 )

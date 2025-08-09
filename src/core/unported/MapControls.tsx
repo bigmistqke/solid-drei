@@ -1,13 +1,12 @@
 import { createEffect, createMemo, onCleanup, splitProps, untrack } from 'solid-js'
-import { Primitive, SolidThreeCore, useFrame, useThree } from 'solid-three'
+import { type S3, T, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { MapControls as MapControlsImpl } from 'three-stdlib'
-import { RefComponent } from '@/utils/type-utils'
 
-export type MapControlsProps = SolidThreeCore.Overwrite<
-  SolidThreeCore.Object3DNode<MapControlsImpl>,
+export type MapControlsProps = S3.Overwrite<
+  S3.Object3DNode<MapControlsImpl>,
   {
-    target?: SolidThreeCore.Vector3
+    target?: S3.Vector3
     camera?: THREE.Camera
     makeDefault?: boolean
     onChange?: (e?: THREE.Event) => void
@@ -37,7 +36,7 @@ export const MapControls: RefComponent<MapControlsImpl, MapControlsProps> = prop
   createEffect(() => {
     controls().connect(explDomElement())
     const callback = (e: THREE.Event) => {
-      store.invalidate()
+      //store.invalidate()
       if (props.onChange) props.onChange(e)
     }
     controls().addEventListener('change', callback)
@@ -63,7 +62,7 @@ export const MapControls: RefComponent<MapControlsImpl, MapControlsProps> = prop
 
   useFrame(() => controls().update(), -1)
   return (
-    <Primitive
+    <T.Primitive
       ref={props.ref}
       object={controls()}
       enableDamping={props.enableDamping || true}

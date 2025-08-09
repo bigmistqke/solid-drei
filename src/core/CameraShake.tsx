@@ -1,7 +1,8 @@
 import { createWritable } from '@/utils/create-writable'
 import { defaultProps } from '@/utils/default-props'
-import { createEffect, onCleanup } from 'solid-js'
+import { useRef } from '@/utils/use-refs'
 import type { Ref } from 'solid-js'
+import { createEffect, onCleanup } from 'solid-js'
 import { useFrame, useThree } from 'solid-three'
 import { Euler } from 'three'
 import { SimplexNoise } from 'three-stdlib'
@@ -90,10 +91,7 @@ export function CameraShake(props: CameraShakeProps) {
     setIntensity: setClampedIntensity,
   }
 
-  createEffect(() => {
-    if (typeof config.ref === 'function') config.ref(methods)
-    else config.ref = methods
-  })
+  useRef(config, methods)
 
   return null
 }

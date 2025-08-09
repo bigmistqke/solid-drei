@@ -24,7 +24,7 @@ export type BoundsApi = {
   }) => any
 }
 
-export type BoundsProps = S3.ClassProps<THREE.Group> & {
+export type BoundsProps = S3.Props<'Group'> & {
   damping?: number
   fit?: boolean
   clip?: boolean

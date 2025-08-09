@@ -1,13 +1,16 @@
-import { createEffect, createMemo, mergeProps, splitProps } from 'solid-js'
+import { processProps } from '@/utils/process-props'
+import { useRef } from '@/utils/use-refs'
 import type { Ref } from 'solid-js'
-import { $S3C, T, extend, useFrame, useThree } from 'solid-three'
+import { createMemo, mergeProps, splitProps } from 'solid-js'
 import type { S3 } from 'solid-three'
+import { $S3C, Entity, useFrame, useThree } from 'solid-three'
 import {
   DepthFormat,
   DepthTexture,
   HalfFloatType,
   LinearFilter,
   Matrix4,
+  MeshStandardMaterial,
   PerspectiveCamera,
   Plane,
   Texture,
@@ -18,20 +21,8 @@ import {
 } from 'three'
 import { BlurPass } from '../materials/BlurPass'
 import { MeshReflectorMaterial as MeshReflectorMaterialImpl } from '../materials/MeshReflectorMaterial'
-import type { MeshReflectorMaterialProps as MeshReflectorMaterialImplProps } from '../materials/MeshReflectorMaterial'
-import { processProps } from '@/utils/process-props'
 
-extend({ MeshReflectorMaterialImpl })
-
-declare global {
-  namespace SolidThree {
-    interface Elements {
-      MeshReflectorMaterialImpl: MeshReflectorMaterialImplProps
-    }
-  }
-}
-
-interface MeshReflectorMaterialProps extends S3.Props<'MeshStandardMaterial'> {
+interface MeshReflectorMaterialProps extends S3.Props<typeof MeshStandardMaterial> {
   ref?: Ref<MeshReflectorMaterialImpl>
   key?: any
   resolution?: number
@@ -67,27 +58,29 @@ export function MeshReflectorMaterial(props: MeshReflectorMaterialProps) {
       reflectorOffset: 0,
     },
     [
-      'key',
-      'ref',
-      'mixBlur',
-      'mixStrength',
-      'resolution',
+      'args',
       'blur',
-      'minDepthThreshold',
-      'maxDepthThreshold',
       'depthScale',
       'depthToBlurRatioBias',
-      'mirror',
       'distortion',
-      'mixContrast',
       'distortionMap',
+      'key',
+      'maxDepthThreshold',
+      'minDepthThreshold',
+      'mirror',
+      'mixBlur',
+      'mixContrast',
+      'mixStrength',
+      'ref',
       'reflectorOffset',
+      'resolution',
     ],
   )
 
   const store = useThree()
   const blur = () => (Array.isArray(config.blur) ? config.blur : [config.blur, config.blur])
   const hasBlur = () => blur()[0] + blur()[1] > 0
+  const material = createMemo(() => new MeshReflectorMaterialImpl(...config.args))
 
   let materialRef: MeshReflectorMaterialImpl
   const reflectorPlane = new Plane()
@@ -275,13 +268,11 @@ export function MeshReflectorMaterial(props: MeshReflectorMaterialProps) {
     store.gl.setRenderTarget(null)
   })
 
-  createEffect(() => {
-    if (typeof props.ref === 'function') props.ref(materialRef)
-    else props.ref = materialRef
-  })
+  useRef(props, material)
 
   return (
-    <T.MeshReflectorMaterialImpl
+    <Entity
+      from={material()}
       // Defines can't be updated dynamically, so we need to recreate the material
       /* @ts-expect-error TODO: add key-type to component */
       key={
@@ -290,7 +281,6 @@ export function MeshReflectorMaterial(props: MeshReflectorMaterialProps) {
         reflectorProps['defines-USE_DEPTH'] +
         reflectorProps['defines-USE_DISTORTION']
       }
-      ref={materialRef}
       {...reflectorProps}
       {...rest}
     />

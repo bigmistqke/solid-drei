@@ -1,9 +1,8 @@
-import { createEffect, onCleanup } from 'solid-js'
+import { when } from '@/utils/conditionals'
 import type { Accessor } from 'solid-js'
-import { useFrame } from 'solid-three'
-import type { S3 } from 'solid-three'
+import { createEffect, onCleanup } from 'solid-js'
+import { useFrame, type S3 } from 'solid-three'
 import type { Event } from 'three'
-import { whenever } from '@/utils/conditionals'
 
 type ControlProtoBase = {
   update: (delta: number) => void
@@ -36,14 +35,14 @@ function connect(controls: Accessor<ControlProto>, element: Accessor<HTMLElement
 }
 function makeDefault(
   controls: Accessor<ControlProto>,
-  store: any,
+  store: S3.Context,
   config: { makeDefault?: boolean },
 ) {
-  createEffect(() => config.makeDefault && store.setControls(controls()))
+  // createEffect(() => config.makeDefault && store.setControls(controls()))
 }
 function update(controls: Accessor<ControlProto>) {
   createEffect(
-    whenever(controls, controls => {
+    when(controls, controls => {
       if ('enabled' in controls) {
         useFrame((_, delta) => controls.enabled && controls.update(delta))
       } else {
@@ -70,7 +69,7 @@ function addEventHandler<
   selector: (event: Event<TEventName, TControl>) => void,
 ) {
   createEffect(
-    whenever(controls, controls => {
+    when(controls, controls => {
       const callback = (e: Event<TEventName, TControl>) => selector(e)
       controls.addEventListener?.(eventType, callback)
       onCleanup(() => controls.removeEventListener?.(eventType, callback))

@@ -1,6 +1,10 @@
-import { type Accessor, type Ref, Show, createEffect, createMemo } from 'solid-js'
-import { type S3, T, extend, useFrame, useThree } from 'solid-three'
+import { processProps } from '@/utils/process-props'
+import { useRef } from '@/utils/use-refs'
+import { type Accessor, createMemo, type Ref, Show } from 'solid-js'
+import { createT, type S3, useFrame, useThree } from 'solid-three'
 import {
+  BufferAttribute,
+  BufferGeometry,
   Color,
   type ColorRepresentation,
   MathUtils,
@@ -10,15 +14,6 @@ import {
   Vector4,
 } from 'three'
 import { shaderMaterial } from '../../materials/shaderMaterial'
-import { processProps } from '@/utils/process-props'
-
-declare global {
-  namespace SolidThree {
-    interface Elements {
-      SparklesImplMaterial: { pixelRatio: number } & typeof SparklesImplMaterial
-    }
-  }
-}
 
 /**********************************************************************************/
 /*                                                                                */
@@ -112,7 +107,12 @@ const SparklesImplMaterial = shaderMaterial(
     }`,
 )
 
-extend({ SparklesImplMaterial })
+const T = createT({
+  SparklesImplMaterial,
+  Points,
+  BufferGeometry,
+  BufferAttribute,
+})
 
 /**********************************************************************************/
 /*                                                                                */
@@ -120,7 +120,7 @@ extend({ SparklesImplMaterial })
 /*                                                                                */
 /**********************************************************************************/
 
-export interface SparklesProps extends S3.Props<'Points'> {
+export interface SparklesProps extends S3.Props<Points> {
   ref: Ref<Points>
   /** Number of particles (default: 100) */
   count?: number
@@ -190,13 +190,10 @@ export function Sparkles(props: SparklesProps) {
     if (points && points.material) (points.material as any).time = state.clock.elapsedTime
   })
 
-  createEffect(() => {
-    if (typeof props.ref === 'function') props.ref(points)
-    else props.ref = points
-  })
+  useRef(props, points)
 
   return (
-    <T.Points {...rest} ref={points}>
+    <T.Points {...rest}>
       <T.BufferGeometry>
         <T.BufferAttribute attach="attributes-position" args={[positions(), 3]} />
         <T.BufferAttribute attach="attributes-size" args={[sizes(), 1]} />

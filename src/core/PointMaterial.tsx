@@ -1,15 +1,6 @@
 import type { Ref } from 'solid-js'
-import { T } from 'solid-three'
-import type { S3 } from 'solid-three'
+import { Entity, type S3 } from 'solid-three'
 import * as THREE from 'three'
-
-declare global {
-  namespace SolidThree {
-    interface Elements {
-      PointMaterialImpl: Parameters<typeof T.PointsMaterial>[0]
-    }
-  }
-}
 
 /**********************************************************************************/
 /*                                                                                */
@@ -49,11 +40,11 @@ export class PointMaterialImpl extends THREE.PointsMaterial {
 /*                                                                                */
 /**********************************************************************************/
 
-interface PointMaterialProps extends Omit<S3.Props<'PointMaterialImpl'>, 'attach'> {
+interface PointMaterialProps extends Omit<S3.Props<PointMaterialImpl>, 'attach'> {
   ref: Ref<PointMaterialImpl>
 }
 
 export function PointMaterial(props: PointMaterialProps) {
   const material = new PointMaterialImpl(null)
-  return <T.Primitive {...props} object={material} ref={props.ref} attach="material" />
+  return <Entity from={material} {...props} attach="material" />
 }

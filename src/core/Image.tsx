@@ -1,13 +1,12 @@
-import { Show, splitProps } from 'solid-js'
-import type { Ref } from 'solid-js'
-import { T, extend } from 'solid-three'
-import type { S3 } from 'solid-three'
-import { Color, Mesh, Texture } from 'three'
-import { shaderMaterial } from '../materials/shaderMaterial'
 import { processProps } from '@/utils/process-props'
+import type { Ref } from 'solid-js'
+import { Show, splitProps } from 'solid-js'
+import { createT, type S3 } from 'solid-three'
+import { Color, Mesh, PlaneGeometry, Texture } from 'three'
+import { shaderMaterial } from '../materials/shaderMaterial'
 import { useTexture } from './useTexture'
 
-interface ImagePropsBase extends Omit<S3.Props<'Mesh'>, 'scale'> {
+interface ImagePropsBase extends Omit<S3.Props<Mesh>, 'scale'> {
   ref?: Ref<Mesh>
   segments?: number
   scale?: number | [number, number]
@@ -21,23 +20,6 @@ interface ImagePropsBase extends Omit<S3.Props<'Mesh'>, 'scale'> {
 
 type TextureImageProps = ImagePropsBase & { texture: Texture; url?: never }
 type UrlImageProps = ImagePropsBase & { texture?: never; url: string }
-
-interface ImageMaterialType extends S3.Props<'ShaderMaterial'> {
-  scale?: number[]
-  imageBounds?: number[]
-  color?: S3.Color
-  map: Texture
-  zoom?: number
-  grayscale?: number
-}
-
-declare global {
-  namespace SolidThree {
-    interface Elements {
-      ImageMaterial: ImageMaterialType
-    }
-  }
-}
 
 const ImageMaterialImpl = shaderMaterial(
   {
@@ -85,7 +67,7 @@ const ImageMaterialImpl = shaderMaterial(
     gl_FragColor = toGrayscale(texture2D(map, zUv) * vec4(color, opacity), grayscale);
     
     #include <tonemapping_fragment>
-    #include <encodings_fragment>
+    #include <colorspace_fragment>
   }
 `,
 )
@@ -115,7 +97,7 @@ function ImageBase(props: Omit<ImageProps, 'url'>) {
     ],
   )
 
-  extend({ ImageMaterial: ImageMaterialImpl })
+  const T = createT({ Mesh, PlaneGeometry, ImageMaterial: ImageMaterialImpl })
 
   const planeBounds = () =>
     Array.isArray(config.scale) ? [config.scale[0], config.scale[1]] : [config.scale, config.scale]

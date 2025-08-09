@@ -1,10 +1,9 @@
-import { Canvas, T, useLoader } from 'solid-three'
+import { MapControls } from '@/index'
+import { check } from '@/utils/conditionals'
 import { For, Suspense, createMemo, createSignal, onMount } from 'solid-js'
+import { Canvas, T, useLoader } from 'solid-three'
 import { Box3, Sphere, Vector3 } from 'three'
 import { SVGLoader } from 'three-stdlib'
-
-import { MapControls } from '../../src'
-import { when } from '../../src/helpers/when'
 
 export default {
   title: 'Controls/MapControls',
@@ -32,7 +31,7 @@ function Svg() {
   const resource = useLoader(SVGLoader, 'map.svg')
 
   const shapes = createMemo(() =>
-    when(resource)(({ paths }) =>
+    check(resource)(({ paths }) =>
       paths.flatMap(p =>
         p.toShapes(true).map(shape =>
           //@ts-expect-error this issue has been raised https://github.com/mrdoob/three.js/pull/21059

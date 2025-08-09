@@ -1,17 +1,11 @@
-import { type Accessor, createEffect, onCleanup } from 'solid-js'
-import { T, type ThreeProps, useThree } from 'solid-three'
-import { Group, Mesh } from 'three'
-import {
-  SAH,
-  SplitStrategy,
-  acceleratedRaycast,
-  computeBoundsTree,
-  disposeBoundsTree,
-} from 'three-mesh-bvh'
-import { when } from '@/utils/conditionals'
+import { check } from '@/utils/conditionals'
 import { processProps } from '@/utils/process-props'
 import { RefComponent } from '@/utils/type-utils'
 import { createImperativeHandle } from '@/utils/use-imperative-handle'
+import { type Accessor, createEffect, onCleanup } from 'solid-js'
+import { T, type ThreeProps, useThree } from 'solid-three'
+import { Group, Mesh } from 'three'
+import { SAH, acceleratedRaycast, computeBoundsTree, disposeBoundsTree } from 'three-mesh-bvh'
 
 export interface BVHOptions {
   /** Split strategy, default: SAH (slowest to construct, fastest runtime, least memory) */
@@ -49,7 +43,7 @@ export function useBVH(mesh: Accessor<Mesh | undefined>, options?: BVHOptions) {
     ...options,
   }
   createEffect(() =>
-    when(mesh)(mesh => {
+    check(mesh)(mesh => {
       mesh.raycast = acceleratedRaycast
       const geometry: any = mesh.geometry
       geometry.computeBoundsTree = computeBoundsTree

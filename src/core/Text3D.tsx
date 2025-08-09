@@ -1,24 +1,14 @@
-import { Show, createEffect, createMemo, mergeProps, splitProps } from 'solid-js'
-import type { JSXElement, Ref } from 'solid-js'
-import { T, extend } from 'solid-three'
-import type { S3 } from 'solid-three'
-import { Mesh } from 'three'
-import { TextGeometry, mergeVertices } from 'three-stdlib'
-import type { TextGeometryParameters } from 'three-stdlib'
 import { processProps } from '@/utils/process-props'
 import { resolveAccessor } from '@/utils/resolve-accessor'
-import { useFont } from './useFont'
+import { useRef } from '@/utils/use-refs'
+import type { JSXElement, Ref } from 'solid-js'
+import { Show, createEffect, createMemo, mergeProps, splitProps } from 'solid-js'
+import { Entity, type S3 } from 'solid-three'
+import { Mesh } from 'three'
+import type { TextGeometryParameters } from 'three-stdlib'
+import { TextGeometry, mergeVertices } from 'three-stdlib'
 import type { FontData } from './useFont'
-
-declare global {
-  namespace SolidThree {
-    interface Elements {
-      RenamedTextGeometry: TextGeometry
-    }
-  }
-}
-
-extend({ RenamedTextGeometry: TextGeometry })
+import { useFont } from './useFont'
 
 /**********************************************************************************/
 /*                                                                                */
@@ -46,7 +36,7 @@ function getTextFromChildren(children: any) {
 /*                                                                                */
 /**********************************************************************************/
 
-type Text3DPropsBase = Omit<TextGeometryParameters, 'font'> & S3.Props<'Mesh'>
+type Text3DPropsBase = Omit<TextGeometryParameters, 'font'> & S3.Props<Mesh>
 interface Text3DProps extends Text3DPropsBase {
   ref?: Ref<Mesh>
   letterSpacing?: number
@@ -98,7 +88,7 @@ export function Text3D(props: Text3DProps) {
     fontProps,
   )
 
-  let mesh: Mesh
+  const mesh = new Mesh()
   const font = useFont(() => config.font)
 
   const memo = createMemo(() => getTextFromChildren(config.children))
@@ -109,17 +99,14 @@ export function Text3D(props: Text3DProps) {
     mesh.geometry.computeVertexNormals()
   })
 
-  createEffect(() => {
-    if (typeof config.ref === 'function') config.ref(mesh)
-    else config.ref = mesh
-  })
+  useRef(config, mesh)
 
   return (
-    <T.Mesh {...rest} ref={mesh!}>
+    <Entity from={mesh} {...rest}>
       <Show when={options.font}>
-        <T.RenamedTextGeometry args={[memo().label, options]} />
+        <Entity from={new TextGeometry(memo().label, options)} />
       </Show>
       {memo().rest}
-    </T.Mesh>
+    </Entity>
   )
 }

@@ -1,7 +1,7 @@
+import { every, when } from '@/utils/conditionals'
+import { defaultProps } from '@/utils/default-props'
 import { createRenderEffect, createResource } from 'solid-js'
 import { RepeatWrapping, Texture, Vector2 } from 'three'
-import { every, whenever } from '@/utils/conditionals'
-import { defaultProps } from '@/utils/default-props'
 import { useTexture } from './useTexture'
 
 const NORMAL_ROOT =
@@ -25,21 +25,21 @@ export function useNormalTexture(
     fetch(LIST_URL).then(res => res.json() as unknown as Record<string, string>),
   )
 
-  const numTot = whenever(normalsList, list => Object.keys(list).length)
-  const imageName = whenever(normalsList, list => list[id] || list[0])
-  const url = whenever(imageName, name => `${NORMAL_ROOT}/normals/${name}`)
+  const numTot = when(normalsList, list => Object.keys(list).length)
+  const imageName = when(normalsList, list => list[id] || list[0])
+  const url = when(imageName, name => `${NORMAL_ROOT}/normals/${name}`)
 
   const [texture] = createResource(
     url,
     url =>
       new Promise<Texture>(resolve => {
         const texture = useTexture(url, onLoad)
-        createRenderEffect(whenever(texture, resolve))
+        createRenderEffect(when(texture, resolve))
       }),
   )
 
   createRenderEffect(
-    whenever(texture, texture => {
+    when(texture, texture => {
       texture.wrapS = texture.wrapT = RepeatWrapping
       texture.repeat = new Vector2(config.repeat[0], config.repeat[1])
       texture.offset = new Vector2(config.offset[0], config.offset[1])
@@ -47,7 +47,7 @@ export function useNormalTexture(
     }),
   )
 
-  return whenever(every(texture, url, numTot), ([texture, url, numTot]) => ({
+  return when(every(texture, url, numTot), ([texture, url, numTot]) => ({
     texture,
     url,
     numTot,

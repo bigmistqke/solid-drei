@@ -314,7 +314,7 @@ You can use the OrthographicCamera to film contents into a RenderTarget, it has 
 A [THREE.CubeCamera](https://threejs.org/docs/#api/en/cameras/CubeCamera) that returns its texture as a render-prop. It makes children invisible while rendering to the internal buffer so that they are not included in the reflection.
 
 ```tsx
-type Props = ThreeProps<'Group'> & {
+type Props = ThreeProps<Group> & {
   /** Number of frames to render, Infinity */
   frames?: number
   /** Resolution of the FBO, 256 */
@@ -1583,7 +1583,7 @@ const animations = useAnimations(
   () => gltf()?.animations,
   () => gltf()?.scene
 )
-return <T.Primitive object={gltf()?.scene} />
+return <Entity from={gltf()?.scene} />
 ```
 
 #### MarchingCubes
@@ -1779,7 +1779,7 @@ This material makes your geometry distort following simplex noise.
 A convincing Glass/Diamond refraction material.
 
 ```tsx
-type MeshRefractionMaterialProps = ThreeProps<'ShaderMaterial'> & {
+type MeshRefractionMaterialProps = ThreeProps<ShaderMaterial> & {
   /** Environment map */
   envMap: THREE.CubeTexture | THREE.Texture
   /** Number of ray-cast bounces, it can be expensive to have too many, 2 */
@@ -1831,7 +1831,7 @@ Although it should be faster than MPM keep in mind that it can still be expensiv
 For performance and visual reasons the host mesh gets removed from the render-stack temporarily. If you have other objects that you don't want to see reflected in the material just add them to the parent mesh as children.
 
 ```tsx
-type MeshTransmissionMaterialProps = ThreeProps<'MeshPhysicalMaterial'> & {
+type MeshTransmissionMaterialProps = ThreeProps<MeshPhysicalMaterial> & {
   /* Transmission, default: 1 */
   transmission?: number
   /* Thickness (refraction), default: 0 */
@@ -2793,7 +2793,7 @@ useFBX(url)
 
 function SuzanneFBX() {
   let fbx = useFBX('suzanne/suzanne.fbx')
-  return <T.Primitive object={fbx()} />
+  return <Entity from={fbx()} />
 }
 ```
 
@@ -3193,7 +3193,7 @@ export interface BVHOptions {
 }
 
 export type BvhProps = BVHOptions &
-  ThreeProps<'Group'> & {
+  ThreeProps<Group> & {
     /**Enabled, default: true */
     enabled?: boolean
     /** Use .raycastFirst to retrieve hits which is generally faster, default: false */
@@ -3398,7 +3398,7 @@ return (
 This component allows you to render a live scene into a texture which you can then apply to a material. The contents of it run inside a portal and are separate from the rest of the canvas, therefore you can have events in there, environment maps, etc.
 
 ```tsx
-type Props = ThreeProps<'Texture'> & {
+type Props = ThreeProps<Texture> & {
   /** Optional width of the texture, defaults to viewport bounds */
   width?: number
   /** Optional height of the texture, defaults to viewport bounds */
@@ -3500,7 +3500,7 @@ const stencil = useMask(1, true)
 </p>
 
 ```tsx
-export type PortalProps = ThreeProps<'ShaderMaterial'> & {
+export type PortalProps = ThreeProps<ShaderMaterial> & {
   /** Mix the portals own scene with the world scene, 0 = world scene render,
    *  0.5 = both scenes render, 1 = portal scene renders, defaults to 0 */
   blend?: number
@@ -3558,7 +3558,7 @@ It is also possible to _enter_ the portal. If blend is 0 your scene will render 
 Calculates a boundary box and centers its children accordingly.
 
 ```tsx
-export type Props = ThreeProps<'Group'> & {
+export type Props = ThreeProps<Group> & {
   top?: boolean
   right?: boolean
   bottom?: boolean

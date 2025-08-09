@@ -1,7 +1,7 @@
+import { when } from '@/utils/conditionals'
 import { createEffect, createSignal, onCleanup } from 'solid-js'
 import { addAfterEffect, addEffect } from 'solid-three'
 import { Object3D } from 'three'
-import { whenever } from '@/utils/conditionals'
 
 export function useIntersect<T extends Object3D>(onChange: (visible: boolean) => void) {
   const [ref, setRef] = createSignal<T>()
@@ -9,7 +9,7 @@ export function useIntersect<T extends Object3D>(onChange: (visible: boolean) =>
   let temp = false
 
   createEffect(
-    whenever(ref, ref => {
+    when(ref, ref => {
       // Stamp out frustum check pre-emptively
       const unsub1 = addEffect(() => {
         check = false

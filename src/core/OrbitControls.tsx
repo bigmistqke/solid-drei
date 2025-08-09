@@ -1,18 +1,15 @@
-import { ControlUtils } from '@/core/control-utils'
+import { whenEffect } from '@/utils/conditionals'
 import { processProps } from '@/utils/process-props'
-import { createEffect, createMemo } from 'solid-js'
-import type { Ref } from 'solid-js'
-import { T, useThree } from 'solid-three'
-import type { S3 } from 'solid-three'
+import { createEffect, createMemo, onCleanup, type Ref } from 'solid-js'
+import { type S3, useFrame, useProps, useThree } from 'solid-three'
 import type { Event } from 'three'
 import { OrbitControls as ThreeOrbitControls } from 'three-stdlib'
 
-export type OrbitControlsProps = S3.ClassProps<typeof ThreeOrbitControls> & {
+export interface OrbitControlsProps extends S3.Props<typeof ThreeOrbitControls> {
   ref?: Ref<ThreeOrbitControls>
   camera?: S3.CameraType
   domElement?: HTMLElement
   enableDamping?: boolean
-  makeDefault?: boolean
   onChange?: (e?: Event<'change', ThreeOrbitControls>) => void
   onEnd?: (e?: Event<'end', ThreeOrbitControls>) => void
   onStart?: (e?: Event<'start', ThreeOrbitControls>) => void
@@ -29,7 +26,6 @@ export function OrbitControls(props: OrbitControlsProps) {
       keyEvents: false,
     },
     [
-      'makeDefault',
       'camera',
       'regress',
       'domElement',
@@ -41,27 +37,39 @@ export function OrbitControls(props: OrbitControlsProps) {
       'dispose',
     ],
   )
-  const store = useThree()
-  const element = () =>
-    config.keyEvents instanceof HTMLElement
-      ? config.keyEvents
-      : ControlUtils.getDomElement(store, config)
-  const camera = () => config.camera || store.camera
-  const controls = createMemo(() => new ThreeOrbitControls(camera()))
-
-  ControlUtils.initialize(controls, element, store, config)
-  createEffect(() => {
-    if (!config.onChange) return
-    ControlUtils.addEventHandler(controls, 'change', config.onChange)
-  })
-  createEffect(() => {
-    if (!config.onEnd) return
-    ControlUtils.addEventHandler(controls, 'end', config.onEnd)
-  })
-  createEffect(() => {
-    if (!config.onStart) return
-    ControlUtils.addEventHandler(controls, 'start', config.onStart)
+  const three = useThree()
+  const controls = createMemo<ThreeOrbitControls>(previous => {
+    previous?.dispose()
+    return new ThreeOrbitControls(config.camera ?? three.camera)
   })
 
-  return <T.Primitive ref={props.ref} object={controls()} {...rest} />
+  useFrame(() => controls().update())
+
+  whenEffect(controls, controls => controls.connect(props.domElement ?? three.gl.domElement))
+
+  createEffect(() => {
+    const callback = config.onStart
+    if (!callback) return
+    const _controls = controls()
+    _controls.addEventListener('start', callback)
+    onCleanup(() => _controls.removeEventListener('start', callback))
+  })
+  createEffect(() => {
+    const callback = config.onChange
+    if (!callback) return
+    const _controls = controls()
+    _controls.addEventListener('change', callback)
+    onCleanup(() => _controls.removeEventListener('change', callback))
+  })
+  createEffect(() => {
+    const callback = config.onEnd
+    if (!callback) return
+    const _controls = controls()
+    _controls.addEventListener('end', callback)
+    onCleanup(() => _controls.removeEventListener('end', callback))
+  })
+
+  useProps(controls, rest)
+
+  return null!
 }

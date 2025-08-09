@@ -2,6 +2,8 @@ import { Accessor, ParentComponent, createRenderEffect, createSignal, untrack } 
 
 import { MeshSurfaceSampler } from 'three-stdlib'
 
+import { check } from '@/utils/conditionals'
+import { processProps } from '@/utils/process-props'
 import { T, ThreeProps } from 'solid-three'
 import {
   Color,
@@ -12,8 +14,6 @@ import {
   Object3D,
   Vector3,
 } from 'three'
-import { when } from '@/utils/conditionals'
-import { processProps } from '@/utils/process-props'
 
 type SamplePayload = {
   /**
@@ -107,7 +107,7 @@ export function useSurfaceSampler(
   )
 
   createRenderEffect(() =>
-    when(mesh, mesh => {
+    check(mesh, mesh => {
       const sampler = new MeshSurfaceSampler(mesh)
       if (weight) {
         sampler.setWeightAttribute(weight)
@@ -141,12 +141,12 @@ export function useSurfaceSampler(
         }
 
         dummy.updateMatrix()
-        when(instanceMesh, instanceMesh => instanceMesh.setMatrixAt(i, dummy.matrix))
+        check(instanceMesh, instanceMesh => instanceMesh.setMatrixAt(i, dummy.matrix))
 
         untrack(() => dummy.matrix.toArray(buffer().array, i * 16))
       }
 
-      when(instanceMesh, instanceMesh => (instanceMesh.instanceMatrix.needsUpdate = true))
+      check(instanceMesh, instanceMesh => (instanceMesh.instanceMatrix.needsUpdate = true))
 
       untrack(() => {
         buffer().needsUpdate = true

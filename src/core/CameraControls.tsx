@@ -1,8 +1,10 @@
+import { useRef } from '@/utils/use-refs'
 import ThreeCameraControls from 'camera-controls'
-import { createEffect, createMemo, splitProps } from 'solid-js'
 import type { Ref } from 'solid-js'
-import { T, useThree } from 'solid-three'
+import { createEffect, createMemo, splitProps } from 'solid-js'
 import type { S3 } from 'solid-three'
+import { Entity, useThree } from 'solid-three'
+import type { Event, OrthographicCamera, PerspectiveCamera } from 'three'
 import {
   Box3,
   MathUtils,
@@ -15,12 +17,11 @@ import {
   Vector3,
   Vector4,
 } from 'three'
-import type { Event, OrthographicCamera, PerspectiveCamera } from 'three'
 import { ControlUtils } from './control-utils'
 
 export type CameraControls = ThreeCameraControls
 
-export interface CameraControlsProps extends S3.ClassProps<typeof ThreeCameraControls> {
+export interface CameraControlsProps extends S3.Props<typeof ThreeCameraControls> {
   ref?: Ref<ThreeCameraControls>
   camera?: PerspectiveCamera | OrthographicCamera
   domElement?: HTMLElement
@@ -85,5 +86,7 @@ export function CameraControls(props: CameraControlsProps) {
     ControlUtils.addEventHandler(controls, 'controlend', config.onEnd)
   })
 
-  return <T.Primitive ref={config.ref} object={controls()} {...rest} />
+  useRef(props, controls)
+
+  return <Entity from={controls()} {...rest} />
 }

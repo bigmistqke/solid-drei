@@ -1,11 +1,11 @@
-import { createEffect } from 'solid-js'
-import type { Ref } from 'solid-js'
-import { T } from 'solid-three'
-import type { S3 } from 'solid-three'
-import { EdgesGeometry, LineSegments, Mesh } from 'three'
 import { processProps } from '@/utils/process-props'
+import { useRef } from '@/utils/use-refs'
+import type { Ref } from 'solid-js'
+import { createEffect } from 'solid-js'
+import { Entity, type S3 } from 'solid-three'
+import { EdgesGeometry, LineBasicMaterial, LineSegments, Mesh } from 'three'
 
-interface EdgesProps extends S3.Props<'LineSegments'> {
+interface EdgesProps extends S3.Props<LineSegments> {
   ref?: Ref<LineSegments>
   threshold?: number
   color?: S3.Color
@@ -20,7 +20,7 @@ export const Edges = (props: EdgesProps) => {
     'threshold',
     'color',
   ])
-  let lineSegments: LineSegments = null!
+  const lineSegments = new LineSegments()
 
   createEffect(() => {
     const parent = lineSegments.parent as Mesh
@@ -37,14 +37,15 @@ export const Edges = (props: EdgesProps) => {
     }
   })
 
-  createEffect(() => {
-    if (typeof props.ref === 'function') props.ref(lineSegments)
-    else props.ref = lineSegments
-  })
+  useRef(props, lineSegments)
 
   return (
-    <T.LineSegments ref={lineSegments} raycast={() => null} {...rest}>
-      {config.children ? config.children : <T.LineBasicMaterial color={config.color} />}
-    </T.LineSegments>
+    <Entity from={lineSegments} raycast={() => null} {...rest}>
+      {config.children ? (
+        config.children
+      ) : (
+        <Entity from={new LineBasicMaterial()} color={config.color} />
+      )}
+    </Entity>
   )
 }
