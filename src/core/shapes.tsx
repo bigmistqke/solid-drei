@@ -56,7 +56,7 @@ export interface ShapeProps<T> extends Omit<S3.Props<typeof Mesh>, 'children' | 
   args?: Args<T>
   children?: JSX.Element | JSX.Element[]
 }
-interface GeometryProps<T extends GeometryKind> extends S3.Props<typeof Mesh> {
+interface GeometryProps<T extends GeometryKind> extends Omit<S3.Props<typeof Mesh>, 'args'> {
   ref?: Ref<Mesh>
   args?: S3.Props<T>['args']
 }
