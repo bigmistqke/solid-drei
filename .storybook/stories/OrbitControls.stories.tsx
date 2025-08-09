@@ -36,6 +36,12 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
+/**********************************************************************************/
+/*                                                                                */
+/*                                  Orbit Controls                                */
+/*                                                                                */
+/**********************************************************************************/
+
 export const Default: Story = {
   render: (props: OrbitControlsProps) => (
     <>
@@ -60,7 +66,6 @@ const CustomCamera = (props: OrbitControlsProps) => {
     if (virtualCamera) {
       gl.setRenderTarget(fbo)
       gl.render(virtualScene, virtualCamera)
-
       gl.setRenderTarget(null)
     }
   })

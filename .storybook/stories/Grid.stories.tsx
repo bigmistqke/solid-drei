@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from 'storybook-solidjs-vite'
 import { createT } from 'solid-three'
+import type { Meta, StoryObj } from 'storybook-solidjs-vite'
 import { DirectionalLight, MeshStandardMaterial, Vector3 } from 'three'
 import { Box, Grid } from '../../src'
 import { Setup } from '../Setup'
@@ -27,6 +27,12 @@ const meta = {
 
 export default meta
 type Story = StoryObj<typeof meta>
+
+/**********************************************************************************/
+/*                                                                                */
+/*                                       Grid                                     */
+/*                                                                                */
+/**********************************************************************************/
 
 function UseGridScene() {
   return (

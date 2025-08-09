@@ -5,6 +5,32 @@ import { Group, MeshStandardMaterial, Vector3 } from 'three'
 import { Billboard, Box, Cone, Text as DreiText, OrbitControls, Plane } from '../../src'
 import { Setup } from '../Setup'
 
+const meta = {
+  title: 'Abstractions/Billboard',
+  component: Billboard,
+  decorators: [
+    (Story: () => JSX.Element) => (
+      <Setup controls={false} cameraPosition={new Vector3(0, 0, 10)}>
+        <Story />
+      </Setup>
+    ),
+  ],
+  args: {
+    follow: true,
+    lockX: false,
+    lockY: false,
+    lockZ: false,
+  },
+} satisfies Meta<typeof Billboard>
+
+export default meta
+
+/**********************************************************************************/
+/*                                                                                */
+/*                                    Billboard                                   */
+/*                                                                                */
+/**********************************************************************************/
+
 const T = createT({ Group, MeshStandardMaterial })
 
 type BillboardProps = {
@@ -131,23 +157,3 @@ Text.args = {
   lockY: false,
   lockZ: false,
 }
-
-const meta = {
-  title: 'Abstractions/Billboard',
-  component: Billboard,
-  decorators: [
-    (Story: () => JSX.Element) => (
-      <Setup controls={false} cameraPosition={new Vector3(0, 0, 10)}>
-        <Story />
-      </Setup>
-    ),
-  ],
-  args: {
-    follow: true,
-    lockX: false,
-    lockY: false,
-    lockZ: false,
-  },
-} satisfies Meta<typeof Billboard>
-
-export default meta

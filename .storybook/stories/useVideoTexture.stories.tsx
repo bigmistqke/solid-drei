@@ -5,6 +5,27 @@ import * as THREE from 'three'
 import { Plane, useTexture, useVideoTexture } from '../../src'
 import { Setup } from '../Setup'
 
+const meta = {
+  title: 'Misc/useVideoTexture',
+  decorators: [
+    (Story: () => JSX.Element) => {
+      return (
+        <Setup cameraPosition={new THREE.Vector3(0, 0, 3)}>
+          <Story />
+        </Setup>
+      )
+    },
+  ],
+} satisfies Meta
+
+export default meta
+
+/**********************************************************************************/
+/*                                                                                */
+/*                                Use Video Texture                               */
+/*                                                                                */
+/**********************************************************************************/
+
 const T = createT({ MeshBasicMaterial: THREE.MeshBasicMaterial })
 
 function FallbackMaterial({ url }: { url: string }) {
@@ -62,18 +83,3 @@ export function MediaStream() {
     </Suspense>
   )
 }
-
-const meta = {
-  title: 'Misc/useVideoTexture',
-  decorators: [
-    (Story: () => JSX.Element) => {
-      return (
-        <Setup cameraPosition={new THREE.Vector3(0, 0, 3)}>
-          <Story />
-        </Setup>
-      )
-    },
-  ],
-} satisfies Meta
-
-export default meta

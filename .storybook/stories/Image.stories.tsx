@@ -26,6 +26,12 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
+/**********************************************************************************/
+/*                                                                                */
+/*                                      Image                                     */
+/*                                                                                */
+/**********************************************************************************/
+
 function TextureWrapper(props: any) {
   const texture = useTexture('/images/living-room-1.jpg')
   const texture2 = useTexture('/images/living-room-3.jpg')
