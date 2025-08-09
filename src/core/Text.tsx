@@ -2,11 +2,12 @@ import { processProps } from '@/utils/process-props'
 import { resolveAccessor } from '@/utils/resolve-accessor'
 import type { JSX } from 'solid-js'
 import { createMemo, createResource, onCleanup, onMount, Show } from 'solid-js'
-import type { S3 } from 'solid-three'
+import { Entity, type S3 } from 'solid-three'
+import type { Mesh } from 'three'
 import { Font } from 'three-stdlib'
-import { preloadFont, Text as ThreeTextMesh } from 'troika-three-text'
+import { preloadFont, Text as TroikaMesh } from 'troika-three-text'
 
-interface Props extends S3.Props<Mesh> {
+interface Props extends S3.Props<typeof Mesh> {
   /** The text or elements to display */
   children: JSX.Element | JSX.Element[]
   /** Characters to preload */
@@ -118,9 +119,15 @@ export function Text(props: Props) {
     ['sdfGlyphSize', 'anchorX', 'anchorY', 'font', 'fontSize', 'children', 'characters', 'onSync'],
   )
 
+  const troikaMesh = new TroikaMesh()
+
   const [font] = createResource(
     () => [config.font, config.characters],
-    ([font, characters]) => new Promise<Font>(res => preloadFont({ font, characters }, res)),
+    ([font, characters]) => {
+      return new Promise<Font>(res =>
+        preloadFont({ font: font || null, characters: characters || '' }, res),
+      )
+    },
   )
 
   const memo = createMemo(() => {
@@ -141,8 +148,6 @@ export function Text(props: Props) {
     return { nodes, text }
   })
 
-  const troikaMesh = new ThreeTextMesh()
-
   onMount(() => {
     troikaMesh.sync(() => config.onSync && config.onSync(troikaMesh))
     onCleanup(() => troikaMesh.dispose())
@@ -150,21 +155,18 @@ export function Text(props: Props) {
 
   return (
     <Show when={font()}>
-      {resource => (
-        <Entity
-          object={troikaMesh}
-          /* @ts-expect-error */
-          font={resource()}
-          text={memo().text}
-          anchorX={config.anchorX}
-          anchorY={config.anchorY}
-          fontSize={config.fontSize}
-          sdfGlyphSize={config.sdfGlyphSize}
-          {...rest}
-        >
-          {memo().nodes}
-        </Entity>
-      )}
+      <Entity
+        from={troikaMesh}
+        font={props.font}
+        text={memo().text}
+        anchorX={config.anchorX}
+        anchorY={config.anchorY}
+        fontSize={config.fontSize}
+        sdfGlyphSize={config.sdfGlyphSize}
+        {...rest}
+      >
+        {memo().nodes}
+      </Entity>
     </Show>
   )
 }
