@@ -1,10 +1,9 @@
-import { T, useFrame } from 'solid-three'
+import { Entity, useFrame } from 'solid-three'
 import * as THREE from 'three'
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
-
-import { Setup } from '../Setup'
-
 import { CameraShake, OrbitControls } from '../../src'
+import { Setup } from '../Setup'
+import { T } from '../t'
 
 const frequencyArgType = {
   control: {
@@ -55,7 +54,7 @@ export default {
 }
 
 function Scene() {
-  let cube: THREE.Mesh
+  const cube = new THREE.Mesh()
 
   useFrame(() => {
     if (cube) {
@@ -65,10 +64,10 @@ function Scene() {
 
   return (
     <>
-      <T.Mesh ref={cube!}>
+      <Entity from={cube!}>
         <T.BoxGeometry args={[2, 2, 2]} />
         <T.MeshStandardMaterial wireframe color="white" />
-      </T.Mesh>
+      </Entity>
       <T.Mesh position={[0, -6, 0]} rotation={[Math.PI / -2, 0, 0]}>
         <T.PlaneGeometry args={[200, 200, 75, 75]} />
         <T.MeshBasicMaterial wireframe color="red" side={THREE.DoubleSide} />

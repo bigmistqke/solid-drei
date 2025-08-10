@@ -1,10 +1,8 @@
-import { createT } from 'solid-three'
 import type { Meta, StoryObj } from 'storybook-solidjs-vite'
-import { DirectionalLight, MeshStandardMaterial, Vector3 } from 'three'
+import { Vector3 } from 'three'
 import { Box, Grid } from '../../src'
 import { Setup } from '../Setup'
-
-const T = createT({ MeshStandardMaterial, DirectionalLight })
+import { T } from '../t'
 
 const meta = {
   title: 'Gizmos/Grid',

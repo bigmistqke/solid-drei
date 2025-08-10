@@ -1,8 +1,8 @@
-import { createT } from 'solid-three'
 import type { Meta, StoryObj } from 'storybook-solidjs-vite'
-import { MeshPhongMaterial, Vector3 } from 'three'
+import { Vector3 } from 'three'
 import * as shapes from '../../src/core/shapes'
 import { Setup } from '../Setup'
+import { T } from '../t'
 import { useTurntable } from '../useTurntable'
 
 const meta = {
@@ -31,8 +31,6 @@ type Story = StoryObj<typeof meta>
 /*                                      Shapes                                    */
 /*                                                                                */
 /**********************************************************************************/
-
-const T = createT({ MeshPhongMaterial })
 
 function StoryComponent({ comp, args = [] }: { comp: keyof typeof shapes; args?: any }) {
   const Comp = shapes[comp]

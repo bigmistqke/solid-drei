@@ -1,9 +1,9 @@
 import type { JSX } from 'solid-js'
-import { createT } from 'solid-three'
 import type { Meta } from 'storybook-solidjs-vite'
-import { Group, MeshStandardMaterial, Vector3 } from 'three'
+import { Vector3 } from 'three'
 import { Billboard, Box, Cone, Text as DreiText, OrbitControls, Plane } from '../../src'
 import { Setup } from '../Setup'
+import { T } from '../t'
 
 const meta = {
   title: 'Abstractions/Billboard',
@@ -30,8 +30,6 @@ export default meta
 /*                                    Billboard                                   */
 /*                                                                                */
 /**********************************************************************************/
-
-const T = createT({ Group, MeshStandardMaterial })
 
 type BillboardProps = {
   follow: boolean

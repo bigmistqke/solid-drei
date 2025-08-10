@@ -1,9 +1,9 @@
 import { Suspense } from 'solid-js'
-import { createT } from 'solid-three'
 import type { Meta, StoryObj } from 'storybook-solidjs-vite'
-import { DoubleSide, MeshBasicMaterial, Vector3 } from 'three'
+import { DoubleSide, Vector3 } from 'three'
 import { Text } from '../../src'
 import { Setup } from '../Setup'
+import { T } from '../t'
 import { useTurntable } from '../useTurntable'
 
 const meta = {
@@ -26,8 +26,6 @@ type Story = StoryObj<typeof meta>
 /*                                       Text                                     */
 /*                                                                                */
 /**********************************************************************************/
-
-const T = createT({ MeshBasicMaterial })
 
 const loremText = `LOREM IPSUM DOLOR SIT AMET, CONSECTETUR ADIPISCING ELIT, SED DO EIUSMOD TEMPOR INCIDIDUNT UT LABORE ET DOLORE MAGNA ALIQUA. UT ENIM AD MINIM VENIAM, QUIS NOSTRUD EXERCITATION ULLAMCO LABORIS NISI UT ALIQUIP EX EA COMMODO CONSEQUAT. DUIS AUTE IRURE DOLOR IN REPREHENDERIT IN VOLUPTATE VELIT ESSE CILLUM DOLORE EU FUGIAT NULLA PARIATUR. EXCEPTEUR SINT OCCAECAT CUPIDATAT NON PROIDENT, SUNT IN CULPA QUI OFFICIA DESERUNT MOLLIT ANIM ID EST LABORUM.`
 

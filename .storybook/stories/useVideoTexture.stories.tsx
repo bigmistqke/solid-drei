@@ -1,9 +1,9 @@
 import { createSignal, onMount, Suspense, type JSX } from 'solid-js'
-import { createT } from 'solid-three'
 import type { Meta } from 'storybook-solidjs-vite'
 import * as THREE from 'three'
 import { Plane, useTexture, useVideoTexture } from '../../src'
 import { Setup } from '../Setup'
+import { T } from '../t'
 
 const meta = {
   title: 'Misc/useVideoTexture',
@@ -25,8 +25,6 @@ export default meta
 /*                                Use Video Texture                               */
 /*                                                                                */
 /**********************************************************************************/
-
-const T = createT({ MeshBasicMaterial: THREE.MeshBasicMaterial })
 
 function FallbackMaterial({ url }: { url: string }) {
   const texture = useTexture(url)

@@ -1,9 +1,7 @@
 import { Box } from '@/index'
-import { createT } from 'solid-three'
 import * as THREE from 'three'
 import { Setup } from '../Setup'
-
-const T = createT(THREE)
+import { T } from '../t'
 
 export function BoxStory() {
   return (

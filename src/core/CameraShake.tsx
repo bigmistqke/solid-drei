@@ -27,6 +27,10 @@ export interface CameraShakeProps {
   yawFrequency?: number
   pitchFrequency?: number
   rollFrequency?: number
+  controls?: {
+    addEventListener(name: string, callback: () => void): void
+    removeEventListener(name: string, callback: () => void): void
+  }
 }
 
 export function CameraShake(props: CameraShakeProps) {
@@ -76,12 +80,12 @@ export function CameraShake(props: CameraShakeProps) {
   })
 
   createEffect(() => {
-    if (store.controls) {
+    if (props.controls) {
       const callback = () => void (initialRotation = store.camera.rotation.clone())
-      store.controls.addEventListener('change', callback)
+      props.controls.addEventListener('change', callback)
       callback()
       onCleanup(() => {
-        store.controls?.removeEventListener('change', callback)
+        props.controls?.removeEventListener('change', callback)
       })
     }
   })

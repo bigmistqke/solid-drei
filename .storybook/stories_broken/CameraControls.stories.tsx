@@ -1,14 +1,14 @@
-import { createT, Portal, useFrame } from 'solid-three'
-import { MeshBasicMaterial, Scene } from 'three'
+import { Portal, useFrame } from 'solid-three'
+import { Scene } from 'three'
 import type { CameraControlsProps } from '../../src'
 import { Box, CameraControls, PerspectiveCamera, Plane, useFBO } from '../../src'
 import { Setup } from '../Setup'
+import { T } from '../t'
 
 const args = {}
-const T = createT({ MeshBasicMaterial })
 
 export const CameraControlsStory = (props: CameraControlsProps) => {
-  let cameraControlRef: CameraControls | null = null
+  let cameraControlRef: CameraControls = null!
 
   return (
     <>

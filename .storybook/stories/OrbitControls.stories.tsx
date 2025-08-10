@@ -1,11 +1,10 @@
-import { createT, Entity, Portal, useFrame } from 'solid-three'
+import { Entity, Portal, useFrame } from 'solid-three'
 import type { Meta, StoryObj } from 'storybook-solidjs-vite'
-import { MeshBasicMaterial, PerspectiveCamera, Scene, Vector3 } from 'three'
+import { PerspectiveCamera, Scene, Vector3 } from 'three'
 import type { OrbitControlsProps } from '../../src'
 import { Box, OrbitControls, Plane, useFBO } from '../../src'
 import { Setup } from '../Setup'
-
-const T = createT({ MeshBasicMaterial })
+import { T } from '../t'
 
 const meta = {
   title: 'Controls/OrbitControls',
