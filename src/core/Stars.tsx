@@ -59,7 +59,7 @@ class StarfieldMaterial extends ShaderMaterial {
         gl_FragColor = vec4(vColor, opacity);
 
         #include <tonemapping_fragment>
-	      #include <encodings_fragment>
+        #include <colorspace_fragment>
       }`,
     })
   }

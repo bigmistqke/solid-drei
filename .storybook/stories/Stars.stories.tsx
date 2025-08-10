@@ -1,18 +1,22 @@
-import { Setup } from '../Setup'
-
-import { T } from 'solid-three'
 import { Plane, Stars } from '../../src'
+import { Setup } from '../Setup'
+import { T } from '../t'
 
 export default {
   title: 'Staging/Stars',
   component: Stars,
-  decorators: [storyFn => <Setup> {storyFn()}</Setup>],
+  decorators: [
+    StoryFn => (
+      <Setup>
+        <StoryFn />
+      </Setup>
+    ),
+  ],
 }
 
 function StarsScene() {
   return (
     <>
-      {/* s3f: needed to add background-color to scene© to make stars visible */}
       <T.Color args={[0, 0, 0]} attach="background" />
       <Stars />
       <Plane rotation-x={Math.PI / 2} args={[100, 100, 4, 4]}>
