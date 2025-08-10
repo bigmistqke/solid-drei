@@ -1,21 +1,31 @@
+import type { Meta, StoryObj } from 'storybook-solidjs-vite'
 import { Plane, Stars } from '../../src'
 import { Setup } from '../Setup'
 import { T } from '../t'
 
-export default {
+const meta = {
   title: 'Staging/Stars',
   component: Stars,
   decorators: [
-    StoryFn => (
+    Story => (
       <Setup>
-        <StoryFn />
+        <Story />
       </Setup>
     ),
   ],
-}
+} satisfies Meta<typeof Stars>
 
-function StarsScene() {
-  return (
+export default meta
+type Story = StoryObj<typeof meta>
+
+/**********************************************************************************/
+/*                                                                                */
+/*                                     Stars                                      */
+/*                                                                                */
+/**********************************************************************************/
+
+export const Default: Story = {
+  render: () => (
     <>
       <T.Color args={[0, 0, 0]} attach="background" />
       <Stars />
@@ -24,8 +34,5 @@ function StarsScene() {
       </Plane>
       <T.AxesHelper />
     </>
-  )
+  ),
 }
-
-export const StarsSt = () => <StarsScene />
-StarsSt.storyName = 'Default'
