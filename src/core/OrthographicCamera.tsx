@@ -2,7 +2,7 @@ import { when } from '@/utils/conditionals'
 import { processProps } from '@/utils/process-props'
 import { useRef } from '@/utils/use-refs'
 import type { JSX, Ref } from 'solid-js'
-import { Show, createEffect, createMemo } from 'solid-js'
+import { createEffect, createMemo, Show } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { Entity, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
@@ -10,7 +10,7 @@ import { OrthographicCamera as ThreeOrthographicCamera } from 'three'
 import { useFBO } from './unported/useFBO'
 
 type OrthographicCameraProps = S3.Props<typeof ThreeOrthographicCamera> & {
-  ref: Ref<THREE.Camera>
+  ref?: Ref<THREE.Camera>
   /** Registers the camera as the system default, fiber will start rendering with it */
   makeDefault?: boolean
   /** Making it manual will stop responsiveness and you have to calculate aspect ratio yourself. */
@@ -67,6 +67,7 @@ export function OrthographicCamera(props: OrthographicCameraProps) {
   const [config, rest] = processProps(
     props,
     {
+      args: [],
       resolution: 256,
       frames: Infinity,
     },
@@ -75,7 +76,7 @@ export function OrthographicCamera(props: OrthographicCameraProps) {
 
   const store = useThree()
   const fbo = useFBO(config.resolution)
-  const camera = createMemo(() => new ThreeOrthographicCamera(...props.args))
+  const camera = createMemo(() => new ThreeOrthographicCamera(...config.args))
   const group = new THREE.Group()
   let count = 0
   let previousEnvMap: THREE.Color | THREE.Texture | null = null
