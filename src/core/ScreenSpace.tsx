@@ -14,17 +14,17 @@ export function ScreenSpace(props: ScreenSpaceProps) {
 
   const group = new Group()
 
-  useFrame(({ camera }) => {
+  useFrame(({ currentCamera }) => {
     if (!group) return
-    group.quaternion.copy(camera.quaternion)
-    group.position.copy(camera.position)
+    group.quaternion.copy(currentCamera.quaternion)
+    group.position.copy(currentCamera.position)
   })
 
   useRef(props, group)
 
   return (
     <Entity from={group} {...rest}>
-      <Entity from={new Group()} position-z={-config.depth}>
+      <Entity from={Group} position-z={-config.depth}>
         {config.children}
       </Entity>
     </Entity>

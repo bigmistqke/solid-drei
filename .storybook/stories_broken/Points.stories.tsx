@@ -72,7 +72,7 @@ function BasicPointsBufferScene() {
 
   return (
     <Points positions={positionFinal} colors={color} sizes={size}>
-      <Entity from={new MyPointsMaterial()} />
+      <Entity from={MyPointsMaterial} />
     </Points>
   )
 }
@@ -135,7 +135,7 @@ function BasicPointsInstancesScene() {
             />
           )}
         </For>
-        <Entity from={new MyPointsMaterial()} />
+        <Entity from={MyPointsMaterial} />
       </Points>
     </>
   )

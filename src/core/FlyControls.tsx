@@ -1,34 +1,59 @@
-import { ControlUtils } from '@/core/control-utils'
+import { processProps } from '@/utils/process-props'
 import { useRef } from '@/utils/use-refs'
-import type { Ref } from 'solid-js'
-import { createEffect, createMemo, splitProps } from 'solid-js'
+import type { JSXElement, Ref } from 'solid-js'
+import { createEffect, createMemo } from 'solid-js'
 import type { S3 } from 'solid-three'
-import { Entity, useThree } from 'solid-three'
-import type { Event } from 'three'
+import { autolisten, useFrame, useProps, useThree } from 'solid-three'
+import type { Event, OrthographicCamera, PerspectiveCamera } from 'three'
 import { FlyControls as ThreeFlyControls } from 'three-stdlib'
 
 type FlyControlsPropsBase = Omit<S3.Props<typeof ThreeFlyControls>, 'object'>
 export interface FlyControlsProps extends FlyControlsPropsBase {
   ref?: Ref<ThreeFlyControls>
+  camera?: PerspectiveCamera | OrthographicCamera
   onChange?: (e: Event<'change', ThreeFlyControls>) => void
   domElement?: HTMLElement
-  makeDefault?: boolean
+  makeCurrent?: boolean
 }
 
-export function FlyControls(props: FlyControlsProps) {
-  const [config, rest] = splitProps(props, ['domElement', 'onChange', 'makeDefault'])
-  const store = useThree()
-  const element = () => config.domElement /* || store.events.connected */ || store.gl.domElement
-  const controls = createMemo(() => new ThreeFlyControls(store.camera, element()))
+export function useFlyControls(context: S3.Context, props: FlyControlsProps) {
+  const [config, rest] = processProps(
+    props,
+    {
+      get camera() {
+        return context.camera
+      },
+      get domElement() {
+        return context.gl.domElement
+      },
+    },
+    ['camera', 'domElement', 'onChange', 'makeCurrent'],
+  )
 
-  ControlUtils.initialize(controls, element, store, config)
+  const controls = createMemo(() => new ThreeFlyControls(config.camera, config.domElement))
 
   createEffect(() => {
     if (!config.onChange) return
-    ControlUtils.addEventHandler(controls, 'change', config.onChange)
+    autolisten(controls())('change', config.onChange)
+  })
+
+  createEffect(() => {
+    const _controls = controls()
+    createEffect(() => _controls.connect(config.domElement))
+    useFrame((_, delta) => _controls.update(delta))
   })
 
   useRef(props, controls)
+  useProps(controls, rest)
 
-  return <Entity from={controls()} {...rest} />
+  return {
+    get controls() {
+      return controls()
+    },
+  }
+}
+
+export function FlyControls(props: FlyControlsProps) {
+  useFlyControls(useThree(), props)
+  return null as unknown as JSXElement
 }

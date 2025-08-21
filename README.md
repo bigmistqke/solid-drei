@@ -236,7 +236,7 @@ import { PerspectiveCamera, PositionalAudio, ... } from 'solid-drei'
 ```tsx
 type Props = Omit<ThreeProps<'PerspectiveCamera'>, 'children'> & {
   /** Registers the camera as the system default, fiber will start rendering with it */
-  makeDefault?: boolean
+  makeCurrent?: boolean
   /** Making it manual will stop responsiveness and you have to calculate aspect ratio yourself. */
   manual?: boolean
   /** The contents will either follow the camera, or be hidden when filming if you pass a function */
@@ -253,14 +253,14 @@ type Props = Omit<ThreeProps<'PerspectiveCamera'>, 'children'> & {
 A responsive [THREE.PerspectiveCamera](https://threejs.org/docs/#api/en/cameras/PerspectiveCamera) that can set itself as the default.
 
 ```jsx
-<PerspectiveCamera makeDefault {...props} />
+<PerspectiveCamera makeCurrent {...props} />
 <T.Mesh />
 ```
 
 You can also give it children, which will now occupy the same position as the camera and follow along as it moves.
 
 ```jsx
-<PerspectiveCamera makeDefault {...props}>
+<PerspectiveCamera makeCurrent {...props}>
   <T.Mesh />
 </PerspectiveCamera>
 ```
@@ -290,7 +290,7 @@ You can use the PerspectiveCamera to film contents into a RenderTarget, similar 
 A responsive [THREE.OrthographicCamera](https://threejs.org/docs/#api/en/cameras/OrthographicCamera) that can set itself as the default.
 
 ```jsx
-<OrthographicCamera makeDefault {...props}>
+<OrthographicCamera makeCurrent {...props}>
   <T.Mesh />
 </OrthographicCamera>
 ```
@@ -351,10 +351,10 @@ If you have moving objects, unset the prop and use a smaller `resolution` instea
 
 If available controls have damping enabled by default, they manage their own updates, remove themselves on unmount, are compatible with the `frameloop="demand"` canvas-flag. They inherit all props from their underlying [THREE controls](https://github.com/mrdoob/three.js/tree/master/examples/jsm/controls). They are the first effects to run before all other useFrames, to ensure that other components may mutate the camera on top of them.
 
-[Some controls](https://github.com/search?q=repo%3Apmndrs%2Fdrei+language%3ATSX+path%3A%2F%5Esrc%5C%2Fcore%5C%2F.*Controls%5C.tsx%2F+makeDefault&type=code) allow you to set `makeDefault`, similar to, for instance, `PerspectiveCamera`. This will set [solid-three](https://docs.pmnd.rs/solid-three-fiber/api/hooks#usethree)'s `controls` field in the root store. This can make it easier in situations where you want controls to be known and other parts of the app could respond to it. Some drei controls already take it into account, like `CameraShake`, `Gizmo` and `TransformControls`.
+[Some controls](https://github.com/search?q=repo%3Apmndrs%2Fdrei+language%3ATSX+path%3A%2F%5Esrc%5C%2Fcore%5C%2F.*Controls%5C.tsx%2F+makeCurrent&type=code) allow you to set `makeCurrent`, similar to, for instance, `PerspectiveCamera`. This will set [solid-three](https://docs.pmnd.rs/solid-three-fiber/api/hooks#usethree)'s `controls` field in the root store. This can make it easier in situations where you want controls to be known and other parts of the app could respond to it. Some drei controls already take it into account, like `CameraShake`, `Gizmo` and `TransformControls`.
 
 ```tsx
-<CameraControls makeDefault />
+<CameraControls makeCurrent />
 ```
 
 ```tsx
@@ -363,7 +363,7 @@ const controls = useThree((state) => state.controls)
 
 Drei currently exports OrbitControls [![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/controls-orbitcontrols--orbit-controls-story), MapControls [![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/controls-mapcontrols--map-controls-scene-st), TrackballControls, ArcballControls, FlyControls, DeviceOrientationControls, PointerLockControls [![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/controls-pointerlockcontrols--pointer-lock-controls-scene-st), FirstPersonControls [![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/controls-firstpersoncontrols--first-person-controls-story) CameraControls [![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/controls-cameracontrols--camera-controls-story) and FaceControls [![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/controls-facecontrols)
 
-All controls react to the default camera. If you have a `<PerspectiveCamera makeDefault />` in your scene, they will control it. If you need to inject an imperative camera or one that isn't the default, use the `camera` prop: `<OrbitControls camera={MyCamera} />`.
+All controls react to the default camera. If you have a `<PerspectiveCamera makeCurrent />` in your scene, they will control it. If you need to inject an imperative camera or one that isn't the default, use the `camera` prop: `<OrbitControls defaultCamera={MyCamera} />`.
 
 PointerLockControls additionally supports a `selector` prop, which enables the binding of `click` event handlers for control activation to other elements than `document` (e.g. a 'Click here to play' button). All elements matching the `selector` prop will activate the controls. It will also center raycast events by default, so regular onPointerOver/etc events on meshes will continue to work.
 
@@ -386,7 +386,7 @@ type CameraControlsProps = {
   /** DOM element to connect to, default to the state's `gl` renderer */
   domElement?: HTMLElement
   /** Reference this CameraControls instance as state's `controls` */
-  makeDefault?: boolean
+  makeCurrent?: boolean
   /** Events callbacks, see: https://github.com/yomotsu/camera-controls#events */
   onStart?: (e?: { type: 'controlstart' }) => void
   onEnd?: (e?: { type: 'controlend' }) => void
@@ -637,7 +637,7 @@ type FaceControlsProps = {
   /** Callback function to call on "videoFrame" event, default: undefined */
   onVideoFrame?: (e: THREE.Event) => void
   /** Reference this FaceControls instance as state's `controls` */
-  makeDefault?: boolean
+  makeCurrent?: boolean
   /** Approximate time to reach the target. A smaller value will reach the target faster. */
   smoothTime?: number
   /** Apply position offset extracted from `facialTransformationMatrix` */
@@ -700,7 +700,7 @@ const onVideoFrame = (event) => {
   store.controls.detect(event.texture.source.data, event.time)
 }
 
-;<FaceControls makeDefault manualDetect onVideoFrame={onVideoFrame} />
+;<FaceControls makeCurrent manualDetect onVideoFrame={onVideoFrame} />
 ```
 
 ##### FaceControls[manualUpdate]
@@ -714,7 +714,7 @@ useFrame((_, delta) => {
   store.controls.update(delta) // 60 or 120 FPS with default damping
 })
 
-<FaceControls makeDefault manualUpdate />
+<FaceControls makeCurrent manualUpdate />
 ```
 
 Or, if you want your own custom damping, use `computeTarget` method and update the camera pos/rot yourself with:
@@ -756,7 +756,7 @@ Used by widgets that visualize and control camera position.
 
 Two example gizmos are included: GizmoViewport and GizmoViewcube, and `useGizmoContext` makes it easy to create your own.
 
-Make sure to set the `makeDefault` prop on your controls, in that case you do not have to define the onTarget and onUpdate props.
+Make sure to set the `makeCurrent` prop on your controls, in that case you do not have to define the onTarget and onUpdate props.
 
 ```jsx
 <GizmoHelper
@@ -871,7 +871,7 @@ If you are using other controls (Orbit, Trackball, etc), you will notice how the
 
 ```jsx
 <TransformControls mode="translate" />
-<OrbitControls makeDefault />
+<OrbitControls makeCurrent />
 ```
 
 #### Grid
@@ -1910,7 +1910,7 @@ return (
 Or a PerspectiveCamera.
 
 ```jsx
-<PerspectiveCamera makeDefault fov={75} position={[10, 0, 15]} resolution={1024}>
+<PerspectiveCamera makeCurrent fov={75} position={[10, 0, 15]} resolution={1024}>
   {(texture) => (
     <>
       <T.Mesh geometry={torus}>
@@ -3328,7 +3328,7 @@ type HudProps = {
   /* Renders on top of the default scene with a perspective camera */
 }
 <Hud>
-  <PerspectiveCamera makeDefault position={[0, 0, 10]} />
+  <PerspectiveCamera makeCurrent position={[0, 0, 10]} />
   <T.Mesh>
     <T.RingGeometry />
   </T.Mesh>
@@ -3337,7 +3337,7 @@ type HudProps = {
   /* Renders on top of the previous HUD with an orthographic camera */
 }
 <Hud renderPriority={2}>
-  <OrthographicCamera makeDefault position={[0, 0, 10]} />
+  <OrthographicCamera makeCurrent position={[0, 0, 10]} />
   <T.Mesh>
     <T.BoxGeometry />
   </T.Mesh>
@@ -3692,7 +3692,7 @@ For instance, one could want the Html component to be pinned to `positive x`, `p
   <a href="https://codesandbox.io/s/42glz0"><img width="20%" src="https://codesandbox.io/api/v1/sandboxes/42glz0/screenshot.png" alt="Demo"/></a>
 </p>
 
-Calculates a boundary box and centers the camera accordingly. If you are using camera controls, make sure to pass them the `makeDefault` prop. `fit` fits the current view on first render. `clip` sets the cameras near/far planes. `observe` will trigger on window resize.
+Calculates a boundary box and centers the camera accordingly. If you are using camera controls, make sure to pass them the `makeCurrent` prop. `fit` fits the current view on first render. `clip` sets the cameras near/far planes. `observe` will trigger on window resize.
 
 ```jsx
 <Bounds fit clip observe damping={6} margin={1.2}>
@@ -3732,7 +3732,7 @@ function Foo() {
 
 A component for applying a configurable camera shake effect. Currently only supports rotational camera shake. Pass a ref to recieve the `ShakeController` API.
 
-If you use shake in combination with controls make sure to set the `makeDefault` prop on your controls, in that case you do not have to pass them via the `controls` prop.
+If you use shake in combination with controls make sure to set the `makeCurrent` prop on your controls, in that case you do not have to pass them via the `controls` prop.
 
 ```js
 const config = {
@@ -3785,7 +3785,7 @@ This component makes its contents float or hover.
   <a href="https://codesandbox.io/s/57iefg"><img width="20%" src="https://codesandbox.io/api/v1/sandboxes/57iefg/screenshot.png" alt="Demo"/></a>
 </p>
 
-Creates a "stage" with proper studio lighting, 0/0/0 top-centred, model-shadows, ground-shadows and optional zoom to fit. Make sure to set `makeDefault` on your controls when `adjustCamera` is true!
+Creates a "stage" with proper studio lighting, 0/0/0 top-centred, model-shadows, ground-shadows and optional zoom to fit. Make sure to set `makeCurrent` on your controls when `adjustCamera` is true!
 
 ```tsx
 type StageProps = {

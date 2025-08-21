@@ -1,5 +1,5 @@
 import { when } from '@/utils/conditionals'
-import { resolveAccessor } from '@/utils/resolve-accessor'
+import { resolve } from '@/utils/resolve'
 import type { Accessor } from 'solid-js'
 import { createMemo, onCleanup } from 'solid-js'
 import { useFrame, useThree } from 'solid-three'
@@ -18,7 +18,7 @@ export function useHelper<T extends Constructor>(
 
   const helper = createMemo(
     when(
-      () => resolveAccessor(object3D),
+      () => resolve(object3D),
       object3D => {
         const helper = new (helperConstructor as any)(object3D, ...args)
         // Prevent the helpers from blocking rays

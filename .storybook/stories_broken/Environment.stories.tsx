@@ -2,7 +2,7 @@ import { Vector3 } from 'three'
 
 import { Setup } from '../Setup'
 
-import { ContactShadows, Environment, OrbitControls } from '../../src'
+import { ContactShadows, Environment } from '../../src'
 
 import { T } from 'solid-three'
 import { presetsObj } from '../../src/helpers/environment-assets'
@@ -27,7 +27,7 @@ export const EnvironmentStory = props => {
         <T.TorusKnotGeometry args={[1, 0.5, 128, 32]} />
         <T.MeshStandardMaterial metalness={1} roughness={0} color="white" />
       </T.Mesh>
-      <OrbitControls autoRotate />
+      <useOrbitControls autoRotate />
     </>
   )
 }
@@ -63,7 +63,7 @@ export const EnvironmentFilesStory = props => (
       <T.TorusKnotGeometry args={[1, 0.5, 128, 32]} />
       <T.MeshStandardMaterial metalness={1} roughness={0} />
     </T.Mesh>
-    <OrbitControls autoRotate />
+    <useOrbitControls autoRotate />
   </>
 )
 
@@ -89,7 +89,7 @@ export const EnvironmentGroundStory = props => {
         opacity={1}
         far={10}
       />
-      <OrbitControls autoRotate />
+      <useOrbitControls autoRotate />
       {/* <PerspectiveCamera position={[40, 40, 40]} makeDefault /> */}
     </>
   )

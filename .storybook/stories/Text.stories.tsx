@@ -1,6 +1,6 @@
 import { Suspense } from 'solid-js'
 import type { Meta, StoryObj } from 'storybook-solidjs-vite'
-import { DoubleSide, Vector3 } from 'three'
+import { DoubleSide } from 'three'
 import { Text } from '../../src'
 import { Setup } from '../Setup'
 import { T } from '../t'
@@ -11,7 +11,7 @@ const meta = {
   component: Text,
   decorators: [
     Story => (
-      <Setup cameraPosition={new Vector3(0, 0, 200)}>
+      <Setup defaultCamera={{ position: [0, 0, 200] }}>
         <Story />
       </Setup>
     ),

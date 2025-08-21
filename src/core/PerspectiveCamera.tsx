@@ -1,31 +1,30 @@
 import { processProps } from '@/utils/process-props'
 import { useRef } from '@/utils/use-refs'
 import type { JSX, Ref } from 'solid-js'
-import { Show, createEffect, createMemo, onMount } from 'solid-js'
+import { Show, createEffect, createMemo, onCleanup, onMount } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { Entity, useFrame, useThree } from 'solid-three'
-import * as THREE from 'three'
+import { Color, Group, Scene, Texture, PerspectiveCamera as ThreePerspectiveCamera } from 'three'
 import { useFBO } from './unported/useFBO'
 
-interface PerspectiveCameraProps
-  extends Omit<S3.Props<typeof THREE.PerspectiveCamera>, 'children'> {
-  ref: Ref<THREE.PerspectiveCamera>
+interface PerspectiveCameraProps extends Omit<S3.Props<ThreePerspectiveCamera>, 'children'> {
+  ref?: Ref<ThreePerspectiveCamera>
   /** Registers the camera as the system default, fiber will start rendering with it */
-  makeDefault?: boolean
+  makeCurrent?: boolean
   /** Making it manual will stop responsiveness and you have to calculate aspect ratio yourself. */
   manual?: boolean
   /** The contents will either follow the camera, or be hidden when filming if you pass a function */
-  children?: JSX.Element | ((texture: THREE.Texture) => JSX.Element)
+  children?: JSX.Element | ((texture: Texture) => JSX.Element)
   /** Number of frames to render, default is Infinity */
   frames?: number
   /** Resolution of the FBO, default is 256 */
   resolution?: number
   /** Optional environment map for functional use */
-  envMap?: THREE.Texture
+  envMap?: Texture
 }
 
 /**
- * Sets up a perspective camera using `THREE.PerspectiveCamera`.
+ * Sets up a perspective camera using `ThreePerspectiveCamera`.
  *
  * This camera can be made the default for rendering, manually controlled for precise adjustments,
  * and supports custom frame counts, resolution settings, and environment maps. The contents of the camera
@@ -35,17 +34,17 @@ interface PerspectiveCameraProps
  * export default () => {
  *   const cameraRef = useRef();
  *   return (
- *     <PerspectiveCamera makeDefault ref={cameraRef} />
+ *     <PerspectiveCamera makeCurrent ref={cameraRef} />
  *   );
  * }
  *
  * @example
  * export default () => {
  *   let cameraRef;
- *   const envMap = new THREE.Texture();
+ *   const envMap = new Texture();
  *   return (
  *     <PerspectiveCamera
- *       makeDefault
+ *       makeCurrent
  *       manual
  *       frames={100}
  *       resolution={512}
@@ -69,16 +68,17 @@ export function PerspectiveCamera(props: PerspectiveCameraProps) {
       resolution: 256,
       frames: Infinity,
     },
-    ['ref', 'envMap', 'resolution', 'frames', 'makeDefault', 'children', 'manual'],
+    ['args', 'ref', 'envMap', 'resolution', 'frames', 'makeCurrent', 'children', 'manual'],
   )
 
-  const camera = new THREE.PerspectiveCamera()
-  const group = new THREE.Group()
-  let frameCount = 0
-  let previousEnvMap: THREE.Color | THREE.Texture | null = null
-
   const store = useThree()
+
+  const camera = createMemo(() => new ThreePerspectiveCamera(...(config.args ?? [])))
   const fbo = useFBO(config.resolution)
+  const group = new Group()
+
+  let frameCount = 0
+  let previousEnvMap: Color | Texture | null = null
 
   const offspring = createMemo(() => {
     const offspring = config.children
@@ -91,14 +91,14 @@ export function PerspectiveCamera(props: PerspectiveCameraProps) {
   createEffect(() => {
     if (!offspring().isFunctional) return
     const scene = store.scene
-    if (!(scene instanceof THREE.Scene)) return
+    if (!(scene instanceof Scene)) return
     useFrame(state => {
       if (config.frames === Infinity || frameCount < config.frames) {
         group.visible = false
         state.gl.setRenderTarget(fbo)
         previousEnvMap = scene.background
         if (config.envMap) scene.background = config.envMap
-        state.gl.render(scene, camera)
+        state.gl.render(scene, camera())
         scene.background = previousEnvMap
         state.gl.setRenderTarget(null)
         group.visible = true
@@ -109,18 +109,22 @@ export function PerspectiveCamera(props: PerspectiveCameraProps) {
 
   createEffect(() => {
     if (config.manual || !store.bounds.height) return
-    camera.aspect = store.bounds.width / store.bounds.height
+    camera().aspect = store.bounds.width / store.bounds.height
   })
 
-  createEffect(() => config.makeDefault && store.setCamera(camera))
+  createEffect(() => {
+    if (config.makeCurrent) {
+      onCleanup(store.setCurrentCamera(camera()))
+    }
+  })
 
-  onMount(() => camera.updateProjectionMatrix())
+  onMount(() => camera().updateProjectionMatrix())
 
   useRef(props, camera)
 
   return (
     <>
-      <Entity from={camera!} {...rest}>
+      <Entity from={camera()} {...rest}>
         <Show when={!offspring().isFunctional}>{offspring().elements()}</Show>
       </Entity>
       <Entity from={group}>

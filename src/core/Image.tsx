@@ -1,3 +1,4 @@
+import { version } from '@/utils/constants'
 import { processProps } from '@/utils/process-props'
 import type { Ref } from 'solid-js'
 import { Show, splitProps } from 'solid-js'
@@ -67,7 +68,7 @@ const ImageMaterialImpl = shaderMaterial(
     gl_FragColor = toGrayscale(texture2D(map, zUv) * vec4(color, opacity), grayscale);
     
     #include <tonemapping_fragment>
-    #include <colorspace_fragment>
+    #include <${version >= 154 ? 'colorspace_fragment' : 'encodings_fragment'}>
   }
 `,
 )

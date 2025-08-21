@@ -1,17 +1,18 @@
-import { Entity, Portal, useFrame } from 'solid-three'
+import { Entity, Portal, useFrame, useThree } from 'solid-three'
 import type { Meta, StoryObj } from 'storybook-solidjs-vite'
-import { PerspectiveCamera, Scene, Vector3 } from 'three'
-import type { OrbitControlsProps } from '../../src'
-import { Box, OrbitControls, Plane, useFBO } from '../../src'
+import { DoubleSide, PerspectiveCamera, Scene } from 'three'
+import type { OrbitControlsOptions } from '../../src'
+import { Box, Plane, useFBO, useOrbitControls } from '../../src'
 import { Setup } from '../Setup'
 import { T } from '../t'
+import { useTurntable } from '../useTurntable'
 
 const meta = {
   title: 'Controls/OrbitControls',
-  component: OrbitControls,
+  component: useOrbitControls,
   decorators: [
     Story => (
-      <Setup controls={false} cameraPosition={new Vector3(0, 0, 3)}>
+      <Setup controls={false} defaultCamera={{ position: [0, 0, 3] }}>
         <Story />
       </Setup>
     ),
@@ -30,7 +31,7 @@ const meta = {
     enableZoom: true,
     reverseOrbit: false,
   },
-} satisfies Meta<typeof OrbitControls>
+} satisfies Meta<typeof useOrbitControls>
 
 export default meta
 type Story = StoryObj<typeof meta>
@@ -42,18 +43,18 @@ type Story = StoryObj<typeof meta>
 /**********************************************************************************/
 
 export const Default: Story = {
-  render: (props: OrbitControlsProps) => (
-    <>
-      <OrbitControls />
+  render: (props: OrbitControlsOptions) => {
+    useOrbitControls(useThree())
+    return (
       <Box>
         <T.MeshBasicMaterial wireframe />
       </Box>
-    </>
-  ),
+    )
+  },
   name: 'Default',
 }
 
-const CustomCamera = (props: OrbitControlsProps) => {
+const CustomCamera = (props: OrbitControlsOptions) => {
   /**
    * we will render our scene in a render target and use it as a map.
    */
@@ -71,25 +72,28 @@ const CustomCamera = (props: OrbitControlsProps) => {
 
   return (
     <>
-      <Plane args={[4, 4, 4]}>
-        <T.MeshBasicMaterial map={fbo.texture} />
+      <Plane args={[4, 4, 4]} ref={useTurntable()}>
+        <T.MeshBasicMaterial map={fbo.texture} side={DoubleSide} />
       </Plane>
       <Portal element={virtualScene}>
-        <Box>
+        <Entity from={virtualCamera} name="FBO Camera" position={[0, 0, 5]} />
+        {(() => {
+          useOrbitControls(useThree(), { camera: virtualCamera })
+          return null!
+        })()}
+        <Box /* ref={useTurntable()} */>
           <T.MeshBasicMaterial wireframe />
         </Box>
         {/* s3f:  ref of PerspectiveCamera does not accept Camera */}
-        <Entity from={virtualCamera} name="FBO Camera" position={[0, 0, 5]} />
-        <OrbitControls camera={virtualCamera} {...props} />
 
         {/* @ts-ignore */}
-        <T.Color attach="background" args={['hotpink']} />
+        {/* <T.Color attach="background" args={['hotpink']} /> */}
       </Portal>
     </>
   )
 }
 
 export const CustomCameraStory: Story = {
-  render: (props: OrbitControlsProps) => <CustomCamera {...props} />,
+  render: (props: OrbitControlsOptions) => <CustomCamera {...props} />,
   name: 'Custom Camera',
 }

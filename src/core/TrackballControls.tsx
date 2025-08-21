@@ -11,10 +11,10 @@ type TrackballControlsPropsBase = Omit<S3.Props<typeof TrackballControlsImpl>, '
 export interface TrackballControlsProps extends TrackballControlsPropsBase {
   ref?: Ref<TrackballControlsImpl>
   target?: S3.Vector3
-  camera?: S3.CameraType
+  camera?: S3.CameraKind
   domElement?: HTMLElement
   regress?: boolean
-  makeDefault?: boolean
+  makeCurrent?: boolean
   onChange?: (e?: THREE.Event) => void
   onStart?: (e?: THREE.Event) => void
   onEnd?: (e?: THREE.Event) => void
@@ -22,7 +22,7 @@ export interface TrackballControlsProps extends TrackballControlsPropsBase {
 
 export function TrackballControls(props: TrackballControlsProps) {
   const [config, rest] = splitProps(props, [
-    'makeDefault',
+    'makeCurrent',
     'camera',
     'domElement',
     'regress',
@@ -31,7 +31,7 @@ export function TrackballControls(props: TrackballControlsProps) {
     'onEnd',
   ])
   const store = useThree()
-  const camera = () => props.camera || store.camera
+  const camera = () => props.camera || store.currentCamera
   const element = () => ControlUtils.getDomElement(store, config)
   const controls = createMemo(() => new TrackballControlsImpl(camera()))
 

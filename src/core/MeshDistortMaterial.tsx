@@ -24,7 +24,7 @@ interface Uniform<T> {
   value: T
 }
 
-class DistortMaterialImpl extends MeshPhysicalMaterial {
+export class DistortMaterialImpl extends MeshPhysicalMaterial {
   #time: Uniform<number>
   #distort: Uniform<number>
   #radius: Uniform<number>

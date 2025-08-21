@@ -1,6 +1,6 @@
 import { processProps } from '@/utils/process-props'
 import { createMemo, onMount, type Ref } from 'solid-js'
-import { createT, type S3 } from 'solid-three'
+import { createT, Entity, type S3 } from 'solid-three'
 import { CanvasTexture, Color, DoubleSide, Mesh, MeshBasicMaterial, PlaneGeometry } from 'three'
 
 const T = createT({
@@ -53,7 +53,7 @@ export function Shadow(props: ShadowProps) {
     <T.Mesh ref={config.ref} renderOrder={config.renderOrder} rotation-x={-Math.PI / 2} {...rest}>
       <T.PlaneGeometry />
       <Entity
-        object={mat}
+        from={mat}
         transparent={true}
         opacity={config.opacity}
         fog={config.fog}

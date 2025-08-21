@@ -7,7 +7,7 @@ const boundingBox = new Box3()
 const boundingBoxSize = new Vector3()
 
 export interface BBAnchorProps extends S3.Props<Group> {
-  anchor: [number, number, number]
+  anchor: S3.Representation<Vector3>
 }
 
 export function BBAnchor(props: BBAnchorProps) {

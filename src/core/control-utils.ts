@@ -21,10 +21,10 @@ function initialize(
   controls: Accessor<ControlProto>,
   element: Accessor<HTMLElement>,
   store: any,
-  config: { makeDefault?: boolean },
+  config: { makeCurrent?: boolean },
 ) {
   connect(controls, element)
-  makeDefault(controls, store, config)
+  makeCurrent(controls, store, config)
   update(controls)
 }
 function connect(controls: Accessor<ControlProto>, element: Accessor<HTMLElement>) {
@@ -33,12 +33,12 @@ function connect(controls: Accessor<ControlProto>, element: Accessor<HTMLElement
     onCleanup(() => controls().dispose())
   })
 }
-function makeDefault(
+function makeCurrent(
   controls: Accessor<ControlProto>,
   store: S3.Context,
-  config: { makeDefault?: boolean },
+  config: { makeCurrent?: boolean },
 ) {
-  // createEffect(() => config.makeDefault && store.setControls(controls()))
+  // createEffect(() => config.makeCurrent && store.setControls(controls()))
 }
 function update(controls: Accessor<ControlProto>) {
   createEffect(
@@ -55,7 +55,7 @@ function getDomElement(store: any, config: { domElement?: HTMLElement }) {
   return config.domElement /* || store.events.connected */ || store.gl.domElement
 }
 function getCamera(store: any, config: { camera?: any }) {
-  return config.camera || store.camera
+  return config.camera || store.currentCamera
 }
 function addEventHandler<
   const TControl extends {
@@ -79,7 +79,7 @@ function addEventHandler<
 export const ControlUtils = {
   initialize,
   connect,
-  makeDefault,
+  makeCurrent,
   update,
   getDomElement,
   getCamera,

@@ -1,12 +1,12 @@
+import { processProps } from '@/utils/process-props'
 import { createMemo } from 'solid-js'
 import { CatmullRomCurve3, Color, Vector3 } from 'three'
 import { Line2 } from 'three-stdlib'
-import { processProps } from '@/utils/process-props'
-import { Line } from './Line'
 import type { LineProps } from './Line'
+import { Line } from './Line'
 
 interface Props extends Omit<LineProps, 'ref' | 'segments'> {
-  ref: Line2
+  ref?: Line2
   closed?: boolean
   curveType?: 'centripetal' | 'chordal' | 'catmullrom'
   tension?: number

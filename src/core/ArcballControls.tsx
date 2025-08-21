@@ -11,7 +11,7 @@ export interface ArcballControlsProps extends S3.Props<ThreeArcballControls> {
   ref?: Ref<ThreeArcballControls>
   camera?: OrthographicCamera | PerspectiveCamera
   domElement?: HTMLElement
-  makeDefault?: boolean
+  makeCurrent?: boolean
   onChange?: (e?: Event) => void
   onEnd?: (e?: Event) => void
   onStart?: (e?: Event) => void
@@ -23,7 +23,7 @@ export function ArcballControls(props: ArcballControlsProps) {
   const [config, rest] = splitProps(props, [
     'ref',
     'camera',
-    'makeDefault',
+    'makeCurrent',
     'regress',
     'domElement',
     'onChange',
@@ -31,7 +31,7 @@ export function ArcballControls(props: ArcballControlsProps) {
     'onEnd',
   ])
   const store = useThree()
-  const camera = () => config.camera || store.camera
+  const camera = () => config.camera || store.currentCamera
   const element = () => ControlUtils.getDomElement(store, config)
   const controls = createMemo(() => new ThreeArcballControls(camera()))
 

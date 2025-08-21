@@ -175,8 +175,8 @@ function VolumetricMesh(props: VolumetricMeshProps) {
           uniforms-attenuation-value={config.attenuation}
           uniforms-anglePower-value={config.anglePower}
           uniforms-depth-value={config.depthBuffer}
-          uniforms-cameraNear-value={store.camera.near}
-          uniforms-cameraFar-value={store.camera.far}
+          uniforms-cameraNear-value={store.currentCamera.near}
+          uniforms-cameraFar-value={store.currentCamera.far}
           uniforms-resolution-value={
             config.depthBuffer
               ? [store.bounds.width * store.dpr, store.bounds.height * store.dpr]

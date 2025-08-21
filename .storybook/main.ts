@@ -1,6 +1,7 @@
 import type { StorybookConfig } from 'storybook-solidjs-vite'
 import { mergeConfig } from 'vite'
 import path from 'path'
+import glslify from 'vite-plugin-glslify'
 
 const config: StorybookConfig = {
   staticDirs: ['./public'],
@@ -20,6 +21,7 @@ const config: StorybookConfig = {
           '../../src': path.resolve(__dirname, '../src'),
         },
       },
+      plugins: [glslify()],
     })
   },
 }

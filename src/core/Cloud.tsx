@@ -41,7 +41,7 @@ export function Cloud(props: CloudProps) {
   )
 
   const group = new Group()
-  const cloudTexture = useTexture(config.texture)
+  const cloudTexture = useTexture(() => config.texture)
 
   const clouds = createMemo(() =>
     [...new Array(config.segments)].map((_, index) => ({

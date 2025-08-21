@@ -1,5 +1,5 @@
 import { processProps } from '@/utils/process-props'
-import { resolveAccessor } from '@/utils/resolve-accessor'
+import { resolve } from '@/utils/resolve'
 import { useRef } from '@/utils/use-refs'
 import type { JSXElement, Ref } from 'solid-js'
 import { Show, createEffect, createMemo, mergeProps, splitProps } from 'solid-js'
@@ -20,7 +20,7 @@ const TYPES = ['string', 'number']
 function getTextFromChildren(children: any) {
   let label = ''
   const rest: JSXElement[] = []
-  children.map(resolveAccessor).forEach((child: any) => {
+  children.map(resolve).forEach((child: any) => {
     if (TYPES.includes(typeof child)) label += child + ''
     else rest.push(child)
   })
@@ -103,8 +103,8 @@ export function Text3D(props: Text3DProps) {
 
   return (
     <Entity from={mesh} {...rest}>
-      <Show when={options.font}>
-        <Entity from={new TextGeometry(memo().label, options)} />
+      <Show when={options.font && options}>
+        {options => <Entity from={TextGeometry} args={[memo().label, options()]} />}
       </Show>
       {memo().rest}
     </Entity>

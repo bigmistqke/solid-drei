@@ -21,7 +21,7 @@ interface WobbleMaterialType extends S3.Props<MeshStandardMaterial> {
   speed?: number
 }
 
-class WobbleMaterialImpl extends MeshStandardMaterial {
+export class WobbleMaterialImpl extends MeshStandardMaterial {
   #time: Uniform<number>
   #factor: Uniform<number>
 

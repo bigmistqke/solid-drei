@@ -1,5 +1,5 @@
 import { when } from '@/utils/conditionals'
-import { resolveAccessor } from '@/utils/resolve-accessor'
+import { resolve } from '@/utils/resolve'
 import { type Accessor, createResource } from 'solid-js'
 import { Texture } from 'three'
 import { useTexture } from './useTexture'
@@ -35,7 +35,7 @@ export function useMatcapTexture(
   const numTot = when(matcapList, matcapList => Object.keys(matcapList).length)
 
   const fileHash = () => {
-    const _id = resolveAccessor(id)
+    const _id = resolve(id)
     if (typeof _id === 'string') {
       return _id
     } else if (typeof _id === 'number') {
@@ -43,7 +43,7 @@ export function useMatcapTexture(
     }
     return null
   }
-  const resolveFormat = () => resolveAccessor(format)
+  const resolveFormat = () => resolve(format)
   const DEFAULT_MATCAP = () => matcapList()?.[0]
   const fileName = () => `${fileHash() || DEFAULT_MATCAP()}${getFormatString(resolveFormat())}.png`
   const url = () => `${MATCAP_ROOT}/${resolveFormat()}/${fileName()}`

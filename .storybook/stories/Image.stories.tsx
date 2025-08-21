@@ -1,6 +1,5 @@
 import { splitProps, Suspense } from 'solid-js'
 import type { Meta, StoryObj } from 'storybook-solidjs-vite'
-import { Vector3 } from 'three'
 import { Image, useTexture } from '../../src'
 import { Setup } from '../Setup'
 
@@ -9,7 +8,7 @@ const meta = {
   component: Image,
   decorators: [
     Story => (
-      <Setup controls={false} cameraPosition={new Vector3(0, 0, 10)}>
+      <Setup controls={false} defaultCamera={{ position: [0, 0, 10] }}>
         <Story />
       </Setup>
     ),

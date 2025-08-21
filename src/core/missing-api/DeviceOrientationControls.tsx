@@ -2,7 +2,7 @@ import { useRef } from '@/utils/use-refs'
 import type { Ref } from 'solid-js'
 import { createEffect, onCleanup, splitProps } from 'solid-js'
 import type { S3 } from 'solid-three'
-import { Entity, useFrame, useThree } from 'solid-three'
+import { autodispose, Entity, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { DeviceOrientationControls as DeviceOrientationControlsImp } from 'three-stdlib'
 
@@ -11,14 +11,14 @@ export interface DeviceOrientationControlsProps extends DeviceOrientationControl
   ref?: Ref<DeviceOrientationControlsImp>
   camera?: THREE.Camera
   onChange?: (e?: THREE.Event) => void
-  makeDefault?: boolean
+  makeCurrent?: boolean
 }
 
 export function DeviceOrientationControls(props: DeviceOrientationControlsProps) {
-  const [config, rest] = splitProps(props, ['ref', 'camera', 'onChange', 'makeDefault'])
+  const [config, rest] = splitProps(props, ['ref', 'camera', 'onChange', 'makeCurrent'])
   const store = useThree()
 
-  const explCamera = config.camera || store.camera
+  const explCamera = config.camera || store.currentCamera
   const controls = new DeviceOrientationControlsImp(explCamera)
 
   createEffect(() => {
@@ -42,12 +42,12 @@ export function DeviceOrientationControls(props: DeviceOrientationControlsProps)
   })
 
   createEffect(() => {
-    if (config.makeDefault) {
+    if (config.makeCurrent) {
       store.setControls(controls)
     }
   })
 
   useRef(config, controls)
 
-  return <Entity from={controls} {...rest} />
+  return <Entity from={autodispose(controls)} {...rest} />
 }

@@ -54,7 +54,7 @@ export function CameraShake(props: CameraShakeProps) {
   }
 
   const store = useThree()
-  let initialRotation: Euler = store.camera.rotation.clone()
+  let initialRotation: Euler = store.currentCamera.rotation.clone()
   const yawNoise = new SimplexNoise()
   const pitchNoise = new SimplexNoise()
   const rollNoise = new SimplexNoise()
@@ -68,7 +68,7 @@ export function CameraShake(props: CameraShakeProps) {
     const roll =
       config.maxRoll * shake * rollNoise.noise(state.clock.elapsedTime * config.rollFrequency, 1)
 
-    store.camera.rotation.set(
+    store.currentCamera.rotation.set(
       initialRotation.x + pitch,
       initialRotation.y + yaw,
       initialRotation.z + roll,
@@ -81,7 +81,7 @@ export function CameraShake(props: CameraShakeProps) {
 
   createEffect(() => {
     if (props.controls) {
-      const callback = () => void (initialRotation = store.camera.rotation.clone())
+      const callback = () => void (initialRotation = store.currentCamera.rotation.clone())
       props.controls.addEventListener('change', callback)
       callback()
       onCleanup(() => {

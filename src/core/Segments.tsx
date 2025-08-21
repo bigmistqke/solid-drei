@@ -3,7 +3,7 @@ import { useRef } from '@/utils/use-refs'
 import type { JSX, Ref } from 'solid-js'
 import { createContext, createSignal, onMount, useContext } from 'solid-js'
 import type { S3 } from 'solid-three'
-import { Entity, useFrame } from 'solid-three'
+import { autodispose, Entity, useFrame } from 'solid-three'
 import { Color, Vector2, Vector3 } from 'three'
 import { Line2, LineMaterial, LineSegmentsGeometry } from 'three-stdlib'
 
@@ -67,7 +67,7 @@ export function Segments(props: SegmentsProps) {
 
   const line = new Line2()
   const material = new LineMaterial()
-  const geometry = new LineSegmentsGeometry()
+  const geometry = autodispose(new LineSegmentsGeometry())
   const resolution = new Vector2(512, 512)
   const positions = Array(config.limit * 6).fill(0)
   const colors = Array(config.limit * 6).fill(0)

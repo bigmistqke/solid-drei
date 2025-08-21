@@ -2,17 +2,17 @@ import { when } from '@/utils/conditionals'
 import { processProps } from '@/utils/process-props'
 import { useRef } from '@/utils/use-refs'
 import type { JSX, Ref } from 'solid-js'
-import { createEffect, createMemo, Show } from 'solid-js'
+import { createEffect, createMemo, onCleanup, Show } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { Entity, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { OrthographicCamera as ThreeOrthographicCamera } from 'three'
 import { useFBO } from './unported/useFBO'
 
-type OrthographicCameraProps = S3.Props<typeof ThreeOrthographicCamera> & {
+type OrthographicCameraProps = S3.Props<ThreeOrthographicCamera> & {
   ref?: Ref<THREE.Camera>
   /** Registers the camera as the system default, fiber will start rendering with it */
-  makeDefault?: boolean
+  makeCurrent?: boolean
   /** Making it manual will stop responsiveness and you have to calculate aspect ratio yourself. */
   manual?: boolean
   /** The contents will either follow the camera, or be hidden when filming if you pass a function */
@@ -36,7 +36,7 @@ type OrthographicCameraProps = S3.Props<typeof ThreeOrthographicCamera> & {
  * export default () => {
  *   let cameraRef;
  *   return (
- *     <OrthographicCamera makeDefault ref={cameraRef!} />
+ *     <OrthographicCamera makeCurrent ref={cameraRef!} />
  *   );
  * }
  *
@@ -46,7 +46,7 @@ type OrthographicCameraProps = S3.Props<typeof ThreeOrthographicCamera> & {
  *   const envMap = new THREE.Texture();
  *   return (
  *     <OrthographicCamera
- *       makeDefault
+ *       makeCurrent
  *       manual
  *       frames={100}
  *       resolution={512}
@@ -67,17 +67,18 @@ export function OrthographicCamera(props: OrthographicCameraProps) {
   const [config, rest] = processProps(
     props,
     {
-      args: [],
       resolution: 256,
       frames: Infinity,
     },
-    ['args', 'children', 'envMap', 'frames', 'makeDefault', 'manual', 'ref', 'resolution'],
+    ['args', 'children', 'envMap', 'frames', 'makeCurrent', 'manual', 'ref', 'resolution'],
   )
 
   const store = useThree()
+
+  const camera = createMemo(() => new ThreeOrthographicCamera(...(config.args ?? [])))
   const fbo = useFBO(config.resolution)
-  const camera = createMemo(() => new ThreeOrthographicCamera(...config.args))
   const group = new THREE.Group()
+
   let count = 0
   let previousEnvMap: THREE.Color | THREE.Texture | null = null
 
@@ -90,7 +91,11 @@ export function OrthographicCamera(props: OrthographicCameraProps) {
     }
   })
 
-  createEffect(() => config.makeDefault && store.setCamera(camera()))
+  createEffect(() => {
+    if (config.makeCurrent) {
+      onCleanup(store.setCurrentCamera(camera()))
+    }
+  })
 
   createEffect(() => {
     if (!children().isFunctional) return

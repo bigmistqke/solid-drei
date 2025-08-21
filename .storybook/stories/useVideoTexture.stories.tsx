@@ -10,7 +10,7 @@ const meta = {
   decorators: [
     (Story: () => JSX.Element) => {
       return (
-        <Setup cameraPosition={new THREE.Vector3(0, 0, 3)}>
+        <Setup defaultCamera={{ position: [0, 0, 3] }}>
           <Story />
         </Setup>
       )

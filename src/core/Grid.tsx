@@ -4,6 +4,7 @@
         by https://github.com/grischaerbe and https://github.com/jerzakm
 */
 
+import { version } from '@/utils/constants'
 import { processProps } from '@/utils/process-props'
 import { useRef } from '@/utils/use-refs'
 import type { Ref } from 'solid-js'
@@ -117,7 +118,7 @@ const GridMaterial = shaderMaterial(
       if (gl_FragColor.a <= 0.0) discard;
 
       #include <tonemapping_fragment>
-      #include <colorspace_fragment>
+      #include <${version >= 154 ? 'colorspace_fragment' : 'encodings_fragment'}>
     }
   `,
 )
@@ -213,7 +214,7 @@ export function Grid(props: GridProps) {
   return (
     <Entity from={mesh} frustumCulled={false} {...rest}>
       <Entity
-        from={new GridMaterial()}
+        from={GridMaterial}
         transparent
         extensions-derivatives
         side={config.side}

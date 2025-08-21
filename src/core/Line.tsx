@@ -3,7 +3,7 @@ import { processProps } from '@/utils/process-props'
 import type { Ref } from 'solid-js'
 import { createEffect, createMemo, createRenderEffect, onCleanup } from 'solid-js'
 import type { S3 } from 'solid-three'
-import { Entity, useThree } from 'solid-three'
+import { autodispose, Entity, useThree } from 'solid-three'
 import type { ColorRepresentation } from 'three'
 import { Color, Vector2, Vector3, Vector4 } from 'three'
 import type { LineMaterialParameters } from 'three-stdlib'
@@ -47,7 +47,7 @@ export function Line(props: LineProps) {
   const lineMaterial = new LineMaterial()
   const itemSize = (config.vertexColors?.[0] as number[] | undefined)?.length
   const lineGeometry = createMemo(() => {
-    const geometry = config.segments ? new LineSegmentsGeometry() : new LineGeometry()
+    const geometry = autodispose(config.segments ? new LineSegmentsGeometry() : new LineGeometry())
     let localColor = config.color
 
     const positions = config.points.map(point => {

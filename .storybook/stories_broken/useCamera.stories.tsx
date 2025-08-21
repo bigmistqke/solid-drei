@@ -1,5 +1,5 @@
-import { Portal, T, useFrame, useThree } from 'solid-three'
 import { For, createMemo, createSignal } from 'solid-js'
+import { Portal, T, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
 
 import { Setup } from '../Setup'

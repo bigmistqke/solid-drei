@@ -1,7 +1,7 @@
 import { when } from '@/utils/conditionals'
 import { processProps } from '@/utils/process-props'
-import { type Ref, createEffect, onCleanup, onMount } from 'solid-js'
-import { type S3, useLoader, useThree } from 'solid-three'
+import { type Ref, createEffect, createResource, onCleanup, onMount } from 'solid-js'
+import { Entity, type S3, useThree } from 'solid-three'
 import { AudioListener, AudioLoader, PositionalAudio as PositionalAudioImpl } from 'three'
 
 interface PositionalAudioProps extends S3.Props<typeof PositionalAudioImpl> {
@@ -25,7 +25,10 @@ export function PositionalAudio(props: PositionalAudioProps) {
   const positionalAudio = new PositionalAudioImpl(listener)
 
   const store = useThree()
-  const buffer = useLoader(AudioLoader, () => config.url)
+  const [buffer] = createResource<AudioBuffer, string>(
+    () => config.url,
+    url => new Promise((resolve, reject) => new AudioLoader().load(url, resolve, reject)),
+  )
 
   createEffect(
     when(buffer, buffer => {
@@ -38,10 +41,10 @@ export function PositionalAudio(props: PositionalAudioProps) {
     }),
   )
 
-  onMount(() => store.camera.add(listener))
+  onMount(() => store.currentCamera.add(listener))
 
   onCleanup(() => {
-    store.camera.remove(listener)
+    store.currentCamera.remove(listener)
     if (positionalAudio.isPlaying) positionalAudio.stop()
     if (positionalAudio.source && (positionalAudio.source as any)._connected)
       positionalAudio.disconnect()

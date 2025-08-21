@@ -1,14 +1,14 @@
 import { check } from '@/utils/conditionals'
-import { For, Show, createMemo, onCleanup, splitProps } from 'solid-js'
+import { For, Show, createMemo, createResource, onCleanup, splitProps } from 'solid-js'
 import type { S3 } from 'solid-three'
-import { createT, useLoader } from 'solid-three'
+import { createT } from 'solid-three'
 import { DoubleSide, Mesh, MeshBasicMaterial, Object3D, ShapeGeometry } from 'three'
-import { SVGLoader } from 'three-stdlib'
+import { SVGLoader, type SVGResult } from 'three-stdlib'
 
 const T = createT({ Object3D, Mesh, ShapeGeometry, MeshBasicMaterial })
 
 export interface SvgProps extends Omit<S3.Props<Object3D>, 'ref'> {
-  ref: Object3D
+  ref?: Object3D
   /** src can be a URL or SVG data */
   src: string
   /** Skip rendering the fill of the SVG paths */
@@ -84,8 +84,10 @@ export function Svg(props: SvgProps) {
     'fillMeshProps',
     'strokeMeshProps',
   ])
-  const resource = useLoader(SVGLoader, () =>
-    !config.src.startsWith('<svg') ? config.src : `data:image/sv>g+xml;utf8,${config.src}`,
+  const [resource] = createResource<SVGResult, string>(
+    () => (!config.src.startsWith('<svg') ? config.src : `data:image/sv>g+xml;utf8,${config.src}`),
+    path =>
+      new Promise((resolve, reject) => new SVGLoader().load(path, resolve, undefined, reject)),
   )
 
   const strokeGeometries = createMemo(() => {

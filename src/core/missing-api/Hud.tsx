@@ -1,6 +1,6 @@
 import { defaultProps } from '@/utils/default-props'
 import type { JSX } from 'solid-js'
-import { Portal, useFrame, useThree } from 'solid-three'
+import { Entity, Portal, useFrame, useThree } from 'solid-three'
 import { Camera, Group, Scene } from 'three'
 
 /**********************************************************************************/
@@ -34,7 +34,7 @@ function RenderHud(props: RenderHudProps) {
       // Disable cleaning and render the portal with its own camera
       store.gl.autoClear = false
       store.gl.clearDepth()
-      store.gl.render(store.scene, store.camera)
+      store.gl.render(store.scene, store.currentCamera)
 
       // Restore default
       store.gl.autoClear = oldClear
@@ -43,7 +43,7 @@ function RenderHud(props: RenderHudProps) {
   )
 
   // Without an element that receives pointer events state.pointer will always be 0/0
-  return <Entity from={new Group()} onPointerOver={() => null} />
+  return <Entity from={Group} onPointerOver={() => null} />
 }
 
 /**********************************************************************************/
@@ -68,7 +68,7 @@ export function Hud(props: HudProps) {
       {props.children}
       <RenderHud
         defaultScene={store.scene}
-        defaultCamera={store.camera}
+        defaultCamera={store.currentCamera}
         renderPriority={props.renderPriority || 1}
       />
     </Portal>

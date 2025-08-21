@@ -1,10 +1,10 @@
-import { createMemo, createSignal, useContext } from 'solid-js'
 import type { Component } from 'solid-js'
-import { T, useThree } from 'solid-three'
+import { createMemo, createSignal, useContext } from 'solid-js'
 import type { S3 } from 'solid-three'
+import { T, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { Line } from '../../../core/Line'
-import { Html } from '../Html'
+import { Html } from '../../Html'
 import { context } from './context'
 
 const decomposeIntoBasis = (e1: THREE.Vector3, e2: THREE.Vector3, offset: THREE.Vector3) => {

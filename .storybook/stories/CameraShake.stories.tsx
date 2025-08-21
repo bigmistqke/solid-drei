@@ -1,5 +1,7 @@
 import { Entity, useFrame } from 'solid-three'
+import type { Meta, StoryObj } from 'storybook-solidjs-vite'
 import * as THREE from 'three'
+import { Vector3 } from 'three'
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
 import { CameraShake, OrbitControls } from '../../src'
 import { Setup } from '../Setup'
@@ -23,35 +25,49 @@ const numberArgType = {
   },
 }
 
-const args = {
-  maxPitch: 0.05,
-  maxRoll: 0.05,
-  maxYaw: 0.05,
-  pitchFrequency: 0.8,
-  rollFrequency: 0.8,
-  yawFrequency: 0.8,
-}
-
-const argTypes = {
-  maxPitch: numberArgType,
-  maxRoll: numberArgType,
-  maxYaw: numberArgType,
-  pitchFrequency: frequencyArgType,
-  rollFrequency: frequencyArgType,
-  yawFrequency: frequencyArgType,
-}
-
-export default {
+const meta = {
   title: 'Staging/CameraShake',
   component: CameraShake,
+  args: {
+    maxPitch: 0.05,
+    maxRoll: 0.05,
+    maxYaw: 0.05,
+    pitchFrequency: 0.8,
+    rollFrequency: 0.8,
+    yawFrequency: 0.8,
+  },
+  argTypes: {
+    maxPitch: numberArgType,
+    maxRoll: numberArgType,
+    maxYaw: numberArgType,
+    pitchFrequency: frequencyArgType,
+    rollFrequency: frequencyArgType,
+    yawFrequency: frequencyArgType,
+  },
   decorators: [
-    storyFn => (
-      <Setup cameraPosition={new THREE.Vector3(0, 0, 10)} controls={false}>
-        {storyFn()}
+    Story => (
+      <Setup defaultCamera={{ position: new Vector3(0, 0, 3) }} controls={false}>
+        <Story />
       </Setup>
     ),
   ],
-}
+  parameters: {
+    docs: {
+      description: {
+        component: 'Camera Shake',
+      },
+    },
+  },
+} satisfies Meta<typeof CameraShake>
+
+export default meta
+type Story = StoryObj<typeof meta>
+
+/**********************************************************************************/
+/*                                                                                */
+/*                                  Camera Shake                                  */
+/*                                                                                */
+/**********************************************************************************/
 
 function Scene() {
   const cube = new THREE.Mesh()
@@ -61,7 +77,6 @@ function Scene() {
       cube.rotation.x = cube.rotation.y += 0.01
     }
   })
-
   return (
     <>
       <Entity from={cube!}>
@@ -76,28 +91,26 @@ function Scene() {
   )
 }
 
-export const CameraShakeStory = ({ ...args }) => (
-  <>
-    <CameraShake {...args} />
-    <Scene />
-  </>
-)
-
-CameraShakeStory.args = args
-CameraShakeStory.argTypes = argTypes
-CameraShakeStory.storyName = 'Default'
-
-export const CameraShakeWithOrbitControlsStory = ({ ...args }) => {
-  let controlsRef: OrbitControlsImpl = null!
-  return (
-    <>
-      <OrbitControls ref={controlsRef} />
-      <CameraShake {...args} controls={controlsRef} />
-      <Scene />
-    </>
-  )
+export const Default: Story = {
+  render(props) {
+    return (
+      <>
+        <CameraShake {...props} />
+        <Scene />
+      </>
+    )
+  },
 }
 
-CameraShakeWithOrbitControlsStory.args = args
-CameraShakeWithOrbitControlsStory.argTypes = argTypes
-CameraShakeWithOrbitControlsStory.storyName = 'With OrbitControls'
+export const WithOrbitControls: Story = {
+  render(props) {
+    let controlsRef: OrbitControlsImpl = null!
+    return (
+      <>
+        <OrbitControls ref={controlsRef} />
+        <CameraShake {...props} controls={controlsRef} />
+        <Scene />
+      </>
+    )
+  },
+}

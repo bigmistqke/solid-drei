@@ -1,5 +1,5 @@
-import { T, useLoader } from 'solid-three'
 import { Show } from 'solid-js'
+import { T, useLoader } from 'solid-three'
 import * as THREE from 'three'
 import { RGBELoader } from 'three-stdlib'
 import {
@@ -9,7 +9,6 @@ import {
   Environment,
   MeshRefractionMaterial,
   MeshTransmissionMaterial,
-  OrbitControls,
   RandomizedLight,
   useGLTF,
 } from '../../src'
@@ -131,7 +130,7 @@ export const RefractionSt = () => (
       />
     </AccumulativeShadows>
     <Environment files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/aerodynamics_workshop_1k.hdr" />
-    <OrbitControls
+    <useOrbitControls
       makeDefault
       autoRotate
       autoRotateSpeed={0.1}

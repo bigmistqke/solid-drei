@@ -1,9 +1,8 @@
+import { useFrame } from 'solid-three'
 import { Color, Group, Vector3 } from 'three'
-
-import { Setup } from '../Setup'
-
-import { T, useFrame } from 'solid-three'
 import { MarchingCube, MarchingCubes, MarchingPlane, OrbitControls } from '../../src'
+import { Setup } from '../Setup'
+import { T } from '../t'
 
 export default {
   title: 'Abstractions/MarchingCubes',

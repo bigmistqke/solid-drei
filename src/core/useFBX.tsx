@@ -1,6 +1,9 @@
-import type { Accessor } from 'solid-js'
-import { useLoader } from 'solid-three'
+import { createAsync } from '@/utils/create-async'
+import { type Accessor } from 'solid-js'
+import { load } from 'solid-three'
 import { FBXLoader } from 'three-stdlib'
+
+const loader = new FBXLoader()
 
 /**
  * Loads an FBX model from a given path using `FBXLoader`.
@@ -42,5 +45,5 @@ import { FBXLoader } from 'three-stdlib'
  * @link https://threejs.org/docs/#examples/en/loaders/FBXLoader
  */
 export function useFBX(path: Accessor<string>) {
-  return useLoader(FBXLoader, path)
+  return createAsync(() => load(loader, path()))
 }

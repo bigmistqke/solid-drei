@@ -3,10 +3,10 @@ import { For, createEffect, createSignal } from 'solid-js'
 import { MeshBVHVisualizer } from 'three-mesh-bvh'
 import { Setup } from '../Setup'
 
-import { T, useFrame, useThree } from 'solid-three'
 import { boolean, select, withKnobs } from '@storybook/addon-knobs'
+import { T, useFrame, useThree } from 'solid-three'
 import { Mesh, Raycaster, Vector3 } from 'three'
-import { OrbitControls, TorusKnot, useBVH, useHelper } from '../../src'
+import { TorusKnot, useBVH, useHelper } from '../../src'
 
 export default {
   title: 'Performance/useBVH',
@@ -130,7 +130,7 @@ function Scene() {
         <TorusBVH bvh={bvh} position-z={2} />
       </T.Group>
       <DebugRayCast grp={grp} />
-      <OrbitControls enablePan={false} zoomSpeed={0.5} />
+      <useOrbitControls enablePan={false} zoomSpeed={0.5} />
     </>
   )
 }

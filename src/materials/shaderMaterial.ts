@@ -1,4 +1,10 @@
+import type { WidenBooleans } from '@/utils/type-utils'
 import * as THREE from 'three'
+
+type ShaderMaterialType<TUniforms extends object> = typeof THREE.ShaderMaterial &
+  (new () => THREE.ShaderMaterial & WidenBooleans<TUniforms>) & {
+    key: string
+  }
 
 export function shaderMaterial<
   TUniforms extends {
@@ -54,10 +60,7 @@ export function shaderMaterial<
       // Call onInit
       if (onInit) onInit(this)
     }
-  } as unknown as typeof THREE.ShaderMaterial &
-    (new () => THREE.ShaderMaterial & TUniforms) & {
-      key: string
-    }
+  } as unknown as ShaderMaterialType<TUniforms>
   material.key = THREE.MathUtils.generateUUID()
   return material
 }

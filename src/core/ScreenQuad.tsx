@@ -5,7 +5,7 @@ import { splitProps } from 'solid-js'
 import { Entity, type S3 } from 'solid-three'
 import { BufferAttribute, BufferGeometry, Mesh } from 'three'
 
-interface Props extends Omit<S3.Props<typeof Mesh>, 'args'> {
+interface Props extends Omit<S3.Props<Mesh>, 'args'> {
   ref?: Ref<Mesh>
 }
 

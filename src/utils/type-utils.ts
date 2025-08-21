@@ -14,3 +14,11 @@ export type KeyOfOptionals<T> = keyof {
 export type NamedArrayTuple<T extends (...args: any) => any> = Parameters<T>
 
 export type Ref<TRef> = TRef | ((value: TRef) => void)
+
+export type WidenBooleans<T> = {
+  [K in keyof T]: T[K] extends false | true ? boolean : T[K]
+}
+
+export type Prettify<T> = {
+  [K in keyof T]: T[K]
+} & {}

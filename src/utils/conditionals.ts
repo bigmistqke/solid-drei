@@ -139,6 +139,6 @@ export function whenMemo<
     ? Exclude<ReturnType<Exclude<TAccessor, undefined>>, null | undefined | false>
     : Exclude<TAccessor, null | undefined | false>,
   const TResult,
->(accessor: TAccessor, callback: (value: TValues) => TResult) {
-  return createMemo(when(accessor, callback))
+>(accessor: TAccessor, callback: (value: TValues, prev?: NoInfer<TResult> | undefined) => TResult) {
+  return createMemo<TResult | undefined>(prev => check(accessor, value => callback(value, prev)))
 }

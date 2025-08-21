@@ -1,8 +1,7 @@
-import { when } from '@/utils/conditionals'
 import { processProps } from '@/utils/process-props'
 import { type NamedArrayTuple } from '@/utils/type-utils'
-import { type Ref, createMemo, createRenderEffect } from 'solid-js'
-import { Entity, type S3 } from 'solid-three'
+import { createMemo, createRenderEffect, type Ref } from 'solid-js'
+import { autodispose, Entity, type S3 } from 'solid-three'
 import { ExtrudeGeometry, Mesh, Shape } from 'three'
 import { toCreasedNormals } from 'three-stdlib'
 
@@ -45,25 +44,37 @@ export function RoundedBox(props: RoundedBoxProps) {
     return { width, height, depth }
   }
 
-  const shape = createMemo(() => createShape(args().width, args().height, config.radius))
-  const params = createMemo(() => ({
-    depth: args().depth - config.radius * 2,
+  const params = {
+    get depth() {
+      return args().depth - config.radius * 2
+    },
     bevelEnabled: true,
-    bevelSegments: config.smoothness * 2,
-    steps: config.steps,
-    bevelSize: config.radius - eps,
-    bevelThickness: config.radius,
-    curveSegments: config.smoothness,
-  }))
+    get bevelSegments() {
+      return config.smoothness * 2
+    },
+    get steps() {
+      return config.steps
+    },
+    get bevelSize() {
+      return config.radius - eps
+    },
+    get bevelThickness() {
+      return config.radius
+    },
+    get curveSegments() {
+      return config.smoothness
+    },
+  }
 
-  const geometry = createMemo(() => new ExtrudeGeometry(shape(), params()))
-
-  createRenderEffect(
-    when(geometry, geometry => {
+  const shape = createMemo(() => createShape(args().width, args().height, config.radius))
+  const geometry = createMemo(() => {
+    const geometry = autodispose(new ExtrudeGeometry(shape(), params))
+    createRenderEffect(() => {
       geometry.center()
       toCreasedNormals(geometry, config.creaseAngle)
-    }),
-  )
+    })
+    return geometry
+  })
 
   return (
     <Entity from={new Mesh()} {...rest}>

@@ -1,5 +1,5 @@
-import { type Accessor, createRenderEffect, onCleanup } from 'solid-js'
-import { useThree } from 'solid-three'
+import { type Accessor, createRenderEffect } from 'solid-js'
+import { autodispose, useThree } from 'solid-three'
 import * as THREE from 'three'
 
 type FBOSettings = {
@@ -7,10 +7,8 @@ type FBOSettings = {
   samples?: number
   /** If set, the scene depth will be rendered into buffer.depthTexture. Default: false */
   depth?: boolean
-} & THREE.WebGLRenderTargetOptions
+} & THREE.RenderTargetOptions
 
-// 👇 uncomment when TS version supports function overloads
-// export function useFBO(settings?: FBOSettings)
 export function useFBO(
   /** Width in pixels, or settings (will render fullscreen by default) */
   width?: Accessor<number> | number | FBOSettings,
@@ -26,14 +24,14 @@ export function useFBO(
       ? width
       : typeof width === 'function'
       ? width()
-      : store.bounds.width * (store.viewport?.dpr ?? 1)
+      : store.bounds.width * (store.dpr ?? 1)
   const _height = () =>
     typeof height === 'number'
       ? height
       : typeof height === 'function'
       ? height()
-      : store.bounds?.height && (store.viewport?.dpr ?? 1)
-      ? store.bounds.height * (store.viewport?.dpr ?? 1)
+      : store.bounds?.height && (store.dpr ?? 1)
+      ? store.bounds.height * (store.dpr ?? 1)
       : 0
 
   const _settings = () =>
@@ -41,12 +39,14 @@ export function useFBO(
 
   const { samples = 0, depth, ...targetSettings } = _settings()
 
-  const target = new THREE.WebGLRenderTarget(_width(), _height(), {
-    minFilter: THREE.LinearFilter,
-    magFilter: THREE.LinearFilter,
-    type: THREE.HalfFloatType,
-    ...targetSettings,
-  })
+  const target = autodispose(
+    new THREE.WebGLRenderTarget(_width(), _height(), {
+      minFilter: THREE.LinearFilter,
+      magFilter: THREE.LinearFilter,
+      type: THREE.HalfFloatType,
+      ...targetSettings,
+    }),
+  )
 
   if (depth) {
     target.depthTexture = new THREE.DepthTexture(_width(), _height(), THREE.FloatType)
@@ -58,8 +58,6 @@ export function useFBO(
     target.setSize(_width(), _height())
     if (samples) target.samples = samples
   })
-  onCleanup(() => {
-    target.dispose()
-  })
+
   return target
 }

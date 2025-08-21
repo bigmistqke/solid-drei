@@ -2,6 +2,7 @@
  *    https://github.com/N8python/caustics
  */
 
+import { version } from '@/utils/constants'
 import { processProps } from '@/utils/process-props'
 import { useRef } from '@/utils/use-refs'
 import type { Ref } from 'solid-js'
@@ -125,7 +126,7 @@ const CausticsProjectionMaterial = shaderMaterial(
     vec3 back = texture2D(causticsTextureB, lightSpacePos.xy).rgb;
     gl_FragColor = vec4((front + back) * color, 1.0);
     #include <tonemapping_fragment>
-    #include <encodings_fragment>
+    #include <${version >= 154 ? 'colorspace_fragment' : 'encodings_fragment'}>
    }`,
 )
 

@@ -1,35 +1,52 @@
-import { Entity } from 'solid-three'
+import type { Meta, StoryObj } from 'storybook-solidjs-vite'
 import * as THREE from 'three'
 import { Lathe } from '../../src'
 import { Setup } from '../Setup'
+import { T } from '../t'
 import { useTurntable } from '../useTurntable'
 
-export default {
+const meta = {
   title: 'Shapes/Lathe',
   component: Lathe,
   decorators: [
-    storyFn => <Setup cameraPosition={new THREE.Vector3(-30, 30, 30)}>{storyFn()}</Setup>,
+    Story => (
+      <Setup defaultCamera={{ position: [-30, 30, 30] }}>
+        <Story />
+      </Setup>
+    ),
   ],
+  parameters: {
+    docs: {
+      description: {
+        component: 'Lathe',
+      },
+    },
+  },
+} satisfies Meta<typeof Lathe>
+
+export default meta
+type Story = StoryObj<typeof meta>
+
+/**********************************************************************************/
+/*                                                                                */
+/*                                      Lathe                                     */
+/*                                                                                */
+/**********************************************************************************/
+
+export const Default: Story = {
+  render() {
+    const points = Array.from(
+      (function* () {
+        for (let i = 0; i < 10; i++) {
+          yield new THREE.Vector2(Math.sin(i * 0.2) * 10 + 5, (i - 5) * 2)
+        }
+      })(),
+    )
+
+    return (
+      <Lathe ref={useTurntable()} args={[points]}>
+        <T.MeshPhongMaterial color="#f3f3f3" wireframe />
+      </Lathe>
+    )
+  },
 }
-
-function LatheScene() {
-  const points = (() => {
-    const _points: THREE.Vector2[] = []
-    for (let i = 0; i < 10; i++) {
-      _points.push(new THREE.Vector2(Math.sin(i * 0.2) * 10 + 5, (i - 5) * 2))
-    }
-
-    return _points
-  })()
-
-  const turntable = useTurntable()
-
-  return (
-    <Lathe ref={turntable} args={[points]}>
-      <Entity from={new THREE.MeshPhongMaterial()} color="#f3f3f3" wireframe />
-    </Lathe>
-  )
-}
-
-export const LatheSt = () => <LatheScene />
-LatheSt.storyName = 'Default'

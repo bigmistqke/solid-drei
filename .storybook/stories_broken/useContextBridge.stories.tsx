@@ -1,8 +1,8 @@
-import { Canvas } from 'solid-three'
 import { withKnobs } from '@storybook/addon-knobs'
 import { Suspense, createContext, createSignal, useContext } from 'solid-js'
+import { Canvas } from 'solid-three'
 
-import { Box, OrbitControls, Text, useContextBridge } from '../../src'
+import { Box, Text, useContextBridge } from '../../src'
 
 export default {
   title: 'Misc/useContextBridge',
@@ -60,7 +60,7 @@ function SceneWrapper() {
       {/* create the bridge inside the Canvas and forward the context */}
       <ContextBridge>
         <Scene />
-        <OrbitControls enablePan={false} zoomSpeed={0.5} />
+        <useOrbitControls enablePan={false} zoomSpeed={0.5} />
       </ContextBridge>
     </Canvas>
   )

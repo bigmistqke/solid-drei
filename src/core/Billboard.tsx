@@ -30,14 +30,14 @@ export function Billboard(props: BillboardProps) {
   )
   const group = new Group()
 
-  useFrame(({ camera }) => {
+  useFrame(({ currentCamera }) => {
     if (!config.follow) return
 
     // save previous rotation in case we're locking an axis
     const prevRotation = group.rotation.clone()
 
-    // always face the camera
-    camera.getWorldQuaternion(group.quaternion)
+    // always face the currentCamera
+    currentCamera.getWorldQuaternion(group.quaternion)
 
     // readjust any axis that is locked
     if (config.lockX) group.rotation.x = prevRotation.x

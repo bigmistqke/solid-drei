@@ -13,10 +13,10 @@
      https://www.shadertoy.com/view/tt3fDH [spawner64]
 */
 
+import { defaultProps } from '@/utils/default-props'
 import { createEffect, onCleanup } from 'solid-js'
 import { useThree } from 'solid-three'
 import { Camera, Material, Scene, ShaderChunk, WebGLRenderer } from 'three'
-import { defaultProps } from '@/utils/default-props'
 
 /**********************************************************************************/
 /*                                                                                */
@@ -172,11 +172,11 @@ export function SoftShadows(props: SoftShadowsProps) {
         '\nreturn PCSS(shadowMap, shadowCoord);\n#if defined( SHADOWMAP_TYPE_PCF )',
       )
 
-    reset(store.gl, store.scene, store.camera)
+    reset(store.gl, store.scene, store.currentCamera)
 
     onCleanup(() => {
       ShaderChunk.shadowmap_pars_fragment = original
-      reset(store.gl, store.scene, store.camera)
+      reset(store.gl, store.scene, store.currentCamera)
     })
   })
 

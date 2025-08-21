@@ -7,5 +7,5 @@ export function MeshDiscardMaterial(
   _props: S3.Props<typeof ShaderMaterial> & { ref: Ref<ShaderMaterial> },
 ) {
   const [props, rest] = splitProps(_props, ['args'])
-  return <Entity from={new DiscardMaterial(...props.args)} {...rest} />
+  return <Entity from={DiscardMaterial} args={props.args} {...rest} />
 }

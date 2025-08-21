@@ -1,5 +1,5 @@
-import { T } from 'solid-three'
 import { For, JSX, createMemo, createSignal } from 'solid-js'
+import { T } from 'solid-three'
 import { Euler, InstancedBufferAttribute, Matrix4, Mesh, Quaternion, Vector3 } from 'three'
 import { Decal, PerspectiveCamera, Sampler, useSurfaceSampler, useTexture } from '../../src'
 import { Setup } from '../Setup'
@@ -61,7 +61,7 @@ function DecalScene() {
 
   return (
     <>
-      <PerspectiveCamera makeDefault position={[6, 6, 6]} />
+      <PerspectiveCamera current position={[6, 6, 6]} />
 
       <T.DirectionalLight position={[1, -1, 1]} />
 

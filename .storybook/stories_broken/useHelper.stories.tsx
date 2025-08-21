@@ -3,8 +3,8 @@ import { VertexNormalsHelper } from 'three-stdlib'
 
 import { Setup } from '../Setup'
 
-import { T, useFrame } from 'solid-three'
 import { Component, createSignal } from 'solid-js'
+import { T, useFrame } from 'solid-three'
 import { PerspectiveCamera, Sphere, useHelper } from '../../src'
 import { when } from '../../src/helpers/when'
 
@@ -58,9 +58,7 @@ const CameraScene: Component<StoryProps> = props => {
     }),
   )
 
-  return (
-    <PerspectiveCamera makeDefault={false} position={[0, 3, 3]} near={1} far={4} ref={setCamera} />
-  )
+  return <PerspectiveCamera current={false} position={[0, 3, 3]} near={1} far={4} ref={setCamera} />
 }
 
 export const CameraStory = (args: StoryProps) => <CameraScene {...args} />

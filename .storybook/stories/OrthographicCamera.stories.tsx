@@ -14,7 +14,7 @@ type Story = StoryObj<typeof meta>
 
 /**********************************************************************************/
 /*                                                                                */
-/*                              OrthographicCamera                               */
+/*                              Orthographic Camera                               */
 /*                                                                                */
 /**********************************************************************************/
 
@@ -41,7 +41,7 @@ export const Default: Story = {
 
     return (
       <Canvas style={{ height: '100vh' }}>
-        <OrthographicCamera makeDefault position={[0, 0, 10]} zoom={40} />
+        <OrthographicCamera makeCurrent position={[0, 0, 10]} zoom={40} />
         <T.Group position={[0, 0, -10]}>
           <For each={positions}>
             {({ position }) => (

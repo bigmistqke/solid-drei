@@ -1,3 +1,4 @@
+import { Dynamic } from 'solid-js/web'
 import type { Meta, StoryObj } from 'storybook-solidjs-vite'
 import { Vector3 } from 'three'
 import * as shapes from '../../src/core/shapes'
@@ -9,7 +10,7 @@ const meta = {
   title: 'Shapes',
   decorators: [
     Story => (
-      <Setup cameraPosition={new Vector3(0, 0, 3)}>
+      <Setup defaultCamera={{ position: new Vector3(0, 0, 3) }}>
         <Story />
       </Setup>
     ),
@@ -33,11 +34,10 @@ type Story = StoryObj<typeof meta>
 /**********************************************************************************/
 
 function StoryComponent({ comp, args = [] }: { comp: keyof typeof shapes; args?: any }) {
-  const Comp = shapes[comp]
   return (
-    <Comp args={args} ref={useTurntable()}>
+    <Dynamic component={shapes[comp]} args={args} ref={useTurntable()}>
       <T.MeshPhongMaterial color="#f3f3f3" wireframe />
-    </Comp>
+    </Dynamic>
   )
 }
 

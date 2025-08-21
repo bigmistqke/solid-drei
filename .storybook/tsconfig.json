@@ -1,6 +1,6 @@
 {
   "extends": "../tsconfig.json",
-  "include": ["stories", "stories_broken"],
+  "include": ["stories", "stories_broken", "."],
   "compilerOptions": {
     "outDir": "./types",
     "target": "esnext",

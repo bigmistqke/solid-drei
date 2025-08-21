@@ -1,4 +1,5 @@
-import { ShaderMaterial, Vector3, Color, Vector2 } from 'three'
+import { version } from '@/utils/constants'
+import { Color, ShaderMaterial, Vector2, Vector3 } from 'three'
 
 export class SpotLightMaterial extends ShaderMaterial {
   constructor() {
@@ -79,7 +80,7 @@ export class SpotLightMaterial extends ShaderMaterial {
         gl_FragColor = vec4(lightColor, intensity * opacity);
 
         #include <tonemapping_fragment>
-	      #include <encodings_fragment>
+	      #include <${version >= 154 ? 'colorspace_fragment' : 'encodings_fragment'}>
       }`,
     })
   }

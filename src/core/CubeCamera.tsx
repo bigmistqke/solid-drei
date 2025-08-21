@@ -5,7 +5,7 @@ import { Entity, useFrame } from 'solid-three'
 import { Group, Texture } from 'three'
 import { type CubeCameraOptions, useCubeCamera } from './useCubeCamera'
 
-type CameraPropsBase = Omit<S3.Props<Group>, 'children'> & CubeCameraOptions
+type CameraPropsBase = Omit<S3.Props<typeof Group>, 'children'> & CubeCameraOptions
 interface CameraProps extends CameraPropsBase {
   /** The contents of CubeCamera will be hidden when filming the cube */
   children: (tex: Texture) => JSX.Element
@@ -42,7 +42,7 @@ export function CubeCamera(props: CameraProps) {
   })
 
   return (
-    <Entity from={new Group()} {...rest}>
+    <Entity from={Group} {...rest}>
       <Entity from={camera()} />
       <Entity from={group}>{config.children(fbo().texture)}</Entity>
     </Entity>

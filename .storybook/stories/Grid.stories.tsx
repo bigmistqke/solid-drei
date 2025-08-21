@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from 'storybook-solidjs-vite'
-import { Vector3 } from 'three'
 import { Box, Grid } from '../../src'
 import { Setup } from '../Setup'
 import { T } from '../t'
@@ -9,7 +8,7 @@ const meta = {
   component: Grid,
   decorators: [
     Story => (
-      <Setup cameraPosition={new Vector3(-5, 5, 10)}>
+      <Setup defaultCamera={{ position: [-5, 5, 10] }}>
         <Story />
       </Setup>
     ),

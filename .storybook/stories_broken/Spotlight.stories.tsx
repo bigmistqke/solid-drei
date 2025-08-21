@@ -6,7 +6,6 @@ import { MathUtils, RepeatWrapping } from 'three'
 import {
   Circle,
   Environment,
-  OrbitControls,
   PerspectiveCamera,
   Plane,
   SpotLight,
@@ -100,7 +99,7 @@ function SpotLightShadowsScene({ debug, wind }: { debug: boolean; wind: boolean 
 
   return (
     <>
-      <OrbitControls
+      <useOrbitControls
         makeDefault //
         autoRotate={true}
         autoRotateSpeed={0.5}
@@ -111,7 +110,7 @@ function SpotLightShadowsScene({ debug, wind }: { debug: boolean; wind: boolean 
         near={0.01} //
         far={50}
         position={[1, 3, 1]}
-        makeDefault
+        current
         fov={60}
       />
 

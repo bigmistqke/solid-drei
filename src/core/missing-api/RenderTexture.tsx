@@ -103,7 +103,7 @@ export const RenderTexture = (props: Props) => {
       <Portal element={vScene}>
         {/* { events: { compute: props.compute || uvCompute, priority: props.eventPriority } } */}
         <Container renderPriority={config.renderPriority} frames={config.frames} fbo={fbo}>
-          <Entity from={new Group()} onPointerEnter={() => null} />
+          <Entity from={Group} onPointerEnter={() => null} />
           {config.children}
           {/* Without an element that receives pointer events state.pointer will always be 0/0 */}
         </Container>

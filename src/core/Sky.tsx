@@ -1,7 +1,8 @@
 import { processProps } from '@/utils/process-props'
+import { useRef } from '@/utils/use-refs'
 import type { Ref } from 'solid-js'
 import { createRenderEffect } from 'solid-js'
-import type { S3 } from 'solid-three'
+import { Entity, type S3 } from 'solid-three'
 import { Vector3 } from 'three'
 import { Sky as SkyImpl } from 'three-stdlib'
 
@@ -73,10 +74,11 @@ export function Sky(props: SkyProps) {
   const scale = new Vector3()
   createRenderEffect(() => scale.setScalar(config.distance))
 
+  useRef(config, sky)
+
   return (
     <Entity
-      object={sky}
-      ref={config.ref}
+      from={sky}
       material-uniforms-mieCoefficient-value={config.mieCoefficient}
       material-uniforms-mieDirectionalG-value={config.mieDirectionalG}
       material-uniforms-rayleigh-value={config.rayleigh}

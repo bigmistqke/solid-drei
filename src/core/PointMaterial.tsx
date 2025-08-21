@@ -1,3 +1,4 @@
+import { version } from '@/utils/constants'
 import type { Ref } from 'solid-js'
 import { Entity, type S3 } from 'solid-three'
 import * as THREE from 'three'
@@ -27,7 +28,7 @@ export class PointMaterialImpl extends THREE.PointsMaterial {
       float mask = 1.0 - smoothstep(1.0 - delta, 1.0 + delta, r);
       gl_FragColor = vec4(gl_FragColor.rgb, mask * gl_FragColor.a );
       #include <tonemapping_fragment>
-      #include <encodings_fragment>
+      #include <${version >= 154 ? 'colorspace_fragment' : 'encodings_fragment'}>
       `,
       )
     }

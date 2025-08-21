@@ -72,8 +72,8 @@ export function Center(props: CenterProps) {
   )
 
   const group = new Group()
-  let outer: Group = null!
-  let inner: Group = null!
+  const outer = new Group()
+  const inner = new Group()
 
   createEffect(() => {
     outer.matrixWorld.identity()
@@ -117,10 +117,8 @@ export function Center(props: CenterProps) {
 
   return (
     <Entity from={group} {...rest}>
-      <Entity from={new Group()} ref={outer}>
-        <Entity from={new Group()} ref={inner}>
-          {config.children}
-        </Entity>
+      <Entity from={outer}>
+        <Entity from={inner}>{config.children}</Entity>
       </Entity>
     </Entity>
   )

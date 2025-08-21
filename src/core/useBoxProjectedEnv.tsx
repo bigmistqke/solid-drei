@@ -1,6 +1,6 @@
+import { resolve } from '@/utils/resolve'
 import { createMemo, createRenderEffect, on } from 'solid-js'
 import * as THREE from 'three'
-import { resolveAccessor } from '@/utils/resolve-accessor'
 
 // credits for the box-projecting shader code go to codercat (https://codercat.tk)
 // and @0beqz https://gist.github.com/0beqz/8d51b4ae16d68021a09fb504af708fca
@@ -89,15 +89,13 @@ export function useBoxProjectedEnv(
   let ref: THREE.Material = null!
   const spread = createMemo(() => ({
     ref,
-    onBeforeCompile: (shader: any) =>
-      boxProjectedEnvMap(shader, resolveAccessor(position), resolveAccessor(size)),
+    onBeforeCompile: (shader: any) => boxProjectedEnvMap(shader, resolve(position), resolve(size)),
     customProgramCacheKey: () =>
-      JSON.stringify(resolveAccessor(position).toArray()) +
-      JSON.stringify(resolveAccessor(size).toArray()),
+      JSON.stringify(resolve(position).toArray()) + JSON.stringify(resolve(size).toArray()),
   }))
   createRenderEffect(
     on(
-      () => resolveAccessor(position) && resolveAccessor(size),
+      () => resolve(position) && resolve(size),
       boolean => boolean && (ref.needsUpdate = true),
     ),
   )

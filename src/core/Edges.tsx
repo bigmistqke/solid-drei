@@ -41,11 +41,7 @@ export const Edges = (props: EdgesProps) => {
 
   return (
     <Entity from={lineSegments} raycast={() => null} {...rest}>
-      {config.children ? (
-        config.children
-      ) : (
-        <Entity from={new LineBasicMaterial()} color={config.color} />
-      )}
+      {config.children ? config.children : <Entity from={LineBasicMaterial} color={config.color} />}
     </Entity>
   )
 }

@@ -3,7 +3,7 @@ import { Vector3 } from 'three'
 import { Setup } from '../Setup'
 
 import { T } from 'solid-three'
-import { Detailed, Icosahedron, OrbitControls } from '../../src'
+import { Detailed, Icosahedron } from '../../src'
 
 export default {
   title: 'Abstractions/Detailed',
@@ -30,7 +30,7 @@ function DetailedScene() {
           <T.MeshBasicMaterial color="lightblue" wireframe />
         </Icosahedron>
       </Detailed>
-      <OrbitControls enablePan={false} enableRotate={false} zoomSpeed={0.5} />
+      <useOrbitControls enablePan={false} enableRotate={false} zoomSpeed={0.5} />
     </>
   )
 }

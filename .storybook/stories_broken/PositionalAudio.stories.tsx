@@ -2,7 +2,7 @@ import { For } from 'solid-js'
 import { Vector3 } from 'three'
 
 import { T } from 'solid-three'
-import { OrbitControls, PositionalAudio } from '../../src'
+import { PositionalAudio } from '../../src'
 import { Setup } from '../Setup'
 
 export default {
@@ -46,7 +46,7 @@ function PositionalAudioScene() {
           </For>
         </T.Group>
       </T.Suspense>
-      <OrbitControls />
+      <useOrbitControls />
     </>
   )
 }

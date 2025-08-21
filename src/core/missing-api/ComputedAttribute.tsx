@@ -19,7 +19,7 @@ export function ComputedAttribute(props: ComputedAttributeProps) {
 
   const bufferAttribute = new BufferAttribute(new Float32Array(0), 1)
 
-  const [primitive, setPrimitive] = createSignal<S3.Instance<BufferAttribute>>()
+  const [primitive, setPrimitive] = createSignal<S3.Meta<BufferAttribute>>()
 
   createRenderEffect(() => {
     const parent = primitive()?.[$S3C]?.parent?.object

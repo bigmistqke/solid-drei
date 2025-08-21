@@ -1,10 +1,10 @@
-import { useFrame } from 'solid-three'
 import { withKnobs } from '@storybook/addon-knobs'
+import { useFrame } from 'solid-three'
 import { Vector3 } from 'three'
 
 import { Setup } from '../Setup'
 
-import { OrbitControls, Segment, SegmentObject, Segments } from '../../src'
+import { Segment, SegmentObject, Segments } from '../../src'
 
 export default {
   title: 'Performance/Segments',
@@ -22,7 +22,7 @@ export function BasicSegments() {
         <Segment start={[0, 0, 0]} end={[0, -10, 0]} color={[0, 1, 0]} />
         <Segment start={[0, 0, 0]} end={[0, 0, -10]} color={[1, 1, 0]} />
       </Segments>
-      <OrbitControls />
+      <useOrbitControls />
     </>
   )
 }
@@ -64,7 +64,7 @@ export function ManySegments() {
   return (
     <>
       <AnimatedSegments />
-      <OrbitControls />
+      <useOrbitControls />
     </>
   )
 }

@@ -1,4 +1,4 @@
-import { resolveAccessor } from '@/utils/resolve-accessor'
+import { resolve } from '@/utils/resolve'
 import {
   type Accessor,
   createEffect,
@@ -26,7 +26,7 @@ export function useAnimations<T extends AnimationClip>(
   let lazyActions: Record<string, AnimationAction> = {}
   const mixer = new AnimationMixer(undefined as unknown as Object3D)
 
-  const resolveRoot = () => resolveAccessor(root)
+  const resolveRoot = () => resolve(root)
 
   const actions = createMemo(() => {
     const actions = {} as { [key in T['name']]: AnimationAction | null }

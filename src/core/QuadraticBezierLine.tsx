@@ -25,7 +25,7 @@ export function QuadraticBezierLine(props: QuadraticBezierLineProps) {
     props,
     {
       end: [0, 0, 0],
-      mid: [0, 0, 0],
+      // mid: [0, 0, 0],
       segments: 20,
       start: [0, 0, 0],
     },

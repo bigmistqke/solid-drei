@@ -1,3 +1,4 @@
+import { version } from '@/utils/constants'
 import { defaultProps } from '@/utils/default-props'
 import { type Ref, createMemo } from 'solid-js'
 import { createT, Entity, useFrame } from 'solid-three'
@@ -59,7 +60,7 @@ class StarfieldMaterial extends ShaderMaterial {
         gl_FragColor = vec4(vColor, opacity);
 
         #include <tonemapping_fragment>
-        #include <colorspace_fragment>
+        #include <${version >= 154 ? 'colorspace_fragment' : 'encodings_fragment'}>
       }`,
     })
   }

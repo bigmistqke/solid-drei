@@ -25,7 +25,7 @@ export interface CameraControlsProps extends S3.Props<typeof ThreeCameraControls
   ref?: Ref<ThreeCameraControls>
   camera?: PerspectiveCamera | OrthographicCamera
   domElement?: HTMLElement
-  makeDefault?: boolean
+  makeCurrent?: boolean
   onStart?: (e: Event) => void
   onEnd?: (e: Event) => void
   onChange?: (e: Event) => void
@@ -57,7 +57,7 @@ export function CameraControls(props: CameraControlsProps) {
     'ref',
     'camera',
     'domElement',
-    'makeDefault',
+    'makeCurrent',
     'onStart',
     'onEnd',
     'onChange',

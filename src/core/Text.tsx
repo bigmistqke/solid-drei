@@ -1,5 +1,5 @@
 import { processProps } from '@/utils/process-props'
-import { resolveAccessor } from '@/utils/resolve-accessor'
+import { resolve } from '@/utils/resolve'
 import type { JSX } from 'solid-js'
 import { createMemo, createResource, onCleanup, onMount, Show } from 'solid-js'
 import { Entity, type S3 } from 'solid-three'
@@ -137,7 +137,7 @@ export function Text(props: Props) {
     const children = Array.isArray(config.children) ? config.children : [config.children]
 
     children.forEach(childAccessor => {
-      const child = resolveAccessor(childAccessor)
+      const child = resolve(childAccessor)
       if (typeof child === 'string' || typeof child === 'number') {
         text += child
       } else {
