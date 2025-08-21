@@ -1,6 +1,7 @@
 node_modules
 dist
 gitignore
+storybook-static
 
 # tsup
 tsup.config.bundled_*.{m,c,}s

@@ -1,6 +1,6 @@
+import path from 'path'
 import type { StorybookConfig } from 'storybook-solidjs-vite'
 import { mergeConfig } from 'vite'
-import path from 'path'
 import glslify from 'vite-plugin-glslify'
 
 const config: StorybookConfig = {
@@ -17,8 +17,6 @@ const config: StorybookConfig = {
       resolve: {
         alias: {
           '@': path.resolve(__dirname, '../src'),
-          // Also alias the src folder directly for story imports
-          '../../src': path.resolve(__dirname, '../src'),
         },
       },
       plugins: [glslify()],

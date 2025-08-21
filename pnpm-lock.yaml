@@ -42,8 +42,8 @@ importers:
         specifier: ^1.54.2
         version: 1.54.2
       solid-three:
-        specifier: 0.3.0-next.8
-        version: 0.3.0-next.8(@types/three@0.164.1)(solid-js@1.8.18)(three@0.164.1)
+        specifier: 0.3.0-next.11
+        version: 0.3.0-next.11(@types/three@0.164.1)(solid-js@1.8.18)(three@0.164.1)
       stats.js:
         specifier: ^0.17.0
         version: 0.17.0
@@ -2371,8 +2371,8 @@ packages:
     peerDependencies:
       solid-js: ^1.3
 
-  solid-three@0.3.0-next.8:
-    resolution: {integrity: sha512-xqFloXPXkpwftHp50KxKfflmQsZWudeDRdjY6pEBFYPrhq8mo4VgjXCEN0yQA4H1Zu+lxL0W+daKkwWvjxO9WA==}
+  solid-three@0.3.0-next.11:
+    resolution: {integrity: sha512-nai9Sf5zEO+v8JZGauB5PMt36qlj6wdef9OXfUHkh91pNDClr4i8hhhSjTEYxNzzD6nYk9Ov1Q+gh4zEgjKdsg==}
     peerDependencies:
       '@types/three': '*'
       solid-js: '*'
@@ -5165,7 +5165,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  solid-three@0.3.0-next.8(@types/three@0.164.1)(solid-js@1.8.18)(three@0.164.1):
+  solid-three@0.3.0-next.11(@types/three@0.164.1)(solid-js@1.8.18)(three@0.164.1):
     dependencies:
       '@solid-primitives/resize-observer': 2.1.3(solid-js@1.8.18)
       '@types/three': 0.164.1
