@@ -1,6 +1,5 @@
-import { processProps } from '@/utils/process-props'
-import { resolve } from '@/utils/resolve'
-import { useRef } from '@/utils/use-refs'
+import { processProps, resolve, useRef } from '@/utils'
+import type { Intersect } from '@/utils/types'
 import type { JSXElement, Ref } from 'solid-js'
 import { Show, createEffect, createMemo, mergeProps, splitProps } from 'solid-js'
 import { Entity, type S3 } from 'solid-three'
@@ -36,8 +35,7 @@ function getTextFromChildren(children: any) {
 /*                                                                                */
 /**********************************************************************************/
 
-type Text3DPropsBase = Omit<TextGeometryParameters, 'font'> & S3.Props<Mesh>
-interface Text3DProps extends Text3DPropsBase {
+interface Text3DProps extends Intersect<[Omit<TextGeometryParameters, 'font'>, S3.Props<Mesh>]> {
   ref?: Ref<Mesh>
   letterSpacing?: number
   lineHeight?: number

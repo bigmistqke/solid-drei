@@ -27,21 +27,24 @@ interface Position {
 
 export const Default: Story = {
   render: () => {
-    const positions: Position[] = []
     const half = (NUM - 1) / 2
-
-    for (let x = 0; x < NUM; x++) {
-      for (let y = 0; y < NUM; y++) {
-        positions.push({
-          id: `${x}-${y}`,
-          position: [(x - half) * 4, (y - half) * 4, 0],
-        })
-      }
-    }
+    const positions: Position[] = Array.from(
+      (function* () {
+        for (let x = 0; x < NUM; x++) {
+          for (let y = 0; y < NUM; y++) {
+            yield {
+              id: `${x}-${y}`,
+              position: [(x - half) * 4, (y - half) * 4, 0],
+            }
+          }
+        }
+      })(),
+    )
 
     return (
       <Canvas style={{ height: '100vh' }}>
         <OrthographicCamera makeCurrent position={[0, 0, 10]} zoom={40} />
+        <OrbitControls enabled />
         <T.Group position={[0, 0, -10]}>
           <For each={positions}>
             {({ position }) => (
@@ -51,7 +54,6 @@ export const Default: Story = {
             )}
           </For>
         </T.Group>
-        <OrbitControls />
       </Canvas>
     )
   },

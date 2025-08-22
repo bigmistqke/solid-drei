@@ -1,4 +1,4 @@
-import { useRef } from '@/utils/use-refs'
+import { useRef } from '@/utils'
 import type { Ref } from 'solid-js'
 import { createEffect, onCleanup, splitProps } from 'solid-js'
 import type { S3 } from 'solid-three'
@@ -6,8 +6,8 @@ import { autodispose, Entity, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { DeviceOrientationControls as DeviceOrientationControlsImp } from 'three-stdlib'
 
-type DeviceOrientationControlsPropsBase = Omit<S3.Props<DeviceOrientationControlsImp>, 'object'>
-export interface DeviceOrientationControlsProps extends DeviceOrientationControlsPropsBase {
+export interface DeviceOrientationControlsProps
+  extends Omit<S3.Props<DeviceOrientationControlsImp>, 'object'> {
   ref?: Ref<DeviceOrientationControlsImp>
   camera?: THREE.Camera
   onChange?: (e?: THREE.Event) => void

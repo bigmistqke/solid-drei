@@ -1,10 +1,16 @@
+import type { Accessor } from 'solid-js'
+
 export type Args<T> = T extends new (...args: any) => any ? ConstructorParameters<T> : T
 
 export type Mandatory<T, K extends keyof T> = T & { [P in K]-?: T[P] }
 
-type OmitFunctionProperties<T> = { [K in keyof T]: T[K] extends Function ? never : K }[keyof T]
-/** Overwrites the properties in `T` with the properties from `O`. */
-export type Overwrite<T, O> = Omit<T, OmitFunctionProperties<O>> & O
+export type Overwrite<T extends unknown[]> = T extends [infer First, ...infer Rest]
+  ? Rest extends []
+    ? First
+    : Overwrite<Rest> extends infer Result
+    ? Omit<First, keyof Result> & Result
+    : never
+  : never
 
 export type KeyOfOptionals<T> = keyof {
   [K in keyof T as T extends Record<K, T[K]> ? never : K]: T[K]
@@ -22,3 +28,12 @@ export type WidenBooleans<T> = {
 export type Prettify<T> = {
   [K in keyof T]: T[K]
 } & {}
+
+export type Intersect<T extends any[]> = T extends [infer U, ...infer Rest]
+  ? Rest['length'] extends 0
+    ? U
+    : U & Intersect<Rest>
+  : T
+
+export type AccessorMaybe<T> = T | Accessor<T>
+export type Resolve<T> = T extends (...args: any[]) => infer U ? U : T

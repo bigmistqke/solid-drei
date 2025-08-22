@@ -1,4 +1,4 @@
-import { resolve } from '@/utils/resolve'
+import { resolve } from '@/utils'
 import { createMemo, createRenderEffect, on } from 'solid-js'
 import * as THREE from 'three'
 

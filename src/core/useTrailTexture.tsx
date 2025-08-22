@@ -1,6 +1,6 @@
-import { createMemo } from 'solid-js'
 import type { Accessor } from 'solid-js'
-import { useFrame } from 'solid-three'
+import { createMemo } from 'solid-js'
+import { useFrame, type S3 } from 'solid-three'
 import { Texture } from 'three'
 
 /**
@@ -197,21 +197,23 @@ class TrailTexture {
   }
 }
 
-// s3f:   currently config would not be reactive. should we do Accessor<config>?
-export function useTrailTexture(
-  config: Partial<TrailConfig> = {},
-): Accessor<{ texture: Texture; onMove: (ThreeEvent) => void }> {
+export function useTrailTexture(config: Partial<TrailConfig> = {}): {
+  texture: Accessor<Texture>
+  update(event: S3.ThreeEvent<MouseEvent | PointerEvent>): void
+} {
   const trail = createMemo(() => new TrailTexture(config))
 
   useFrame((_, delta) => {
     trail().update(delta)
   })
-  function onMove(e) {
-    trail().addTouch(e.uv)
+  function update(e: S3.ThreeEvent<MouseEvent | PointerEvent>) {
+    trail().addTouch(e.intersection.uv)
   }
 
-  return () => ({
-    texture: trail()?.texture,
-    onMove,
-  })
+  return {
+    texture() {
+      return trail().texture
+    },
+    update,
+  }
 }

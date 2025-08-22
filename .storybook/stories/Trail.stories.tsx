@@ -104,7 +104,6 @@ export const UseTrailWithInstances: Story = {
         <Sphere ref={setSphere} args={[0.1, 32, 32]} position-x={0} position-y={3}>
           <T.MeshNormalMaterial />
         </Sphere>
-
         <Entity from={instancedMesh}>
           <T.BoxGeometry args={[0.1, 0.1, 0.1]} />
           <T.MeshNormalMaterial />

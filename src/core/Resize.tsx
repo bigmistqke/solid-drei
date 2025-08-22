@@ -1,5 +1,4 @@
-import { processProps } from '@/utils/process-props'
-import { useRef } from '@/utils/use-refs'
+import { processProps, useRef } from '@/utils'
 import type { Ref } from 'solid-js'
 import { createEffect } from 'solid-js'
 import { Entity, type S3 } from 'solid-three'

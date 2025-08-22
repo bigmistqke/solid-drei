@@ -1,6 +1,6 @@
+import { processProps } from '@/utils'
 import { check } from '@/utils/conditionals'
-import { processProps } from '@/utils/process-props'
-import { RefComponent } from '@/utils/type-utils'
+import { RefComponent } from '@/utils/types'
 import { createImperativeHandle } from '@/utils/use-imperative-handle'
 import { type Accessor, createEffect, onCleanup } from 'solid-js'
 import { T, type ThreeProps, useThree } from 'solid-three'

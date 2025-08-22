@@ -1,4 +1,4 @@
-import { useRef } from '@/utils/use-refs'
+import { useRef } from '@/utils'
 import ThreeCameraControls from 'camera-controls'
 import type { Ref } from 'solid-js'
 import { createEffect, createMemo, splitProps } from 'solid-js'

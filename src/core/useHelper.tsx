@@ -1,5 +1,5 @@
+import { resolve } from '@/utils'
 import { when } from '@/utils/conditionals'
-import { resolve } from '@/utils/resolve'
 import type { Accessor } from 'solid-js'
 import { createMemo, onCleanup } from 'solid-js'
 import { useFrame, useThree } from 'solid-three'

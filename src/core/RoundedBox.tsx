@@ -1,5 +1,5 @@
-import { processProps } from '@/utils/process-props'
-import { type NamedArrayTuple } from '@/utils/type-utils'
+import { processProps } from '@/utils'
+import { type NamedArrayTuple } from '@/utils/types'
 import { createMemo, createRenderEffect, type Ref } from 'solid-js'
 import { autodispose, Entity, type S3 } from 'solid-three'
 import { ExtrudeGeometry, Mesh, Shape } from 'three'

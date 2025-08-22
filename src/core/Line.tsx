@@ -1,5 +1,6 @@
+import { processProps } from '@/utils'
 import { every, when } from '@/utils/conditionals'
-import { processProps } from '@/utils/process-props'
+import type { Intersect } from '@/utils/types'
 import type { Ref } from 'solid-js'
 import { createEffect, createMemo, createRenderEffect, onCleanup } from 'solid-js'
 import type { S3 } from 'solid-three'
@@ -15,11 +16,14 @@ import {
   LineSegmentsGeometry,
 } from 'three-stdlib'
 
-type LinePropsBase = Omit<LineMaterialParameters, 'vertexColors' | 'color'> &
-  Omit<S3.Props<Line2>, 'args'> &
-  Omit<S3.Props<LineMaterial>, 'color' | 'vertexColors' | 'args'>
-
-export interface LineProps extends LinePropsBase {
+export interface LineProps
+  extends Intersect<
+    [
+      Omit<LineMaterialParameters, 'vertexColors' | 'color'>,
+      Omit<S3.Props<Line2>, 'args' | 'ref'>,
+      Omit<S3.Props<LineMaterial>, 'color' | 'vertexColors' | 'args' | 'ref'>,
+    ]
+  > {
   ref?: Ref<LineSegments2 | Line2>
   points: ReadonlyArray<Vector3 | Vector2 | [number, number, number] | [number, number] | number>
   vertexColors?: ReadonlyArray<Color | [number, number, number] | [number, number, number, number]>

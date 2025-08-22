@@ -2,8 +2,8 @@ import { Accessor, ParentComponent, createRenderEffect, createSignal, untrack } 
 
 import { MeshSurfaceSampler } from 'three-stdlib'
 
+import { processProps } from '@/utils'
 import { check } from '@/utils/conditionals'
-import { processProps } from '@/utils/process-props'
 import { T, ThreeProps } from 'solid-three'
 import {
   Color,

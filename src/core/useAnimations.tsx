@@ -1,4 +1,4 @@
-import { resolve } from '@/utils/resolve'
+import { resolve } from '@/utils'
 import {
   type Accessor,
   createEffect,

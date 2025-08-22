@@ -8,8 +8,8 @@ import {
   type DomEvent,
 } from 'solid-three'
 // import * as ReactDOM from 'react-dom/client'
+import { defaultProps } from '@/utils'
 import { when } from '@/utils/conditionals'
-import { defaultProps } from '@/utils/default-props'
 import {
   ParentProps,
   Ref,

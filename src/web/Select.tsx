@@ -1,7 +1,8 @@
-import { processProps } from '@/utils/process-props'
+import { useAutolisten } from '@/core'
+import { processProps } from '@/utils'
 import type { Accessor } from 'solid-js'
 import { createContext, createEffect, createSignal, useContext } from 'solid-js'
-import { autolisten, Entity, useThree, type S3 } from 'solid-three'
+import { Entity, useThree, type S3 } from 'solid-three'
 import {
   Group,
   Vector2,
@@ -55,6 +56,7 @@ export function Select(props: SelectProps) {
 
   const store = useThree()
   const group = new Group()
+  const autolisten = useAutolisten(document)
 
   const [downed, down] = createSignal(false)
   const [hovered, hover] = createSignal(false)
@@ -159,7 +161,7 @@ export function Select(props: SelectProps) {
 
     let previous: Mesh<BufferGeometry, Material | Material[]>[] = []
 
-    autolisten(document)(
+    autolisten(
       'pointerdown',
       (event: PointerEvent) => {
         if (event.shiftKey) {
@@ -169,7 +171,7 @@ export function Select(props: SelectProps) {
       },
       { passive: true },
     )
-    autolisten(document)(
+    autolisten(
       'pointermove',
       (event: PointerEvent) => {
         if (downed()) {
@@ -190,7 +192,7 @@ export function Select(props: SelectProps) {
       },
       { passive: true, capture: true },
     )
-    autolisten(document)(
+    autolisten(
       'pointerup',
       () => {
         if (downed()) {
@@ -210,7 +212,7 @@ export function Select(props: SelectProps) {
       onPointerDown={() => down(true)}
       onPointerUp={() => down(false)}
       onClickMissed={onClickMissed}
-      {...rest}
+      // {...rest}
     >
       <context.Provider value={active}>{config.children}</context.Provider>
     </Entity>

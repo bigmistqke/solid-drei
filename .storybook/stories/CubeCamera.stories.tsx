@@ -1,6 +1,5 @@
-import { Resource, useFrame } from 'solid-three'
+import { useFrame } from 'solid-three'
 import type { Meta, StoryObj } from 'storybook-solidjs-vite'
-import { CubeTextureLoader } from 'three'
 import { Box, CubeCamera } from '../../src'
 import { Setup } from '../Setup'
 import { T } from '../t'
@@ -10,13 +9,7 @@ const meta = {
   component: CubeCamera,
   decorators: [
     Story => (
-      <Setup defaultCamera={{ position: [0, 5, 50] }}>
-        <Resource
-          loader={CubeTextureLoader}
-          attach="environment"
-          path="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r80/examples/textures/cube/Bridge2/"
-          url={['posx.jpg', 'negx.jpg', 'posy.jpg', 'negy.jpg', 'posz.jpg', 'negz.jpg']}
-        />
+      <Setup environment defaultCamera={{ position: [0, 5, 50] }}>
         <Story />
       </Setup>
     ),

@@ -4,7 +4,7 @@ import { useFrame, useThree } from 'solid-three'
 import type { Meta, StoryObj } from 'storybook-solidjs-vite'
 import { Color, Object3D, Vector3 } from 'three'
 import { Html, Icosahedron, type CalculatePosition, type HtmlProps } from '../../src'
-import { processProps } from '../../src/utils/process-props'
+import { processProps } from '../../src/utils'
 import { Setup } from '../Setup'
 import { T } from '../t'
 import { useTurntable } from '../useTurntable'
@@ -40,7 +40,7 @@ type Story = StoryObj<typeof meta>
 /*                                                                                */
 /**********************************************************************************/
 
-function HTMLScene(props: Overwrite<HtmlProps, { color?: string; children?: JSX.Element }>) {
+function HTMLScene(props: Overwrite<[HtmlProps, { color?: string; children?: JSX.Element }]>) {
   const [config, rest] = processProps(
     props,
     {

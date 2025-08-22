@@ -1,4 +1,4 @@
-import { resolve } from '@/utils/resolve'
+import { resolve } from '@/utils'
 import {
   createEffect,
   createMemo,
@@ -9,14 +9,15 @@ import {
   type Ref,
 } from 'solid-js'
 import type { S3 } from 'solid-three'
-import { autolisten, Entity, Portal, useThree } from 'solid-three'
+import { Entity, Portal, useThree } from 'solid-three'
 import { Group, Object3D, type Event as ThreeEvent } from 'three'
 import { TransformControls as ThreeTransformControls } from 'three-stdlib'
+import { useAutolisten } from './useAutolisten'
 
 export interface TransformControlsProps
   extends Omit<
     S3.Props<Group> & S3.Props<ThreeTransformControls>,
-    'object' | 'onMouseDown' | 'onMouseUp'
+    'object' | 'onMouseDown' | 'onMouseUp' | 'ref'
   > {
   ref?: Ref<ThreeTransformControls>
   axis?: string | null
@@ -72,18 +73,18 @@ export function TransformControls(props: TransformControlsProps) {
   const store = useThree()
   const group = new Group()
 
-  const controls = createMemo(
-    () =>
-      new ThreeTransformControls(
-        config.camera ?? store.currentCamera,
-        config.domElement ?? store.canvas,
-      ),
-  )
-
-  createEffect(() => autolisten(controls())('change', config.onChange))
-  createEffect(() => autolisten(controls())('mouseUp', config.onMouseUp))
-  createEffect(() => autolisten(controls())('mouseDown', config.onMouseDown))
-  createEffect(() => autolisten(controls())('objectChange', config.onObjectChange))
+  const controls = createMemo(() => {
+    const controls = new ThreeTransformControls(
+      config.camera ?? store.currentCamera,
+      config.domElement ?? store.canvas,
+    )
+    const autolisten = useAutolisten(controls)
+    createEffect(() => autolisten('change', config.onChange))
+    createEffect(() => autolisten('mouseUp', config.onMouseUp))
+    createEffect(() => autolisten('mouseDown', config.onMouseDown))
+    createEffect(() => autolisten('objectChange', config.onObjectChange))
+    return controls
+  })
 
   createEffect(() => {
     controls().attach(resolve(config.object) || group)

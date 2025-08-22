@@ -1,5 +1,4 @@
-import { assertedNotNullish } from '@/utils'
-import { defaultProps } from '@/utils/default-props'
+import { assertedNotNullish, defaultProps } from '@/utils'
 import { createContext, createEffect, useContext } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { Entity, useFrame, useThree } from 'solid-three'
@@ -12,8 +11,8 @@ import {
   Vector3,
 } from 'three'
 import { OrbitControls as OrbitControlsType } from 'three-stdlib'
-import { OrthographicCamera } from './OrthographicCamera'
-import { Hud } from './missing-api/Hud'
+import { OrthographicCamera } from '..'
+import { Hud } from './Hud'
 
 /**********************************************************************************/
 /*                                                                                */
@@ -139,7 +138,7 @@ export const GizmoHelper = (props: GizmoHelperProps): any => {
         // // so we need to reset it after the animation is done
         // // moving it around for the controls to work correctly
         // if (isOrbitControls(store.controls as any as ControlsProto)) {
-        //   store.currentCamera.up.copy(defaultUp)
+        store.currentCamera.up.copy(defaultUp)
         // }
       } else {
         const step = delta * turnRate

@@ -4,13 +4,13 @@
  *    https://github.com/junni-inc/next.junni.co.jp/blob/master/src/ts/MainScene/World/Sections/Section2/Transparents/Transparent/shaders/transparent.fs
  */
 
+import { processProps } from '@/utils'
+import { RefComponent } from '@/utils/types'
+import { createImperativeHandle } from '@/utils/use-imperative-handle'
 import { createSignal } from 'solid-js'
 import { Instance, T, ThreeProps, extend, useFrame } from 'solid-three'
 import * as THREE from 'three'
 import { DiscardMaterial } from '../../materials/DiscardMaterial'
-import { processProps } from '@/utils/process-props'
-import { RefComponent } from '@/utils/type-utils'
-import { createImperativeHandle } from '@/utils/use-imperative-handle'
 import { useFBO } from './useFBO'
 
 type MeshTransmissionMaterialType = Omit<

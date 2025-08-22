@@ -1,6 +1,5 @@
+import { processProps, useRef } from '@/utils'
 import { when } from '@/utils/conditionals'
-import { processProps } from '@/utils/process-props'
-import { useRef } from '@/utils/use-refs'
 import type { JSX, Ref } from 'solid-js'
 import { createEffect, createMemo, onCleanup, Show } from 'solid-js'
 import type { S3 } from 'solid-three'

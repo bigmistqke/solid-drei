@@ -2,8 +2,8 @@
 import { Suspense, createSignal } from 'solid-js'
 import { T, ThreeProps, type Color } from 'solid-three'
 
-import { processProps } from '@/utils/process-props'
-import { RefComponent } from '@/utils/type-utils'
+import { processProps } from '@/utils'
+import { RefComponent } from '@/utils/types'
 import { createImperativeHandle } from '@/utils/use-imperative-handle'
 import { Center } from '../Center'
 import { Text3D } from '../Text3D'

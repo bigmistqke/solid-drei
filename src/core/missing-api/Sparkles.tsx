@@ -1,6 +1,5 @@
+import { processProps, useRef } from '@/utils'
 import { version } from '@/utils/constants'
-import { processProps } from '@/utils/process-props'
-import { useRef } from '@/utils/use-refs'
 import { type Accessor, createMemo, type Ref, Show } from 'solid-js'
 import { createT, type S3, useFrame, useThree } from 'solid-three'
 import {

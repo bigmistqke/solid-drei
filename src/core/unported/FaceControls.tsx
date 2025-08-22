@@ -4,9 +4,9 @@ import { easing } from 'maath'
 import { T, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
 
+import { defaultProps } from '@/utils'
 import { check } from '@/utils/conditionals'
-import { defaultProps } from '@/utils/default-props'
-import { RefComponent } from '@/utils/type-utils'
+import { RefComponent } from '@/utils/types'
 import { createImperativeHandle } from '@/utils/use-imperative-handle'
 import {
   Accessor,

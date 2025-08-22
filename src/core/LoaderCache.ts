@@ -27,6 +27,7 @@ export interface LoaderRegistry {
   get<TData extends object, TUrl extends string | string[]>(
     loader: Loader<TData, TUrl>,
     url: TUrl,
+    warn?: boolean,
   ): Promise<TData> | TData | undefined
 }
 
@@ -150,8 +151,9 @@ export class LoaderCache implements LoaderRegistry {
   get<TData extends object, TUrl extends string | string[]>(
     loader: Loader<TData, TUrl>,
     path: TUrl,
+    warn = true,
   ) {
-    const node = this.#registry(loader).get(path)
+    const node = this.#registry(loader).get(path, warn)
 
     if (!node) return undefined
 
@@ -174,7 +176,7 @@ export class LoaderCache implements LoaderRegistry {
     options?: { force?: boolean },
   ) {
     const registry = this.#registry(loader)
-    let node = registry.get(path)
+    let node = registry.get(path, false)
 
     if (node) {
       node.update(data, options)

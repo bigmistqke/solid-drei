@@ -1,5 +1,5 @@
+import { defaultProps } from '@/utils'
 import { version } from '@/utils/constants'
-import { defaultProps } from '@/utils/default-props'
 import { type Ref, createMemo } from 'solid-js'
 import { createT, Entity, useFrame } from 'solid-three'
 import {

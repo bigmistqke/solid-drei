@@ -10,7 +10,8 @@ const meta = {
   component: ContactShadows,
   decorators: [
     Story => (
-      <Setup defaultCamera={{ position: [0, 0, 5] }}>
+      <Setup defaultCamera={{ position: [5, 5, 5] }}>
+        <T.Color attach="background" args={['white']} />
         <Story />
       </Setup>
     ),

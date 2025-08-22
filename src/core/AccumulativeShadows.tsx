@@ -1,8 +1,7 @@
 import { DiscardMaterial } from '@/materials/DiscardMaterial'
 import { shaderMaterial } from '@/materials/shaderMaterial'
+import { processProps, useRef } from '@/utils'
 import { version } from '@/utils/constants'
-import { processProps } from '@/utils/process-props'
-import { useRef } from '@/utils/use-refs'
 import type { Ref } from 'solid-js'
 import {
   createContext,

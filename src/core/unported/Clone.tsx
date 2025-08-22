@@ -1,10 +1,10 @@
+import { processProps } from '@/utils'
+import { RefComponent } from '@/utils/types'
 import pick from 'lodash.pick'
 import { For, Show, createMemo, splitProps, type JSX } from 'solid-js'
 import { T, ThreeProps } from 'solid-three'
 import * as THREE from 'three'
 import { SkeletonUtils } from 'three-stdlib'
-import { processProps } from '@/utils/process-props'
-import { RefComponent } from '@/utils/type-utils'
 
 export type CloneProps = {
   /** Any pre-existing THREE.Object3D (groups, meshes, ...), or an array of objects */

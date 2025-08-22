@@ -1,5 +1,5 @@
+import { resolve } from '@/utils'
 import { when } from '@/utils/conditionals'
-import { resolve } from '@/utils/resolve'
 import { type Accessor, createResource } from 'solid-js'
 import { Texture } from 'three'
 import { useTexture } from './useTexture'

@@ -1,9 +1,8 @@
 import { Show, createSignal } from 'solid-js'
-import { autolisten } from 'solid-three'
 import type { Meta, StoryObj } from 'storybook-solidjs-vite'
 import { Object3D, Vector3 } from 'three'
 import { TransformControls as TransformControlsImpl } from 'three-stdlib'
-import { Box, OrbitControls, Select, TransformControls } from '../../src'
+import { Box, OrbitControls, Select, TransformControls, useAutolisten } from '../../src'
 import { Setup } from '../Setup'
 import { T } from '../t'
 
@@ -39,7 +38,7 @@ export const Default: Story = {
   render() {
     let ref: TransformControlsImpl = null!
 
-    autolisten(document)('keydown', (e: KeyboardEvent) => {
+    useAutolisten(document)('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         ref.reset()
       }
@@ -61,7 +60,7 @@ export const WithSelect: Story = {
     const active = () => selected()[0]
 
     return (
-      <Setup controls={false}>
+      <>
         <OrbitControls />
         <Show when={active()}>
           <TransformControls object={active()} />
@@ -78,7 +77,7 @@ export const WithSelect: Story = {
             </Box>
           </T.Group>
         </Select>
-      </Setup>
+      </>
     )
   },
 }
@@ -102,13 +101,15 @@ export const LockOrbitControls: Story = {
     return (
       <>
         <TransformControls
-          ref={controls => {
-            autolisten(controls)('dragging-changed', event => setOrbitEnabled(!event.value))
-          }}
           mode={props.mode}
           showX={props.showX}
           showY={props.showY}
           showZ={props.showZ}
+          onMouseDown={() => {
+            console.log('this happens?')
+            setOrbitEnabled(false)
+          }}
+          onMouseUp={() => setOrbitEnabled(true)}
         >
           <Box>
             <T.MeshBasicMaterial wireframe />

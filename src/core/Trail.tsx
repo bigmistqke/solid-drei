@@ -1,7 +1,5 @@
+import { createWritable, defaultProps, resolve } from '@/utils'
 import { check, when } from '@/utils/conditionals'
-import { createWritable } from '@/utils/create-writable'
-import { defaultProps } from '@/utils/default-props'
-import { resolve } from '@/utils/resolve'
 import { MeshLineGeometry, MeshLineMaterial } from 'meshline'
 import {
   type Accessor,

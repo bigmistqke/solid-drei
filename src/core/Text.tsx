@@ -1,5 +1,4 @@
-import { processProps } from '@/utils/process-props'
-import { resolve } from '@/utils/resolve'
+import { processProps, resolve } from '@/utils'
 import type { JSX } from 'solid-js'
 import { createMemo, createResource, onCleanup, onMount, Show } from 'solid-js'
 import { Entity, type S3 } from 'solid-three'

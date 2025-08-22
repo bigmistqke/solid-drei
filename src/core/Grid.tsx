@@ -4,9 +4,9 @@
         by https://github.com/grischaerbe and https://github.com/jerzakm
 */
 
+import { processProps, useRef } from '@/utils'
 import { version } from '@/utils/constants'
-import { processProps } from '@/utils/process-props'
-import { useRef } from '@/utils/use-refs'
+import type { Intersect } from '@/utils/types'
 import type { Ref } from 'solid-js'
 import { splitProps } from 'solid-js'
 import type { S3 } from 'solid-three'
@@ -130,9 +130,8 @@ const T = createT({ GridMaterial, PlaneGeometry })
 /*                                       Grid                                     */
 /*                                                                                */
 /**********************************************************************************/
-
-type GridPropsBase = Omit<S3.Props<typeof Mesh>, 'args'> & GridMaterialType
-export interface GridProps extends GridPropsBase {
+export interface GridProps
+  extends Intersect<[Omit<S3.Props<typeof Mesh>, 'args'> & GridMaterialType]> {
   ref?: Ref<Mesh>
   args?: S3.Props<typeof PlaneGeometry>['args']
 }

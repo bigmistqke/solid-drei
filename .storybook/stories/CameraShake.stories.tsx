@@ -1,5 +1,6 @@
 import { Entity, useFrame } from 'solid-three'
 import type { Meta, StoryObj } from 'storybook-solidjs-vite'
+import type { InputType } from 'storybook/internal/csf'
 import * as THREE from 'three'
 import { Vector3 } from 'three'
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
@@ -14,7 +15,7 @@ const frequencyArgType = {
     step: 0.1,
     type: 'range',
   },
-}
+} satisfies InputType
 
 const numberArgType = {
   control: {
@@ -23,7 +24,7 @@ const numberArgType = {
     step: 0.05,
     type: 'range',
   },
-}
+} satisfies InputType
 
 const meta = {
   title: 'Staging/CameraShake',
@@ -46,7 +47,7 @@ const meta = {
   },
   decorators: [
     Story => (
-      <Setup defaultCamera={{ position: new Vector3(0, 0, 3) }} controls={false}>
+      <Setup defaultCamera={{ position: new Vector3(0, 0, 5) }} controls={false}>
         <Story />
       </Setup>
     ),

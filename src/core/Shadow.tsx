@@ -1,4 +1,4 @@
-import { processProps } from '@/utils/process-props'
+import { processProps } from '@/utils'
 import { createMemo, onMount, type Ref } from 'solid-js'
 import { createT, Entity, type S3 } from 'solid-three'
 import { CanvasTexture, Color, DoubleSide, Mesh, MeshBasicMaterial, PlaneGeometry } from 'three'

@@ -1,8 +1,16 @@
-import { defaultProps } from '@/utils/default-props'
-import { processProps } from '@/utils/process-props'
-import { createMemo, createSignal } from 'solid-js'
-import { T, ThreeEvent, ThreeProps, useThree } from 'solid-three'
-import { CanvasTexture, Sprite } from 'three'
+import { defaultProps, processProps } from '@/utils'
+import { createMemo, createSignal, mergeProps } from 'solid-js'
+import { Entity, type S3, useThree } from 'solid-three'
+import { pickProps } from 'solid-use/props'
+import {
+  BoxGeometry,
+  CanvasTexture,
+  Group,
+  Mesh,
+  MeshBasicMaterial,
+  Sprite,
+  SpriteMaterial,
+} from 'three'
 import { useGizmoContext } from './GizmoHelper'
 
 type AxisProps = {
@@ -11,17 +19,17 @@ type AxisProps = {
   scale?: [number, number, number]
 }
 
-type AxisHeadProps = ThreeProps<Sprite> & {
+type AxisHeadProps = S3.Props<Sprite> & {
   arcStyle: string
   label?: string
   labelColor: string
   axisHeadScale?: number
   disabled?: boolean
   font: string
-  onClick?: (e: ThreeEvent<MouseEvent>) => null
+  onClick?: (e: S3.ThreeEvent<MouseEvent>) => null
 }
 
-type GizmoViewportProps = ThreeProps<Sprite> & {
+type GizmoViewportProps = S3.Props<Group> & {
   axisColors?: [string, string, string]
   axisScale?: [number, number, number]
   labels?: [string, string, string]
@@ -31,7 +39,7 @@ type GizmoViewportProps = ThreeProps<Sprite> & {
   hideAxisHeads?: boolean
   disabled?: boolean
   font?: string
-  onClick?: (e: ThreeEvent<MouseEvent>) => null
+  onClick?: (e: S3.ThreeEvent<MouseEvent>) => null
 }
 
 function Axis(_props: AxisProps) {
@@ -39,12 +47,12 @@ function Axis(_props: AxisProps) {
     scale: [0.8, 0.05, 0.05],
   })
   return (
-    <T.Group rotation={props.rotation}>
-      <T.Mesh position={[0.4, 0, 0]}>
-        <T.BoxGeometry args={props.scale} />
-        <T.MeshBasicMaterial color={props.color} toneMapped={false} />
-      </T.Mesh>
-    </T.Group>
+    <Entity from={Group} rotation={props.rotation}>
+      <Entity from={Mesh} position={[0.4, 0, 0]}>
+        <Entity from={BoxGeometry} args={props.scale} />
+        <Entity from={MeshBasicMaterial} color={props.color} toneMapped={false} />
+      </Entity>
+    </Entity>
   )
 }
 
@@ -81,29 +89,31 @@ function AxisHead(_props: AxisHeadProps) {
 
   const [active, setActive] = createSignal(false)
   const scale = () => (props.label ? 1 : 0.75) * (active() ? 1.2 : 1) * props.axisHeadScale
-  const handlePointerOver = (e: ThreeEvent<PointerEvent>) => {
+  const handlePointerOver = (e: S3.ThreeEvent<PointerEvent>) => {
     e.stopPropagation()
     setActive(true)
   }
-  const handlePointerOut = (e: ThreeEvent<PointerEvent>) => {
+  const handlePointerOut = (e: S3.ThreeEvent<PointerEvent>) => {
     e.stopPropagation()
     setActive(false)
   }
   return (
-    <T.Sprite
+    <Entity
+      from={Sprite}
       scale={scale()}
-      onPointerOver={!props.disabled ? handlePointerOver : undefined}
-      onPointerOut={!props.disabled ? props.onClick || handlePointerOut : undefined}
+      onPointerEnter={!props.disabled ? handlePointerOver : undefined}
+      onPointerLeave={!props.disabled ? props.onClick || handlePointerOut : undefined}
       {...rest}
     >
-      <T.SpriteMaterial
+      <Entity
+        from={SpriteMaterial}
         map={texture()}
         map-anisotropy={store.gl.capabilities.getMaxAnisotropy() || 1}
         alphaTest={0.3}
         opacity={props.label ? 1 : 0.75}
         toneMapped={false}
       />
-    </T.Sprite>
+    </Entity>
   )
 }
 
@@ -132,21 +142,21 @@ export const GizmoViewport = (_props: GizmoViewportProps) => {
   )
 
   const { tweenCamera } = useGizmoContext()
-  const axisHeadProps = {
-    font: props.font,
-    disabled: props.disabled,
-    labelColor: props.labelColor,
-    onClick: props.onClick,
-    axisHeadScale: props.axisHeadScale,
-    onPointerDown: !props.disabled
-      ? (e: ThreeEvent<PointerEvent>) => {
-          tweenCamera(e.object.position)
-          e.stopPropagation()
-        }
-      : undefined,
-  }
+
+  const axisHeadProps = mergeProps(
+    {
+      onPointerDown: !props.disabled
+        ? (e: S3.ThreeEvent<PointerEvent>) => {
+            tweenCamera(e.intersection.object.position)
+            e.stopPropagation()
+          }
+        : undefined,
+    },
+    pickProps(props, ['font', 'disabled', 'labelColor', 'onClick', 'axisHeadScale']),
+  )
+
   return (
-    <T.Group scale={40} {...rest}>
+    <Entity from={Group} scale={40} {...rest}>
       <Axis color={props.axisColors[0]} rotation={[0, 0, 0]} scale={props.axisScale} />
       <Axis color={props.axisColors[1]} rotation={[0, 0, Math.PI / 2]} scale={props.axisScale} />
       <Axis color={props.axisColors[2]} rotation={[0, -Math.PI / 2, 0]} scale={props.axisScale} />
@@ -179,6 +189,6 @@ export const GizmoViewport = (_props: GizmoViewportProps) => {
           )}
         </>
       )}
-    </T.Group>
+    </Entity>
   )
 }

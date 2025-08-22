@@ -2,9 +2,8 @@
  *    https://github.com/N8python/caustics
  */
 
+import { processProps, useRef } from '@/utils'
 import { version } from '@/utils/constants'
-import { processProps } from '@/utils/process-props'
-import { useRef } from '@/utils/use-refs'
 import type { Ref } from 'solid-js'
 import { createEffect as onMount, Show } from 'solid-js'
 import type { S3 } from 'solid-three'

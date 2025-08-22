@@ -1,5 +1,5 @@
 import { ControlUtils } from '@/core/control-utils'
-import { useRef } from '@/utils/use-refs'
+import { useRef } from '@/utils'
 import type { Ref } from 'solid-js'
 import { createMemo, splitProps } from 'solid-js'
 import type { S3 } from 'solid-three'

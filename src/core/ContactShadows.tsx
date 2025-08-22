@@ -1,8 +1,7 @@
 // The author of the original code is @mrdoob https://twitter.com/mrdoob
 // https://threejs.org/examples/?q=con#webgl_shadow_contact
 
-import { processProps } from '@/utils/process-props'
-import { useRef } from '@/utils/use-refs'
+import { processProps, useRef } from '@/utils'
 import type { Ref } from 'solid-js'
 import { createMemo } from 'solid-js'
 import type { S3 } from 'solid-three'
@@ -80,13 +79,23 @@ export function ContactShadows(props: ContactShadowsProps) {
     ],
   )
 
-  const group = new Group()
-
-  let shadowCamera: OrthographicCamera
   const store = useThree()
 
+  const group = new Group()
   const width = () => transform(config.width, config.scale)
   const height = () => transform(config.height, config.scale)
+
+  const shadowCamera = createMemo(
+    () =>
+      new OrthographicCamera(
+        -width() / 2,
+        width() / 2,
+        height() / 2,
+        -height() / 2,
+        config.near,
+        config.far,
+      ),
+  )
 
   const shadow = createMemo(() => {
     const renderTarget = new WebGLRenderTarget(config.resolution, config.resolution)
@@ -142,14 +151,14 @@ export function ContactShadows(props: ContactShadowsProps) {
     shadow().horizontalBlurMaterial.uniforms.h!.value = (blur * 1) / 256
 
     store.gl.setRenderTarget(shadow().renderTargetBlur)
-    store.gl.render(shadow().blurPlane, shadowCamera)
+    store.gl.render(shadow().blurPlane, shadowCamera())
 
     shadow().blurPlane.material = shadow().verticalBlurMaterial
     shadow().verticalBlurMaterial.uniforms.tDiffuse!.value = shadow().renderTargetBlur.texture
     shadow().verticalBlurMaterial.uniforms.v!.value = (blur * 1) / 256
 
     store.gl.setRenderTarget(shadow().renderTarget)
-    store.gl.render(shadow().blurPlane, shadowCamera)
+    store.gl.render(shadow().blurPlane, shadowCamera())
 
     shadow().blurPlane.visible = false
   }
@@ -159,7 +168,6 @@ export function ContactShadows(props: ContactShadowsProps) {
   let initialOverrideMaterial: Material | null
   useFrame(() => {
     if (config.frames === Infinity || count < config.frames) {
-      // console.log('this happens?')
       count++
 
       initialBackground = store.scene.background
@@ -170,7 +178,7 @@ export function ContactShadows(props: ContactShadowsProps) {
       store.scene.overrideMaterial = shadow().depthMaterial
 
       store.gl.setRenderTarget(shadow().renderTarget)
-      store.gl.render(store.scene, shadowCamera)
+      store.gl.render(store.scene, shadowCamera())
 
       blurShadows(config.blur)
       if (config.smooth) blurShadows(config.blur * 0.4)
@@ -199,10 +207,7 @@ export function ContactShadows(props: ContactShadowsProps) {
           depthWrite={config.depthWrite}
         />
       </T.Mesh>
-      <T.OrthographicCamera
-        ref={shadowCamera!}
-        args={[-width() / 2, width() / 2, height() / 2, -height() / 2, config.near, config.far]}
-      />
+      <Entity from={shadowCamera()} />
     </Entity>
   )
 }

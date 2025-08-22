@@ -1,5 +1,5 @@
+import { processProps } from '@/utils'
 import { check, when } from '@/utils/conditionals'
-import { processProps } from '@/utils/process-props'
 import {
   createEffect,
   createMemo,
@@ -8,7 +8,6 @@ import {
   Show,
   type Accessor,
   type JSX,
-  type Ref,
 } from 'solid-js'
 import { render } from 'solid-js/web'
 import { createT, Entity, useFrame, useThree, type S3 } from 'solid-three'
@@ -158,10 +157,8 @@ type PointerEventsProperties =
   | 'all'
   | 'inherit'
 
-type HtmlPropsBase = Omit<Assign<JSX.HTMLAttributes<HTMLDivElement>, S3.Props<Group>>, 'ref'>
-
-export interface HtmlProps extends HtmlPropsBase {
-  ref?: Ref<HTMLDivElement>
+export interface HtmlProps
+  extends Assign<JSX.HTMLAttributes<HTMLDivElement>, Omit<S3.Props<Group>, 'ref'>> {
   prepend?: boolean
   center?: boolean
   fullscreen?: boolean

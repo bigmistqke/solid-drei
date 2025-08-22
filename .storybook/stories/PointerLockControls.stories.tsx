@@ -1,7 +1,6 @@
 import { createMemo, createSignal, For } from 'solid-js'
-import { CenterRaycaster } from 'solid-three'
 import type { Meta, StoryObj } from 'storybook-solidjs-vite'
-import { Extrude, Icosahedron, PointerLockControls, usePointerLockControls } from '../../src'
+import { Extrude, Icosahedron, PointerLockControls } from '../../src'
 import { Setup } from '../Setup'
 import { T } from '../t'
 
@@ -78,17 +77,9 @@ function Icosahedrons() {
 
 export const Default: Story = {
   render() {
-    let [controls, setControls] = createSignal<{ active: boolean }>()
-
     return (
-      <Setup
-        ref={context => {
-          setControls(usePointerLockControls(context))
-        }}
-        defaultCamera={{ position: [0, 0, 10] }}
-        controls={false}
-        raycaster={controls()?.active ? new CenterRaycaster() : undefined}
-      >
+      <Setup controls={false} defaultCamera={{ position: [0, 0, 10] }}>
+        <PointerLockControls />
         <Icosahedrons />
       </Setup>
     )

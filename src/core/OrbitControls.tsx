@@ -1,16 +1,10 @@
-import { when } from '@/utils/conditionals'
-import { processProps } from '@/utils/process-props'
-import {
-  createComputed,
-  createEffect,
-  createMemo,
-  onCleanup,
-  type JSXElement,
-  type Ref,
-} from 'solid-js'
-import { autolisten, useFrame, useProps, useThree, type S3 } from 'solid-three'
+import { processProps } from '@/utils'
+import { whenComputed } from '@/utils/conditionals'
+import { createComputed, createMemo, onCleanup, type JSXElement, type Ref } from 'solid-js'
+import { autodispose, useFrame, useProps, useThree, type S3 } from 'solid-three'
 import { OrthographicCamera, PerspectiveCamera, type Event } from 'three'
 import { OrbitControls as ThreeOrbitControls } from 'three-stdlib'
+import { useAutolisten } from './useAutolisten'
 
 export interface OrbitControlsOptions extends S3.Props<typeof ThreeOrbitControls> {
   ref?: Ref<ThreeOrbitControls>
@@ -24,57 +18,72 @@ export interface OrbitControlsOptions extends S3.Props<typeof ThreeOrbitControls
   keyEvents?: boolean | HTMLElement
 }
 
-export function useOrbitControls(three = useThree(), options?: OrbitControlsOptions) {
+export function OrbitControls(props: OrbitControlsOptions) {
+  useOrbitControls(props)
+  return null as unknown as JSXElement
+}
+
+export function useOrbitControls(options?: OrbitControlsOptions) {
+  const store = useThree()
+
   const [config, rest] = processProps(
     options ?? {},
     {
       enableDamping: true,
       keyEvents: false,
+      enabled: true,
       get camera() {
-        return three.currentCamera
+        return store.currentCamera
       },
       get domElement() {
-        return three.gl.domElement
+        return store.gl.domElement
       },
     },
     [
       'camera',
-      'domElement',
-      'regress',
-      'keyEvents',
-      'onChange',
-      'onStart',
-      'onEnd',
-      'object',
       'dispose',
+      'domElement',
+      'enabled',
+      'keyEvents',
+      'object',
+      'onChange',
+      'onEnd',
+      'onStart',
+      'regress',
     ],
   )
 
   const controls = createMemo<ThreeOrbitControls>(() => {
-    const controls = new ThreeOrbitControls(config.camera)
-    onCleanup(() => controls?.dispose())
+    const controls = autodispose(new ThreeOrbitControls(config.camera))
+    const autolisten = useAutolisten(controls)
+
+    whenComputed(
+      () => config.enabled,
+      () => {
+        // Enable OrbitControls
+        controls.enabled = true
+        // Disable OrbitControls on cleanup
+        onCleanup(() => (controls.enabled = false))
+
+        // Connect to domElement (defaults to store.canvas)
+        createComputed(() => controls.connect(config.domElement))
+
+        // Attach event-listeners
+        createComputed(() => autolisten('start', config.onStart))
+        createComputed(() => autolisten('change', config.onChange))
+        createComputed(() => autolisten('end', config.onEnd))
+
+        // Apply props
+        useProps(controls, rest, store)
+
+        // Update controls on each frame
+        useFrame(controls.update)
+      },
+    )
     return controls
   })
-
-  createComputed(
-    when(controls, controls => {
-      useFrame(() => controls.update())
-
-      createEffect(() => controls.connect(config.domElement))
-      createEffect(() => autolisten(controls)('start', config.onStart))
-      createEffect(() => autolisten(controls)('change', config.onChange))
-      createEffect(() => autolisten(controls)('end', config.onEnd))
-
-      useProps(controls, rest, three)
-    }),
-  )
 
   return {
     controls,
   }
-}
-
-export function OrbitControls(props: OrbitControlsOptions) {
-  useOrbitControls(useThree(), props)
-  return null as unknown as JSXElement
 }

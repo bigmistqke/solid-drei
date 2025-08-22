@@ -1,35 +1,40 @@
-import { useOrbitControls } from '@/core'
-import { processProps } from '@/utils/process-props'
-import { createEffect, Show, type ParentComponent } from 'solid-js'
-import { Canvas, createT, type CanvasProps } from 'solid-three'
+import { OrbitControls } from '@/core'
+import { processProps } from '@/utils'
+import { Show } from 'solid-js'
+import { Canvas, createT, Resource, type CanvasProps } from 'solid-three'
 import * as THREE from 'three'
 import './index.css'
 
 const T = createT(THREE)
 
-export const Setup: ParentComponent<
-  CanvasProps & { lights?: boolean; controls?: boolean }
-> = _props => {
-  const [props, rest] = processProps(
-    _props,
+export function Setup(
+  props: CanvasProps & { lights?: boolean; controls?: boolean; environment?: boolean },
+) {
+  const [config, rest] = processProps(
+    props,
     {
       controls: true,
       lights: true,
     },
-    ['controls', 'lights', 'children'],
+    ['controls', 'lights', 'children', 'environment'],
   )
 
   return (
     <>
-      <Canvas
-        ref={() => createEffect(() => props.controls && useOrbitControls())}
-        shadows
-        {...rest}
-      >
-        {props.children}
-        <Show when={props.lights}>
+      <Canvas shadows {...rest}>
+        <OrbitControls enabled={config.controls} />
+        {config.children}
+        <Show when={config.lights}>
           <T.AmbientLight intensity={0.8} />
-          <T.PointLight intensity={1} position={[0, 6, 0]} />
+          <T.PointLight intensity={5} position={[0, 6, 0]} />
+        </Show>
+        <Show when={config.environment}>
+          <Resource
+            loader={THREE.CubeTextureLoader}
+            attach="environment"
+            path="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r80/examples/textures/cube/Bridge2/"
+            url={['posx.jpg', 'negx.jpg', 'posy.jpg', 'negy.jpg', 'posz.jpg', 'negz.jpg']}
+          />
         </Show>
       </Canvas>
     </>

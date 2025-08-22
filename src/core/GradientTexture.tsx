@@ -1,4 +1,4 @@
-import { processProps } from '@/utils/process-props'
+import { processProps } from '@/utils'
 import { createMemo } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { createT, Entity, useThree } from 'solid-three'

@@ -1,4 +1,4 @@
-import { processProps } from '@/utils/process-props'
+import { processProps } from '@/utils'
 import { createMemo } from 'solid-js'
 import { CatmullRomCurve3, Color, Vector3 } from 'three'
 import { Line2 } from 'three-stdlib'

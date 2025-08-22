@@ -1,12 +1,13 @@
+import type { Intersect } from '@/utils/types'
 import type { JSX, Ref } from 'solid-js'
-import { Show, splitProps } from 'solid-js'
+import { splitProps } from 'solid-js'
 import { Entity, type S3 } from 'solid-three'
 import type { Group, Mesh, Object3D } from 'three'
-import { useGLTF } from './useGLTF'
+import { useGLTF, type UseGLTFOptions } from './useGLTF'
 
-interface GltfProps extends S3.Props<typeof Group> {
-  ref: Ref<Group>
-  src: string
+interface GltfProps extends Intersect<[S3.Props<Group>, UseGLTFOptions]> {
+  ref?: Ref<Group>
+  url: string
   /** Children will be placed within the object, or within the group that holds arrayed objects */
   children?: JSX.Element
   /** Can clone materials and/or geometries deeply (default: false) */
@@ -23,7 +24,7 @@ interface GltfProps extends S3.Props<typeof Group> {
 }
 
 export const Gltf = (props: GltfProps) => {
-  const [config, rest] = splitProps(props, ['src'])
-  const resource = useGLTF(() => config.src)
-  return <Show when={resource()?.scene}>{scene => <Entity from={scene()} {...rest} />}</Show>
+  const [config, rest] = splitProps(props, ['url', 'useDraco', 'useMeshOpt', 'extendLoader'])
+  const gltf = useGLTF(() => config.url, config)
+  return <Entity from={gltf()?.scene} {...rest} />
 }

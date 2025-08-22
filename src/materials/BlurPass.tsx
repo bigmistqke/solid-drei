@@ -98,4 +98,11 @@ export class BlurPass {
     renderer.setRenderTarget(this.renderToScreen ? null : outputBuffer)
     renderer.render(scene, camera)
   }
+
+  dispose() {
+    this.renderTargetA.dispose()
+    this.renderTargetB.dispose()
+    this.convolutionMaterial.dispose()
+    this.screen.geometry.dispose()
+  }
 }

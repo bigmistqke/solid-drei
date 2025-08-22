@@ -1,5 +1,5 @@
+import { processProps } from '@/utils'
 import { when } from '@/utils/conditionals'
-import { processProps } from '@/utils/process-props'
 import { type Ref, createEffect, createResource, onCleanup, onMount } from 'solid-js'
 import { Entity, type S3, useThree } from 'solid-three'
 import { AudioListener, AudioLoader, PositionalAudio as PositionalAudioImpl } from 'three'

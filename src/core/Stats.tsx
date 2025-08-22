@@ -1,4 +1,4 @@
-import { defaultProps } from '@/utils/default-props'
+import { defaultProps } from '@/utils'
 import { createEffect, onCleanup } from 'solid-js'
 import { useFrame } from 'solid-three'
 import StatsImpl from 'stats.js'

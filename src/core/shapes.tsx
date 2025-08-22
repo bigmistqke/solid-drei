@@ -1,5 +1,5 @@
-import type { Args } from '@/utils/type-utils'
-import { useRef } from '@/utils/use-refs'
+import { useRef } from '@/utils'
+import type { Args } from '@/utils/types'
 import type { Ref } from 'solid-js'
 import { onMount, splitProps, type JSX } from 'solid-js'
 import { autodispose, Entity, type S3 } from 'solid-three'

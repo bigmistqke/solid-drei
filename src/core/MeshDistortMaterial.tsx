@@ -5,8 +5,8 @@ import type { MeshPhysicalMaterialParameters, WebGLProgramParametersWithUniforms
 import { MeshPhysicalMaterial } from 'three'
 // eslint-disable-next-line
 // @ts-ignore
+import { processProps } from '@/utils'
 import distort from '@/utils/glsl/distort.vert.glsl'
-import { processProps } from '@/utils/process-props'
 
 interface DistortMaterialType extends S3.Props<typeof MeshPhysicalMaterial> {
   time?: number

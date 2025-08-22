@@ -1,7 +1,7 @@
+import { processProps } from '@/utils'
 import { createEffect, createResource } from 'solid-js'
 import { useThree } from 'solid-three'
 import * as THREE from 'three'
-import { processProps } from '@/utils/process-props'
 
 interface VideoTextureProps extends HTMLVideoElement {
   unsuspend?: 'canplay' | 'canplaythrough' | 'loadstart' | 'loadedmetadata'

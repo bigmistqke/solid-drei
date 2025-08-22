@@ -1,5 +1,5 @@
+import { processProps } from '@/utils'
 import { version } from '@/utils/constants'
-import { processProps } from '@/utils/process-props'
 import type { Ref } from 'solid-js'
 import { Show, splitProps } from 'solid-js'
 import { createT, type S3 } from 'solid-three'
@@ -19,8 +19,14 @@ interface ImagePropsBase extends Omit<S3.Props<Mesh>, 'scale'> {
   opacity?: number
 }
 
-type TextureImageProps = ImagePropsBase & { texture: Texture; url?: never }
-type UrlImageProps = ImagePropsBase & { texture?: never; url: string }
+interface TextureImageProps extends ImagePropsBase {
+  texture?: Texture
+  url?: never
+}
+interface UrlImageProps extends ImagePropsBase {
+  texture?: never
+  url?: string
+}
 
 const ImageMaterialImpl = shaderMaterial(
   {

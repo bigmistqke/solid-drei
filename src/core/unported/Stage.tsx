@@ -1,14 +1,14 @@
-import * as THREE from 'three'
+import { processProps } from '@/utils'
+import { type PresetsKind } from '@/utils/environment-assets'
 import { Show, createEffect, createSignal, on } from 'solid-js'
 import { T, type S3 } from 'solid-three'
+import * as THREE from 'three'
 import { Center, type CenterProps } from '../Center'
 import { ContactShadows, type ContactShadowsProps } from '../ContactShadows'
-import { type PresetsType } from '@/utils/environment-assets'
-import { processProps } from '@/utils/process-props'
 import {
   AccumulativeShadows,
-  type AccumulativeShadowsProps,
   RandomizedLight,
+  type AccumulativeShadowsProps,
   type RandomizedLightProps,
 } from './AccumulativeShadows'
 import { Bounds, useBounds } from './Bounds'
@@ -60,7 +60,7 @@ type StageProps = {
   /** Optionally wraps and thereby centers the models using <Bounds>, can also be a margin, default: true */
   adjustCamera?: boolean | number
   /** The default environment, default: "city" */
-  environment?: PresetsType | Partial<EnvironmentProps>
+  environment?: PresetsKind | Partial<EnvironmentProps>
   /** The lighting intensity, default: 0.5 */
   intensity?: number
   /** To adjust centering, default: undefined */

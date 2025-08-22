@@ -1,7 +1,7 @@
 import { ParentProps, Ref, createEffect, createRenderEffect } from 'solid-js'
 import { Size, T, useFrame } from 'solid-three'
 import * as THREE from 'three'
-import { processProps } from '../../../utils/process-props'
+import { processProps } from '../../../utils/utils'
 import { AxisArrow } from './AxisArrow'
 import { AxisRotator } from './AxisRotator'
 import { PlaneSlider } from './PlaneSlider'

@@ -1,5 +1,4 @@
-import { processProps } from '@/utils/process-props'
-import { useRef } from '@/utils/use-refs'
+import { processProps, useRef } from '@/utils'
 import type { Ref } from 'solid-js'
 import {
   createContext,
@@ -118,8 +117,7 @@ const usePointContext = () => {
 /*                                                                                */
 /**********************************************************************************/
 
-interface PointsInstancesProps extends S3.Props<typeof Points> {
-  ref?: Ref<ThreePoints>
+interface PointsInstancesProps extends S3.Props<ThreePoints> {
   range?: number
   limit?: number
 }
@@ -241,11 +239,7 @@ function PointsInstances(props: PointsInstancesProps) {
 /*                                                                                */
 /**********************************************************************************/
 
-interface PointProps extends S3.Props<PositionPoint> {
-  ref?: Ref<unknown>
-}
-
-export function Point(props: PointProps) {
+export function Point(props: S3.Props<PositionPoint>) {
   const [config, rest] = splitProps(props, ['ref', 'children'])
 
   const positionPoint = new PositionPoint()
@@ -274,8 +268,7 @@ export function Point(props: PointProps) {
  * Buffer implementation, relies on complete buffers of the correct number,
  * leaves it to the user to update them
  */
-interface PointsBufferProps extends S3.Props<typeof ThreePoints> {
-  ref?: Ref<ThreePoints>
+interface PointsBufferProps extends S3.Props<ThreePoints> {
   // a buffer containing all points position
   positions: Float32Array
   colors?: Float32Array
@@ -349,8 +342,7 @@ export function PointsBuffer(props: PointsBufferProps) {
 /*                                                                                */
 /**********************************************************************************/
 
-type PointsPropsBase = PointsBufferProps | PointsInstancesProps
-type PointsProps = PointsPropsBase & { ref?: Ref<ThreePoints> }
+type PointsProps = (PointsBufferProps | PointsInstancesProps) & { ref?: Ref<ThreePoints> }
 
 export function Points(props: PointsProps) {
   return (

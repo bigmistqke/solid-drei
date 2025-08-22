@@ -17,9 +17,9 @@ import {
   WebGLRenderTarget,
 } from 'three'
 
+import { processProps } from '@/utils'
 import { createRef } from '@/utils/create-ref'
-import { processProps } from '@/utils/process-props'
-import { RefComponent } from '@/utils/type-utils'
+import { RefComponent } from '@/utils/types'
 import { BlurPass } from '../../materials/BlurPass'
 import {
   MeshReflectorMaterial,

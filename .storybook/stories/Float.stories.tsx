@@ -20,7 +20,6 @@ const meta = {
   decorators: [
     Story => (
       <Setup defaultCamera={{ position: new THREE.Vector3(0, 0, 10) }}>
-        {' '}
         <Story />
       </Setup>
     ),

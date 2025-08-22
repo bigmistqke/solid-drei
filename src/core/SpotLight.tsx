@@ -35,9 +35,8 @@ import {
 import { FullScreenQuad } from 'three-stdlib'
 import { SpotLightMaterial } from '../materials/SpotLightMaterial'
 // @ts-ignore
+import { processProps, useRef } from '@/utils'
 import SpotlightShadowShader from '@/utils/glsl/DefaultSpotlightShadowShadows.glsl?raw'
-import { processProps } from '@/utils/process-props'
-import { useRef } from '@/utils/use-refs'
 
 const T = createT({
   Group,

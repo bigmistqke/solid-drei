@@ -1,57 +1,77 @@
-import { useRef } from '@/utils/use-refs'
+import { processProps } from '@/utils'
+import { whenComputed } from '@/utils/conditionals'
 import type { Ref } from 'solid-js'
-import { createEffect, createMemo, splitProps } from 'solid-js'
+import { createComputed, createMemo, on, onCleanup } from 'solid-js'
 import type { S3 } from 'solid-three'
-import { Entity, useThree } from 'solid-three'
+import { autodispose, useFrame, useProps, useThree } from 'solid-three'
 import * as THREE from 'three'
-import { TrackballControls as TrackballControlsImpl } from 'three-stdlib'
-import { ControlUtils } from './control-utils'
+import { TrackballControls as TreeTrackballControls } from 'three-stdlib'
+import { useAutolisten } from './useAutolisten'
 
-type TrackballControlsPropsBase = Omit<S3.Props<typeof TrackballControlsImpl>, 'object'>
-export interface TrackballControlsProps extends TrackballControlsPropsBase {
-  ref?: Ref<TrackballControlsImpl>
-  target?: S3.Vector3
+export interface TrackballControlsProps
+  extends Omit<S3.Props<typeof TreeTrackballControls>, 'object'> {
+  ref?: Ref<TreeTrackballControls>
   camera?: S3.CameraKind
   domElement?: HTMLElement
+  enabled?: boolean
   regress?: boolean
-  makeCurrent?: boolean
+  target?: S3.Vector3
   onChange?: (e?: THREE.Event) => void
-  onStart?: (e?: THREE.Event) => void
   onEnd?: (e?: THREE.Event) => void
+  onStart?: (e?: THREE.Event) => void
+}
+
+export function useTrackballControls(props: TrackballControlsProps) {
+  const store = useThree()
+  const [config, rest] = processProps(
+    props,
+    {
+      enabled: true,
+      get domElement() {
+        return store.canvas
+      },
+    },
+    ['camera', 'domElement', 'enabled', 'regress', 'onChange', 'onStart', 'onEnd'],
+  )
+
+  const controls = createMemo(() =>
+    autodispose(new TreeTrackballControls(props.camera || store.currentCamera)),
+  )
+  const autolisten = useAutolisten(controls)
+
+  whenComputed(
+    () => config.enabled,
+    () => {
+      // Enable OrbitControls
+      controls().enabled = true
+      // Disable OrbitControls on cleanup
+      onCleanup(() => (controls().enabled = false))
+
+      // Connect to domElement (defaults to store.canvas)
+      createComputed(() => controls().connect(config.domElement))
+
+      // Attach event-listeners
+      createComputed(() => autolisten('start', config.onStart))
+      createComputed(() => autolisten('change', config.onChange))
+      createComputed(() => autolisten('end', config.onEnd))
+
+      // Call resize-handler whenever store.bounds updates
+      createComputed(on(() => store.bounds, controls().handleResize.bind(controls())))
+
+      // Apply props
+      useProps(controls(), rest, store)
+
+      // Update controls on each frame
+      useFrame(controls().update)
+    },
+  )
+
+  return {
+    controls,
+  }
 }
 
 export function TrackballControls(props: TrackballControlsProps) {
-  const [config, rest] = splitProps(props, [
-    'makeCurrent',
-    'camera',
-    'domElement',
-    'regress',
-    'onChange',
-    'onStart',
-    'onEnd',
-  ])
-  const store = useThree()
-  const camera = () => props.camera || store.currentCamera
-  const element = () => ControlUtils.getDomElement(store, config)
-  const controls = createMemo(() => new TrackballControlsImpl(camera()))
-
-  ControlUtils.initialize(controls, element, store, config)
-
-  createEffect(() => {
-    if (!config.onChange) return
-    ControlUtils.addEventHandler(controls, 'change', config.onChange)
-  })
-  createEffect(() => {
-    if (!config.onStart) return
-    ControlUtils.addEventHandler(controls, 'start', config.onStart)
-  })
-  createEffect(() => {
-    if (!config.onEnd) return
-    ControlUtils.addEventHandler(controls, 'end', config.onEnd)
-  })
-  createEffect(() => controls().handleResize())
-
-  useRef(props, controls)
-
-  return <Entity from={controls()} {...rest} />
+  useTrackballControls(props)
+  return null!
 }

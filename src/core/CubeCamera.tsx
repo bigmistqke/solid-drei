@@ -1,12 +1,13 @@
-import { processProps } from '@/utils/process-props'
+import { processProps } from '@/utils'
+import type { Intersect } from '@/utils/types'
 import type { JSX } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { Entity, useFrame } from 'solid-three'
 import { Group, Texture } from 'three'
 import { type CubeCameraOptions, useCubeCamera } from './useCubeCamera'
 
-type CameraPropsBase = Omit<S3.Props<typeof Group>, 'children'> & CubeCameraOptions
-interface CameraProps extends CameraPropsBase {
+interface CameraProps
+  extends Intersect<[Omit<S3.Props<typeof Group>, 'children'>, CubeCameraOptions]> {
   /** The contents of CubeCamera will be hidden when filming the cube */
   children: (tex: Texture) => JSX.Element
   /** Number of frames to render, Infinity */

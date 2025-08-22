@@ -1,3 +1,8 @@
+import { processProps } from '@/utils'
+import Composer from '@/utils/composer'
+import { createRef } from '@/utils/create-ref'
+import { mergeRefs } from '@/utils/merge-refs'
+import { RefComponent } from '@/utils/types'
 import {
   Context,
   JSX,
@@ -11,11 +16,6 @@ import {
 } from 'solid-js'
 import { T, ThreeProps, extend, useFrame } from 'solid-three'
 import * as THREE from 'three'
-import Composer from '@/utils/composer'
-import { createRef } from '@/utils/create-ref'
-import { mergeRefs } from '@/utils/merge-refs'
-import { processProps } from '@/utils/process-props'
-import { RefComponent } from '@/utils/type-utils'
 
 declare global {
   namespace SolidThree {

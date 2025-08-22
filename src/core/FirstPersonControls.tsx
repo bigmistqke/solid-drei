@@ -1,5 +1,4 @@
-import { processProps } from '@/utils/process-props'
-import { useRef } from '@/utils/use-refs'
+import { processProps } from '@/utils'
 import type { JSXElement, Ref } from 'solid-js'
 import { createEffect, createMemo } from 'solid-js'
 import type { S3 } from 'solid-three'
@@ -7,8 +6,8 @@ import { autodispose, useFrame, useProps, useThree } from 'solid-three'
 import type { OrthographicCamera, PerspectiveCamera } from 'three'
 import { FirstPersonControls as ThreeFirstPersonControl } from 'three-stdlib'
 
-type FirstPersonControlsPropsBase = Omit<S3.Props<typeof ThreeFirstPersonControl>, 'object'>
-export interface FirstPersonControlsOptions extends FirstPersonControlsPropsBase {
+export interface FirstPersonControlsOptions
+  extends Omit<S3.Props<typeof ThreeFirstPersonControl>, 'object'> {
   ref?: Ref<ThreeFirstPersonControl>
   camera?: PerspectiveCamera | OrthographicCamera
   domElement?: HTMLElement
@@ -23,7 +22,7 @@ export function useFirstPersonControls(three: S3.Context, props?: FirstPersonCon
         return three.currentCamera
       },
     },
-    ['camera', 'ref', 'domElement', 'makeCurrent'],
+    ['camera', 'domElement', 'makeCurrent'],
   )
   const store = useThree()
   const element = () => config.domElement /* || store.events.connected */ || store.gl.domElement
@@ -36,7 +35,6 @@ export function useFirstPersonControls(three: S3.Context, props?: FirstPersonCon
     useFrame((_, delta) => controls().enabled && controls().update(delta))
   })
 
-  useRef(config, controls)
   useProps(controls, rest)
 
   return {

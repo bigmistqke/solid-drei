@@ -27,34 +27,31 @@ type Story = StoryObj<typeof meta>
 /*                                                                                */
 /**********************************************************************************/
 
-const NUM = 3
-
-interface Positions {
-  id: string
-  position: [number, number, number]
-}
-
 export const Default: Story = {
-  render() {
+  args: {
+    amount: 3,
+  },
+  render(props) {
     const positions = createMemo(() => {
-      const pos: Positions[] = []
-      const half = (NUM - 1) / 2
-
-      for (let x = 0; x < NUM; x++) {
-        for (let y = 0; y < NUM; y++) {
-          pos.push({
-            id: `${x}-${y}`,
-            position: [(x - half) * 4, (y - half) * 4, 0],
-          })
-        }
-      }
-
-      return pos
-    }, [])
+      const half = (props.amount - 1) / 2
+      return Array.from(
+        (function* () {
+          for (let x = 0; x < props.amount; x++) {
+            for (let y = 0; y < props.amount; y++) {
+              yield {
+                id: `${x}-${y}`,
+                position: [(x - half) * 4, (y - half) * 4, 0],
+              }
+            }
+          }
+        })(),
+      )
+    })
 
     return (
       <>
         <PerspectiveCamera makeCurrent position={[0, 0, 10]} />
+        <OrbitControls enabled />
         <T.Group position={[0, 0, -10]}>
           <For each={positions()}>
             {({ id, position }) => (
@@ -64,7 +61,6 @@ export const Default: Story = {
             )}
           </For>
         </T.Group>
-        <OrbitControls />
       </>
     )
   },

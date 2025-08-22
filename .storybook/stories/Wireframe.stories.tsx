@@ -1,8 +1,7 @@
 import { WireframeMaterialShaders } from '@/materials/WireframeMaterial'
 import { Suspense } from 'solid-js'
-import { Resource } from 'solid-three'
 import type { Meta, StoryObj } from 'storybook-solidjs-vite'
-import { CubeTextureLoader, IcosahedronGeometry, Vector3 } from 'three'
+import { IcosahedronGeometry, Vector3 } from 'three'
 import { Wireframe } from '../../src'
 import { Setup } from '../Setup'
 import { T } from '../t'
@@ -12,13 +11,7 @@ const meta = {
   component: Wireframe,
   decorators: [
     Story => (
-      <Setup controls={false} defaultCamera={{ position: new Vector3(2, 2, 2) }}>
-        <Resource
-          loader={CubeTextureLoader}
-          attach="environment"
-          path="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r80/examples/textures/cube/Bridge2/"
-          url={['posx.jpg', 'negx.jpg', 'posy.jpg', 'negy.jpg', 'posz.jpg', 'negz.jpg']}
-        />
+      <Setup environment controls={false} defaultCamera={{ position: new Vector3(2, 2, 2) }}>
         <Story />
       </Setup>
     ),

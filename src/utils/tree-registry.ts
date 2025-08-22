@@ -1,4 +1,4 @@
-import { bubbleUp } from '@/utils/utils'
+import { bubbleUp } from '@/utils'
 
 type TreeMap<T> = Map<string, TreeNode<T>>
 
@@ -94,11 +94,13 @@ export class TreeRegistry<T> implements TreeBase<T> {
    * @param input Path as a string or array of strings
    * @returns The data stored at the path, or undefined if not found
    */
-  get(input: string | string[]) {
+  get(input: string | string[], warn = true) {
     const node = this.#resolve(input, false)
 
     if (!node) {
-      console.warn('Invalid path', input)
+      if (warn) {
+        console.warn('Invalid path', input)
+      }
       return undefined
     }
 

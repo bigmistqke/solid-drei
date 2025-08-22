@@ -1,4 +1,4 @@
-import { processProps } from '@/utils/process-props'
+import { processProps } from '@/utils'
 import { Show, createEffect, createMemo, onCleanup, onMount } from 'solid-js'
 import { Entity, createT } from 'solid-three'
 import {

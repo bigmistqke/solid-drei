@@ -1,16 +1,15 @@
-import { processProps } from '@/utils/process-props'
-import { useRef } from '@/utils/use-refs'
+import { processProps, useRef } from '@/utils'
 import type { Ref } from 'solid-js'
-import { createMemo, mergeProps, splitProps } from 'solid-js'
+import { createMemo, mergeProps } from 'solid-js'
 import type { S3 } from 'solid-three'
-import { $S3C, Entity, useFrame, useThree } from 'solid-three'
+import { Entity, getMeta, useFrame, useThree } from 'solid-three'
+import { pickProps } from 'solid-use/props'
 import {
   DepthFormat,
   DepthTexture,
   HalfFloatType,
   LinearFilter,
   Matrix4,
-  MeshStandardMaterial,
   PerspectiveCamera,
   Plane,
   Texture,
@@ -20,10 +19,16 @@ import {
   WebGLRenderTarget,
 } from 'three'
 import { BlurPass } from '../materials/BlurPass'
-import { MeshReflectorMaterial as MeshReflectorMaterialImpl } from '../materials/MeshReflectorMaterial'
+import { MeshReflectorMaterial as ThreeMeshReflectorMaterial } from '../materials/MeshReflectorMaterial'
 
-interface MeshReflectorMaterialProps extends S3.Props<typeof MeshStandardMaterial> {
-  ref?: Ref<MeshReflectorMaterialImpl>
+const FBO_PARAMETERS = {
+  minFilter: LinearFilter,
+  magFilter: LinearFilter,
+  type: HalfFloatType,
+}
+interface MeshReflectorMaterialProps
+  extends Omit<S3.Props<typeof ThreeMeshReflectorMaterial>, 'ref'> {
+  ref?: Ref<ThreeMeshReflectorMaterial>
   key?: any
   resolution?: number
   mixBlur?: number
@@ -44,18 +49,19 @@ export function MeshReflectorMaterial(props: MeshReflectorMaterialProps) {
   const [config, rest] = processProps(
     props,
     {
-      mixBlur: 0,
-      mixStrength: 1,
-      resolution: 256,
+      args: [],
       blur: [0, 0],
-      minDepthThreshold: 0.9,
-      maxDepthThreshold: 1,
       depthScale: 0,
       depthToBlurRatioBias: 0.25,
-      mirror: 0,
       distortion: 1,
+      maxDepthThreshold: 1,
+      minDepthThreshold: 0.9,
+      mirror: 0,
+      mixBlur: 0,
       mixContrast: 1,
+      mixStrength: 1,
       reflectorOffset: 0,
+      resolution: 256,
     },
     [
       'args',
@@ -78,11 +84,12 @@ export function MeshReflectorMaterial(props: MeshReflectorMaterialProps) {
   )
 
   const store = useThree()
+
+  const material = createMemo(() => new ThreeMeshReflectorMaterial(...config.args))
+
   const blur = () => (Array.isArray(config.blur) ? config.blur : [config.blur, config.blur])
   const hasBlur = () => blur()[0] + blur()[1] > 0
-  const material = createMemo(() => new MeshReflectorMaterialImpl(...config.args))
 
-  let materialRef: MeshReflectorMaterialImpl
   const reflectorPlane = new Plane()
   const normal = new Vector3()
   const reflectorWorldPosition = new Vector3()
@@ -97,7 +104,7 @@ export function MeshReflectorMaterial(props: MeshReflectorMaterialProps) {
   const virtualCamera = new PerspectiveCamera()
 
   const reflectorProps = mergeProps(
-    splitProps(config, [
+    pickProps(config, [
       'mirror',
       'mixBlur',
       'mixStrength',
@@ -108,7 +115,7 @@ export function MeshReflectorMaterial(props: MeshReflectorMaterialProps) {
       'distortion',
       'distortionMap',
       'mixContrast',
-    ])[0],
+    ]),
     {
       textureMatrix,
       get tDiffuse() {
@@ -124,7 +131,7 @@ export function MeshReflectorMaterial(props: MeshReflectorMaterialProps) {
         return hasBlur()
       },
       get 'defines-USE_BLUR'() {
-        return hasBlur() ? '' : undefined
+        return hasBlur() || rest.roughnessMap ? '' : undefined
       },
       get 'defines-USE_DEPTH'() {
         return config.depthScale > 0 ? '' : undefined
@@ -135,14 +142,8 @@ export function MeshReflectorMaterial(props: MeshReflectorMaterialProps) {
     },
   )
 
-  const fboParameters = {
-    minFilter: LinearFilter,
-    magFilter: LinearFilter,
-    type: HalfFloatType,
-  }
-
   const fbo1 = createMemo(() => {
-    const fbo1 = new WebGLRenderTarget(config.resolution, config.resolution, fboParameters)
+    const fbo1 = new WebGLRenderTarget(config.resolution, config.resolution, FBO_PARAMETERS)
     fbo1.depthBuffer = true
     fbo1.depthTexture = new DepthTexture(config.resolution, config.resolution)
     fbo1.depthTexture.format = DepthFormat
@@ -151,47 +152,58 @@ export function MeshReflectorMaterial(props: MeshReflectorMaterialProps) {
   })
 
   const fbo2 = createMemo(() => {
-    return new WebGLRenderTarget(config.resolution, config.resolution, fboParameters)
+    return new WebGLRenderTarget(config.resolution, config.resolution, FBO_PARAMETERS)
   })
 
-  const blurpass = createMemo(
-    () =>
-      new BlurPass({
-        gl: store.gl,
-        resolution: config.resolution,
-        width: blur()[0],
-        height: blur()[1],
-        minDepthThreshold: config.minDepthThreshold,
-        maxDepthThreshold: config.maxDepthThreshold,
-        depthScale: config.depthScale,
-        depthToBlurRatioBias: config.depthToBlurRatioBias,
-      }),
-  )
+  const blurpass = createMemo(() => {
+    return new BlurPass({
+      gl: store.gl,
+      resolution: config.resolution,
+      width: blur()[0],
+      height: blur()[1],
+      minDepthThreshold: config.minDepthThreshold,
+      maxDepthThreshold: config.maxDepthThreshold,
+      depthScale: config.depthScale,
+      depthToBlurRatioBias: config.depthToBlurRatioBias,
+    })
+  })
 
   const beforeRender = () => {
-    // TODO: As of R3f 7-8 this should be __r3f.parent
-    const parent = (materialRef as any).parent?.object || (materialRef as any)?.__r3f.parent?.object
+    const parent = getMeta(material())?.parent
 
-    if (!parent.matrixWorld) return
+    if (!parent?.matrixWorld) {
+      return
+    }
 
     reflectorWorldPosition.setFromMatrixPosition(parent.matrixWorld)
     cameraWorldPosition.setFromMatrixPosition(store.currentCamera.matrixWorld)
+
     rotationMatrix.extractRotation(parent.matrixWorld)
+
     normal.set(0, 0, 1)
     normal.applyMatrix4(rotationMatrix)
+
     reflectorWorldPosition.addScaledVector(normal, config.reflectorOffset)
     view.subVectors(reflectorWorldPosition, cameraWorldPosition)
+
     // Avoid rendering when reflector is facing away
-    if (view.dot(normal) > 0) return
+    if (view.dot(normal) > 0) {
+      return
+    }
+
     view.reflect(normal).negate()
     view.add(reflectorWorldPosition)
+
     rotationMatrix.extractRotation(store.currentCamera.matrixWorld)
+
     lookAtPosition.set(0, 0, -1)
     lookAtPosition.applyMatrix4(rotationMatrix)
     lookAtPosition.add(cameraWorldPosition)
+
     target.subVectors(reflectorWorldPosition, lookAtPosition)
     target.reflect(normal).negate()
     target.add(reflectorWorldPosition)
+
     virtualCamera.position.copy(view)
     virtualCamera.up.set(0, 1, 0)
     virtualCamera.up.applyMatrix4(rotationMatrix)
@@ -200,6 +212,7 @@ export function MeshReflectorMaterial(props: MeshReflectorMaterialProps) {
     virtualCamera.far = store.currentCamera.far // Used in WebGLBackground
     virtualCamera.updateMatrixWorld()
     virtualCamera.projectionMatrix.copy(store.currentCamera.projectionMatrix)
+
     // Update the texture matrix
     textureMatrix.set(
       0.5,
@@ -222,23 +235,28 @@ export function MeshReflectorMaterial(props: MeshReflectorMaterialProps) {
     textureMatrix.multiply(virtualCamera.projectionMatrix)
     textureMatrix.multiply(virtualCamera.matrixWorldInverse)
     textureMatrix.multiply(parent.matrixWorld)
+
     // Now update projection matrix with new clip plane, implementing code from: http://www.terathon.com/code/oblique.html
     // Paper explaining this technique: http://www.terathon.com/lengyel/Lengyel-Oblique.pdf
     reflectorPlane.setFromNormalAndCoplanarPoint(normal, reflectorWorldPosition)
     reflectorPlane.applyMatrix4(virtualCamera.matrixWorldInverse)
+
     clipPlane.set(
       reflectorPlane.normal.x,
       reflectorPlane.normal.y,
       reflectorPlane.normal.z,
       reflectorPlane.constant,
     )
+
     const projectionMatrix = virtualCamera.projectionMatrix
     q.x = (Math.sign(clipPlane.x) + projectionMatrix.elements[8]) / projectionMatrix.elements[0]
     q.y = (Math.sign(clipPlane.y) + projectionMatrix.elements[9]) / projectionMatrix.elements[5]
     q.z = -1.0
     q.w = (1.0 + projectionMatrix.elements[10]) / projectionMatrix.elements[14]
+
     // Calculate the scaled plane vector
     clipPlane.multiplyScalar(2.0 / clipPlane.dot(q))
+
     // Replacing the third row of the projection matrix
     projectionMatrix.elements[2] = clipPlane.x
     projectionMatrix.elements[6] = clipPlane.y
@@ -247,24 +265,38 @@ export function MeshReflectorMaterial(props: MeshReflectorMaterialProps) {
   }
 
   useFrame(() => {
-    // TODO: As of R3f 7-8 this should be __r3f.parent
-    const parent = materialRef[$S3C].parent
+    const parent = getMeta(material())?.parent
+
     if (!parent) return
 
     parent.visible = false
+
     const currentXrEnabled = store.gl.xr.enabled
     const currentShadowAutoUpdate = store.gl.shadowMap.autoUpdate
+
     beforeRender()
+
     store.gl.xr.enabled = false
     store.gl.shadowMap.autoUpdate = false
+
     store.gl.setRenderTarget(fbo1())
     store.gl.state.buffers.depth.setMask(true)
-    if (!store.gl.autoClear) store.gl.clear()
+
+    if (!store.gl.autoClear) {
+      store.gl.clear()
+    }
+
     store.gl.render(store.scene, virtualCamera)
-    if (hasBlur()) blurpass().render(store.gl, fbo1(), fbo2())
+
+    if (hasBlur()) {
+      blurpass().render(store.gl, fbo1(), fbo2())
+    }
+
     store.gl.xr.enabled = currentXrEnabled
     store.gl.shadowMap.autoUpdate = currentShadowAutoUpdate
+
     parent.visible = true
+
     store.gl.setRenderTarget(null)
   })
 
@@ -274,13 +306,12 @@ export function MeshReflectorMaterial(props: MeshReflectorMaterialProps) {
     <Entity
       from={material()}
       // Defines can't be updated dynamically, so we need to recreate the material
-      /* @ts-expect-error TODO: add key-type to component */
-      key={
-        'key' +
-        reflectorProps['defines-USE_BLUR'] +
-        reflectorProps['defines-USE_DEPTH'] +
-        reflectorProps['defines-USE_DISTORTION']
-      }
+      // key={
+      //   'key' +
+      //   reflectorProps['defines-USE_BLUR'] +
+      //   reflectorProps['defines-USE_DEPTH'] +
+      //   reflectorProps['defines-USE_DISTORTION']
+      // }
       {...reflectorProps}
       {...rest}
     />

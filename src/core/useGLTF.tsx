@@ -1,9 +1,16 @@
+import { defaultProps, resolve } from '@/utils'
 import { createResource, type Accessor } from 'solid-js'
 import { load } from 'solid-three'
 import { DRACOLoader, GLTFLoader, MeshoptDecoder, type GLTF } from 'three-stdlib'
 
 const loader = new GLTFLoader()
 let dracoLoader: DRACOLoader | null = null
+
+export interface UseGLTFOptions {
+  useDraco?: boolean | string
+  useMeshOpt?: boolean
+  extendLoader?: (loader: GLTFLoader) => void
+}
 
 /**
  * Loads a GLTF model using `GLTFLoader`.
@@ -48,31 +55,23 @@ let dracoLoader: DRACOLoader | null = null
  *
  * @link https://threejs.org/docs/#examples/en/loaders/GLTFLoader
  */
-export function useGLTF<T = GLTF>(
-  path: Accessor<string>,
-  useDraco: boolean | string = true,
-  useMeshOpt: boolean = true,
-  extendLoader?: (loader: GLTFLoader) => void,
-) {
+export function useGLTF<T = GLTF>(path: Accessor<string>, options?: UseGLTFOptions) {
+  const config = defaultProps(options, { useDraco: true, useMeshOpt: true })
   return createResource(path, path => {
-    if (extendLoader) {
-      extendLoader(loader as GLTFLoader)
+    if (config.extendLoader) {
+      config.extendLoader(loader as GLTFLoader)
     }
-    if (useDraco) {
-      if (!dracoLoader) {
-        dracoLoader = new DRACOLoader()
-      }
+    if (config.useDraco) {
+      dracoLoader ??= new DRACOLoader()
       dracoLoader.setDecoderPath(
-        typeof useDraco === 'string'
-          ? useDraco
+        typeof config.useDraco === 'string'
+          ? config.useDraco
           : 'https://www.gstatic.com/draco/versioned/decoders/1.5.5/',
       )
       loader.setDRACOLoader(dracoLoader)
     }
-    if (useMeshOpt) {
-      loader.setMeshoptDecoder(
-        typeof MeshoptDecoder === 'function' ? MeshoptDecoder() : MeshoptDecoder,
-      )
+    if (config.useMeshOpt) {
+      loader.setMeshoptDecoder(resolve(MeshoptDecoder))
     }
     return load(loader, path) as Promise<T>
   })[0]

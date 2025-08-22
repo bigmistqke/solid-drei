@@ -1,4 +1,4 @@
-import type { WidenBooleans } from '@/utils/type-utils'
+import type { WidenBooleans } from '@/utils/types'
 import * as THREE from 'three'
 
 type ShaderMaterialType<TUniforms extends object> = typeof THREE.ShaderMaterial &

@@ -1,64 +1,114 @@
-import { processProps } from '@/utils/process-props'
-import { createEffect, createSignal, type JSXElement } from 'solid-js'
-import { autodispose, autolisten, useProps, useThree, type S3 } from 'solid-three'
+import { processProps } from '@/utils'
+import { every, whenEffect } from '@/utils/conditionals'
+import { createEffect, createSignal, onCleanup, type JSXElement } from 'solid-js'
+import { autodispose, CenterRaycaster, useProps, useThree, type S3 } from 'solid-three'
 import * as THREE from 'three'
+// import type { EventDispatcher } from 'node_modules/three-stdlib/controls/EventDispatcher'
 import { PointerLockControls as ThreePointerLockControls } from 'three-stdlib'
+import { useAutolisten } from './useAutolisten'
+export declare class EventDispatcher<TEventMap extends {} = {}> {
+  private _listeners
+  /**
+   * Adds a listener to an event type.
+   * @param type The type of event to listen to.
+   * @param listener The function that gets called when the event is fired.
+   */
+  addEventListener<T extends Extract<keyof TEventMap, string>>(
+    type: T,
+    listener: THREE.EventListener<TEventMap[T], T, this>,
+  ): void
+  /**
+   * Checks if listener is added to an event type.
+   * @param type The type of event to listen to.
+   * @param listener The function that gets called when the event is fired.
+   */
+  hasEventListener<T extends Extract<keyof TEventMap, string>>(
+    type: T,
+    listener: THREE.EventListener<TEventMap[T], T, this>,
+  ): boolean
+  /**
+   * Removes a listener from an event type.
+   * @param type The type of the listener that gets removed.
+   * @param listener The listener function that gets removed.
+   */
+  removeEventListener<T extends Extract<keyof TEventMap, string>>(
+    type: T,
+    listener: THREE.EventListener<TEventMap[T], T, this>,
+  ): void
+  /**
+   * Fire an event type.
+   * @param event The event that gets fired.
+   */
+  dispatchEvent<T extends Extract<keyof TEventMap, string>>(
+    event: THREE.BaseEvent<T> & TEventMap[T],
+  ): void
+}
 
-export interface PointerLockControlsOptions
+export interface PointerLockControlsProps
   extends Omit<S3.Props<typeof ThreePointerLockControls>, 'camera'> {
   selector?: string
   enabled?: boolean
   onChange?: (e?: THREE.Event) => void
   onLock?: (e?: THREE.Event) => void
   onUnlock?: (e?: THREE.Event) => void
+  useCenterRaycaster?: boolean
 }
 
-export function usePointerLockControls(store: S3.Context, options?: PointerLockControlsOptions) {
-  const [config, rest] = processProps(options ?? {}, { enabled: true, domElement: store.canvas }, [
-    'domElement',
-    'selector',
-    'onChange',
-    'onLock',
-    'onUnlock',
-    'enabled',
-  ])
+export function PointerLockControls(props: PointerLockControlsProps) {
+  usePointerLockControls(props)
+  return null as unknown as JSXElement
+}
 
-  const [active, setActive] = createSignal<boolean>(false)
+export function usePointerLockControls(options: PointerLockControlsProps) {
+  const store = useThree()
+
+  const [config, rest] = processProps(
+    options,
+    { enabled: true, domElement: store.canvas, useCenterRaycaster: true },
+    ['domElement', 'enabled', 'onChange', 'onLock', 'onUnlock', 'selector', 'useCenterRaycaster'],
+  )
+  const [locked, setLocked] = createSignal(false)
 
   const controls = autodispose(new ThreePointerLockControls(store.currentCamera))
+  const autolisten = useAutolisten(controls)
 
+  // Apply props to controls
   useProps(controls, rest)
 
-  autolisten(controls)('lock', event => (setActive(true), config.onLock?.(event)))
-  autolisten(controls)('unlock', event => (setActive(false), config.onUnlock?.(event)))
+  // Attach event listeners and toggle locked
+  autolisten('lock', event => (setLocked(true), config.onLock?.(event)))
+  autolisten('unlock', event => (setLocked(false), config.onUnlock?.(event)))
 
-  createEffect(() => {
-    if (!config.enabled) return
+  whenEffect(
+    () => config.enabled,
+    () => {
+      // If useCenterRaycaster isn't disabled
+      // we push a CenterRaycaster to the raycaster-stack
+      whenEffect(
+        every(locked, () => config.useCenterRaycaster),
+        () => {
+          const cleanup = store.setCurrentRaycaster(new CenterRaycaster())
+          onCleanup(cleanup)
+        },
+      )
 
-    createEffect(() => controls.connect(store.canvas))
+      // Connect controls to domElement (defaults to store.canvas)
+      createEffect(() => controls.connect(config.domElement))
 
-    createEffect(() => autolisten(controls)('change', config.onChange))
+      // Attach event listener
+      createEffect(() => autolisten('change', config.onChange))
 
-    createEffect(() => {
-      if (config.selector) {
-        for (const element of document.querySelectorAll(config.selector)) {
-          autolisten(element)('click', controls.lock.bind(controls))
+      // Bind lock to either the domElement (defaults to store.canvas)
+      // or elements selected by given selector
+      createEffect(() => {
+        if (config.selector) {
+          for (const element of document.querySelectorAll(config.selector)) {
+            useAutolisten(element)('click', controls.lock.bind(controls))
+          }
+        } else {
+          useAutolisten(config.domElement)('click', controls.lock.bind(controls))
         }
-        return
-      }
-      autolisten(store.canvas)('click', controls.lock.bind(controls))
-    })
-  })
-
-  return {
-    controls,
-    get active() {
-      return active()
+      })
     },
-  }
-}
-
-export function PointerLockControls(props: PointerLockControlsOptions) {
-  usePointerLockControls(useThree(), props)
-  return null as unknown as JSXElement
+  )
 }

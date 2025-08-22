@@ -1,7 +1,6 @@
-import { when } from '@/utils/conditionals'
-import { useRef } from '@/utils/use-refs'
-import type { JSX, Ref } from 'solid-js'
-import { createEffect, createMemo, on, Show } from 'solid-js'
+import { useRef } from '@/utils'
+import { whenComputed } from '@/utils/conditionals'
+import { createSignal, Suspense, type JSX, type Ref } from 'solid-js'
 import { Entity, Portal } from 'solid-three'
 import type { Curve, Vector3 } from 'three'
 import { Mesh, Scene } from 'three'
@@ -17,31 +16,30 @@ export interface CurveModifierProps {
 
 export const CurveModifier = (props: CurveModifierProps) => {
   const scene = new Scene()
-  const api: CurveModifierApi = {
+  const [modifier, setModifier] = createSignal<Flow>()
+
+  useRef(props, {
     moveAlongCurve: (val: number) => modifier()?.moveAlongCurve(val),
-  }
-
-  const modifier = createMemo(
-    on(
-      () => scene.children,
-      children => new Flow(children[0] as Mesh),
-    ),
-  )
-
-  useRef(props, api)
-
-  createEffect(
-    when(modifier, modifier => {
-      if (props.curve) {
-        modifier.updateCurve(0, props.curve)
-      }
-    }),
-  )
+  })
 
   return (
     <>
-      <Portal>{props.children}</Portal>
-      <Show when={modifier()?.object3D}>{obj => <Entity from={obj()} />}</Show>
+      <Portal
+        element={scene}
+        onUpdate={({ children }) => {
+          if (children[0] instanceof Mesh) {
+            const modifier = new Flow(children[0])
+            setModifier(modifier)
+            whenComputed(
+              () => props.curve,
+              curve => modifier.updateCurve(0, curve),
+            )
+          }
+        }}
+      >
+        <Suspense>{props.children}</Suspense>
+      </Portal>
+      <Entity from={modifier()?.object3D} />
     </>
   )
 }

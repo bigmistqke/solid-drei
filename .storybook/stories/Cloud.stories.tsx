@@ -9,7 +9,7 @@ const meta = {
   component: Cloud,
   decorators: [
     Story => (
-      <Setup controls={false} defaultCamera={{ position: new Vector3(0, 0, 10) }}>
+      <Setup controls={false} defaultCamera={{ position: new Vector3(0, 0, 20) }}>
         <Story />
       </Setup>
     ),

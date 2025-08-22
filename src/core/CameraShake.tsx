@@ -1,6 +1,4 @@
-import { createWritable } from '@/utils/create-writable'
-import { defaultProps } from '@/utils/default-props'
-import { useRef } from '@/utils/use-refs'
+import { createWritable, defaultProps, useRef } from '@/utils'
 import type { Ref } from 'solid-js'
 import { createEffect, onCleanup } from 'solid-js'
 import { useFrame, useThree } from 'solid-three'

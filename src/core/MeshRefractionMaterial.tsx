@@ -1,9 +1,9 @@
+import { processProps } from '@/utils'
 import { createMemo, onMount } from 'solid-js'
 import { $S3C, S3, T, extend, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { MeshBVH, MeshBVHUniformStruct, SAH } from 'three-mesh-bvh'
 import { MeshRefractionMaterial as MeshRefractionMaterialImpl } from '../../materials/MeshRefractionMaterial'
-import { processProps } from '@/utils/process-props'
 
 declare global {
   namespace SolidThree {

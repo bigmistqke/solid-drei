@@ -1,7 +1,7 @@
 import { Suspense } from 'solid-js'
-import { Entity, Resource } from 'solid-three'
+import { Entity } from 'solid-three'
 import type { Meta, StoryObj } from 'storybook-solidjs-vite'
-import { CubeTextureLoader, Mesh, MeshStandardMaterial } from 'three'
+import { Mesh, MeshStandardMaterial } from 'three'
 import { AccumulativeShadows, OrbitControls, RandomizedLight, useGLTF } from '../../src'
 import { Setup } from '../Setup'
 import { T } from '../t'
@@ -11,13 +11,7 @@ const meta = {
   component: AccumulativeShadows,
   decorators: [
     Story => (
-      <Setup defaultCamera={{ position: [0, 0, 17] }}>
-        <Resource
-          loader={CubeTextureLoader}
-          attach="environment"
-          path="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r80/examples/textures/cube/Bridge2/"
-          url={['posx.jpg', 'negx.jpg', 'posy.jpg', 'negy.jpg', 'posz.jpg', 'negz.jpg']}
-        />
+      <Setup environment defaultCamera={{ position: [0, 0, 17] }}>
         <Story />
       </Setup>
     ),
