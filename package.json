@@ -74,7 +74,7 @@
   },
   "peerDependencies": {
     "solid-js": "^1.8.17",
-    "solid-three": "file:../solid-three",
+    "solid-three": ">=0.3.0-next.12",
     "three": "^0.179.1",
     "three-stdlib": "^2.36.0"
   },
@@ -94,6 +94,7 @@
     "jsdom": "^24.1.0",
     "prettier": "3.0.0",
     "solid-js": "^1.8.18",
+    "solid-three": "https://pkg.pr.new/solid-three@5449e5a",
     "tsconfig-paths": "^4.2.0",
     "tsup": "^8.1.2",
     "tsup-preset-solid": "^2.2.0",
