@@ -215,7 +215,7 @@ export function AccumulativeShadows(
       for (let i = 0; i < frames; i++) {
         api.lights.forEach(light => light.update())
 
-        plm().update(store.currentCamera, api.blend)
+        plm().update(store.camera, api.blend)
       }
       // Switch lights off
       lights.visible = false

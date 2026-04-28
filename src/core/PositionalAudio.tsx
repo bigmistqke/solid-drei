@@ -41,10 +41,10 @@ export function PositionalAudio(props: PositionalAudioProps) {
     }),
   )
 
-  onMount(() => store.currentCamera.add(listener))
+  onMount(() => store.camera.add(listener))
 
   onCleanup(() => {
-    store.currentCamera.remove(listener)
+    store.camera.remove(listener)
     if (positionalAudio.isPlaying) positionalAudio.stop()
     if (positionalAudio.source && (positionalAudio.source as any)._connected)
       positionalAudio.disconnect()

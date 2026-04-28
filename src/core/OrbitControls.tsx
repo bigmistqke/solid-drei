@@ -33,7 +33,7 @@ export function useOrbitControls(options?: OrbitControlsOptions) {
       keyEvents: false,
       enabled: true,
       get camera() {
-        return store.currentCamera
+        return store.camera
       },
       get domElement() {
         return store.gl.domElement

@@ -75,7 +75,7 @@ export function TransformControls(props: TransformControlsProps) {
 
   const controls = createMemo(() => {
     const controls = new ThreeTransformControls(
-      config.camera ?? store.currentCamera,
+      config.camera ?? store.camera,
       config.domElement ?? store.canvas,
     )
     const autolisten = useAutolisten(controls)

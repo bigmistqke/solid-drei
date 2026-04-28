@@ -13,10 +13,10 @@ export function ScreenSpace(props: ScreenSpaceProps) {
 
   const group = new Group()
 
-  useFrame(({ currentCamera }) => {
+  useFrame(({ camera }) => {
     if (!group) return
-    group.quaternion.copy(currentCamera.quaternion)
-    group.position.copy(currentCamera.position)
+    group.quaternion.copy(camera.quaternion)
+    group.position.copy(camera.position)
   })
 
   useRef(props, group)

@@ -65,7 +65,7 @@ function isObjectVisible(el: Object3D, camera: Camera, raycaster: Raycaster, occ
   const elPos = v1.setFromMatrixPosition(el.matrixWorld)
   const screenPos = elPos.clone()
   screenPos.project(camera)
-  raycaster.setFromCamera(screenPos, camera)
+  raycaster.setFromCamera(screenPos as unknown as Vector3, camera)
   const intersects = raycaster.intersectObjects(occlude, true)
   if (intersects.length) {
     const intersectionDistance = intersects[0].distance
@@ -343,7 +343,7 @@ export function Html(props: HtmlProps) {
       if (config.transform) {
         element().style.cssText = `position:absolute;top:0;left:0;pointer-events:none;overflow:hidden;`
       } else {
-        const vec = config.calculatePosition(group, store.currentCamera, store.bounds)
+        const vec = config.calculatePosition(group, store.camera, store.bounds)
         element().style.cssText = `position:absolute;top:0;left:0;transform:translate3d(${vec[0]}px,${vec[1]}px,0);transform-origin:0 0;`
       }
       if (target()) {
@@ -392,19 +392,19 @@ export function Html(props: HtmlProps) {
   let visible = true
 
   useFrame(gl => {
-    store.currentCamera.updateMatrixWorld()
+    store.camera.updateMatrixWorld()
     group.updateWorldMatrix(true, false)
     const vector = config.transform
       ? oldPosition
-      : config.calculatePosition(group, store.currentCamera, store.bounds)
+      : config.calculatePosition(group, store.camera, store.bounds)
 
     if (
       config.transform ||
-      Math.abs(oldZoom - store.currentCamera.zoom) > config.eps ||
+      Math.abs(oldZoom - store.camera.zoom) > config.eps ||
       Math.abs(oldPosition[0]! - vector[0]!) > config.eps ||
       Math.abs(oldPosition[1]! - vector[1]!) > config.eps
     ) {
-      const isBehindCamera = isObjectBehindCamera(group, store.currentCamera)
+      const isBehindCamera = isObjectBehindCamera(group, store.camera)
       let raytraceTarget: null | undefined | boolean | Object3D[] = false
 
       if (isRayCastOcclusion()) {
@@ -419,7 +419,7 @@ export function Html(props: HtmlProps) {
       if (raytraceTarget) {
         const isvisible = isObjectVisible(
           group,
-          store.currentCamera,
+          store.camera,
           store.raycaster,
           raytraceTarget,
         )
@@ -440,14 +440,14 @@ export function Html(props: HtmlProps) {
           : [halfRange - 1, 0]
         : config.zIndexRange
 
-      element().style.zIndex = `${objectZIndex(group, store.currentCamera, zRange)}`
+      element().style.zIndex = `${objectZIndex(group, store.camera, zRange)}`
 
       if (config.transform) {
         const [widthHalf, heightHalf] = [store.bounds.width / 2, store.bounds.height / 2]
-        const fov = store.currentCamera.projectionMatrix.elements[5] * heightHalf
+        const fov = store.camera.projectionMatrix.elements[5] * heightHalf
         const { isOrthographicCamera, top, left, bottom, right } =
-          store.currentCamera as OrthographicCamera
-        const cameraMatrix = getCameraCSSMatrix(store.currentCamera.matrixWorldInverse)
+          store.camera as OrthographicCamera
+        const cameraMatrix = getCameraCSSMatrix(store.camera.matrixWorldInverse)
         const cameraTransform = isOrthographicCamera
           ? `scale(${fov})translate(${epsilon(-(right + left) / 2)}px,${epsilon(
               (top + bottom) / 2,
@@ -455,7 +455,7 @@ export function Html(props: HtmlProps) {
           : `translateZ(${fov}px)`
         let matrix = group.matrixWorld
         if (config.sprite) {
-          matrix = store.currentCamera.matrixWorldInverse
+          matrix = store.camera.matrixWorldInverse
             .clone()
             .transpose()
             .copyPosition(matrix)
@@ -477,11 +477,11 @@ export function Html(props: HtmlProps) {
         const scale =
           config.distanceFactor === undefined
             ? 1
-            : objectScale(group, store.currentCamera) * config.distanceFactor
+            : objectScale(group, store.camera) * config.distanceFactor
         element().style.transform = `translate3d(${vector[0]}px,${vector[1]}px,0) scale(${scale})`
       }
       oldPosition = vector
-      oldZoom = store.currentCamera.zoom
+      oldZoom = store.camera.zoom
     }
 
     if (!isRayCastOcclusion() && occlusionMeshRef && !isMeshSizeSet) {
@@ -490,7 +490,7 @@ export function Html(props: HtmlProps) {
           const el = transformOuterRef.children[0]
 
           if (el?.clientWidth && el?.clientHeight) {
-            const { isOrthographicCamera } = store.currentCamera as OrthographicCamera
+            const { isOrthographicCamera } = store.camera as OrthographicCamera
 
             if (isOrthographicCamera || config.geometry) {
               if (rest.scale) {

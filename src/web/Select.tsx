@@ -106,7 +106,7 @@ export function Select(props: SelectProps) {
   createEffect(() => {
     if (!config.box || !config.multiple) return
 
-    const selBox = new SelectionBox(store.currentCamera, group as unknown as Scene)
+    const selBox = new SelectionBox(store.camera, group as unknown as Scene)
 
     const element = document.createElement('div')
     element.style.pointerEvents = 'none'
@@ -179,7 +179,7 @@ export function Select(props: SelectProps) {
           prepareRay(event, selBox.endPoint)
           const allSelected = selBox
             .select()
-            .sort(o => (o as any).uuid)
+            .sort((o: Object3D) => (o.uuid as unknown as number))
             .filter(o => o.isMesh)
 
           console.log(allSelected)

@@ -35,7 +35,7 @@ export function useTrackballControls(props: TrackballControlsProps) {
   )
 
   const controls = createMemo(() =>
-    autodispose(new TreeTrackballControls(props.camera || store.currentCamera)),
+    autodispose(new TreeTrackballControls(props.camera || store.camera)),
   )
   const autolisten = useAutolisten(controls)
 

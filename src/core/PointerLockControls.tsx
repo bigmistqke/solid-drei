@@ -69,7 +69,7 @@ export function usePointerLockControls(options: PointerLockControlsProps) {
   )
   const [locked, setLocked] = createSignal(false)
 
-  const controls = autodispose(new ThreePointerLockControls(store.currentCamera))
+  const controls = autodispose(new ThreePointerLockControls(store.camera))
   const autolisten = useAutolisten(controls)
 
   // Apply props to controls
@@ -87,7 +87,7 @@ export function usePointerLockControls(options: PointerLockControlsProps) {
       whenEffect(
         every(locked, () => config.useCenterRaycaster),
         () => {
-          const cleanup = store.setCurrentRaycaster(new CenterRaycaster())
+          const cleanup = store.setRaycaster(new CenterRaycaster())
           onCleanup(cleanup)
         },
       )

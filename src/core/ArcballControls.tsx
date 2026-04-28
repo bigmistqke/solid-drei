@@ -31,7 +31,7 @@ export function ArcballControls(props: ArcballControlsProps) {
     'onEnd',
   ])
   const store = useThree()
-  const camera = () => config.camera || store.currentCamera
+  const camera = () => config.camera || store.camera
   const element = () => ControlUtils.getDomElement(store, config)
   const controls = createMemo(() => new ThreeArcballControls(camera()))
 

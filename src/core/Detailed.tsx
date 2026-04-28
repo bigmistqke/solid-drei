@@ -33,7 +33,7 @@ export function Detailed(props: DetailedProps) {
     )
   })
 
-  useFrame(state => lod.update(state.currentCamera))
+  useFrame(state => lod.update(state.camera))
 
   useRef(props, lod)
 

@@ -113,7 +113,7 @@ export function PerspectiveCamera(props: PerspectiveCameraProps) {
 
   createEffect(() => {
     if (config.makeCurrent) {
-      onCleanup(store.setCurrentCamera(camera()))
+      onCleanup(store.setCamera(camera()))
     }
   })
 

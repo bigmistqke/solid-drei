@@ -29,7 +29,7 @@ export function useFlyControls(props: FlyControlsProps) {
     {
       enabled: true,
       get camera() {
-        return context.currentCamera
+        return context.camera
       },
       get domElement() {
         return context.gl.domElement

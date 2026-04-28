@@ -18,7 +18,7 @@ export function DeviceOrientationControls(props: DeviceOrientationControlsProps)
   const [config, rest] = splitProps(props, ['ref', 'camera', 'onChange', 'makeCurrent'])
   const store = useThree()
 
-  const explCamera = config.camera || store.currentCamera
+  const explCamera = config.camera || store.camera
   const controls = new DeviceOrientationControlsImp(explCamera)
 
   createEffect(() => {

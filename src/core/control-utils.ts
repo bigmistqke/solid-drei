@@ -55,7 +55,7 @@ function getDomElement(store: any, config: { domElement?: HTMLElement }) {
   return config.domElement /* || store.events.connected */ || store.gl.domElement
 }
 function getCamera(store: any, config: { camera?: any }) {
-  return config.camera || store.currentCamera
+  return config.camera || store.camera
 }
 function addEventHandler<
   const TControl extends {

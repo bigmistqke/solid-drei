@@ -94,16 +94,16 @@ export const GizmoHelper = (props: GizmoHelperProps): any => {
       focusPoint = /* store.controls?.target || */ config.onTarget?.()
     }
 
-    radius = store.currentCamera.position.distanceTo(target)
+    radius = store.camera.position.distanceTo(target)
 
     // Rotate from current camera orientation
-    q1.copy(store.currentCamera.quaternion)
+    q1.copy(store.camera.quaternion)
 
     // To new current camera orientation
     targetPosition.copy(direction).multiplyScalar(radius).add(target)
 
     dummy.lookAt(targetPosition)
-    dummy.up.copy(store.currentCamera.up)
+    dummy.up.copy(store.camera.up)
 
     q2.copy(dummy.quaternion)
 
@@ -138,32 +138,32 @@ export const GizmoHelper = (props: GizmoHelperProps): any => {
         // // so we need to reset it after the animation is done
         // // moving it around for the controls to work correctly
         // if (isOrbitControls(store.controls as any as ControlsProto)) {
-        store.currentCamera.up.copy(defaultUp)
+        store.camera.up.copy(defaultUp)
         // }
       } else {
         const step = delta * turnRate
         // animate position by doing a slerp and then scaling the position on the unit sphere
         q1.rotateTowards(q2, step)
         // animate orientation
-        store.currentCamera.position
+        store.camera.position
           .set(0, 0, 1)
           .applyQuaternion(q1)
           .multiplyScalar(radius)
           .add(focusPoint)
-        store.currentCamera.up.set(0, 1, 0).applyQuaternion(q1).normalize()
-        store.currentCamera.quaternion.copy(q1)
+        store.camera.up.set(0, 1, 0).applyQuaternion(q1).normalize()
+        store.camera.quaternion.copy(q1)
         if (config.onUpdate) config.onUpdate()
         // else if (store.controls) (store.controls as any as ControlsProto).update()
       }
     }
 
     // Sync Gizmo with main camera orientation
-    matrix.copy(store.currentCamera.matrix).invert()
+    matrix.copy(store.camera.matrix).invert()
     gizmo?.quaternion.setFromRotationMatrix(matrix)
   })
 
   createEffect(() => {
-    defaultUp.copy(store.currentCamera.up)
+    defaultUp.copy(store.camera.up)
   })
 
   return (

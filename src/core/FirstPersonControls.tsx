@@ -19,7 +19,7 @@ export function useFirstPersonControls(three: S3.Context, props?: FirstPersonCon
     props ?? {},
     {
       get camera() {
-        return three.currentCamera
+        return three.camera
       },
     },
     ['camera', 'domElement', 'makeCurrent'],

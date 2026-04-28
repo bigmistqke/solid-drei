@@ -92,7 +92,7 @@ export function OrthographicCamera(props: OrthographicCameraProps) {
 
   createEffect(() => {
     if (config.makeCurrent) {
-      onCleanup(store.setCurrentCamera(camera()))
+      onCleanup(store.setCamera(camera()))
     }
   })
 

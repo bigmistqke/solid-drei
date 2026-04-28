@@ -32,7 +32,7 @@ function RenderHud(props: RenderHudProps) {
       // Disable cleaning and render the portal with its own camera
       store.gl.autoClear = false
       store.gl.clearDepth()
-      store.gl.render(store.scene, store.currentCamera)
+      store.gl.render(store.scene, store.camera)
       // Restore default
       store.gl.autoClear = oldClear
     },
@@ -69,7 +69,7 @@ export function Hud(props: HudProps) {
       {props.children}
       <RenderHud
         defaultScene={store.scene}
-        defaultCamera={store.currentCamera}
+        defaultCamera={store.camera}
         renderPriority={props.renderPriority || 1}
       />
     </Portal>

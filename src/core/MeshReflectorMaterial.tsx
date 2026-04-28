@@ -176,7 +176,7 @@ export function MeshReflectorMaterial(props: MeshReflectorMaterialProps) {
     }
 
     reflectorWorldPosition.setFromMatrixPosition(parent.matrixWorld)
-    cameraWorldPosition.setFromMatrixPosition(store.currentCamera.matrixWorld)
+    cameraWorldPosition.setFromMatrixPosition(store.camera.matrixWorld)
 
     rotationMatrix.extractRotation(parent.matrixWorld)
 
@@ -194,7 +194,7 @@ export function MeshReflectorMaterial(props: MeshReflectorMaterialProps) {
     view.reflect(normal).negate()
     view.add(reflectorWorldPosition)
 
-    rotationMatrix.extractRotation(store.currentCamera.matrixWorld)
+    rotationMatrix.extractRotation(store.camera.matrixWorld)
 
     lookAtPosition.set(0, 0, -1)
     lookAtPosition.applyMatrix4(rotationMatrix)
@@ -209,9 +209,9 @@ export function MeshReflectorMaterial(props: MeshReflectorMaterialProps) {
     virtualCamera.up.applyMatrix4(rotationMatrix)
     virtualCamera.up.reflect(normal)
     virtualCamera.lookAt(target)
-    virtualCamera.far = store.currentCamera.far // Used in WebGLBackground
+    virtualCamera.far = store.camera.far // Used in WebGLBackground
     virtualCamera.updateMatrixWorld()
-    virtualCamera.projectionMatrix.copy(store.currentCamera.projectionMatrix)
+    virtualCamera.projectionMatrix.copy(store.camera.projectionMatrix)
 
     // Update the texture matrix
     textureMatrix.set(

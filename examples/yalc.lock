@@ -1,0 +1,13 @@
+{
+  "version": "v1",
+  "packages": {
+    "solid-three": {
+      "signature": "49b1835e165e13949bb59434f8bcdb12",
+      "file": true
+    },
+    "solid-drei": {
+      "signature": "b21ab7cb6fc29447637ead7ee0d2e7cc",
+      "file": true
+    }
+  }
+}

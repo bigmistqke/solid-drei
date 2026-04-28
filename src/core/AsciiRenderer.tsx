@@ -71,7 +71,7 @@ export function AsciiRenderer(_props: AsciiRendererProps) {
   })
 
   // Take over render-loop (that is what the index is for)
-  useFrame(() => effect().render(store.scene, store.currentCamera))
+  useFrame(() => effect().render(store.scene, store.camera))
 
   return null!
 }

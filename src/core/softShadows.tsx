@@ -172,11 +172,11 @@ export function SoftShadows(props: SoftShadowsProps) {
         '\nreturn PCSS(shadowMap, shadowCoord);\n#if defined( SHADOWMAP_TYPE_PCF )',
       )
 
-    reset(store.gl, store.scene, store.currentCamera)
+    reset(store.gl, store.scene, store.camera)
 
     onCleanup(() => {
       ShaderChunk.shadowmap_pars_fragment = original
-      reset(store.gl, store.scene, store.currentCamera)
+      reset(store.gl, store.scene, store.camera)
     })
   })
 
