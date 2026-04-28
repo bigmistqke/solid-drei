@@ -1,0 +1,23 @@
+import { createEffect, onCleanup } from 'solid-js'
+import { useThree } from 'solid-three'
+
+export function AdaptiveDpr({ pixelated }: { pixelated?: boolean }) {
+  const store = useThree()
+
+  createEffect(() => {
+    const domElement = store.gl.domElement
+    onCleanup(() => {
+      if (store.internal.active) store.setDpr(store.viewport.initialDpr)
+      if (pixelated && domElement) domElement.style.imageRendering = 'auto'
+    })
+  })
+
+  createEffect(() => {
+    store.setDpr(store.performance.current * store.viewport.initialDpr)
+    if (pixelated && store.gl.domElement)
+      store.gl.domElement.style.imageRendering =
+        store.performance.current === 1 ? 'auto' : 'pixelated'
+  })
+
+  return null
+}

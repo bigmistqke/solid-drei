@@ -108,12 +108,12 @@ Port of [pmndrs/drei](https://github.com/pmndrs/drei) for [solid-three](https://
 | useHelper | ✅ |
 | useTrailTexture | ✅ |
 | FaceLandmarker | 🚧 |
-| StatsGl | 🚧 |
-| useAspect | 🚧 |
+| StatsGl | ✅ |
+| useAspect | ✅ |
 | useBVH | 🚧 |
-| useCamera | 🚧 |
+| useCamera | ✅ |
 | useContextBridge | 🚧 |
-| useIntersect | 🚧 |
+| useIntersect | ✅ |
 | calculateScaleFactor | ❌ |
 
 ## Shaders / Materials
@@ -178,12 +178,12 @@ Port of [pmndrs/drei](https://github.com/pmndrs/drei) for [solid-three](https://
 | Detailed | ✅ |
 | Points | ✅ |
 | Segments | ✅ |
-| AdaptiveDpr | 🚧 |
-| AdaptiveEvents | 🚧 |
+| AdaptiveDpr | 🔒 |
+| AdaptiveEvents | 🔒 |
 | Instances | 🚧 |
 | PerformanceMonitor | 🚧 |
-| Preload | 🚧 |
-| meshBounds | 🚧 |
+| Preload | ✅ |
+| meshBounds | ✅ |
 
 ## Portals / Rendering
 

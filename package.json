@@ -66,6 +66,7 @@
     "meshline": "^3.3.1",
     "playwright": "^1.54.2",
     "solid-use": "^0.9.1",
+    "stats-gl": "^4.1.0",
     "stats.js": "^0.17.0",
     "storybook": "^9.1.0",
     "storybook-solidjs-vite": "^9.0.2",
