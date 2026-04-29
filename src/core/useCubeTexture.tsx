@@ -1,7 +1,7 @@
 import { createResource, type Accessor } from 'solid-js'
 import { CubeTextureLoader } from 'three'
 
-type Options = {
+export type Options = {
   path?: string
 }
 

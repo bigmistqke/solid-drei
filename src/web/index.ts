@@ -8,6 +8,8 @@ export * from './ScrollControls'
 export * from './PresentationControls'
 export * from './Select'
 export { Hud } from './Hud'
+export * from './ScreenVideoTexture'
+export * from './WebcamVideoTexture'
 // Portal
 export * from './View'
 // Gizmos

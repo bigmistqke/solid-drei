@@ -1,0 +1,48 @@
+import { createResource, onCleanup } from 'solid-js'
+import { useThree } from 'solid-three'
+import * as THREE from 'three'
+
+export interface WebcamVideoTextureOptions {
+  colorSpace?: THREE.ColorSpace
+}
+
+export function useWebcamVideoTexture(
+  constraints?: MediaTrackConstraints,
+  options?: WebcamVideoTextureOptions,
+) {
+  const store = useThree()
+
+  const [texture] = createResource(() =>
+    navigator.mediaDevices
+      .getUserMedia({ video: constraints ?? true, audio: false })
+      .then(stream => {
+        const video = document.createElement('video')
+        video.srcObject = stream
+        video.muted = true
+        video.playsInline = true
+        video.autoplay = true
+
+        const texture = new THREE.VideoTexture(video)
+        if (options?.colorSpace !== undefined) {
+          texture.colorSpace = options.colorSpace
+        } else if ('colorSpace' in texture) {
+          texture.colorSpace = store.gl.outputColorSpace
+        } else {
+          // @ts-expect-error legacy encoding
+          texture.encoding = store.gl.outputEncoding
+        }
+
+        video.play()
+
+        onCleanup(() => {
+          stream.getTracks().forEach(track => track.stop())
+          video.srcObject = null
+          texture.dispose()
+        })
+
+        return texture
+      }),
+  )
+
+  return texture
+}
