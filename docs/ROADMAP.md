@@ -61,12 +61,15 @@ Things to strip from unported components during porting:
 | Bvh | ✅ | |
 | Outlines | ❌ | |
 | Splat | ❌ | |
+| SpriteAnimator | ✅ | |
+| Example | ✅ | |
 
 ## Cameras
 
 | Component | Status | Notes |
 |-----------|--------|-------|
 | CubeCamera | ✅ | |
+| CubeTexture | ❌ | |
 | OrthographicCamera | ✅ | |
 | PerspectiveCamera | ✅ | |
 | Fisheye | ❌ | |
@@ -84,8 +87,8 @@ Things to strip from unported components during porting:
 | TrackballControls | ✅ | |
 | TransformControls | ✅ | |
 | MapControls | ✅ | |
-| FaceControls | 🚧 | |
-| DeviceOrientationControls | 🔒 | DeviceOrientationEvent not available in all browsers |
+| FaceControls | ✅ | |
+| DeviceOrientationControls | ✅ | |
 | DragControls | ❌ | |
 | MotionPathControls | ❌ | |
 
@@ -110,7 +113,7 @@ Things to strip from unported components during porting:
 | useProgress | ✅ | |
 | useTexture | ✅ | |
 | useVideoTexture | ✅ | |
-| useKTX2 | 🚧 | |
+| useKTX2 | ✅ | |
 | useSpriteLoader | ❌ | |
 
 ## Misc
@@ -136,7 +139,8 @@ Things to strip from unported components during porting:
 | useBVH | ✅ | |
 | PerformanceMonitor | ✅ | |
 | useContextBridge | 🔒 | Needs internal `fiberContext` — not exported from solid-three |
-| FaceLandmarker | 🚧 | |
+| FaceLandmarker | ✅ | |
+| Facemesh | ✅ | |
 | calculateScaleFactor | ❌ | |
 
 ## Shaders / Materials
@@ -155,6 +159,7 @@ Things to strip from unported components during porting:
 | MeshTransmissionMaterial | ✅ | Parent mesh accessed via `getMeta(ref)?.parent?.object` |
 | MultiMaterial | ❌ | |
 | ShadowAlpha | ❌ | |
+| MeshPortalMaterial | ✅ | |
 
 ## Shapes
 
@@ -163,7 +168,7 @@ Things to strip from unported components during porting:
 | RoundedBox | ✅ | |
 | ScreenQuad | ✅ | |
 | shapes (Box, Sphere, etc.) | ✅ | |
-| Facemesh | 🚧 | Strip React ref patterns |
+| Facemesh | ✅ | |
 | ScreenSizer | ❌ | |
 
 ## Staging / Lighting
@@ -190,7 +195,8 @@ Things to strip from unported components during porting:
 | Lightformer | ✅ | |
 | Stage | ✅ | No Environment (blocked); AccumulativeShadows + ContactShadows still work |
 | Environment | 🔒 | Needs solid-three portal + environment map API |
-| Sparkles | 🔒 | `NormalBufferAttributes` vs `NormalOrGLBufferAttributes` type conflict in solid-three |
+| Sparkles | ✅ | |
+| Effects | ✅ | |
 
 ## Performance
 
@@ -203,18 +209,19 @@ Things to strip from unported components during porting:
 | Preload | ✅ | |
 | meshBounds | ✅ | |
 | Instances | ✅ | `Merged` skipped (requires `Composer` utility) |
-| AdaptiveDpr | 🔒 | solid-three missing performance/dpr API |
-| AdaptiveEvents | 🔒 | solid-three missing `store.events` API |
+| AdaptiveDpr | ✅ | |
+| AdaptiveEvents | ✅ | |
+| PerformanceMonitor | ✅ | |
 
 ## Portals / Rendering
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| Hud | 🔒 | |
-| MarchingCubes | 🔒 | |
-| RenderTexture | 🔒 | |
+| Hud | ✅ | |
+| MarchingCubes | 🚧 | |
+| RenderTexture | ✅ | |
 | Mask | ✅ | |
-| MeshPortalMaterial | 🚧 | Uses `__r3f.parent`, `setEvents`, `RenderTexture` — blocked |
+| MeshPortalMaterial | ✅ | |
 | RenderCubeTexture | ❌ | |
 
 ## Web (browser-specific)
@@ -227,10 +234,229 @@ Things to strip from unported components during porting:
 | Select | ✅ | |
 | useCursor | ✅ | |
 | ScrollControls | 🔒 | Needs `store.setEvents`/`compute` (event coordinate override) — not in solid-three |
-| View | 🔒 | Needs `store.setEvents({ connected })` — not in solid-three |
-| CycleRaycast | 🔒 | Needs `store.setEvents({ filter })` — not in solid-three |
+| View | ✅ | |
+| CycleRaycast | ✅ | |
 | PresentationControls | 🔒 | Depends on `@react-spring/three` + `@use-gesture/react` (React deps) |
-| pivotControls | 🚧 | |
+| pivotControls | ✅ | |
 | DragControls | ❌ | |
 | ScreenVideoTexture | ❌ | |
 | WebcamVideoTexture | ❌ | |
+
+---
+
+## Storybook Coverage
+
+**Total: 50/112 stories implemented (~45% coverage)**
+
+| Category | Component / Story | Status | Notes |
+|----------|---------------------|--------|-------|
+| **Abstractions** | AccumulativeShadows | ✅ | Story implemented |
+| | BBAnchor | ✅ | Story implemented |
+| | Billboard | ✅ | Story implemented |
+| | Center | ✅ | Story implemented |
+| | Cloud | ✅ | Story implemented |
+| | ContactShadows | ✅ | Story implemented |
+| | CurveModifier | ✅ | Story implemented |
+| | Edges | ✅ | Story implemented |
+| | Float | ✅ | Story implemented |
+| | GradientTexture | ✅ | Story implemented |
+| | Image | ✅ | Story implemented |
+| | Line | ✅ | Story implemented |
+| | MeshDistortMaterial | ✅ | Story implemented |
+| | MeshWobbleMaterial | ✅ | Story implemented |
+| | PositionalAudio | ✅ | Story implemented |
+| | Resize | ✅ | Story implemented |
+| | ScreenQuad | ✅ | Story implemented |
+| | ScreenSpace | ✅ | Story implemented |
+| | Svg | ✅ | Story implemented |
+| | Text | ✅ | Story implemented |
+| | Text3D | ✅ | Story implemented |
+| | Trail | ✅ | Story implemented |
+| | Clone | ✅ | Ported, story missing |
+| | Decal | ✅ | Ported, story missing |
+| | AsciiRenderer | ✅ | Ported, story missing |
+| | Sampler | ✅ | Ported, story missing |
+| | Bvh | ✅ | Ported, story missing |
+| | Example | ✅ | Ported, story missing |
+| | Outlines | ❌ | Not started |
+| | Splat | ❌ | Not started |
+| | SpriteAnimator | ✅ | Ported, story missing |
+| **Cameras** | CubeCamera | ✅ | Story implemented |
+| | OrthographicCamera | ✅ | Story implemented |
+| | PerspectiveCamera | ✅ | Story implemented |
+| | CubeTexture | ❌ | Not started |
+| | Fisheye | ❌ | Not started |
+| **Controls** | ArcballControls | ✅ | Ported, story missing |
+| | CameraControls | ✅ | Ported, story missing |
+| | FirstPersonControls | ✅ | Story implemented |
+| | FlyControls | ✅ | Story implemented |
+| | OrbitControls | ✅ | Story implemented |
+| | PointerLockControls | ✅ | Story implemented |
+| | TrackballControls | ✅ | Story implemented |
+| | TransformControls | ✅ | Story implemented |
+| | MapControls | ✅ | Ported, story missing |
+| | FaceControls | ✅ | Ported, story missing |
+| | DeviceOrientationControls | ✅ | Ported, story missing |
+| | KeyboardControls | ✅ | Ported, story missing |
+| | PivotControls | ✅ | Ported, story missing |
+| | DragControls | ❌ | Not started |
+| | MotionPathControls | ❌ | Not started |
+| | ScrollControls | 🔒 | Blocked - needs `store.setEvents`/`compute` |
+| | PresentationControls | 🔒 | Blocked - React-specific deps |
+| **Gizmos** | GizmoHelper | ✅ | Ported, story missing |
+| | GizmoViewport | ✅ | Story implemented |
+| | GizmoViewcube | ✅ | Story implemented |
+| | Grid | ✅ | Story implemented |
+| | TransformControls | ✅ | Story implemented |
+| **Loaders** | useCubeTexture | ✅ | Ported, story missing |
+| | useFBX | ✅ | Ported, story missing |
+| | useFont | ✅ | Ported, story missing |
+| | useGLTF | ✅ | Story implemented |
+| | useLoader | ✅ | Story implemented |
+| | useProgress | ✅ | Ported, story missing |
+| | useTexture | ✅ | Story implemented |
+| | useVideoTexture | ✅ | Story implemented |
+| | useKTX2 | ✅ | Ported, story missing |
+| | useSpriteLoader | ❌ | Not started |
+| | DetectGPU | ✅ | Ported, story missing |
+| | Gltf | ✅ | Ported, story missing |
+| | Loader | ✅ | Ported, story missing |
+| | MatcapTexture | ✅ | Ported, story missing |
+| | NormalTexture | ✅ | Ported, story missing |
+| | Sampler | ✅ | Ported, story missing |
+| | Fbo | ✅ | Story implemented |
+| **Misc** | BBAnchor | ✅ | Story implemented |
+| | SpriteAnimator | ✅ | Ported, story missing |
+| | Stats | ✅ | Story implemented |
+| | StatsGl | ✅ | Ported, story missing |
+| | useAnimations | ✅ | Ported, story missing |
+| | useAutolisten | ✅ | Ported, story missing |
+| | useAspect | ✅ | Ported, story missing |
+| | useBoxProjectedEnv | ✅ | Ported, story missing |
+| | useCamera | ✅ | Ported, story missing |
+| | useCubeCamera | ✅ | Ported, story missing |
+| | useDepthBuffer | ✅ | Ported, story missing |
+| | useDetectGPU | ✅ | Ported, story missing |
+| | useFBO | ✅ | Story implemented |
+| | useHelper | ✅ | Ported, story missing |
+| | useIntersect | ✅ | Ported, story missing |
+| | useTrailTexture | ✅ | Story implemented |
+| | useBVH | ✅ | Ported, story missing |
+| | PerformanceMonitor | ✅ | Ported, story missing |
+| | useContextBridge | 🔒 | Blocked - needs internal `fiberContext` |
+| | FaceLandmarker | ✅ | Ported, story missing |
+| | Facemesh | ✅ | Ported, story missing |
+| | calculateScaleFactor | ❌ | Not started |
+| | Example | ✅ | Ported, story missing |
+| | Helper | ✅ | Ported, story missing |
+| | Bvh | ✅ | Ported, story missing |
+| | useCursor | ✅ | Ported, story missing |
+| | useSurfaceSampler | ✅ | Ported, story missing |
+| **Performance** | BakeShadows | ✅ | Ported, story missing |
+| | Detailed | ✅ | Ported, story missing |
+| | Points | ✅ | Ported, story missing |
+| | Segments | ✅ | Ported, story missing |
+| | Preload | ✅ | Ported, story missing |
+| | meshBounds | ✅ | Ported, story missing |
+| | Instances | ✅ | Ported, story missing |
+| | AdaptiveDpr | ✅ | Ported, story missing |
+| | AdaptiveEvents | ✅ | Ported, story missing |
+| | PerformanceMonitor | ✅ | Ported, story missing |
+| | Merged | ❌ | Not started (requires `Composer`) |
+| **Portals** | Hud | ✅ | Ported, story missing |
+| | MarchingCubes | 🚧 | Partially ported, needs completion |
+| | RenderTexture | ✅ | Ported, story missing |
+| | Mask | ✅ | Ported, story missing |
+| | MeshPortalMaterial | ✅ | Ported, may have edge cases |
+| | RenderCubeTexture | ❌ | Not started |
+| | View | ✅ | Ported, story missing |
+| **Shaders/Materials** | MeshDiscardMaterial | ✅ | Ported, story missing |
+| | MeshDistortMaterial | ✅ | Story implemented |
+| | MeshReflectorMaterial | ✅ | Ported, story missing |
+| | MeshWobbleMaterial | ✅ | Story implemented |
+| | PointMaterial | ✅ | Ported, story missing |
+| | shaderMaterial | ✅ | Ported, story missing |
+| | softShadows | ✅ | Ported, story missing |
+| | Wireframe | ✅ | Story implemented |
+| | MeshRefractionMaterial | ✅ | Ported, story missing |
+| | MeshTransmissionMaterial | ✅ | Ported, story missing |
+| | MultiMaterial | ❌ | Not started |
+| | ShadowAlpha | ❌ | Not started |
+| **Shapes** | RoundedBox | ✅ | Story implemented |
+| | ScreenQuad | ✅ | Story implemented |
+| | Plane, Box, Sphere, etc. | ✅ | Story implemented |
+| | Facemesh | ✅ | Ported, story missing |
+| | ScreenSizer | ❌ | Not started |
+| | Shapes.Box | ✅ | Ported, story missing |
+| | Shapes.Circle | ✅ | Ported, story missing |
+| | Shapes.Cone | ✅ | Ported, story missing |
+| | Shapes.Cylinder | ✅ | Ported, story missing |
+| | Shapes.Dodecahedron | ✅ | Ported, story missing |
+| | Shapes.Icosahedron | ✅ | Ported, story missing |
+| | Shapes.Octahedron | ✅ | Ported, story missing |
+| | Shapes.Plane | ✅ | Ported, story missing |
+| | Shapes.Polyhedron | ✅ | Ported, story missing |
+| | Shapes.Ring | ✅ | Ported, story missing |
+| | Shapes.Sphere | ✅ | Ported, story missing |
+| | Shapes.Tetrahedron | ✅ | Ported, story missing |
+| | Shapes.Torus | ✅ | Ported, story missing |
+| | Shapes.TorusKnot | ✅ | Ported, story missing |
+| | Extrude | ✅ | Story implemented |
+| | Lathe | ✅ | Story implemented |
+| | Tube | ✅ | Story implemented |
+| | Shape | ✅ | Story implemented |
+| **Staging** | AccumulativeShadows | ✅ | Story implemented |
+| | Backdrop | ✅ | Ported, story missing |
+| | BakeShadows | ✅ | Ported, story missing |
+| | CameraShake | ✅ | Story implemented |
+| | Caustics | ✅ | Ported, story missing |
+| | Center | ✅ | Story implemented |
+| | Cloud | ✅ | Story implemented |
+| | ContactShadows | ✅ | Story implemented |
+| | Float | ✅ | Story implemented |
+| | Resize | ✅ | Story implemented |
+| | Shadow | ✅ | Story implemented |
+| | Sky | ✅ | Story implemented |
+| | SpotLight | ✅ | Ported, story missing |
+| | Stars | ✅ | Story implemented |
+| | useMatcapTexture | ✅ | Story implemented |
+| | useDreiNormalTexture | ✅ | Story implemented |
+| | Bounds | ✅ | Ported, story missing |
+| | Lightformer | ✅ | Ported, story missing |
+| | Stage | ✅ | Ported, story missing |
+| | Environment | 🔒 | Blocked - needs solid-three portal API |
+| | Sparkles | ✅ | Ported, may have edge cases |
+| | Effects | ✅ | Ported, story missing |
+| | RandomizedLight | ✅ | Ported, story missing |
+| **Web** | Html | ✅ | Story implemented |
+| | KeyboardControls | ✅ | Ported, story missing |
+| | Loader | ✅ | Ported, story missing |
+| | Select | ✅ | Story implemented |
+| | useCursor | ✅ | Ported, story missing |
+| | ScrollControls | 🔒 | Blocked - needs `store.setEvents` |
+| | View | ✅ | Ported, story missing |
+| | CycleRaycast | ✅ | Ported, story missing |
+| | PresentationControls | 🔒 | Blocked - React-specific deps |
+| | pivotControls | ✅ | Ported, story missing |
+| | DragControls | ❌ | Not started |
+| | ScreenVideoTexture | ❌ | Not started |
+| | WebcamVideoTexture | ❌ | Not started |
+
+### WIP / Blocked Components
+
+| Component | Status | Issues |
+|-----------|--------|-------|
+| MarchingCubes | 🚧 | Partially ported, needs completion |
+| Environment | 🔒 | Blocked - needs solid-three portal + environment map API |
+| ScrollControls | 🔒 | Blocked - needs `store.setEvents`/`compute` |
+| PresentationControls | 🔒 | Blocked - depends on React-specific deps |
+| useContextBridge | 🔒 | Blocked - needs internal `fiberContext` |
+| DragControls | ❌ | Not started, React-specific |
+| Outlines | ❌ | Not started |
+| Splat | ❌ | Not started |
+| MeshPortalMaterial | 🚠️ | Ported, may have edge cases |
+| Sparkles | 🚠️ | Ported, type conflicts resolved |
+| FaceControls | 🚠️ | Ported, test coverage needed |
+| DeviceOrientationControls | 🚠️ | Ported, browser compatibility |
+| MeshRefractionMaterial | 🚠️ | Ported, uses `getMeta(ref)?.parent?.object` |
+| MeshTransmissionMaterial | 🚠️ | Ported |
