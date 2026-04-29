@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createRenderEffect, mergeProps, onCleanup } from 'solid-js'
+import { createEffect, createMemo, createRenderEffect, merge, onCleanup } from 'solid-js'
 import { useFrame, useThree } from 'solid-three'
 import { AsciiEffect } from 'three-stdlib'
 
@@ -20,7 +20,7 @@ type AsciiRendererProps = {
 }
 
 export function AsciiRenderer(_props: AsciiRendererProps) {
-  const props = mergeProps(
+  const props = merge(
     {
       renderIndex: 1,
       bgColor: 'black',

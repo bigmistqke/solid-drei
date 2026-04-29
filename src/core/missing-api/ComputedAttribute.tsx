@@ -1,5 +1,5 @@
 import type { ParentProps } from 'solid-js'
-import { createRenderEffect, createSignal, splitProps } from 'solid-js'
+import { createRenderEffect, createSignal, omit } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { $S3C, Entity } from 'solid-three'
 import { BufferAttribute, BufferGeometry } from 'three'
@@ -15,7 +15,7 @@ interface ComputedAttributeProps extends ParentProps<S3.Props<BufferAttribute>> 
  * and attaches the attribute to the geometry.
  */
 export function ComputedAttribute(props: ComputedAttributeProps) {
-  const [config, rest] = splitProps(props, ['compute', 'name'])
+  const rest = omit(props, 'compute', 'name')
 
   const bufferAttribute = new BufferAttribute(new Float32Array(0), 1)
 
@@ -24,7 +24,7 @@ export function ComputedAttribute(props: ComputedAttributeProps) {
   createRenderEffect(() => {
     const parent = primitive()?.[$S3C]?.parent?.object
     if (!parent) return
-    const attr = config.compute(parent)
+    const attr = props.compute(parent)
     primitive()!.copy(attr)
   })
 
@@ -32,7 +32,7 @@ export function ComputedAttribute(props: ComputedAttributeProps) {
     <Entity
       ref={setPrimitive}
       from={bufferAttribute}
-      attach={`attributes-${config.name}`}
+      attach={`attributes-${props.name}`}
       {...rest}
     />
   )

@@ -1,7 +1,7 @@
 import { processProps, resolve, useRef } from '@/utils'
 import type { Intersect } from '@/utils/types'
 import type { JSXElement, Ref } from 'solid-js'
-import { Show, createEffect, createMemo, mergeProps, splitProps } from 'solid-js'
+import { Show, createEffect, createMemo, merge, omit } from 'solid-js'
 import { Entity, type S3 } from 'solid-three'
 import { Mesh } from 'three'
 import type { TextGeometryParameters } from 'three-stdlib'
@@ -76,8 +76,8 @@ export function Text3D(props: Text3DProps) {
       'curveSegments',
     ],
   )
-  const [, fontProps] = splitProps(config, ['font'])
-  const options = mergeProps(
+  const fontProps = omit(config, 'font')
+  const options = merge(
     {
       get font() {
         return font()

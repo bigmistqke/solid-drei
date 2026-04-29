@@ -1,7 +1,7 @@
 import { processProps } from '@/utils'
 import { version } from '@/utils/constants'
 import type { Ref } from 'solid-js'
-import { Show, splitProps } from 'solid-js'
+import { Show, omit } from 'solid-js'
 import { createT, type S3 } from 'solid-three'
 import { Color, Mesh, PlaneGeometry, Texture } from 'three'
 import { shaderMaterial } from '../materials/shaderMaterial'
@@ -135,8 +135,8 @@ function ImageBase(props: Omit<ImageProps, 'url'>) {
 }
 
 function ImageWithUrl(props: UrlImageProps) {
-  const [config, rest] = splitProps(props, ['url'])
-  const texture = useTexture(config.url)
+  const rest = omit(props, 'url')
+  const texture = useTexture(props.url)
   return (
     <Show when={texture()}>
       <ImageBase {...rest} texture={texture()} />

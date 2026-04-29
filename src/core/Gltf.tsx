@@ -1,6 +1,6 @@
 import type { Intersect } from '@/utils/types'
 import type { JSX, Ref } from 'solid-js'
-import { splitProps } from 'solid-js'
+import { omit } from 'solid-js'
 import { Entity, type S3 } from 'solid-three'
 import type { Group, Mesh, Object3D } from 'three'
 import { useGLTF, type UseGLTFOptions } from './useGLTF'
@@ -24,7 +24,7 @@ interface GltfProps extends Intersect<[S3.Props<Group>, UseGLTFOptions]> {
 }
 
 export const Gltf = (props: GltfProps) => {
-  const [config, rest] = splitProps(props, ['url', 'useDraco', 'useMeshOpt', 'extendLoader'])
-  const gltf = useGLTF(() => config.url, config)
+  const rest = omit(props, 'url', 'useDraco', 'useMeshOpt', 'extendLoader')
+  const gltf = useGLTF(() => props.url, { useDraco: props.useDraco, useMeshOpt: props.useMeshOpt, extendLoader: props.extendLoader })
   return <Entity from={gltf()?.scene} {...rest} />
 }

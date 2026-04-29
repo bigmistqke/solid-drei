@@ -6,7 +6,7 @@ import {
   children,
   createMemo,
   createRenderEffect,
-  mergeProps,
+  merge,
   type ParentProps,
 } from 'solid-js'
 import { Entity, Portal, useFrame, useThree, type S3 } from 'solid-three'
@@ -51,7 +51,7 @@ export function useTrail(
   target: Object3D | Accessor<Object3D | undefined>,
   options: Partial<TrailOptions>,
 ) {
-  const config = mergeProps(defaults, options)
+  const config = merge(defaults, options)
 
   const [points, setPoints] = createWritable<Float32Array>(
     () => {

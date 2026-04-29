@@ -1,5 +1,5 @@
 import { processProps } from '@/utils'
-import { For, Show, createMemo, splitProps, type Component, type JSX } from 'solid-js'
+import { For, Show, createMemo, type Component, type JSX } from 'solid-js'
 import { Entity, createEntity, type S3 } from 'solid-three'
 import { Group, Mesh, Object3D } from 'three'
 import { SkeletonUtils } from 'three-stdlib'
@@ -56,7 +56,6 @@ export function Clone(_props: CloneProps) {
   const [props, rest] = processProps(_props, { isChild: false }, [
     'ref', 'isChild', 'object', 'children', 'deep', 'castShadow', 'receiveShadow', 'inject', 'keys',
   ])
-  const [config] = splitProps(props, ['keys', 'deep', 'inject', 'castShadow', 'receiveShadow'])
 
   const object = createMemo(() => {
     if (props.isChild === false && !Array.isArray(props.object)) {
@@ -76,22 +75,22 @@ export function Clone(_props: CloneProps) {
       fallback={
         <Entity from={Group} ref={_props.ref as any} {...(rest as any)}>
           <For each={object() as Object3D[]}>
-            {o => <Clone object={o()} {...config} />}
+            {o => <Clone object={o()} keys={props.keys} deep={props.deep} inject={props.inject} castShadow={props.castShadow} receiveShadow={props.receiveShadow} />}
           </For>
           {props.children}
         </Entity>
       }
     >
       {(obj: Object3D) => {
-        const { children: injectChildren, ...spread } = createSpread(obj, config)
+        const { children: injectChildren, ...spread } = createSpread(obj, { keys: props.keys, deep: props.deep, inject: props.inject, castShadow: props.castShadow, receiveShadow: props.receiveShadow })
         const El = createEntity(obj.constructor as new (...args: any[]) => any) as Component<any>
         return (
           <El {...(spread as any)} {...(rest as any)} ref={_props.ref as any}>
             <For each={obj.children}>
               {child => {
                 const childValue = child()
-                if ((childValue as any).type === 'Bone') return <Entity from={childValue} {...config} />
-                return <Clone object={childValue} {...config} isChild />
+                if ((childValue as any).type === 'Bone') return <Entity from={childValue} keys={props.keys} deep={props.deep} inject={props.inject} castShadow={props.castShadow} receiveShadow={props.receiveShadow} />
+                return <Clone object={childValue} keys={props.keys} deep={props.deep} inject={props.inject} castShadow={props.castShadow} receiveShadow={props.receiveShadow} isChild />
               }}
             </For>
             {props.children}

@@ -1,5 +1,5 @@
 import { defaultProps, processProps } from '@/utils'
-import { createMemo, createSignal, mergeProps } from 'solid-js'
+import { createMemo, createSignal, merge } from 'solid-js'
 import { Entity, type S3, useThree } from 'solid-three'
 import { pickProps } from 'solid-use/props'
 import {
@@ -141,7 +141,7 @@ export const GizmoViewport = (_props: GizmoViewportProps) => {
 
   const { tweenCamera } = useGizmoContext()
 
-  const axisHeadProps = mergeProps(
+  const axisHeadProps = merge(
     {
       onPointerDown: !props.disabled
         ? (e: S3.ThreeEvent<PointerEvent>) => {

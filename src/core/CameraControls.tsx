@@ -1,6 +1,6 @@
 import { useRef } from '@/utils'
 import ThreeCameraControls from 'camera-controls'
-import { createEffect, createMemo, splitProps } from 'solid-js'
+import { createEffect, createMemo } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { Entity, useThree } from 'solid-three'
 import type { Event, OrthographicCamera, PerspectiveCamera } from 'three'
@@ -52,26 +52,15 @@ export function CameraControls(props: CameraControlsProps) {
     },
   })
 
-  const [config] = splitProps(props, [
-    'ref',
-    'camera',
-    'domElement',
-    'makeCurrent',
-    'events',
-    'onStart',
-    'onEnd',
-    'onChange',
-    'regress',
-  ])
   const store = useThree()
-  const camera = () => ControlUtils.getCamera(store, config)
-  const element = () => ControlUtils.getDomElement(store, config)
+  const camera = () => ControlUtils.getCamera(store, props)
+  const element = () => ControlUtils.getDomElement(store, props)
   const controls = createMemo(() => new ThreeCameraControls(camera(), element()))
 
-  ControlUtils.initialize(controls, element, store, config)
+  ControlUtils.initialize(controls, element, store, props)
 
   createEffect(
-    () => config.onChange,
+    () => props.onChange,
     (onChange) => {
       if (!onChange) return
       ControlUtils.addEventHandler(controls, 'control', onChange)
@@ -81,14 +70,14 @@ export function CameraControls(props: CameraControlsProps) {
     }
   )
   createEffect(
-    () => config.onStart,
+    () => props.onStart,
     (onStart) => {
       if (!onStart) return
       ControlUtils.addEventHandler(controls, 'controlstart', onStart)
     }
   )
   createEffect(
-    () => config.onEnd,
+    () => props.onEnd,
     (onEnd) => {
       if (!onEnd) return
       ControlUtils.addEventHandler(controls, 'controlend', onEnd)

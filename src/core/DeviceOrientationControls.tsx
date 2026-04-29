@@ -1,6 +1,6 @@
 import { useRef } from '@/utils'
 import type { Ref } from 'solid-js'
-import { createEffect, onCleanup, splitProps } from 'solid-js'
+import { createEffect, onCleanup, omit } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { autodispose, Entity, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
@@ -15,16 +15,16 @@ export interface DeviceOrientationControlsProps
 }
 
 export function DeviceOrientationControls(props: DeviceOrientationControlsProps) {
-  const [config, rest] = splitProps(props, ['ref', 'camera', 'onChange', 'makeCurrent'])
+  const rest = omit(props, 'ref', 'camera', 'onChange', 'makeCurrent')
   const store = useThree()
 
-  const explCamera = config.camera || store.camera
+  const explCamera = props.camera || store.camera
   const controls = new DeviceOrientationControlsImp(explCamera)
 
   createEffect(() => {
     const callback = (e: THREE.Event<string, unknown>) => {
       store.requestRender()
-      if (config.onChange) config.onChange(e)
+      if (props.onChange) props.onChange(e)
     }
     controls.addEventListener?.('change', callback)
     onCleanup(() => controls.removeEventListener?.('change', callback))

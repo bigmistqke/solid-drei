@@ -1,6 +1,6 @@
 import { processProps, useRef } from '@/utils'
 import type { Ref } from 'solid-js'
-import { createMemo, mergeProps } from 'solid-js'
+import { createMemo, merge } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { Entity, getMeta, useFrame, useThree } from 'solid-three'
 import { pickProps } from 'solid-use/props'
@@ -103,7 +103,7 @@ export function MeshReflectorMaterial(props: MeshReflectorMaterialProps) {
   const textureMatrix = new Matrix4()
   const virtualCamera = new PerspectiveCamera()
 
-  const reflectorProps = mergeProps(
+  const reflectorProps = merge(
     pickProps(config, [
       'mirror',
       'mixBlur',

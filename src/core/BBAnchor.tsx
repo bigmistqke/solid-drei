@@ -1,4 +1,4 @@
-import { onMount, splitProps } from 'solid-js'
+import { onMount, omit } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { Entity, useFrame } from 'solid-three'
 import { Box3, Group, Object3D, Vector3 } from 'three'
@@ -23,7 +23,7 @@ export interface BBAnchorProps extends S3.Props<Group> {
 }
 
 export function BBAnchor(props: BBAnchorProps) {
-  const [config, rest] = splitProps(props, ['anchor'])
+  const rest = omit(props, 'anchor')
 
   const group = new Group()
   let parentRef: Object3D | null = null
@@ -43,7 +43,7 @@ export function BBAnchor(props: BBAnchorProps) {
       boundingBox.setFromObject(parentRef)
       boundingBox.getSize(boundingBoxSize)
 
-      const anchorVec = anchorToVec3(config.anchor)
+      const anchorVec = anchorToVec3(props.anchor)
       group.position.set(
         parentRef.position.x + (boundingBoxSize.x * anchorVec.x) / 2,
         parentRef.position.y + (boundingBoxSize.y * anchorVec.y) / 2,

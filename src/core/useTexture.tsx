@@ -1,5 +1,5 @@
 import type { AccessorMaybe } from '@/utils/types'
-import { mergeProps, type Resource } from 'solid-js'
+import { merge, type Resource } from 'solid-js'
 import { useThree } from 'solid-three'
 import { Texture, TextureLoader } from 'three'
 import { useLoader, type UseLoaderOptions } from './useLoader'
@@ -22,7 +22,7 @@ export function useTexture<T extends string>(
   return useLoader(
     TextureLoader,
     input,
-    mergeProps(options, {
+    merge(options, {
       onLoad(texture: Texture) {
         store.gl.initTexture(texture)
         options?.onLoad?.(texture)
