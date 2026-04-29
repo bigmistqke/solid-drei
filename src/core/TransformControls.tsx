@@ -79,17 +79,32 @@ export function TransformControls(props: TransformControlsProps) {
       config.domElement ?? store.canvas,
     )
     const autolisten = useAutolisten(controls)
-    createEffect(() => autolisten('change', config.onChange))
-    createEffect(() => autolisten('mouseUp', config.onMouseUp))
-    createEffect(() => autolisten('mouseDown', config.onMouseDown))
-    createEffect(() => autolisten('objectChange', config.onObjectChange))
+    createEffect(
+      () => config.onChange,
+      (onChange) => autolisten('change', onChange)
+    )
+    createEffect(
+      () => config.onMouseUp,
+      (onMouseUp) => autolisten('mouseUp', onMouseUp)
+    )
+    createEffect(
+      () => config.onMouseDown,
+      (onMouseDown) => autolisten('mouseDown', onMouseDown)
+    )
+    createEffect(
+      () => config.onObjectChange,
+      (onObjectChange) => autolisten('objectChange', onObjectChange)
+    )
     return controls
   })
 
-  createEffect(() => {
-    controls().attach(resolve(config.object) || group)
-    onCleanup(controls().detach.bind(controls()))
-  })
+  createEffect(
+    () => [controls(), resolve(config.object)] as const,
+    ([ctrl, obj]) => {
+      ctrl.attach(obj || group)
+      onCleanup(ctrl.detach.bind(ctrl))
+    }
+  )
 
   return (
     <>

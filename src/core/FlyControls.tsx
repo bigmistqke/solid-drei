@@ -42,13 +42,19 @@ export function useFlyControls(props: FlyControlsProps) {
   const autolisten = useAutolisten(controls)
 
   // Attach event-listeners
-  createEffect(() => autolisten('change', config.onChange))
+  createEffect(
+    () => config.onChange,
+    (onChange) => autolisten('change', onChange)
+  )
 
   whenEffect(
     () => config.enabled,
     () => {
       // Connect controls to DOM
-      createEffect(() => controls().connect(config.domElement))
+      createEffect(
+        () => [controls(), config.domElement] as const,
+        ([ctrl, elem]) => ctrl.connect(elem)
+      )
 
       // Attach controls to props.ref
       useRef(props, controls)

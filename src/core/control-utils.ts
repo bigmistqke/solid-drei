@@ -28,10 +28,13 @@ function initialize(
   update(controls)
 }
 function connect(controls: Accessor<ControlProto>, element: Accessor<HTMLElement>) {
-  createEffect(() => {
-    controls().connect(element())
-    onCleanup(() => controls().dispose())
-  })
+  createEffect(
+    () => [controls(), element()] as const,
+    ([ctrl, elem]) => {
+      ctrl.connect(elem)
+      onCleanup(() => ctrl.dispose())
+    }
+  )
 }
 function makeCurrent(
   controls: Accessor<ControlProto>,

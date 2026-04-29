@@ -53,61 +53,74 @@ export function DragControls(props: DragControlsProps) {
   })
 
   // Update objects list when it changes
-  createEffect(() => {
-    const ctrl = controls()
-    const objs = objects()
-    // Swap out internal objects array by calling getObjects and mutating
-    const current = ctrl.getObjects()
-    current.length = 0
-    current.push(...objs)
-  })
+  createEffect(
+    () => [controls(), objects()] as const,
+    ([ctrl, objs]) => {
+      // Swap out internal objects array by calling getObjects and mutating
+      const current = ctrl.getObjects()
+      current.length = 0
+      current.push(...objs)
+    }
+  )
 
   // Toggle enabled
-  createEffect(() => {
-    const ctrl = controls()
-    ctrl.enabled = props.enabled !== false
-  })
+  createEffect(
+    () => [controls(), props.enabled] as const,
+    ([ctrl, enabled]) => {
+      ctrl.enabled = enabled !== false
+    }
+  )
 
   // Event listeners
-  createEffect(() => {
-    const ctrl = controls()
-    if (!props.onDragStart) return
-    const cb = (e: DragControlsEventMap['dragstart']) => props.onDragStart!(e)
-    ctrl.addEventListener('dragstart', cb)
-    onCleanup(() => ctrl.removeEventListener('dragstart', cb))
-  })
+  createEffect(
+    () => [controls(), props.onDragStart] as const,
+    ([ctrl, onDragStart]) => {
+      if (!onDragStart) return
+      const cb = (e: DragControlsEventMap['dragstart']) => onDragStart!(e)
+      ctrl.addEventListener('dragstart', cb)
+      onCleanup(() => ctrl.removeEventListener('dragstart', cb))
+    }
+  )
 
-  createEffect(() => {
-    const ctrl = controls()
-    if (!props.onDrag) return
-    const cb = (e: DragControlsEventMap['drag']) => props.onDrag!(e)
-    ctrl.addEventListener('drag', cb)
-    onCleanup(() => ctrl.removeEventListener('drag', cb))
-  })
+  createEffect(
+    () => [controls(), props.onDrag] as const,
+    ([ctrl, onDrag]) => {
+      if (!onDrag) return
+      const cb = (e: DragControlsEventMap['drag']) => onDrag!(e)
+      ctrl.addEventListener('drag', cb)
+      onCleanup(() => ctrl.removeEventListener('drag', cb))
+    }
+  )
 
-  createEffect(() => {
-    const ctrl = controls()
-    if (!props.onDragEnd) return
-    const cb = (e: DragControlsEventMap['dragend']) => props.onDragEnd!(e)
-    ctrl.addEventListener('dragend', cb)
-    onCleanup(() => ctrl.removeEventListener('dragend', cb))
-  })
+  createEffect(
+    () => [controls(), props.onDragEnd] as const,
+    ([ctrl, onDragEnd]) => {
+      if (!onDragEnd) return
+      const cb = (e: DragControlsEventMap['dragend']) => onDragEnd!(e)
+      ctrl.addEventListener('dragend', cb)
+      onCleanup(() => ctrl.removeEventListener('dragend', cb))
+    }
+  )
 
-  createEffect(() => {
-    const ctrl = controls()
-    if (!props.onHoverOn) return
-    const cb = (e: DragControlsEventMap['hoveron']) => props.onHoverOn!(e)
-    ctrl.addEventListener('hoveron', cb)
-    onCleanup(() => ctrl.removeEventListener('hoveron', cb))
-  })
+  createEffect(
+    () => [controls(), props.onHoverOn] as const,
+    ([ctrl, onHoverOn]) => {
+      if (!onHoverOn) return
+      const cb = (e: DragControlsEventMap['hoveron']) => onHoverOn!(e)
+      ctrl.addEventListener('hoveron', cb)
+      onCleanup(() => ctrl.removeEventListener('hoveron', cb))
+    }
+  )
 
-  createEffect(() => {
-    const ctrl = controls()
-    if (!props.onHoverOff) return
-    const cb = (e: DragControlsEventMap['hoveroff']) => props.onHoverOff!(e)
-    ctrl.addEventListener('hoveroff', cb)
-    onCleanup(() => ctrl.removeEventListener('hoveroff', cb))
-  })
+  createEffect(
+    () => [controls(), props.onHoverOff] as const,
+    ([ctrl, onHoverOff]) => {
+      if (!onHoverOff) return
+      const cb = (e: DragControlsEventMap['hoveroff']) => onHoverOff!(e)
+      ctrl.addEventListener('hoveroff', cb)
+      onCleanup(() => ctrl.removeEventListener('hoveroff', cb))
+    }
+  )
 
   useRef(props, controls)
 

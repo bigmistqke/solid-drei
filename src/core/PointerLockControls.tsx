@@ -93,22 +93,31 @@ export function usePointerLockControls(options: PointerLockControlsProps) {
       )
 
       // Connect controls to domElement (defaults to store.canvas)
-      createEffect(() => controls.connect(config.domElement))
+      createEffect(
+        () => [controls, config.domElement] as const,
+        ([ctrl, elem]) => ctrl.connect(elem)
+      )
 
       // Attach event listener
-      createEffect(() => autolisten('change', config.onChange))
+      createEffect(
+        () => config.onChange,
+        (onChange) => autolisten('change', onChange)
+      )
 
       // Bind lock to either the domElement (defaults to store.canvas)
       // or elements selected by given selector
-      createEffect(() => {
-        if (config.selector) {
-          for (const element of document.querySelectorAll(config.selector)) {
-            useAutolisten(element)('click', controls.lock.bind(controls))
+      createEffect(
+        () => [config.selector, config.domElement, controls] as const,
+        ([selector, domElement, ctrl]) => {
+          if (selector) {
+            document.querySelectorAll(selector).forEach((element) => {
+              useAutolisten(element)('click', ctrl.lock.bind(ctrl))
+            })
+          } else {
+            useAutolisten(domElement)('click', ctrl.lock.bind(ctrl))
           }
-        } else {
-          useAutolisten(config.domElement)('click', controls.lock.bind(controls))
         }
-      })
+      )
     },
   )
 }

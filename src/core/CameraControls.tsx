@@ -70,21 +70,30 @@ export function CameraControls(props: CameraControlsProps) {
 
   ControlUtils.initialize(controls, element, store, config)
 
-  createEffect(() => {
-    if (!config.onChange) return
-    ControlUtils.addEventHandler(controls, 'control', config.onChange)
-    ControlUtils.addEventHandler(controls, 'update', config.onChange)
-    ControlUtils.addEventHandler(controls, 'transitionstart', config.onChange)
-    ControlUtils.addEventHandler(controls, 'wake', config.onChange)
-  })
-  createEffect(() => {
-    if (!config.onStart) return
-    ControlUtils.addEventHandler(controls, 'controlstart', config.onStart)
-  })
-  createEffect(() => {
-    if (!config.onEnd) return
-    ControlUtils.addEventHandler(controls, 'controlend', config.onEnd)
-  })
+  createEffect(
+    () => config.onChange,
+    (onChange) => {
+      if (!onChange) return
+      ControlUtils.addEventHandler(controls, 'control', onChange)
+      ControlUtils.addEventHandler(controls, 'update', onChange)
+      ControlUtils.addEventHandler(controls, 'transitionstart', onChange)
+      ControlUtils.addEventHandler(controls, 'wake', onChange)
+    }
+  )
+  createEffect(
+    () => config.onStart,
+    (onStart) => {
+      if (!onStart) return
+      ControlUtils.addEventHandler(controls, 'controlstart', onStart)
+    }
+  )
+  createEffect(
+    () => config.onEnd,
+    (onEnd) => {
+      if (!onEnd) return
+      ControlUtils.addEventHandler(controls, 'controlend', onEnd)
+    }
+  )
 
   useRef(props, controls)
 
