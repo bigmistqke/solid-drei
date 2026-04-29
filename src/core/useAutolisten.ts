@@ -6,7 +6,7 @@
 
 import { resolve } from '@/utils'
 import type { AccessorMaybe } from '@/utils/types'
-import { createComputed, onCleanup } from 'solid-js'
+import { createRenderEffect, onCleanup } from 'solid-js'
 
 export function useAutolisten<
   TTarget extends {
@@ -26,7 +26,7 @@ export function useAutolisten<
   })
 
   return ((type: any, callback: any, ...options: any[]) => {
-    createComputed(() => {
+    createRenderEffect(() => {
       if (callback === undefined || callback === null) return
 
       resolve(object).addEventListener(type, callback, ...options)

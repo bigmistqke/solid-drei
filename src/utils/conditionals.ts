@@ -1,4 +1,4 @@
-import { type Accessor, createComputed, createEffect, createMemo, type Resource } from 'solid-js'
+import { type Accessor, createEffect, createMemo, createRenderEffect } from 'solid-js'
 
 export function check<
   T,
@@ -115,12 +115,6 @@ export function every<
   return callback
 }
 
-export function wrapNullableResource<T extends Resource<any>>(
-  value: T,
-): Accessor<false | [ReturnType<T>]> {
-  return () => value.state === 'ready' && [value()]
-}
-
 /**********************************************************************************/
 /*                                                                                */
 /*                                   Solid Wrappers                               */
@@ -157,5 +151,5 @@ export function whenComputed<
     : Exclude<TAccessor, null | undefined | false>,
   const TResult,
 >(accessor: TAccessor, callback: (value: TValues) => TResult) {
-  createComputed(when(accessor, callback))
+  createRenderEffect(when(accessor, callback))
 }
