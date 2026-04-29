@@ -18,23 +18,26 @@ export function Backdrop(props: BackdropProps) {
 
   let planeGeometry: PlaneGeometry = null!
 
-  createEffect(() => {
-    let i = 0
-    const offset = merged.segments / merged.segments / 2
-    const position = planeGeometry.attributes.position as BufferAttribute
-    for (let x = 0; x < merged.segments + 1; x++) {
-      for (let y = 0; y < merged.segments + 1; y++) {
-        position.setXYZ(
-          i++,
-          x / merged.segments - offset + (x === 0 ? -merged.floor : 0),
-          y / merged.segments - offset,
-          easeInExpo(x / merged.segments),
-        )
+  createEffect(
+    () => [merged.segments, merged.floor] as const,
+    () => {
+      let i = 0
+      const offset = merged.segments / merged.segments / 2
+      const position = planeGeometry.attributes.position as BufferAttribute
+      for (let x = 0; x < merged.segments + 1; x++) {
+        for (let y = 0; y < merged.segments + 1; y++) {
+          position.setXYZ(
+            i++,
+            x / merged.segments - offset + (x === 0 ? -merged.floor : 0),
+            y / merged.segments - offset,
+            easeInExpo(x / merged.segments),
+          )
+        }
       }
-    }
-    position.needsUpdate = true
-    planeGeometry.computeVertexNormals()
-  })
+      position.needsUpdate = true
+      planeGeometry.computeVertexNormals()
+    },
+  )
 
   return (
     <Entity from={Group} {...rest}>

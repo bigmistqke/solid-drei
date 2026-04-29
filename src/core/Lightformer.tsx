@@ -39,21 +39,24 @@ export function Lightformer(_props: LightProps) {
   let mesh: Mesh = null!
   useRef(_props, () => mesh)
 
-  createRenderEffect(() => {
-    if (!mesh) return
-    if (!props.children && !rest.material) {
-      const mat = mesh.material as MeshBasicMaterial
-      if (mat?.color) {
-        mat.color.set(props.color as THREE.ColorRepresentation)
-        mat.color.multiplyScalar(props.intensity)
+  createRenderEffect(
+    () => [props.color, props.intensity, props.target, props.children, rest.material] as const,
+    () => {
+      if (!mesh) return
+      if (!props.children && !rest.material) {
+        const mat = mesh.material as MeshBasicMaterial
+        if (mat?.color) {
+          mat.color.set(props.color as THREE.ColorRepresentation)
+          mat.color.multiplyScalar(props.intensity)
+        }
       }
-    }
-    if (props.target) {
-      mesh.lookAt(
-        Array.isArray(props.target) ? new Vector3(...(props.target as [number,number,number])) : props.target as Vector3,
-      )
-    }
-  })
+      if (props.target) {
+        mesh.lookAt(
+          Array.isArray(props.target) ? new Vector3(...(props.target as [number,number,number])) : props.target as Vector3,
+        )
+      }
+    },
+  )
 
   const scale = () => {
     const s = props.scale

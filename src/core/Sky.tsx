@@ -71,7 +71,12 @@ export function Sky(props: SkyProps) {
 
   const sky = new SkyImpl()
   const scale = new Vector3()
-  createRenderEffect(() => scale.setScalar(config.distance))
+  createRenderEffect(
+    () => config.distance,
+    () => {
+      scale.setScalar(config.distance)
+    },
+  )
 
   useRef(config, sky)
 

@@ -38,7 +38,9 @@ function Refit(props: { radius: number; adjustCamera: number | boolean }) {
   const api = useBounds()
   createEffect(
     () => [props.radius, props.adjustCamera] as const,
-    ([radius, adjustCamera]) => { if (adjustCamera) api?.refresh().clip().fit() },
+    () => {
+      if (props.adjustCamera) api?.refresh().clip().fit()
+    },
   )
   return null
 }

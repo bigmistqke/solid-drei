@@ -65,14 +65,17 @@ function useCommon(arg: {
 }) {
   const [pos, dir] = [new Vector3(), new Vector3()]
 
-  createRenderEffect(() => {
-    if (isSpotLight(arg.spotlight)) {
-      arg.spotlight.shadow.mapSize.set(arg.width, arg.height)
-      arg.spotlight.shadow.needsUpdate = true
-    } else {
-      throw new Error('SpotlightShadow must be a child of a SpotLight')
-    }
-  })
+  createRenderEffect(
+    () => [arg.width, arg.height] as const,
+    () => {
+      if (isSpotLight(arg.spotlight)) {
+        arg.spotlight.shadow.mapSize.set(arg.width, arg.height)
+        arg.spotlight.shadow.needsUpdate = true
+      } else {
+        throw new Error('SpotlightShadow must be a child of a SpotLight')
+      }
+    },
+  )
 
   useFrame(() => {
     if (!arg.mesh) return

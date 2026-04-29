@@ -237,16 +237,18 @@ export function AccumulativeShadows(
     }
   })
 
-  createEffect(() => {
-    const _plm = plm()
-    _plm.configure(plane)
+  createEffect(
+    () => plm(),
+    (_plm) => {
+      _plm.configure(plane)
 
-    onCleanup(() => {
-      // Clean up render targets
-      _plm.progressiveLightMap1.dispose()
-      _plm.progressiveLightMap2.dispose()
-    })
-  })
+      onCleanup(() => {
+        // Clean up render targets
+        _plm.progressiveLightMap1.dispose()
+        _plm.progressiveLightMap2.dispose()
+      })
+    },
+  )
 
   createEffect(
     () => [config.frames, config.blend, config.limit, config.temporal, config.resolution] as const,

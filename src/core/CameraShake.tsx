@@ -77,16 +77,19 @@ export function CameraShake(props: CameraShakeProps) {
     }
   })
 
-  createEffect(() => {
-    if (props.controls) {
-      const callback = () => void (initialRotation = store.camera.rotation.clone())
-      props.controls.addEventListener('change', callback)
-      callback()
-      onCleanup(() => {
-        props.controls?.removeEventListener('change', callback)
-      })
-    }
-  })
+  createEffect(
+    () => props.controls,
+    (controls) => {
+      if (controls) {
+        const callback = () => void (initialRotation = store.camera.rotation.clone())
+        controls.addEventListener('change', callback)
+        callback()
+        onCleanup(() => {
+          controls?.removeEventListener('change', callback)
+        })
+      }
+    },
+  )
 
   const methods: ShakeController = {
     getIntensity: intensity,

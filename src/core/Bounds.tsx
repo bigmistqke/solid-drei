@@ -203,23 +203,28 @@ export function Bounds(_props: BoundsProps) {
     },
   }
 
-  createRenderEffect(() => {
-    const c = controls()
-    if (c) {
-      const stop = () => (current.animating = false)
-      c.addEventListener('start', stop)
-      onCleanup(() => c.removeEventListener('start', stop))
-    }
-  })
+  createRenderEffect(
+    () => controls(),
+    (c) => {
+      if (c) {
+        const stop = () => (current.animating = false)
+        c.addEventListener('start', stop)
+        onCleanup(() => c.removeEventListener('start', stop))
+      }
+    },
+  )
 
   let count = 0
-  createRenderEffect(() => {
-    if (props.observe || count++ === 0) {
-      api.refresh()
-      if (props.fit) api.fit()
-      if (props.clip) api.clip()
-    }
-  })
+  createRenderEffect(
+    () => [props.observe, count] as const,
+    () => {
+      if (props.observe || count++ === 0) {
+        api.refresh()
+        if (props.fit) api.fit()
+        if (props.clip) api.clip()
+      }
+    },
+  )
 
   useFrame((_, delta) => {
     if (current.animating) {

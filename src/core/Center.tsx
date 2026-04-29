@@ -74,43 +74,46 @@ export function Center(props: CenterProps) {
   const outer = new Group()
   const inner = new Group()
 
-  createEffect(() => {
-    outer.matrixWorld.identity()
-    const box3 = new Box3().setFromObject(inner, config.precise)
-    const center = new Vector3()
-    const sphere = new Sphere()
-    const width = box3.max.x - box3.min.x
-    const height = box3.max.y - box3.min.y
-    const depth = box3.max.z - box3.min.z
-    box3.getCenter(center)
-    box3.getBoundingSphere(sphere)
-    const vAlign = config.top ? height / 2 : config.bottom ? -height / 2 : 0
-    const hAlign = config.left ? -width / 2 : config.right ? width / 2 : 0
-    const dAlign = config.front ? depth / 2 : config.back ? -depth / 2 : 0
+  createEffect(
+    () => [config.cacheKey, config.precise, config.disable, config.disableX, config.disableY, config.disableZ, config.top, config.bottom, config.left, config.right, config.front, config.back] as const,
+    () => {
+      outer.matrixWorld.identity()
+      const box3 = new Box3().setFromObject(inner, config.precise)
+      const center = new Vector3()
+      const sphere = new Sphere()
+      const width = box3.max.x - box3.min.x
+      const height = box3.max.y - box3.min.y
+      const depth = box3.max.z - box3.min.z
+      box3.getCenter(center)
+      box3.getBoundingSphere(sphere)
+      const vAlign = config.top ? height / 2 : config.bottom ? -height / 2 : 0
+      const hAlign = config.left ? -width / 2 : config.right ? width / 2 : 0
+      const dAlign = config.front ? depth / 2 : config.back ? -depth / 2 : 0
 
-    outer.position.set(
-      config.disable || config.disableX ? 0 : -center.x + hAlign,
-      config.disable || config.disableY ? 0 : -center.y + vAlign,
-      config.disable || config.disableZ ? 0 : -center.z + dAlign,
-    )
+      outer.position.set(
+        config.disable || config.disableX ? 0 : -center.x + hAlign,
+        config.disable || config.disableY ? 0 : -center.y + vAlign,
+        config.disable || config.disableZ ? 0 : -center.z + dAlign,
+      )
 
-    // Only fire onCentered if the bounding box has changed
-    if (typeof config.onCentered !== 'undefined') {
-      config.onCentered({
-        parent: group.parent!,
-        container: group,
-        width,
-        height,
-        depth,
-        boundingBox: box3,
-        boundingSphere: sphere,
-        center: center,
-        verticalAlignment: vAlign,
-        horizontalAlignment: hAlign,
-        depthAlignment: dAlign,
-      })
-    }
-  })
+      // Only fire onCentered if the bounding box has changed
+      if (typeof config.onCentered !== 'undefined') {
+        config.onCentered({
+          parent: group.parent!,
+          container: group,
+          width,
+          height,
+          depth,
+          boundingBox: box3,
+          boundingSphere: sphere,
+          center: center,
+          verticalAlignment: vAlign,
+          horizontalAlignment: hAlign,
+          depthAlignment: dAlign,
+        })
+      }
+    },
+  )
 
   useRef(config, group)
 
