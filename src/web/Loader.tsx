@@ -23,7 +23,7 @@ export function Loader(_props: Partial<LoaderOptions>) {
   let progressRef = 0
   let rafRef = 0
   let progressSpanRef: HTMLSpanElement = null!
-  const [shown, setShown] = createSignal(props.initialState(progress.active))
+  const [shown, setShown] = createSignal(() => props.initialState(progress.active))
 
   createEffect(
     () => [progress.active, shown()] as const,

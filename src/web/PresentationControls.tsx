@@ -39,10 +39,10 @@ export function PresentationControls(_props: PresentationControlProps) {
   const rAzimuthMax = () => props.rotation[1] + props.azimuth[1]
 
   const [rotX, setRotX] = createSignal(
-    MathUtils.clamp(props.rotation[0], rPolarMin(), rPolarMax()),
+    () => MathUtils.clamp(props.rotation[0], rPolarMin(), rPolarMax()),
   )
   const [rotY, setRotY] = createSignal(
-    MathUtils.clamp(props.rotation[1], rAzimuthMin(), rAzimuthMax()),
+    () => MathUtils.clamp(props.rotation[1], rAzimuthMin(), rAzimuthMax()),
   )
   const [scale, setScale] = createSignal(1)
 
