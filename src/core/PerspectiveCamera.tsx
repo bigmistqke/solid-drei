@@ -87,35 +87,44 @@ export function PerspectiveCamera(props: PerspectiveCameraProps) {
     }
   })
 
-  createEffect(() => {
-    if (!offspring().isFunctional) return
-    const scene = store.scene
-    if (!(scene instanceof Scene)) return
-    useFrame(state => {
-      if (config.frames === Infinity || frameCount < config.frames) {
-        group.visible = false
-        state.gl.setRenderTarget(fbo)
-        previousEnvMap = scene.background
-        if (config.envMap) scene.background = config.envMap
-        state.gl.render(scene, camera())
-        scene.background = previousEnvMap
-        state.gl.setRenderTarget(null)
-        group.visible = true
-        frameCount++
-      }
-    })
-  })
-
-  createEffect(() => {
-    if (config.manual || !store.bounds.height) return
-    camera().aspect = store.bounds.width / store.bounds.height
-  })
-
-  createEffect(() => {
-    if (config.makeCurrent) {
-      onCleanup(store.setCamera(camera()))
+  createEffect(
+    () => offspring().isFunctional,
+    (isFunctional) => {
+      if (!isFunctional) return
+      const scene = store.scene
+      if (!(scene instanceof Scene)) return
+      useFrame(state => {
+        if (config.frames === Infinity || frameCount < config.frames) {
+          group.visible = false
+          state.gl.setRenderTarget(fbo)
+          previousEnvMap = scene.background
+          if (config.envMap) scene.background = config.envMap
+          state.gl.render(scene, camera())
+          scene.background = previousEnvMap
+          state.gl.setRenderTarget(null)
+          group.visible = true
+          frameCount++
+        }
+      })
     }
-  })
+  )
+
+  createEffect(
+    () => [config.manual, store.bounds.width, store.bounds.height] as const,
+    ([manual, width, height]) => {
+      if (manual || !height) return
+      camera().aspect = width / height
+    }
+  )
+
+  createEffect(
+    () => config.makeCurrent,
+    (makeCurrent) => {
+      if (makeCurrent) {
+        onCleanup(store.setCamera(camera()))
+      }
+    }
+  )
 
   onMount(() => camera().updateProjectionMatrix())
 

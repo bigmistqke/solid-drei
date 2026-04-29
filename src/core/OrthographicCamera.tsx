@@ -1,5 +1,4 @@
 import { processProps, useRef } from '@/utils'
-import { when } from '@/utils/conditionals'
 import type { JSX } from 'solid-js'
 import { createEffect, createMemo, onCleanup, Show } from 'solid-js'
 import { Entity, useFrame, useThree, type S3 } from 'solid-three'
@@ -89,11 +88,14 @@ export function OrthographicCamera(props: OrthographicCameraProps) {
     }
   })
 
-  createEffect(() => {
-    if (config.makeCurrent) {
-      onCleanup(store.setCamera(camera()))
+  createEffect(
+    () => config.makeCurrent,
+    (makeCurrent) => {
+      if (makeCurrent) {
+        onCleanup(store.setCamera(camera()))
+      }
     }
-  })
+  )
 
   createEffect(() => {
     if (!children().isFunctional) return
@@ -115,13 +117,12 @@ export function OrthographicCamera(props: OrthographicCameraProps) {
   })
 
   createEffect(
-    when(
-      () => config.manual,
-      () => {
-        store.bounds
+    () => [config.manual, store.bounds] as const,
+    ([manual, bounds]) => {
+      if (manual) {
         camera().updateProjectionMatrix()
-      },
-    ),
+      }
+    }
   )
 
   useRef(props, camera)

@@ -162,9 +162,12 @@ export const GizmoHelper = (props: GizmoHelperProps): any => {
     gizmo?.quaternion.setFromRotationMatrix(matrix)
   })
 
-  createEffect(() => {
-    defaultUp.copy(store.camera.up)
-  })
+  createEffect(
+    () => store.camera.up,
+    (up) => {
+      defaultUp.copy(up)
+    }
+  )
 
   return (
     <Hud renderPriority={config.renderPriority}>
