@@ -44,10 +44,8 @@ export function MarchingCubes(_props: MarchingCubesProps) {
       ),
   )
 
-  useFrame(() => {
-    marchingCubes().update()
-    marchingCubes().reset()
-  }, { priority: -1 }) // To make sure the reset runs before the balls or planes are added
+  useFrame(() => marchingCubes().reset(), { priority: -1 }) // reset before children add balls/planes
+  useFrame(() => marchingCubes().update(), { priority: 1 }) // update after all addBall calls (default priority 0)
 
   return (
     <>
