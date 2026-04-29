@@ -6,48 +6,51 @@
 |--------|---------|
 | ✅ | Ported and story tested |
 | 🧪 | Ported, no story yet |
-| 🚧 | Partial / needs work |
+| 🚧 | Story exists but broken / needs work |
 | ❌ | Not started |
 | 🔇 | Intentionally omitted |
 
 ---
 
-## Ported Components
+## Components
 
 ### Abstractions
 | Component | Status | Notes |
 |-----------|--------|-------|
+| AsciiRenderer | ✅ | |
 | Billboard | ✅ | |
 | CatmullRomLine | ✅ | |
+| Clone | ✅ | |
+| ComputedAttribute | ✅ | |
 | CubicBezierLine | ✅ | |
 | Decal | ✅ | |
 | Edges | ✅ | |
+| Facemesh | ✅ | |
 | Gltf | ✅ | |
 | GradientTexture | ✅ | |
 | Image | ✅ | |
 | Line | ✅ | |
-| MarchingCubes | ✅ | Frame ordering fixed (reset -1, addBall 0, update +1) |
-| Outlines | 🧪 | |
+| MarchingCubes | 🚧 | Component works (frame ordering fixed); story in stories_broken only |
+| Outlines | ✅ | |
 | PositionalAudio | ✅ | |
 | QuadraticBezierLine | ✅ | |
 | Sampler | ✅ | |
 | ScreenSpace | ✅ | |
-| Splat | 🧪 | Full port: streaming binary loader, Web Worker depth sort, GLSL shader |
+| Splat | 🧪 | Full port (streaming loader, Web Worker depth sort, GLSL shader); no story yet |
+| SpriteAnimator | ✅ | |
 | Svg | ✅ | |
 | Text | ✅ | |
 | Text3D | ✅ | |
 | Trail | ✅ | |
-| AsciiRenderer | ✅ | |
-| Clone | ✅ | |
-| ComputedAttribute | ✅ | |
-| Facemesh | ✅ | |
+| useAnimations | ✅ | |
+| useAutolisten | ✅ | |
 
 ### Cameras
 | Component | Status | Notes |
 |-----------|--------|-------|
 | CubeCamera | ✅ | |
 | CubeTexture | ✅ | |
-| Fisheye | 🧪 | |
+| Fisheye | ✅ | |
 | OrthographicCamera | ✅ | |
 | PerspectiveCamera | ✅ | |
 
@@ -57,13 +60,13 @@
 | ArcballControls | ✅ | |
 | CameraControls | ✅ | |
 | DeviceOrientationControls | ✅ | |
-| DragControls | 🧪 | |
+| DragControls | ✅ | |
 | FaceControls | ✅ | |
 | FirstPersonControls | ✅ | |
 | FlyControls | ✅ | |
 | KeyboardControls | ✅ | |
 | MapControls | ✅ | |
-| MotionPathControls | 🧪 | |
+| MotionPathControls | ✅ | |
 | OrbitControls | ✅ | |
 | PivotControls | ✅ | |
 | PointerLockControls | ✅ | |
@@ -79,6 +82,7 @@
 | GizmoViewcube | ✅ | |
 | GizmoViewport | ✅ | |
 | Grid | ✅ | |
+| useHelper | ✅ | |
 
 ### Loaders
 | Hook | Status | Notes |
@@ -90,7 +94,7 @@
 | useKTX2 | ✅ | |
 | useLoader | ✅ | |
 | useProgress | ✅ | |
-| useSpriteLoader | 🧪 | |
+| useSpriteLoader | ✅ | |
 | useTexture | ✅ | |
 | useTrailTexture | ✅ | |
 | useVideoTexture | ✅ | |
@@ -99,19 +103,18 @@
 | Hook / Component | Status | Notes |
 |------------------|--------|-------|
 | FaceLandmarker | ✅ | |
-| useAnimations | ✅ | |
+| Stats | ✅ | |
+| StatsGl | ✅ | |
 | useAspect | ✅ | |
-| useAutolisten | ✅ | |
 | useBoxProjectedEnv | ✅ | |
 | useBVH | ✅ | |
 | useCamera | ✅ | |
-| useContextBridge | 🧪 | Rewritten — lazy children, no premature access |
+| useContextBridge | ✅ | Rewritten — lazy children via thunk chain |
 | useCubeCamera | ✅ | |
 | useCursor | ✅ | |
 | useDepthBuffer | ✅ | |
 | useDetectGPU | ✅ | |
 | useFBO | ✅ | |
-| useHelper | ✅ | |
 | useIntersect | ✅ | |
 | useTrail | ✅ | |
 
@@ -128,7 +131,7 @@
 | BakeShadows | ✅ | |
 | Detailed | ✅ | |
 | Instances | ✅ | |
-| Merged | 🧪 | |
+| Merged | ✅ | |
 | meshBounds | ✅ | |
 | PerformanceMonitor | ✅ | |
 | Points | ✅ | |
@@ -141,8 +144,9 @@
 | Hud | ✅ | |
 | Mask | ✅ | |
 | MeshPortalMaterial | ✅ | |
-| RenderCubeTexture | 🧪 | |
+| RenderCubeTexture | ✅ | |
 | RenderTexture | ✅ | |
+| View | ✅ | |
 
 ### Shaders / Materials
 | Component | Status | Notes |
@@ -153,9 +157,9 @@
 | MeshRefractionMaterial | ✅ | |
 | MeshTransmissionMaterial | ✅ | |
 | MeshWobbleMaterial | ✅ | |
-| MultiMaterial | 🧪 | |
+| MultiMaterial | ✅ | |
 | PointMaterial | ✅ | |
-| ShadowAlpha | 🧪 | |
+| ShadowAlpha | ✅ | |
 | shaderMaterial | ✅ | |
 | softShadows | ✅ | |
 
@@ -165,7 +169,7 @@
 | Box, Sphere, Plane, etc. | ✅ | All primitive shapes |
 | RoundedBox | ✅ | |
 | ScreenQuad | ✅ | |
-| ScreenSizer | 🧪 | |
+| ScreenSizer | ✅ | |
 
 ### Staging
 | Component | Status | Notes |
@@ -179,7 +183,7 @@
 | Center | ✅ | |
 | Cloud | ✅ | |
 | ContactShadows | ✅ | |
-| Environment | 🧪 | HDRI/EXR/cube + presets via Poly Haven CDN |
+| Environment | 🚧 | Component ported (HDRI/EXR/cube + presets); story in stories_broken only |
 | Float | ✅ | |
 | Lightformer | ✅ | |
 | Resize | ✅ | |
@@ -191,14 +195,15 @@
 | Stars | ✅ | |
 | useMatcapTexture | ✅ | |
 | useDreiNormalTexture | ✅ | |
+| useSurfaceSampler | ✅ | |
 | Wireframe | ✅ | |
 
 ### Web
 | Component | Status | Notes |
 |-----------|--------|-------|
 | Html | ✅ | |
-| ScreenVideoTexture | 🧪 | |
-| WebcamVideoTexture | 🧪 | |
+| ScreenVideoTexture | ✅ | |
+| WebcamVideoTexture | ✅ | |
 
 ---
 
@@ -207,14 +212,15 @@
 | Component | Reason |
 |-----------|--------|
 | Reflector | Deprecated upstream — use `MeshReflectorMaterial` |
-| ScrollControls (full) | Pending solid-three scroll event API |
 | useEnvironment | API covered by `Environment` component directly |
 
 ---
 
-## Known Gaps / Future Work
+## Known Gaps
 
-- **Stories**: Several ported components (Splat, Fisheye, DragControls, MotionPathControls, useSpriteLoader, MultiMaterial, ShadowAlpha, ScreenSizer, RenderCubeTexture, Merged, ScreenVideoTexture, WebcamVideoTexture, Environment, useContextBridge) still need Storybook stories.
-- **Environment advanced**: `frames`, `ground projection`, custom children portal not yet implemented.
-- **FaceControls**: Requires `@mediapipe/tasks-vision` — peer dep, needs install instructions.
-- **Publish**: Package not yet published to npm. Needs final API review + changelog.
+- **Splat**: needs a Storybook story.
+- **MarchingCubes**: story in `stories_broken/` — needs porting to current API.
+- **Environment**: story in `stories_broken/` — needs porting to current API.
+- **Environment advanced**: `frames`, ground projection, and custom children portal not yet implemented.
+- **FaceControls**: requires `@mediapipe/tasks-vision` — needs install instructions in README.
+- **Publish**: not yet published to npm. Needs final API review + changelog.
