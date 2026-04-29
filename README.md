@@ -26,7 +26,7 @@ import { PerspectiveCamera, PositionalAudio, ... } from 'solid-drei'
 
 ### Index
 
-> `solid-drei`: most components are ported. `useContextBridge` is blocked (needs internal solid-three API). `ScrollControls` and `PresentationControls` are exported with limitations. Checked means tested with storybook.
+> `solid-drei`: most components are ported. `ScrollControls` and `PresentationControls` are exported with limitations. Checked means tested with storybook.
 
 <table>
   <tr>
@@ -112,7 +112,7 @@ import { PerspectiveCamera, PositionalAudio, ... } from 'solid-drei'
           <li>- [x] <a href="#stats-gl">StatsGl</a></li>
           <li>- [x] <a href="#wireframe">Wireframe</a></li>
           <li>- [x] <a href="#usedepthbuffer">useDepthBuffer</a></li>
-          <li>- [ ] <a href="#usecontextbridge">useContextBridge</a></li>
+          <li>- [x] <a href="#usecontextbridge">useContextBridge</a></li>
           <li>- [x] <a href="#usefbo">useFBO</a></li>
           <li>- [x] <a href="#usecamera">useCamera</a></li>
           <li>- [x] <a href="#usecubecamera">useCubeCamera</a></li>
