@@ -60,7 +60,7 @@ Things to strip from unported components during porting:
 | Sampler | ✅ | |
 | Bvh | ✅ | |
 | Outlines | ✅ | |
-| Splat | ✅ | stub, requires `@pmndrs/gaussian-splats-3d` |
+| Splat | ✅ | |
 | SpriteAnimator | ✅ | |
 | Example | ✅ | |
 
@@ -218,7 +218,7 @@ Things to strip from unported components during porting:
 | Component | Status | Notes |
 |-----------|--------|-------|
 | Hud | ✅ | |
-| MarchingCubes | 🚧 | |
+| MarchingCubes | ✅ | |
 | RenderTexture | ✅ | |
 | Mask | ✅ | |
 | MeshPortalMaterial | ✅ | |
@@ -279,7 +279,7 @@ Things to strip from unported components during porting:
 | | Bvh | ✅ | Ported, story missing |
 | | Example | ✅ | Ported, story missing |
 | | Outlines | ✅ | Ported, story missing |
-| | Splat | ✅ | Ported (stub, requires `@pmndrs/gaussian-splats-3d`), story missing |
+| | Splat | ✅ | Story implemented |
 | | SpriteAnimator | ✅ | Ported, story missing |
 | **Cameras** | CubeCamera | ✅ | Story implemented |
 | | OrthographicCamera | ✅ | Story implemented |
@@ -364,7 +364,7 @@ Things to strip from unported components during porting:
 | | PerformanceMonitor | ✅ | Ported, story missing |
 | | Merged | ✅ | Ported, story missing |
 | **Portals** | Hud | ✅ | Ported, story missing |
-| | MarchingCubes | 🚧 | Partially ported, needs completion |
+| | MarchingCubes | ✅ | Story implemented |
 | | RenderTexture | ✅ | Ported, story missing |
 | | Mask | ✅ | Ported, story missing |
 | | MeshPortalMaterial | ✅ | Ported, may have edge cases |
@@ -446,7 +446,6 @@ Things to strip from unported components during porting:
 
 | Component | Status | Issues |
 |-----------|--------|-------|
-| MarchingCubes | 🚧 | Partially ported, needs completion |
 | Environment | 🔒 | Blocked - needs solid-three portal + environment map API |
 | ScrollControls | ✅ | Ported, limited without `store.setEvents`/`compute` |
 | PresentationControls | ✅ | Ported, reimplemented without React deps |

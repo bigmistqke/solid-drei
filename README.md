@@ -78,7 +78,7 @@ import { PerspectiveCamera, PositionalAudio, ... } from 'solid-drei'
           <li>- [x] <a href="#computedattribute">Computed Attribute</a></li>
           <li>- [x] <a href="#clone">Clone</a></li>
           <li>- [x] <a href="#useanimations">useAnimations</a></li>
-          <li>- [ ] <a href="#marchingcubes">MarchingCubes</a></li>
+          <li>- [x] <a href="#marchingcubes">MarchingCubes</a></li>
           <li>- [x] <a href="#facemesh">Facemesh</a></li>
           <li>- [x] <a href="#decal">Decal</a></li>
           <li>- [x] <a href="#svg">Svg</a></li>
