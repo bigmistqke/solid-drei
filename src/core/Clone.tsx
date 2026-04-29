@@ -76,7 +76,7 @@ export function Clone(_props: CloneProps) {
       fallback={
         <Entity from={Group} ref={_props.ref as any} {...(rest as any)}>
           <For each={object() as Object3D[]}>
-            {o => <Clone object={o} {...config} />}
+            {o => <Clone object={o()} {...config} />}
           </For>
           {props.children}
         </Entity>
@@ -89,8 +89,9 @@ export function Clone(_props: CloneProps) {
           <El {...(spread as any)} {...(rest as any)} ref={_props.ref as any}>
             <For each={obj.children}>
               {child => {
-                if ((child as any).type === 'Bone') return <Entity from={child} {...config} />
-                return <Clone object={child} {...config} isChild />
+                const childValue = child()
+                if ((childValue as any).type === 'Bone') return <Entity from={childValue} {...config} />
+                return <Clone object={childValue} {...config} isChild />
               }}
             </For>
             {props.children}

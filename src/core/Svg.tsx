@@ -115,17 +115,17 @@ export function Svg(props: SvgProps) {
               <Show
                 when={
                   !config.skipFill &&
-                  path.userData?.style.fill !== undefined &&
-                  path.userData.style.fill !== 'none'
+                  path().userData?.style.fill !== undefined &&
+                  path().userData.style.fill !== 'none'
                 }
               >
-                <For each={SVGLoader.createShapes(path)}>
+                <For each={SVGLoader.createShapes(path())}>
                   {(shape, s) => (
                     <T.Mesh>
-                      <T.ShapeGeometry args={[shape]} />
+                      <T.ShapeGeometry args={[shape()]} />
                       <T.MeshBasicMaterial
-                        color={path.userData!.style.fill}
-                        opacity={path.userData!.style.fillOpacity}
+                        color={path().userData!.style.fill}
+                        opacity={path().userData!.style.fillOpacity}
                         transparent={true}
                         side={DoubleSide}
                         depthWrite={false}
@@ -138,16 +138,16 @@ export function Svg(props: SvgProps) {
               <Show
                 when={
                   !config.skipStrokes &&
-                  path.userData?.style.stroke !== undefined &&
-                  path.userData.style.stroke !== 'none'
+                  path().userData?.style.stroke !== undefined &&
+                  path().userData.style.stroke !== 'none'
                 }
               >
-                <For each={path.subPaths}>
+                <For each={path().subPaths}>
                   {(_subPath, s) => (
                     <T.Mesh geometry={strokeGeometries()?.[p()]![s()]} {...config.strokeMeshProps}>
                       <T.MeshBasicMaterial
-                        color={path.userData!.style.stroke}
-                        opacity={path.userData!.style.strokeOpacity}
+                        color={path().userData!.style.stroke}
+                        opacity={path().userData!.style.strokeOpacity}
                         transparent={true}
                         side={DoubleSide}
                         depthWrite={false}

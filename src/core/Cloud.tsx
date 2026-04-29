@@ -69,12 +69,12 @@ export function Cloud(props: CloudProps) {
       <Entity from={group} position={[0, 0, (config.segments / 2) * config.depth]}>
         <For each={clouds()}>
           {(cloud, index) => (
-            <Billboard position={[cloud.x, cloud.y, -index() * config.depth]}>
-              <Plane scale={cloud.scale} rotation={[0, 0, 0]}>
+            <Billboard position={[cloud().x, cloud().y, -index() * config.depth]}>
+              <Plane scale={cloud().scale} rotation={[0, 0, 0]}>
                 <T.MeshStandardMaterial
                   map={cloudTexture()}
                   transparent
-                  opacity={(cloud.scale / 6) * cloud.density * config.opacity}
+                  opacity={(cloud().scale / 6) * cloud().density * config.opacity}
                   depthTest={config.depthTest}
                   color={config.color}
                 />

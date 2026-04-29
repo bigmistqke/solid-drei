@@ -181,11 +181,11 @@ export function GizmoViewcube(props: GenericProps) {
       <FaceCube {...props} />
       <For each={EDGES}>
         {(edge, index) => (
-          <EdgeCube position={edge} dimensions={EDGE_DIMENSIONS[index()]} {...props} />
+          <EdgeCube position={edge()} dimensions={EDGE_DIMENSIONS[index()]} {...props} />
         )}
       </For>
       <For each={CORNERS}>
-        {corner => <EdgeCube position={corner} dimensions={CORNER_DIMENSIONS} {...props} />}
+        {corner => <EdgeCube position={corner()} dimensions={CORNER_DIMENSIONS} {...props} />}
       </For>
     </Entity>
   )
