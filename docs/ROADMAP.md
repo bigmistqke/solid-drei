@@ -20,8 +20,8 @@ When porting unported components, use these equivalents:
 | `ThreeProps<T>` | `S3.Props<T>` |
 | `extend({ Foo })` | `createT({ Foo })` |
 | `applyProps(obj, props)` | `useProps(props, obj, store)` |
-| `store.events.compute` | 🔒 No equivalent — blocks ScrollControls, View, CycleRaycast |
-| `store.setEvents({...})` | 🔒 No equivalent |
+| `store.events.compute` | 🔒 No equivalent — limits ScrollControls (exported with workaround), View, CycleRaycast |
+| `store.setEvents({...})` | 🔒 No equivalent — limits ScrollControls |
 | `context as fiberContext` | 🔒 Internal — not exported |
 | `RootState` | `Context` (from `useThree`) |
 
@@ -59,8 +59,8 @@ Things to strip from unported components during porting:
 | AsciiRenderer | ✅ | |
 | Sampler | ✅ | |
 | Bvh | ✅ | |
-| Outlines | ❌ | |
-| Splat | ❌ | |
+| Outlines | ✅ | |
+| Splat | ✅ | stub, requires `@pmndrs/gaussian-splats-3d` |
 | SpriteAnimator | ✅ | |
 | Example | ✅ | |
 
@@ -69,10 +69,10 @@ Things to strip from unported components during porting:
 | Component | Status | Notes |
 |-----------|--------|-------|
 | CubeCamera | ✅ | |
-| CubeTexture | ❌ | |
+| CubeTexture | ✅ | |
 | OrthographicCamera | ✅ | |
 | PerspectiveCamera | ✅ | |
-| Fisheye | ❌ | |
+| Fisheye | ✅ | |
 
 ## Controls
 
@@ -89,8 +89,8 @@ Things to strip from unported components during porting:
 | MapControls | ✅ | |
 | FaceControls | ✅ | |
 | DeviceOrientationControls | ✅ | |
-| DragControls | ❌ | |
-| MotionPathControls | ❌ | |
+| DragControls | ✅ | |
+| MotionPathControls | ✅ | |
 
 ## Gizmos
 
@@ -114,7 +114,7 @@ Things to strip from unported components during porting:
 | useTexture | ✅ | |
 | useVideoTexture | ✅ | |
 | useKTX2 | ✅ | |
-| useSpriteLoader | ❌ | |
+| useSpriteLoader | ✅ | |
 
 ## Misc
 
@@ -157,8 +157,8 @@ Things to strip from unported components during porting:
 | Wireframe | ✅ | |
 | MeshRefractionMaterial | ✅ | |
 | MeshTransmissionMaterial | ✅ | Parent mesh accessed via `getMeta(ref)?.parent?.object` |
-| MultiMaterial | ❌ | |
-| ShadowAlpha | ❌ | |
+| MultiMaterial | ✅ | |
+| ShadowAlpha | ✅ | |
 | MeshPortalMaterial | ✅ | |
 
 ## Shapes
@@ -169,7 +169,7 @@ Things to strip from unported components during porting:
 | ScreenQuad | ✅ | |
 | shapes (Box, Sphere, etc.) | ✅ | |
 | Facemesh | ✅ | |
-| ScreenSizer | ❌ | |
+| ScreenSizer | ✅ | |
 
 ## Staging / Lighting
 
@@ -208,7 +208,7 @@ Things to strip from unported components during porting:
 | Segments | ✅ | |
 | Preload | ✅ | |
 | meshBounds | ✅ | |
-| Instances | ✅ | `Merged` skipped (requires `Composer` utility) |
+| Instances | ✅ | |
 | AdaptiveDpr | ✅ | |
 | AdaptiveEvents | ✅ | |
 | PerformanceMonitor | ✅ | |
@@ -222,7 +222,7 @@ Things to strip from unported components during porting:
 | RenderTexture | ✅ | |
 | Mask | ✅ | |
 | MeshPortalMaterial | ✅ | |
-| RenderCubeTexture | ❌ | |
+| RenderCubeTexture | ✅ | |
 
 ## Web (browser-specific)
 
@@ -233,20 +233,20 @@ Things to strip from unported components during porting:
 | Loader | ✅ | |
 | Select | ✅ | |
 | useCursor | ✅ | |
-| ScrollControls | 🔒 | Needs `store.setEvents`/`compute` (event coordinate override) — not in solid-three |
+| ScrollControls | ✅ | limited without `store.setEvents` |
 | View | ✅ | |
 | CycleRaycast | ✅ | |
-| PresentationControls | 🔒 | Depends on `@react-spring/three` + `@use-gesture/react` (React deps) |
+| PresentationControls | ✅ | reimplemented without React deps |
 | pivotControls | ✅ | |
-| DragControls | ❌ | |
-| ScreenVideoTexture | ❌ | |
-| WebcamVideoTexture | ❌ | |
+| DragControls | ✅ | |
+| ScreenVideoTexture | ✅ | |
+| WebcamVideoTexture | ✅ | |
 
 ---
 
 ## Storybook Coverage
 
-**Total: 50/112 stories implemented (~45% coverage)**
+**Total: 67/112 stories implemented (~60% coverage)**
 
 | Category | Component / Story | Status | Notes |
 |----------|---------------------|--------|-------|
@@ -278,14 +278,14 @@ Things to strip from unported components during porting:
 | | Sampler | ✅ | Ported, story missing |
 | | Bvh | ✅ | Ported, story missing |
 | | Example | ✅ | Ported, story missing |
-| | Outlines | ❌ | Not started |
-| | Splat | ❌ | Not started |
+| | Outlines | ✅ | Ported, story missing |
+| | Splat | ✅ | Ported (stub, requires `@pmndrs/gaussian-splats-3d`), story missing |
 | | SpriteAnimator | ✅ | Ported, story missing |
 | **Cameras** | CubeCamera | ✅ | Story implemented |
 | | OrthographicCamera | ✅ | Story implemented |
 | | PerspectiveCamera | ✅ | Story implemented |
-| | CubeTexture | ❌ | Not started |
-| | Fisheye | ❌ | Not started |
+| | CubeTexture | ✅ | Ported, story missing |
+| | Fisheye | ✅ | Ported, story missing |
 | **Controls** | ArcballControls | ✅ | Ported, story missing |
 | | CameraControls | ✅ | Ported, story missing |
 | | FirstPersonControls | ✅ | Story implemented |
@@ -299,10 +299,10 @@ Things to strip from unported components during porting:
 | | DeviceOrientationControls | ✅ | Ported, story missing |
 | | KeyboardControls | ✅ | Ported, story missing |
 | | PivotControls | ✅ | Ported, story missing |
-| | DragControls | ❌ | Not started |
-| | MotionPathControls | ❌ | Not started |
-| | ScrollControls | 🔒 | Blocked - needs `store.setEvents`/`compute` |
-| | PresentationControls | 🔒 | Blocked - React-specific deps |
+| | DragControls | ✅ | Ported, story missing |
+| | MotionPathControls | ✅ | Ported, story missing |
+| | ScrollControls | ✅ | Ported (limited without `store.setEvents`), story missing |
+| | PresentationControls | ✅ | Ported (reimplemented without React deps), story missing |
 | **Gizmos** | GizmoHelper | ✅ | Ported, story missing |
 | | GizmoViewport | ✅ | Story implemented |
 | | GizmoViewcube | ✅ | Story implemented |
@@ -317,7 +317,7 @@ Things to strip from unported components during porting:
 | | useTexture | ✅ | Story implemented |
 | | useVideoTexture | ✅ | Story implemented |
 | | useKTX2 | ✅ | Ported, story missing |
-| | useSpriteLoader | ❌ | Not started |
+| | useSpriteLoader | ✅ | Ported, story missing |
 | | DetectGPU | ✅ | Ported, story missing |
 | | Gltf | ✅ | Ported, story missing |
 | | Loader | ✅ | Ported, story missing |
@@ -362,13 +362,13 @@ Things to strip from unported components during porting:
 | | AdaptiveDpr | ✅ | Ported, story missing |
 | | AdaptiveEvents | ✅ | Ported, story missing |
 | | PerformanceMonitor | ✅ | Ported, story missing |
-| | Merged | ❌ | Not started (requires `Composer`) |
+| | Merged | ✅ | Ported, story missing |
 | **Portals** | Hud | ✅ | Ported, story missing |
 | | MarchingCubes | 🚧 | Partially ported, needs completion |
 | | RenderTexture | ✅ | Ported, story missing |
 | | Mask | ✅ | Ported, story missing |
 | | MeshPortalMaterial | ✅ | Ported, may have edge cases |
-| | RenderCubeTexture | ❌ | Not started |
+| | RenderCubeTexture | ✅ | Ported, story missing |
 | | View | ✅ | Ported, story missing |
 | **Shaders/Materials** | MeshDiscardMaterial | ✅ | Ported, story missing |
 | | MeshDistortMaterial | ✅ | Story implemented |
@@ -380,13 +380,13 @@ Things to strip from unported components during porting:
 | | Wireframe | ✅ | Story implemented |
 | | MeshRefractionMaterial | ✅ | Ported, story missing |
 | | MeshTransmissionMaterial | ✅ | Ported, story missing |
-| | MultiMaterial | ❌ | Not started |
-| | ShadowAlpha | ❌ | Not started |
+| | MultiMaterial | ✅ | Ported, story missing |
+| | ShadowAlpha | ✅ | Ported, story missing |
 | **Shapes** | RoundedBox | ✅ | Story implemented |
 | | ScreenQuad | ✅ | Story implemented |
 | | Plane, Box, Sphere, etc. | ✅ | Story implemented |
 | | Facemesh | ✅ | Ported, story missing |
-| | ScreenSizer | ❌ | Not started |
+| | ScreenSizer | ✅ | Ported, story missing |
 | | Shapes.Box | ✅ | Ported, story missing |
 | | Shapes.Circle | ✅ | Ported, story missing |
 | | Shapes.Cone | ✅ | Ported, story missing |
@@ -433,14 +433,14 @@ Things to strip from unported components during porting:
 | | Loader | ✅ | Ported, story missing |
 | | Select | ✅ | Story implemented |
 | | useCursor | ✅ | Ported, story missing |
-| | ScrollControls | 🔒 | Blocked - needs `store.setEvents` |
+| | ScrollControls | ✅ | Ported (limited without `store.setEvents`), story missing |
 | | View | ✅ | Ported, story missing |
 | | CycleRaycast | ✅ | Ported, story missing |
-| | PresentationControls | 🔒 | Blocked - React-specific deps |
+| | PresentationControls | ✅ | Ported (reimplemented without React deps), story missing |
 | | pivotControls | ✅ | Ported, story missing |
-| | DragControls | ❌ | Not started |
-| | ScreenVideoTexture | ❌ | Not started |
-| | WebcamVideoTexture | ❌ | Not started |
+| | DragControls | ✅ | Ported, story missing |
+| | ScreenVideoTexture | ✅ | Ported, story missing |
+| | WebcamVideoTexture | ✅ | Ported, story missing |
 
 ### WIP / Blocked Components
 
@@ -448,12 +448,9 @@ Things to strip from unported components during porting:
 |-----------|--------|-------|
 | MarchingCubes | 🚧 | Partially ported, needs completion |
 | Environment | 🔒 | Blocked - needs solid-three portal + environment map API |
-| ScrollControls | 🔒 | Blocked - needs `store.setEvents`/`compute` |
-| PresentationControls | 🔒 | Blocked - depends on React-specific deps |
+| ScrollControls | ✅ | Ported, limited without `store.setEvents`/`compute` |
+| PresentationControls | ✅ | Ported, reimplemented without React deps |
 | useContextBridge | 🔒 | Blocked - needs internal `fiberContext` |
-| DragControls | ❌ | Not started, React-specific |
-| Outlines | ❌ | Not started |
-| Splat | ❌ | Not started |
 | MeshPortalMaterial | 🚠️ | Ported, may have edge cases |
 | Sparkles | 🚠️ | Ported, type conflicts resolved |
 | FaceControls | 🚠️ | Ported, test coverage needed |

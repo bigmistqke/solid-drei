@@ -26,7 +26,7 @@ import { PerspectiveCamera, PositionalAudio, ... } from 'solid-drei'
 
 ### Index
 
-> `solid-three` all are ported, except `<PresentationalControls/>` and `useContextBridge`. checked equals tested with storybook.
+> `solid-drei`: most components are ported. `useContextBridge` is blocked (needs internal solid-three API). `ScrollControls` and `PresentationControls` are exported with limitations. Checked means tested with storybook.
 
 <table>
   <tr>
@@ -48,8 +48,8 @@ import { PerspectiveCamera, PositionalAudio, ... } from 'solid-drei'
           <li>- [x] <a href="#controls">ArcballControls</a></li>
           <li>- [x] <a href="#controls">PointerLockControls</a></li>
           <li>- [x] <a href="#controls">FirstPersonControls</a></li>          
-          <li>- [ ] <a href="#scrollcontrols">ScrollControls</a></li>
-          <li>- [ ] <a href="#presentationcontrols">PresentationControls</a></li>
+          <li>- [x] <a href="#scrollcontrols">ScrollControls</a></li>
+          <li>- [x] <a href="#presentationcontrols">PresentationControls</a></li>
           <li>- [x] <a href="#keyboardcontrols">KeyboardControls</a></li>
           <li>- [x] <a href="#facecontrols">FaceControls</a></li>
           <li>- [x] <a href="#pivotcontrols">PivotControls</a></li>
@@ -154,7 +154,7 @@ import { PerspectiveCamera, PositionalAudio, ... } from 'solid-drei'
         <li><a href="#performance">Performance</a></li>
         <ul>
           <li>- [x] <a href="#instances">Instances</a></li>
-          <li>- [ ] <a href="#merged">Merged</a></li>
+          <li>- [x] <a href="#merged">Merged</a></li>
           <li>- [x] <a href="#points">Points</a></li>
           <li>- [x] <a href="#segments">Segments</a></li>
           <li>- [x] <a href="#detailed">Detailed</a></li>
