@@ -169,23 +169,26 @@ function WireframeWithoutCustomGeo(
   const uniforms = createMemo(getUniforms)
   useWireframeUniforms(uniforms, rest)
 
-  createEffect(() => {
-    const geometry = getInputGeometry(object3d)
+  createEffect(
+    () => object3d,
+    () => {
+      const geometry = getInputGeometry(object3d)
 
-    if (!geometry) {
-      throw new Error(
-        'Wireframe: Must be a child of a Mesh, Line or Points object or specify a geometry prop.',
-      )
-    }
-    const original = geometry.clone()
+      if (!geometry) {
+        throw new Error(
+          'Wireframe: Must be a child of a Mesh, Line or Points object or specify a geometry prop.',
+        )
+      }
+      const original = geometry.clone()
 
-    setBarycentricCoordinates(geometry, props.simplify)
+      setBarycentricCoordinates(geometry, props.simplify)
 
-    onCleanup(() => {
-      geometry.copy(original)
-      original.dispose()
-    })
-  })
+      onCleanup(() => {
+        geometry.copy(original)
+        original.dispose()
+      })
+    },
+  )
 
   onMount(() => {
     const parentMesh = object3d.parent as Mesh<BufferGeometry, Material>

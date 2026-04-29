@@ -136,10 +136,13 @@ export const View = (_props: ViewProps) => {
 
   const [ready, setReady] = createSignal(false)
 
-  createEffect(() => {
-    rect = props.track.getBoundingClientRect()
-    setReady(true)
-  })
+  createEffect(
+    () => props.track,
+    () => {
+      rect = props.track.getBoundingClientRect()
+      setReady(true)
+    },
+  )
 
   return (
     <Show when={ready()}>

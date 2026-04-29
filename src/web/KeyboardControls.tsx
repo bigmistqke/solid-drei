@@ -40,13 +40,16 @@ export function KeyboardControls(props: KeyboardControlsProps) {
   const key = () => props.map.map(item => item.name + item.keys).join('-')
   const [controls, setControls] = createStore<Record<string, boolean>>({})
 
-  createRenderEffect(() => {
-    setControls(() => props.map.reduce((prev, cur) => ({ ...prev, [cur.name]: false }), {}))
-  })
+  createRenderEffect(
+    () => props.map,
+    () => {
+      setControls(() => props.map.reduce((prev, cur) => ({ ...prev, [cur.name]: false }), {}))
+    },
+  )
 
   createEffect(
-    () => key(),
-    (keyValue) => {
+    () => [key(), props.domElement] as const,
+    () => {
       const config = props.map.map(({ name, keys, up }) => ({
         keys,
         up,
@@ -97,7 +100,7 @@ export function KeyboardControls(props: KeyboardControlsProps) {
   function sub<T extends boolean>(boolean: Accessor<T>, effect: (pressed: T) => void) {
     createRenderEffect(
       () => boolean(),
-      (value) => effect(value),
+      (value: T) => effect(value),
     )
   }
 

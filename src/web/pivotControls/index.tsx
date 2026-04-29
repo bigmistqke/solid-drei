@@ -177,38 +177,47 @@ export function PivotControls(_props: PivotControlsProps) {
   let childrenRef: THREE.Group = null!
   const translation: [number, number, number] = [0, 0, 0]
 
-  createRenderEffect(() => {
-    if (!config.anchor) return
-    childrenRef.updateWorldMatrix(true, true)
+  createRenderEffect(
+    () => config.anchor,
+    () => {
+      if (!config.anchor) return
+      childrenRef.updateWorldMatrix(true, true)
 
-    mPInv.copy(childrenRef.matrixWorld).invert()
-    bb.makeEmpty()
-    childrenRef.traverse((obj: any) => {
-      if (!obj.geometry) return
-      if (!obj.geometry.boundingBox) obj.geometry.computeBoundingBox()
-      mL.copy(obj.matrixWorld).premultiply(mPInv)
-      bbObj.copy(obj.geometry.boundingBox)
-      bbObj.applyMatrix4(mL)
-      bb.union(bbObj)
-    })
-    vCenter.copy(bb.max).add(bb.min).multiplyScalar(0.5)
-    vSize.copy(bb.max).sub(bb.min).multiplyScalar(0.5)
-    vAnchorOffset
-      .copy(vSize)
-      .multiply(new THREE.Vector3(...config.anchor))
-      .add(vCenter)
-    vPosition.set(...config.offset).add(vAnchorOffset)
-    gizmoRef.position.copy(vPosition)
-  })
+      mPInv.copy(childrenRef.matrixWorld).invert()
+      bb.makeEmpty()
+      childrenRef.traverse((obj: any) => {
+        if (!obj.geometry) return
+        if (!obj.geometry.boundingBox) obj.geometry.computeBoundingBox()
+        mL.copy(obj.matrixWorld).premultiply(mPInv)
+        bbObj.copy(obj.geometry.boundingBox)
+        bbObj.applyMatrix4(mL)
+        bb.union(bbObj)
+      })
+      vCenter.copy(bb.max).add(bb.min).multiplyScalar(0.5)
+      vSize.copy(bb.max).sub(bb.min).multiplyScalar(0.5)
+      vAnchorOffset
+        .copy(vSize)
+        .multiply(new THREE.Vector3(...config.anchor))
+        .add(vCenter)
+      vPosition.set(...config.offset).add(vAnchorOffset)
+      gizmoRef.position.copy(vPosition)
+    },
+  )
 
-  createRenderEffect(() => {
-    if (config.matrix && config.matrix instanceof THREE.Matrix4) ref.matrix = config.matrix
-  })
+  createRenderEffect(
+    () => config.matrix,
+    () => {
+      if (config.matrix && config.matrix instanceof THREE.Matrix4) ref.matrix = config.matrix
+    },
+  )
 
-  createEffect(() => {
-    if (typeof config.ref === 'function') config.ref(ref)
-    else config.ref = ref
-  })
+  createEffect(
+    () => config.ref,
+    () => {
+      if (typeof config.ref === 'function') config.ref(ref)
+      else config.ref = ref
+    },
+  )
 
   const vector = new THREE.Vector3()
   const store = useThree()

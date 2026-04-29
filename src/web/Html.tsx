@@ -323,72 +323,84 @@ export function Html(props: HtmlProps) {
       `,
   }))
 
-  createRenderEffect(() => {
-    const el = store.gl.domElement as HTMLCanvasElement
+  createRenderEffect(
+    () => config.occlude,
+    () => {
+      const el = store.gl.domElement as HTMLCanvasElement
 
-    if (config.occlude && config.occlude === 'blending') {
-      el.style.zIndex = `${Math.floor(config.zIndexRange[0] / 2)}`
-      el.style.position = 'absolute'
-      el.style.pointerEvents = 'none'
-    } else {
-      el.style.zIndex = null!
-      el.style.position = null!
-      el.style.pointerEvents = null!
-    }
-  })
+      if (config.occlude && config.occlude === 'blending') {
+        el.style.zIndex = `${Math.floor(config.zIndexRange[0] / 2)}`
+        el.style.position = 'absolute'
+        el.style.pointerEvents = 'none'
+      } else {
+        el.style.zIndex = null!
+        el.style.position = null!
+        el.style.pointerEvents = null!
+      }
+    },
+  )
 
   // s3f:   should we have group be a signal and return it back to a renderEffect?
   createEffect(
-    when(group, group => {
-      store.scene.updateMatrixWorld()
-      if (config.transform) {
-        element().style.cssText = `position:absolute;top:0;left:0;pointer-events:none;overflow:hidden;`
-      } else {
-        const vec = config.calculatePosition(group, store.camera, store.bounds)
-        element().style.cssText = `position:absolute;top:0;left:0;transform:translate3d(${vec[0]}px,${vec[1]}px,0);transform-origin:0 0;`
+    () => group,
+    (g) => {
+      if (g) {
+        store.scene.updateMatrixWorld()
+        if (config.transform) {
+          element().style.cssText = `position:absolute;top:0;left:0;pointer-events:none;overflow:hidden;`
+        } else {
+          const vec = config.calculatePosition(g, store.camera, store.bounds)
+          element().style.cssText = `position:absolute;top:0;left:0;transform:translate3d(${vec[0]}px,${vec[1]}px,0);transform-origin:0 0;`
+        }
+        if (target()) {
+          if (config.prepend) target().prepend(element())
+          else target().appendChild(element())
+        }
+        onCleanup(() => check(target, target => target.removeChild(element())))
       }
-      if (target()) {
-        if (config.prepend) target().prepend(element())
-        else target().appendChild(element())
-      }
-      onCleanup(() => check(target, target => target.removeChild(element())))
-    }),
+    },
   )
 
-  createRenderEffect(() => {
-    if (config.wrapperClass) {
-      element().className = config.wrapperClass
-    }
-  })
+  createRenderEffect(
+    () => config.wrapperClass,
+    () => {
+      if (config.wrapperClass) {
+        element().className = config.wrapperClass
+      }
+    },
+  )
 
-  createRenderEffect(() => {
-    isMeshSizeSet = false
+  createRenderEffect(
+    () => [config.transform, styles(), transformInnerStyles(), config.class, config.style, config.children] as const,
+    () => {
+      isMeshSizeSet = false
 
-    if (config.transform) {
-      render(
-        () => (
-          <div ref={transformOuterRef} style={styles()}>
-            <div ref={transformInnerRef} style={transformInnerStyles()}>
-              <div
-                ref={config.ref}
-                class={config.class}
-                style={config.style}
-                children={config.children}
-              />
+      if (config.transform) {
+        render(
+          () => (
+            <div ref={transformOuterRef} style={styles()}>
+              <div ref={transformInnerRef} style={transformInnerStyles()}>
+                <div
+                  ref={config.ref}
+                  class={config.class}
+                  style={config.style}
+                  children={config.children}
+                />
+              </div>
             </div>
-          </div>
-        ),
-        element(),
-      )
-    } else {
-      render(
-        () => (
-          <div ref={config.ref} style={styles()} class={config.class} children={config.children} />
-        ),
-        element(),
-      )
-    }
-  })
+          ),
+          element(),
+        )
+      } else {
+        render(
+          () => (
+            <div ref={config.ref} style={styles()} class={config.class} children={config.children} />
+          ),
+          element(),
+        )
+      }
+    },
+  )
 
   let visible = true
 

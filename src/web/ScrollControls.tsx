@@ -127,90 +127,96 @@ export function ScrollControls(props: ScrollControlsProps) {
     return state
   })
 
-  createEffect(() => {
-    el.style.position = 'absolute'
-    el.style.width = '100%'
-    el.style.height = '100%'
-    el.style[config.horizontal ? 'overflowX' : 'overflowY'] = 'auto'
-    el.style[config.horizontal ? 'overflowY' : 'overflowX'] = 'hidden'
-    el.style.top = '0px'
-    el.style.left = '0px'
+  createEffect(
+    () => [config.horizontal, config.pages, config.distance, config.style] as const,
+    () => {
+      el.style.position = 'absolute'
+      el.style.width = '100%'
+      el.style.height = '100%'
+      el.style[config.horizontal ? 'overflowX' : 'overflowY'] = 'auto'
+      el.style[config.horizontal ? 'overflowY' : 'overflowX'] = 'hidden'
+      el.style.top = '0px'
+      el.style.left = '0px'
 
-    const style = config.style
-    if (style) {
-      for (const key in style) {
-        ;(el.style as unknown as Record<string, string>)[key] = (
-          style as unknown as Record<string, string>
-        )[key]
-      }
-    }
-
-    fixed.style.position = 'sticky'
-    fixed.style.top = '0px'
-    fixed.style.left = '0px'
-    fixed.style.width = '100%'
-    fixed.style.height = '100%'
-    fixed.style.overflow = 'hidden'
-    el.appendChild(fixed)
-
-    fill.style.height = config.horizontal ? '100%' : `${config.pages * config.distance * 100}%`
-    fill.style.width = config.horizontal ? `${config.pages * config.distance * 100}%` : '100%'
-    fill.style.pointerEvents = 'none'
-    el.appendChild(fill)
-    target().appendChild(el)
-
-    // Init scroll one pixel in to allow upward/leftward scroll
-    el[config.horizontal ? 'scrollLeft' : 'scrollTop'] = 1
-
-    onCleanup(() => {
-      if (target().contains(el)) target().removeChild(el)
-    })
-  })
-
-  createEffect(() => {
-    const containerLength = store.bounds[config.horizontal ? 'width' : 'height']
-    const scrollLength = el[config.horizontal ? 'scrollWidth' : 'scrollHeight']
-    const scrollThreshold = scrollLength - containerLength
-
-    let current = 0
-    let disableScroll = true
-    let firstRun = true
-
-    const onScroll = () => {
-      // Prevent first scroll because it is indirectly caused by the one pixel offset
-      if (!config.enabled || firstRun) return
-      store.requestRender()
-      current = el[config.horizontal ? 'scrollLeft' : 'scrollTop']
-      scroll = current / scrollThreshold
-
-      if (config.infinite) {
-        if (!disableScroll) {
-          if (current >= scrollThreshold) {
-            const damp = 1 - state().offset
-            el[config.horizontal ? 'scrollLeft' : 'scrollTop'] = 1
-            scroll = state().offset = -damp
-            disableScroll = true
-          } else if (current <= 0) {
-            const damp = 1 + state().offset
-            el[config.horizontal ? 'scrollLeft' : 'scrollTop'] = scrollLength
-            scroll = state().offset = damp
-            disableScroll = true
-          }
+      const style = config.style
+      if (style) {
+        for (const key in style) {
+          ;(el.style as unknown as Record<string, string>)[key] = (
+            style as unknown as Record<string, string>
+          )[key]
         }
-        if (disableScroll) setTimeout(() => (disableScroll = false), 40)
       }
-    }
-    el.addEventListener('scroll', onScroll, { passive: true })
-    requestAnimationFrame(() => (firstRun = false))
 
-    const onWheel = (e: WheelEvent) => (el.scrollLeft += e.deltaY / 2)
-    if (config.horizontal) el.addEventListener('wheel', onWheel, { passive: true })
+      fixed.style.position = 'sticky'
+      fixed.style.top = '0px'
+      fixed.style.left = '0px'
+      fixed.style.width = '100%'
+      fixed.style.height = '100%'
+      fixed.style.overflow = 'hidden'
+      el.appendChild(fixed)
 
-    onCleanup(() => {
-      el.removeEventListener('scroll', onScroll)
-      if (config.horizontal) el.removeEventListener('wheel', onWheel)
-    })
-  })
+      fill.style.height = config.horizontal ? '100%' : `${config.pages * config.distance * 100}%`
+      fill.style.width = config.horizontal ? `${config.pages * config.distance * 100}%` : '100%'
+      fill.style.pointerEvents = 'none'
+      el.appendChild(fill)
+      target().appendChild(el)
+
+      // Init scroll one pixel in to allow upward/leftward scroll
+      el[config.horizontal ? 'scrollLeft' : 'scrollTop'] = 1
+
+      onCleanup(() => {
+        if (target().contains(el)) target().removeChild(el)
+      })
+    },
+  )
+
+  createEffect(
+    () => [config.enabled, config.infinite, config.horizontal] as const,
+    () => {
+      const containerLength = store.bounds[config.horizontal ? 'width' : 'height']
+      const scrollLength = el[config.horizontal ? 'scrollWidth' : 'scrollHeight']
+      const scrollThreshold = scrollLength - containerLength
+
+      let current = 0
+      let disableScroll = true
+      let firstRun = true
+
+      const onScroll = () => {
+        // Prevent first scroll because it is indirectly caused by the one pixel offset
+        if (!config.enabled || firstRun) return
+        store.requestRender()
+        current = el[config.horizontal ? 'scrollLeft' : 'scrollTop']
+        scroll = current / scrollThreshold
+
+        if (config.infinite) {
+          if (!disableScroll) {
+            if (current >= scrollThreshold) {
+              const damp = 1 - state().offset
+              el[config.horizontal ? 'scrollLeft' : 'scrollTop'] = 1
+              scroll = state().offset = -damp
+              disableScroll = true
+            } else if (current <= 0) {
+              const damp = 1 + state().offset
+              el[config.horizontal ? 'scrollLeft' : 'scrollTop'] = scrollLength
+              scroll = state().offset = damp
+              disableScroll = true
+            }
+          }
+          if (disableScroll) setTimeout(() => (disableScroll = false), 40)
+        }
+      }
+      el.addEventListener('scroll', onScroll, { passive: true })
+      requestAnimationFrame(() => (firstRun = false))
+
+      const onWheel = (e: WheelEvent) => (el.scrollLeft += e.deltaY / 2)
+      if (config.horizontal) el.addEventListener('wheel', onWheel, { passive: true })
+
+      onCleanup(() => {
+        el.removeEventListener('scroll', onScroll)
+        if (config.horizontal) el.removeEventListener('wheel', onWheel)
+      })
+    },
+  )
 
   let last = 0
   useFrame((_, delta) => {
@@ -283,21 +289,27 @@ function ScrollHtml(props: ScrollHtmlProps) {
   const store = useThree()
 
   createEffect(
-    when(ref, ref => {
-      createEffect(() => {
-        if (typeof props.ref === 'function') props.ref(ref)
-        else props.ref = ref
-      })
-      useFrame(() => {
-        if (scroll.delta > scroll.eps) {
-          ref.style.transform = `translate3d(${
-            scroll.horizontal ? -store.bounds.width * (scroll.pages - 1) * scroll.offset : 0
-          }px,${
-            scroll.horizontal ? 0 : store.bounds.height * (scroll.pages - 1) * -scroll.offset
-          }px,0)`
-        }
-      })
-    }),
+    () => ref(),
+    (r) => {
+      if (r) {
+        createEffect(
+          () => props.ref,
+          () => {
+            if (typeof props.ref === 'function') props.ref(r)
+            else props.ref = r
+          },
+        )
+        useFrame(() => {
+          if (scroll.delta > scroll.eps) {
+            r.style.transform = `translate3d(${
+              scroll.horizontal ? -store.bounds.width * (scroll.pages - 1) * scroll.offset : 0
+            }px,${
+              scroll.horizontal ? 0 : store.bounds.height * (scroll.pages - 1) * -scroll.offset
+            }px,0)`
+          }
+        })
+      }
+    },
   )
 
   createRenderEffect(
