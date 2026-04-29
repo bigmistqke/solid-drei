@@ -1,6 +1,6 @@
-import type { Accessor, MergeProps } from 'solid-js'
+import type { Accessor } from 'solid-js'
 import type { S3 } from 'solid-three'
-import { createRenderEffect, mergeProps, splitProps } from 'solid-js'
+import { createRenderEffect, merge, omit } from 'solid-js'
 import type { KeyOfOptionals } from './types'
 
 /**********************************************************************************/
@@ -93,8 +93,8 @@ export function bubbleUp<T extends { parent: any }>(
 export function defaultProps<T, K extends KeyOfOptionals<T>>(
   props: T,
   defaults: Required<Pick<T, K>>,
-): MergeProps<[Required<Pick<T, K>>, T]> {
-  return mergeProps(defaults, props)
+) {
+  return merge(defaults, props)
 }
 
 export function processProps<
@@ -102,7 +102,8 @@ export function processProps<
   const TKey extends KeyOfOptionals<TProps>,
   const TSplit extends readonly (keyof TProps)[],
 >(props: TProps, defaults: Required<Pick<TProps, TKey>>, split?: TSplit) {
-  return splitProps(defaultProps(props, defaults), split ?? [])
+  const merged = defaultProps(props, defaults)
+  return [merged, omit(merged, ...((split ?? []) as (keyof typeof merged)[]))] as const
 }
 
 /**********************************************************************************/
@@ -115,15 +116,16 @@ export function useRef<T>(
   props: { ref?: T | ((value: S3.Meta<T>) => void) | undefined },
   value: T | Accessor<T>,
 ) {
-  createRenderEffect(() => {
-    const result = resolve(value)
-
-    if (typeof props.ref === 'function') {
-      ;(props.ref as (value: S3.Meta<T>) => void)(result as S3.Meta<T>)
-    } else {
-      props.ref = result
-    }
-  })
+  createRenderEffect(
+    () => resolve(value),
+    (result) => {
+      if (typeof props.ref === 'function') {
+        ;(props.ref as (value: S3.Meta<T>) => void)(result as S3.Meta<T>)
+      } else {
+        props.ref = result
+      }
+    },
+  )
 }
 
 import type { SignalOptions } from 'solid-js'
