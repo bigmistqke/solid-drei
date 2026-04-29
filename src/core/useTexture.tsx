@@ -1,5 +1,5 @@
 import type { AccessorMaybe } from '@/utils/types'
-import { merge, type Resource } from 'solid-js'
+import { merge, type Accessor } from 'solid-js'
 import { useThree } from 'solid-three'
 import { Texture, TextureLoader } from 'three'
 import { useLoader, type UseLoaderOptions } from './useLoader'
@@ -7,12 +7,12 @@ import { useLoader, type UseLoaderOptions } from './useLoader'
 export function useTexture<T extends string | undefined>(
   input: AccessorMaybe<T>,
   options?: UseLoaderOptions<TextureLoader, Texture>,
-): Resource<Texture>
+): Accessor<Texture>
 
 export function useTexture<T extends Record<string, string | undefined>>(
   input: AccessorMaybe<T>,
   options?: UseLoaderOptions<TextureLoader, Texture>,
-): Resource<{ [TKey in keyof T]: Texture }>
+): Accessor<{ [TKey in keyof T]: Texture }>
 
 export function useTexture<T extends string>(
   input: AccessorMaybe<T | undefined>,

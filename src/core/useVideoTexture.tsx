@@ -1,5 +1,5 @@
 import { processProps } from '@/utils'
-import { createEffect, createResource } from 'solid-js'
+import { createEffect, createMemo } from 'solid-js'
 import { useThree } from 'solid-three'
 import * as THREE from 'three'
 
@@ -23,9 +23,8 @@ export function useVideoTexture(src: string | MediaStream, _props?: Partial<Vide
   )
 
   const store = useThree()
-  const [texture] = createResource(
-    [src],
-    () =>
+  const texture = createMemo(
+    async () =>
       new Promise<THREE.VideoTexture>(resolve => {
         const video = Object.assign(document.createElement('video'), {
           src: (typeof src === 'string' && src) || undefined,

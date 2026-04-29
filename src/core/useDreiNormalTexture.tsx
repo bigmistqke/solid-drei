@@ -1,6 +1,6 @@
 import { defaultProps } from '@/utils'
 import { every, when, whenEffect } from '@/utils/conditionals'
-import { createMemo, createRenderEffect, createResource, type Accessor } from 'solid-js'
+import { createMemo, createRenderEffect, type Accessor } from 'solid-js'
 import { RepeatWrapping, Texture, Vector2 } from 'three'
 import { useTexture } from './useTexture'
 
@@ -14,7 +14,7 @@ interface Settings {
   repeat?: number[]
 }
 
-const [normalsList] = createResource<{ count: number; list: Record<string, string> }>(async () => {
+const normalsList = createMemo(async () => {
   const list = await fetch(LIST_URL).then(res => res.json())
   return {
     count: Object.keys(list).length,

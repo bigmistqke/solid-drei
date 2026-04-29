@@ -1,4 +1,4 @@
-import { createResource } from 'solid-js'
+import { createMemo } from 'solid-js'
 import { FontLoader } from 'three-stdlib'
 
 export type Glyph = {
@@ -78,10 +78,10 @@ async function loader(font: string | FontData) {
  *   );
  * }
  *
- * @note This hook uses `createResource` under the hood, so you could use `<Suspense>` to handle loading states.
+ * @note This hook uses `createMemo` under the hood, so you could use `<Suspense>` to handle loading states.
  *
  * @link https://threejs.org/docs/#examples/en/loaders/FontLoader
  */
 export function useFont(font: () => string | FontData) {
-  return createResource(font, loader)[0]
+  return createMemo(async () => loader(font()))
 }

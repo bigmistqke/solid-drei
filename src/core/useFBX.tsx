@@ -1,4 +1,4 @@
-import { createResource, type Accessor } from 'solid-js'
+import { createMemo, type Accessor } from 'solid-js'
 import { load } from 'solid-three'
 import { FBXLoader } from 'three-stdlib'
 
@@ -11,7 +11,7 @@ const loader = new FBXLoader()
  * @returns The loaded FBX model(s).
  *
  * @note
- * This hook uses `createResource` under the hood, so you could use `<Suspense>` to handle loading states.
+ * This hook uses `createMemo` under the hood, so you could use `<Suspense>` to handle loading states.
  *
  * @example
  * // Using a single string
@@ -44,5 +44,5 @@ const loader = new FBXLoader()
  * @link https://threejs.org/docs/#examples/en/loaders/FBXLoader
  */
 export function useFBX(path: Accessor<string>) {
-  return createResource(path, path => load(loader, path))[0]
+  return createMemo(async () => load(loader, path()))
 }

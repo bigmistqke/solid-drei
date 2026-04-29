@@ -1,6 +1,6 @@
 import { resolve } from '@/utils'
 import { when } from '@/utils/conditionals'
-import { type Accessor, createResource } from 'solid-js'
+import { type Accessor, createMemo } from 'solid-js'
 import { Texture } from 'three'
 import { useTexture } from './useTexture'
 
@@ -28,7 +28,7 @@ export function useMatcapTexture(
   format: number | Accessor<number> = 1024,
   onLoad?: (texture: Texture) => void,
 ) {
-  const [matcapList] = createResource<Record<string, string>>(() =>
+  const matcapList = createMemo(async () =>
     fetch(LIST_URL).then(res => res.json()),
   )
 

@@ -1,4 +1,4 @@
-import { createResource, type Accessor } from 'solid-js'
+import { createMemo, type Accessor } from 'solid-js'
 import { CubeTextureLoader } from 'three'
 
 export type Options = {
@@ -10,13 +10,14 @@ export function useCubeTexture<const T extends string[] | string[][]>(
   files: Accessor<T>,
   options?: Options,
 ) {
-  return createResource(files, files => {
+  return createMemo(async () => {
+    const _files = files()
     if (options?.path) {
       loader.setPath(options.path)
     }
-    if (Array.isArray(files[0])) {
+    if (Array.isArray(_files[0])) {
       return Promise.all(
-        (files as string[][]).map(
+        (_files as string[][]).map(
           file =>
             new Promise((resolve, reject) => {
               loader.load(file, resolve, undefined, reject)
@@ -25,7 +26,7 @@ export function useCubeTexture<const T extends string[] | string[][]>(
       )
     }
     return new Promise((resolve, reject) => {
-      loader.load(files as string[], resolve, undefined, reject)
+      loader.load(_files as string[], resolve, undefined, reject)
     })
   })
 }

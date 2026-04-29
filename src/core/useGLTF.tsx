@@ -1,5 +1,5 @@
 import { defaultProps, resolve } from '@/utils'
-import { createResource, type Accessor } from 'solid-js'
+import { createMemo, type Accessor } from 'solid-js'
 import { load } from 'solid-three'
 import { DRACOLoader, GLTFLoader, MeshoptDecoder, type GLTF } from 'three-stdlib'
 
@@ -51,13 +51,14 @@ export interface UseGLTFOptions {
  *   );
  * }
  *
- * @note This hook uses `createResource` under the hood, so you could use `<Suspense>` to handle loading states.
+ * @note This hook uses `createMemo` under the hood, so you could use `<Suspense>` to handle loading states.
  *
  * @link https://threejs.org/docs/#examples/en/loaders/GLTFLoader
  */
 export function useGLTF<T = GLTF>(path: Accessor<string>, options?: UseGLTFOptions) {
   const config = defaultProps(options, { useDraco: true, useMeshOpt: true })
-  return createResource(path, path => {
+  return createMemo(async () => {
+    const _path = path()
     if (config.extendLoader) {
       config.extendLoader(loader as GLTFLoader)
     }
@@ -73,6 +74,6 @@ export function useGLTF<T = GLTF>(path: Accessor<string>, options?: UseGLTFOptio
     if (config.useMeshOpt) {
       loader.setMeshoptDecoder(resolve(MeshoptDecoder))
     }
-    return load(loader, path) as Promise<T>
-  })[0]
+    return load(loader, _path) as Promise<T>
+  })
 }
