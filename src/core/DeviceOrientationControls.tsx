@@ -38,7 +38,7 @@ export function DeviceOrientationControls(props: DeviceOrientationControlsProps)
     onCleanup(() => current.dispose())
   })
 
-  useRef(config, controls)
+  useRef(props, controls)
 
   return <Entity from={autodispose(controls)} {...rest} />
 }
