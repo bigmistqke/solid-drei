@@ -1,6 +1,6 @@
 import { processProps, resolve } from '@/utils'
 import type { JSX } from 'solid-js'
-import { createMemo, createResource, onCleanup, onMount, Show } from 'solid-js'
+import { createMemo, onCleanup, Show } from 'solid-js'
 import { Entity, type S3 } from 'solid-three'
 import type { Mesh } from 'three'
 import { Font } from 'three-stdlib'
@@ -121,14 +121,13 @@ export function Text(props: Props) {
 
   const troikaMesh = new TroikaMesh()
 
-  const [font] = createResource(
-    () => [config.font, config.characters],
-    ([font, characters]) => {
-      return new Promise<Font>(res =>
-        preloadFont({ font: font || null, characters: characters || '' }, res),
-      )
-    },
-  )
+  const font = createMemo(async () => {
+    const fontVal = config.font
+    const charactersVal = config.characters
+    return new Promise<Font>(res =>
+      preloadFont({ font: fontVal || null, characters: charactersVal || '' }, res),
+    )
+  })
 
   const memo = createMemo(() => {
     const nodes: JSX.Element[] = []
@@ -148,10 +147,8 @@ export function Text(props: Props) {
     return { nodes, text }
   })
 
-  onMount(() => {
-    troikaMesh.sync(() => config.onSync && config.onSync(troikaMesh))
-    onCleanup(() => troikaMesh.dispose())
-  })
+  troikaMesh.sync(() => config.onSync && config.onSync(troikaMesh))
+  onCleanup(() => troikaMesh.dispose())
 
   return (
     <Show when={font()}>

@@ -7,12 +7,11 @@ import { MeshBasicMaterial } from 'three'
 
 import { defaultProps } from '@/utils'
 import { check } from '@/utils/conditionals'
-import type { Accessor, ResourceReturn } from 'solid-js'
+import type { Accessor } from 'solid-js'
 import {
-  Suspense,
   createContext,
   createEffect,
-  createResource,
+  createMemo,
   createSignal,
   onCleanup,
   useContext,
@@ -219,13 +218,11 @@ export function FaceControls(_props: FaceControlsProps) {
   return (
     <FaceControlsContext.Provider value={faceControlsApi}>
       {props.webcam && (
-        <Suspense fallback={null}>
-          <Webcam
-            ref={(api) => { webcamApiRef = api }}
-            autostart={props.autostart}
-            videoTextureSrc={props.webcamVideoTextureSrc}
-          />
-        </Suspense>
+        <Webcam
+          ref={(api) => { webcamApiRef = api }}
+          autostart={props.autostart}
+          videoTextureSrc={props.webcamVideoTextureSrc}
+        />
       )}
 
       <Facemesh
@@ -272,17 +269,14 @@ function Webcam(_props: WebcamProps) {
 
   const faceControls = useFaceControls()
 
-  const [stream]: ResourceReturn<MediaStream | null> = createResource(
-    [props.videoTextureSrc],
-    async () => {
-      return !props.videoTextureSrc
-        ? await navigator.mediaDevices.getUserMedia({
-            audio: false,
-            video: { facingMode: 'user' },
-          })
-        : Promise.resolve(null)
-    },
-  )
+  const stream: Accessor<MediaStream | null> = createMemo(async () => {
+    return !props.videoTextureSrc
+      ? await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: { facingMode: 'user' },
+        })
+      : Promise.resolve(null)
+  })
 
   createEffect(
     () => stream(),
@@ -306,13 +300,11 @@ function Webcam(_props: WebcamProps) {
   if (typeof _props.ref === 'function') _props.ref(api)
 
   return (
-    <Suspense fallback={null}>
-      <VideoTexture
-        ref={setVideoTextureApiRef}
-        src={props.videoTextureSrc || stream()!}
-        start={props.autostart}
-      />
-    </Suspense>
+    <VideoTexture
+      ref={setVideoTextureApiRef}
+      src={props.videoTextureSrc || stream()!}
+      start={props.autostart}
+    />
   )
 }
 

@@ -4,7 +4,6 @@ import {
   createEffect,
   createMemo,
   createRenderEffect,
-  createResource,
   createSignal,
   omit,
   untrack,
@@ -153,14 +152,14 @@ export function SpriteAnimator(props: SpriteAnimatorProps) {
   const fpsInterval = () => 1000 / (config.fps || 30)
   const flipOffset = () => (config.flipX ? -1 : 1)
 
-  const [spriteTexture] = createResource(async () => {
+  const spriteTexture = createMemo(async () => {
     const textureLoader = new TextureLoader()
     const texture = await textureLoader.loadAsync(untrack(() => config.textureImageURL))
     texture.premultiplyAlpha = false
     return texture
   })
 
-  const [json] = createResource(async () => {
+  const json = createMemo(async () => {
     let result: SpriteData | undefined
     if (config.textureDataURL) {
       try {
@@ -175,14 +174,19 @@ export function SpriteAnimator(props: SpriteAnimatorProps) {
     return result || 'NONE'
   })
 
-  const [spriteData] = createResource(every(spriteTexture, json), async ([texture, json]) => {
-    if (json !== 'NONE') return json
+  const spriteData = createMemo(async () => {
+    const textureVal = spriteTexture()
+    const jsonVal = json()
+
+    if (!textureVal || !jsonVal) return undefined
+
+    if (jsonVal !== 'NONE') return jsonVal
 
     if (!config.numberOfFrames) return undefined
 
     //get size from texture
-    const width = texture.image.width
-    const height = texture.image.height
+    const width = textureVal.image.width
+    const height = textureVal.image.height
     const frameWidth = width / config.numberOfFrames
     const frameHeight = height
 

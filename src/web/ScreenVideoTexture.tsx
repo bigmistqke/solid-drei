@@ -1,4 +1,4 @@
-import { createResource, onCleanup } from 'solid-js'
+import { createMemo, onCleanup } from 'solid-js'
 import { useThree } from 'solid-three'
 import * as THREE from 'three'
 
@@ -12,7 +12,7 @@ export function useScreenVideoTexture(
 ) {
   const store = useThree()
 
-  const [texture] = createResource(() =>
+  const texture = createMemo(async () =>
     navigator.mediaDevices
       .getDisplayMedia(constraints)
       .then(stream => {

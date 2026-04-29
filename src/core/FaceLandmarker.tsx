@@ -3,7 +3,7 @@ import type { FaceLandmarkerOptions } from '@mediapipe/tasks-vision'
 import { FaceLandmarker as FaceLandmarkerImpl, FilesetResolver } from '@mediapipe/tasks-vision'
 
 import type { Accessor } from 'solid-js'
-import { createContext, createEffect, createResource, onCleanup, useContext, type JSX } from 'solid-js'
+import { createContext, createEffect, createMemo, onCleanup, useContext, type JSX } from 'solid-js'
 
 const FaceLandmarkerContext = createContext((() => {}) as Accessor<FaceLandmarkerImpl | undefined>)
 
@@ -32,9 +32,7 @@ export function FaceLandmarker({
   options = FaceLandmarkerDefaults.options,
   children,
 }: FaceLandmarkerProps) {
-  const opts = JSON.stringify(options)
-
-  const [faceLandmarker] = createResource([basePath, opts], async () => {
+  const faceLandmarker = createMemo(async () => {
     return await FilesetResolver.forVisionTasks(basePath).then((vision) =>
       FaceLandmarkerImpl.createFromOptions(vision, options)
     )

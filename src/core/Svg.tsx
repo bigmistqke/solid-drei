@@ -1,5 +1,5 @@
 import { check } from '@/utils/conditionals'
-import { For, Show, createMemo, createResource, onCleanup, omit } from 'solid-js'
+import { For, Show, createMemo, onCleanup, omit } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { createT } from 'solid-three'
 import { DoubleSide, Mesh, MeshBasicMaterial, Object3D, ShapeGeometry } from 'three'
@@ -85,24 +85,23 @@ export function Svg(props: SvgProps) {
     'strokeMeshProps',
   )
   const config = props
-  const [resource] = createResource<SVGResult, string>(
-    () => (!config.src.startsWith('<svg') ? config.src : `data:image/sv>g+xml;utf8,${config.src}`),
-    path =>
-      new Promise((resolve, reject) => new SVGLoader().load(path, resolve, undefined, reject)),
-  )
+  const resource = createMemo(async () => {
+    const path = !config.src.startsWith('<svg') ? config.src : `data:image/sv>g+xml;utf8,${config.src}`
+    return new Promise<SVGResult>((resolve, reject) => new SVGLoader().load(path, resolve, undefined, reject))
+  })
 
   const strokeGeometries = createMemo(() => {
-    return check(resource, svg =>
-      config.skipStrokes
-        ? []
-        : svg.paths.map(path =>
-            path.userData?.style.stroke === undefined || path.userData.style.stroke === 'none'
-              ? null
-              : path.subPaths.map(subPath =>
-                  SVGLoader.pointsToStroke(subPath.getPoints(), path.userData!.style),
-                ),
-          ),
-    )
+    const res = resource()
+    if (!res) return undefined
+    return config.skipStrokes
+      ? []
+      : res.paths.map(path =>
+          path.userData?.style.stroke === undefined || path.userData.style.stroke === 'none'
+            ? null
+            : path.subPaths.map(subPath =>
+                SVGLoader.pointsToStroke(subPath.getPoints(), path.userData!.style),
+              ),
+        )
   })
 
   onCleanup(() => strokeGeometries()?.forEach(group => group && group.map(g => g.dispose())))

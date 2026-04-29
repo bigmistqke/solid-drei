@@ -1,4 +1,4 @@
-import { createResource, onCleanup } from 'solid-js'
+import { createMemo, onCleanup } from 'solid-js'
 import { useThree } from 'solid-three'
 import * as THREE from 'three'
 
@@ -12,7 +12,7 @@ export function useWebcamVideoTexture(
 ) {
   const store = useThree()
 
-  const [texture] = createResource(() =>
+  const texture = createMemo(async () =>
     navigator.mediaDevices
       .getUserMedia({ video: constraints ?? true, audio: false })
       .then(stream => {
