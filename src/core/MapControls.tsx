@@ -1,6 +1,6 @@
 import { processProps } from '@/utils'
 import { whenComputed } from '@/utils/conditionals'
-import { createComputed, createMemo, onCleanup, type JSXElement, type Ref } from 'solid-js'
+import { createRenderEffect, createMemo, onCleanup, type JSXElement, type Ref } from 'solid-js'
 import { autodispose, useFrame, useProps, useThree, type S3 } from 'solid-three'
 import { OrthographicCamera, PerspectiveCamera, type Event } from 'three'
 import { MapControls as MapControlsImpl } from 'three-stdlib'
@@ -48,11 +48,11 @@ export function useMapControls(options?: MapControlsOptions) {
         controls.enabled = true
         onCleanup(() => (controls.enabled = false))
 
-        createComputed(() => controls.connect(config.domElement))
+        createRenderEffect(() => controls.connect(config.domElement))
 
-        createComputed(() => autolisten('start', config.onStart))
-        createComputed(() => autolisten('change', config.onChange))
-        createComputed(() => autolisten('end', config.onEnd))
+        createRenderEffect(() => autolisten('start', config.onStart))
+        createRenderEffect(() => autolisten('change', config.onChange))
+        createRenderEffect(() => autolisten('end', config.onEnd))
 
         useProps(controls, rest, store)
 

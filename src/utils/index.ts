@@ -1,6 +1,6 @@
 import type { Accessor, MergeProps } from 'solid-js'
 import type { S3 } from 'solid-three'
-import { createComputed, mergeProps, splitProps } from 'solid-js'
+import { createRenderEffect, mergeProps, splitProps } from 'solid-js'
 import type { KeyOfOptionals } from './types'
 
 /**********************************************************************************/
@@ -115,7 +115,7 @@ export function useRef<T>(
   props: { ref?: T | ((value: S3.Meta<T>) => void) | undefined },
   value: T | Accessor<T>,
 ) {
-  createComputed(() => {
+  createRenderEffect(() => {
     const result = resolve(value)
 
     if (typeof props.ref === 'function') {
