@@ -263,17 +263,19 @@ export function SpriteAnimator(props: SpriteAnimatorProps) {
       createRenderEffect(
         () => [spriteTexture(), config.flipX] as const,
         ([texture, flipX]) => {
-          spriteMaterial().map!.wrapS = spriteMaterial().map!.wrapT = RepeatWrapping
-          spriteMaterial().map!.center.set(0, 0)
-          spriteMaterial().map!.repeat.set(
+          const mat = spriteMaterial()
+          if (!mat || !mat.map) return
+          mat.map.wrapS = mat.map.wrapT = RepeatWrapping
+          mat.map.center.set(0, 0)
+          mat.map.repeat.set(
             (1 * flipOffset()) / (metaInfo.w / frameWidth),
             1 / (metaInfo.h / frameHeight),
           )
           //const framesH = (metaInfo.w - 1) / frameW
           const framesV = (metaInfo.h - 1) / frameHeight
           const frameOffsetY = 1 / framesV
-          spriteMaterial().map!.offset.x = 0.0 //-matRef.map.repeat.x
-          spriteMaterial().map!.offset.y = 1 - frameOffsetY
+          mat.map.offset.x = 0.0 //-matRef.map.repeat.x
+          mat.map.offset.y = 1 - frameOffsetY
           setJsonReady(true)
           if (config.onStart) {
             config.onStart({ currentFrameName: config.frameName, currentFrame: currentFrame })
