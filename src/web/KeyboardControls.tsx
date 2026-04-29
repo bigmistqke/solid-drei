@@ -7,7 +7,7 @@ import {
   type JSX,
 } from 'solid-js'
 import type { Accessor } from 'solid-js'
-import { createStore } from 'solid-js/store'
+import { createStore } from 'solid-js'
 
 type KeyboardControlsState<T extends string = string> = { [K in T]: boolean }
 type KeyboardControls<T extends string = string> = [Subscribe, KeyboardControlsState]

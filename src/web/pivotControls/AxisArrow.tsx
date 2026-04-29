@@ -1,4 +1,4 @@
-import { Component, createMemo, createSignal, useContext } from 'solid-js'
+import { type Component, createMemo, createSignal, useContext } from 'solid-js'
 import { Entity, type S3, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { ConeGeometry, CylinderGeometry, Group, Mesh, MeshBasicMaterial } from 'three'

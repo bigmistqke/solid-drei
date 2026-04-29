@@ -14,7 +14,7 @@ import {
   useContext,
   type JSX,
 } from 'solid-js'
-import { Dynamic, render } from 'solid-js/web'
+import { Dynamic, render } from '@solidjs/web'
 import { useFrame, useThree } from 'solid-three'
 import { Group } from 'three'
 import { Entity } from 'solid-three'
@@ -331,7 +331,7 @@ function ScrollHtml(props: ScrollHtmlProps) {
             }}
             {...rest}
           >
-            <scrollContext value={scroll}>{config.children}</scrollContext>
+            <ScrollContext value={scroll}>{config.children}</ScrollContext>
           </div>
         ),
         fixed,
