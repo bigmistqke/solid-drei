@@ -48,12 +48,24 @@ export function useTrackballControls(props: TrackballControlsProps) {
       onCleanup(() => (controls().enabled = false))
 
       // Connect to domElement (defaults to store.canvas)
-      createRenderEffect(() => controls().connect(config.domElement))
+      createRenderEffect(
+        () => config.domElement,
+        () => controls().connect(config.domElement),
+      )
 
       // Attach event-listeners
-      createRenderEffect(() => autolisten('start', config.onStart))
-      createRenderEffect(() => autolisten('change', config.onChange))
-      createRenderEffect(() => autolisten('end', config.onEnd))
+      createRenderEffect(
+        () => config.onStart,
+        () => autolisten('start', config.onStart),
+      )
+      createRenderEffect(
+        () => config.onChange,
+        () => autolisten('change', config.onChange),
+      )
+      createRenderEffect(
+        () => config.onEnd,
+        () => autolisten('end', config.onEnd),
+      )
 
       // Call resize-handler whenever store.bounds updates
       createRenderEffect(

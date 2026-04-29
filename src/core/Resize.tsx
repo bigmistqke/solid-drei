@@ -31,20 +31,23 @@ export function Resize(props: ResizeProps) {
   const outer = new Group()
   const inner = new Group()
 
-  createEffect(() => {
-    outer.matrixWorld.identity()
-    let box = config.box3 || new Box3().setFromObject(inner, config.precise)
-    const w = box.max.x - box.min.x
-    const h = box.max.y - box.min.y
-    const d = box.max.z - box.min.z
+  createEffect(
+    () => [config.width, config.height, config.depth, config.box3, config.precise] as const,
+    () => {
+      outer.matrixWorld.identity()
+      let box = config.box3 || new Box3().setFromObject(inner, config.precise)
+      const w = box.max.x - box.min.x
+      const h = box.max.y - box.min.y
+      const d = box.max.z - box.min.z
 
-    let dimension = Math.max(w, h, d)
-    if (config.width) dimension = w
-    if (config.height) dimension = h
-    if (config.depth) dimension = d
+      let dimension = Math.max(w, h, d)
+      if (config.width) dimension = w
+      if (config.height) dimension = h
+      if (config.depth) dimension = d
 
-    outer.scale.setScalar(1 / dimension)
-  }, [config.width, config.height, config.depth, config.box3, config.precise])
+      outer.scale.setScalar(1 / dimension)
+    },
+  )
 
   useRef(config, ref)
 

@@ -105,11 +105,13 @@ export function MotionPathControls(props: MotionPathControlsProps) {
 
   useRef(props, api)
 
-  createEffect(() => {
-    // Reset initialised flag when path changes so damping snaps
-    path()
-    initialised = false
-  })
+  createEffect(
+    () => path(),
+    () => {
+      // Reset initialised flag when path changes so damping snaps
+      initialised = false
+    },
+  )
 
   useFrame((_, delta) => {
     if (!config.enabled) return

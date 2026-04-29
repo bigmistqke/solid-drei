@@ -22,16 +22,19 @@ export function Detailed(props: DetailedProps) {
 
   const lod = new LOD()
 
-  createEffect(() => {
-    lod.levels.length = 0
-    lod.children.forEach((object, index) =>
-      lod.levels.push({
-        object,
-        hysteresis: config.hysteresis,
-        distance: config.distances[index]!,
-      }),
-    )
-  })
+  createEffect(
+    () => [config.hysteresis, config.distances] as const,
+    () => {
+      lod.levels.length = 0
+      lod.children.forEach((object, index) =>
+        lod.levels.push({
+          object,
+          hysteresis: config.hysteresis,
+          distance: config.distances[index]!,
+        }),
+      )
+    },
+  )
 
   useFrame(state => lod.update(state.camera))
 

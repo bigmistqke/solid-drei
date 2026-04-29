@@ -46,6 +46,11 @@ export function useVideoTexture(src: string | MediaStream, _props?: Partial<Vide
         video.addEventListener(props.unsuspend, () => resolve(texture))
       }),
   )
-  createEffect(() => props.start && texture()?.image.play())
+  createEffect(
+    () => props.start,
+    () => {
+      props.start && texture()?.image.play()
+    },
+  )
   return texture
 }

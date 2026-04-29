@@ -21,22 +21,28 @@ export function DeviceOrientationControls(props: DeviceOrientationControlsProps)
   const explCamera = props.camera || store.camera
   const controls = new DeviceOrientationControlsImp(explCamera)
 
-  createEffect(() => {
-    const callback = (e: THREE.Event<string, unknown>) => {
-      store.requestRender()
-      if (props.onChange) props.onChange(e)
-    }
-    controls.addEventListener?.('change', callback)
-    onCleanup(() => controls.removeEventListener?.('change', callback))
-  })
+  createEffect(
+    () => props.onChange,
+    () => {
+      const callback = (e: THREE.Event<string, unknown>) => {
+        store.requestRender()
+        if (props.onChange) props.onChange(e)
+      }
+      controls.addEventListener?.('change', callback)
+      onCleanup(() => controls.removeEventListener?.('change', callback))
+    },
+  )
 
   useFrame(() => controls.update(), { priority: -1 })
 
-  createEffect(() => {
-    const current = controls
-    current.connect()
-    onCleanup(() => current.dispose())
-  })
+  createEffect(
+    () => controls,
+    () => {
+      const current = controls
+      current.connect()
+      onCleanup(() => current.dispose())
+    },
+  )
 
   useRef(props, controls)
 

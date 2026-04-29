@@ -97,24 +97,27 @@ export function OrthographicCamera(props: OrthographicCameraProps) {
     }
   )
 
-  createEffect(() => {
-    if (!children().isFunctional) return
-    const scene = store.scene
-    if (!(scene instanceof THREE.Scene)) return
-    useFrame(state => {
-      if (config.frames === Infinity || count < config.frames) {
-        group.visible = false
-        state.gl.setRenderTarget(fbo)
-        previousEnvMap = scene.background
-        if (config.envMap) scene.background = config.envMap
-        state.gl.render(scene, camera())
-        scene.background = previousEnvMap
-        state.gl.setRenderTarget(null)
-        group.visible = true
-        count++
-      }
-    })
-  })
+  createEffect(
+    () => children().isFunctional,
+    () => {
+      if (!children().isFunctional) return
+      const scene = store.scene
+      if (!(scene instanceof THREE.Scene)) return
+      useFrame(state => {
+        if (config.frames === Infinity || count < config.frames) {
+          group.visible = false
+          state.gl.setRenderTarget(fbo)
+          previousEnvMap = scene.background
+          if (config.envMap) scene.background = config.envMap
+          state.gl.render(scene, camera())
+          scene.background = previousEnvMap
+          state.gl.setRenderTarget(null)
+          group.visible = true
+          count++
+        }
+      })
+    },
+  )
 
   createEffect(
     () => [config.manual, store.bounds] as const,

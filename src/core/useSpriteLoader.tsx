@@ -189,21 +189,23 @@ export function useSpriteLoader(
   // else: config is SpriteConfig — derive after texture loads
 
   // Recompute frame list once we have both texture and atlas
-  createEffect(() => {
-    const tex = texture()
-    if (!tex) return
+  createEffect(
+    () => texture(),
+    () => {
+      const tex = texture()
+      if (!tex) return
 
-    // Apply texture to material
-    tex.wrapS = tex.wrapT = RepeatWrapping
-    material.map = tex
-    material.needsUpdate = true
+      // Apply texture to material
+      tex.wrapS = tex.wrapT = RepeatWrapping
+      material.map = tex
+      material.needsUpdate = true
 
-    const finalize = (atlas: AtlasData) => {
-      resolvedAtlas = atlas
-      frameList = buildFrameList(atlas, animationNames)
-      if (animationNames && animationNames.length > 0) {
-        animationMap = buildAnimationMap(atlas, animationNames)
-      }
+      const finalize = (atlas: AtlasData) => {
+        resolvedAtlas = atlas
+        frameList = buildFrameList(atlas, animationNames)
+        if (animationNames && animationNames.length > 0) {
+          animationMap = buildAnimationMap(atlas, animationNames)
+        }
 
       const totalF = frameList.length
 

@@ -48,21 +48,23 @@ export function PresentationControls(_props: PresentationControlProps) {
 
   const getDomElement = () => props.domElement || store.gl.domElement
 
-  createEffect(() => {
-    if (!props.enabled) return
-    const domEl = getDomElement()
-
-    let isDragging = false
-    const last = new Vector2()
-
-    const onPointerDown = (e: PointerEvent) => {
+  createEffect(
+    () => props.enabled,
+    () => {
       if (!props.enabled) return
-      isDragging = true
-      last.set(e.clientX, e.clientY)
-      if (props.cursor) domEl.style.cursor = 'grabbing'
-    }
+      const domEl = getDomElement()
 
-    const onPointerMove = (e: PointerEvent) => {
+      let isDragging = false
+      const last = new Vector2()
+
+      const onPointerDown = (e: PointerEvent) => {
+        if (!props.enabled) return
+        isDragging = true
+        last.set(e.clientX, e.clientY)
+        if (props.cursor) domEl.style.cursor = 'grabbing'
+      }
+
+      const onPointerMove = (e: PointerEvent) => {
       if (!isDragging || !props.enabled) return
       const dx = e.clientX - last.x
       const dy = e.clientY - last.y

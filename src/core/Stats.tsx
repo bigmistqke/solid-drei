@@ -16,24 +16,30 @@ export function Stats(props: Props): null {
 
   const stats = new StatsImpl()
 
-  createEffect(() => {
-    stats.showPanel(config.showPanel)
-  })
+  createEffect(
+    () => config.showPanel,
+    () => {
+      stats.showPanel(config.showPanel)
+    },
+  )
 
-  createEffect(() => {
-    const node = config.parent || document.body
+  createEffect(
+    () => [config.parent, config.className] as const,
+    () => {
+      const node = config.parent || document.body
 
-    node?.appendChild(stats.dom)
+      node?.appendChild(stats.dom)
 
-    if (config.className) {
-      stats.dom.classList.add(...config.className.split(' ').filter(Boolean))
-    }
+      if (config.className) {
+        stats.dom.classList.add(...config.className.split(' ').filter(Boolean))
+      }
 
-    useFrame(() => stats.begin(), { priority: -Infinity })
-    useFrame(() => stats.end(), { priority: Infinity, stage: 'after' })
+      useFrame(() => stats.begin(), { priority: -Infinity })
+      useFrame(() => stats.end(), { priority: Infinity, stage: 'after' })
 
-    onCleanup(() => node?.removeChild(stats.dom))
-  })
+      onCleanup(() => node?.removeChild(stats.dom))
+    },
+  )
 
   return null
 }

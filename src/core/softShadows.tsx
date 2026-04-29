@@ -163,20 +163,22 @@ export function SoftShadows(props: SoftShadowsProps) {
 
   const store = useThree()
 
-  createEffect(() => {
-    const original = ShaderChunk.shadowmap_pars_fragment
-    ShaderChunk.shadowmap_pars_fragment = ShaderChunk.shadowmap_pars_fragment
-      .replace('#ifdef USE_SHADOWMAP', '#ifdef USE_SHADOWMAP\n' + pcss(config))
-      .replace(
-        '#if defined( SHADOWMAP_TYPE_PCF )',
-        '\nreturn PCSS(shadowMap, shadowCoord);\n#if defined( SHADOWMAP_TYPE_PCF )',
-      )
+  createEffect(
+    () => store.gl,
+    () => {
+      const original = ShaderChunk.shadowmap_pars_fragment
+      ShaderChunk.shadowmap_pars_fragment = ShaderChunk.shadowmap_pars_fragment
+        .replace('#ifdef USE_SHADOWMAP', '#ifdef USE_SHADOWMAP\n' + pcss(config))
+        .replace(
+          '#if defined( SHADOWMAP_TYPE_PCF )',
+          '\nreturn PCSS(shadowMap, shadowCoord);\n#if defined( SHADOWMAP_TYPE_PCF )',
+        )
 
-    reset(store.gl, store.scene, store.camera)
-
-    onCleanup(() => {
-      ShaderChunk.shadowmap_pars_fragment = original
       reset(store.gl, store.scene, store.camera)
+
+      onCleanup(() => {
+        ShaderChunk.shadowmap_pars_fragment = original
+        reset(store.gl, store.scene, store.camera)
     })
   })
 

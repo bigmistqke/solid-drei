@@ -25,22 +25,24 @@ export function CycleRaycast(_props: CycleRaycastProps) {
   let cycle = 0
   const store = useThree()
 
-  createEffect(() => {
-    let hits: THREE.Intersection[] = []
-    let lastEvent: PointerEvent = undefined!
-    const target = props.portal ?? (store.gl.domElement.parentNode as HTMLElement)
+  createEffect(
+    () => [props.portal, props.onChanged] as const,
+    () => {
+      let hits: THREE.Intersection[] = []
+      let lastEvent: PointerEvent = undefined!
+      const target = props.portal ?? (store.gl.domElement.parentNode as HTMLElement)
 
-    const renderStatus = () => {
-      if (target && props.onChanged) {
-        props.onChanged(hits, Math.round(cycle) % Math.max(hits.length, 1))
+      const renderStatus = () => {
+        if (target && props.onChanged) {
+          props.onChanged(hits, Math.round(cycle) % Math.max(hits.length, 1))
+        }
       }
-    }
 
-    // Cycle, refresh events and render status
-    const refresh = (fn: (current: number) => number) => {
-      cycle = fn(cycle)
-      renderStatus()
-    }
+      // Cycle, refresh events and render status
+      const refresh = (fn: (current: number) => number) => {
+        cycle = fn(cycle)
+        renderStatus()
+      }
 
     // Key events
     const tabEvent = (event: KeyboardEvent) => {

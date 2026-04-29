@@ -21,12 +21,15 @@ export function ComputedAttribute(props: ComputedAttributeProps) {
 
   const [primitive, setPrimitive] = createSignal<S3.Meta<BufferAttribute>>()
 
-  createRenderEffect(() => {
-    const parent = primitive()?.[$S3C]?.parent?.object
-    if (!parent) return
-    const attr = props.compute(parent)
-    primitive()!.copy(attr)
-  })
+  createRenderEffect(
+    () => primitive(),
+    () => {
+      const parent = primitive()?.[$S3C]?.parent?.object
+      if (!parent) return
+      const attr = props.compute(parent)
+      primitive()!.copy(attr)
+    },
+  )
 
   return (
     <Entity

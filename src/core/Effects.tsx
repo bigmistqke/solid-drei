@@ -86,9 +86,12 @@ export const Effects = (_props: EffectsProps) => {
     return c
   })
 
-  createEffect(() => {
-    composer().setSize(store.bounds.width, store.bounds.height)
-  })
+  createEffect(
+    () => [store.bounds.width, store.bounds.height] as const,
+    () => {
+      composer().setSize(store.bounds.width, store.bounds.height)
+    },
+  )
 
   useFrame(
     () => {
@@ -97,9 +100,12 @@ export const Effects = (_props: EffectsProps) => {
     { priority: props.renderIndex },
   )
 
-  createEffect(() => {
-    props.ref?.(composer())
-  })
+  createEffect(
+    () => composer(),
+    () => {
+      props.ref?.(composer())
+    },
+  )
 
   return <>{props.children}</>
 }

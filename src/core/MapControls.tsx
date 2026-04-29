@@ -48,11 +48,23 @@ export function useMapControls(options?: MapControlsOptions) {
         controls.enabled = true
         onCleanup(() => (controls.enabled = false))
 
-        createRenderEffect(() => controls.connect(config.domElement))
+        createRenderEffect(
+          () => config.domElement,
+          () => controls.connect(config.domElement),
+        )
 
-        createRenderEffect(() => autolisten('start', config.onStart))
-        createRenderEffect(() => autolisten('change', config.onChange))
-        createRenderEffect(() => autolisten('end', config.onEnd))
+        createRenderEffect(
+          () => config.onStart,
+          () => autolisten('start', config.onStart),
+        )
+        createRenderEffect(
+          () => config.onChange,
+          () => autolisten('change', config.onChange),
+        )
+        createRenderEffect(
+          () => config.onEnd,
+          () => autolisten('end', config.onEnd),
+        )
 
         useProps(controls, rest, store)
 

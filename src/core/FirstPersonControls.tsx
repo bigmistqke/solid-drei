@@ -30,10 +30,13 @@ export function useFirstPersonControls(three: S3.Context, props?: FirstPersonCon
     autodispose(new ThreeFirstPersonControl(config.camera, element())),
   )
 
-  createEffect(() => {
-    controls().connect(element())
-    useFrame((_, delta) => controls().enabled && controls().update(delta))
-  })
+  createEffect(
+    () => element(),
+    () => {
+      controls().connect(element())
+      useFrame((_, delta) => controls().enabled && controls().update(delta))
+    },
+  )
 
   useProps(controls, rest)
 

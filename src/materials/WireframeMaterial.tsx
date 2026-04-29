@@ -240,51 +240,96 @@ export function useWireframeUniforms(
   uniforms: Accessor<WireFrameUniforms>,
   props: WireframeMaterialProps,
 ) {
-  createEffect(() => {
-    uniforms().fillOpacity.value = props.fillOpacity ?? uniforms().fillOpacity.value
-  })
-  createEffect(() => {
-    uniforms().fillMix.value = props.fillMix ?? uniforms().fillMix.value
-  })
-  createEffect(() => {
-    uniforms().strokeOpacity.value = props.strokeOpacity ?? uniforms().strokeOpacity.value
-  })
-  createEffect(() => {
-    uniforms().thickness.value = props.thickness ?? uniforms().thickness.value
-  })
-  createEffect(() => {
-    uniforms().colorBackfaces.value = !!props.colorBackfaces
-  })
-  createEffect(() => {
-    uniforms().dash.value = !!props.dash
-  })
-  createEffect(() => {
-    uniforms().dashInvert.value = !!props.dashInvert
-  })
-  createEffect(() => {
-    uniforms().dashRepeats.value = props.dashRepeats ?? uniforms().dashRepeats.value
-  })
-  createEffect(() => {
-    uniforms().dashLength.value = props.dashLength ?? uniforms().dashLength.value
-  })
-  createEffect(() => {
-    uniforms().squeeze.value = !!props.squeeze
-  })
-  createEffect(() => {
-    uniforms().squeezeMin.value = props.squeezeMin ?? uniforms().squeezeMin.value
-  })
-  createEffect(() => {
-    uniforms().squeezeMax.value = props.squeezeMax ?? uniforms().squeezeMax.value
-  })
-  createEffect(() => {
-    uniforms().stroke.value = props.stroke ? new THREE.Color(props.stroke) : uniforms().stroke.value
-  })
-  createEffect(() => {
-    uniforms().fill.value = props.fill ? new THREE.Color(props.fill) : uniforms().fill.value
-  })
-  createEffect(() => {
-    uniforms().backfaceStroke.value = props.backfaceStroke
-      ? new THREE.Color(props.backfaceStroke)
-      : uniforms().backfaceStroke.value
-  })
+  createEffect(
+    () => props.fillOpacity,
+    () => {
+      uniforms().fillOpacity.value = props.fillOpacity ?? uniforms().fillOpacity.value
+    },
+  )
+  createEffect(
+    () => props.fillMix,
+    () => {
+      uniforms().fillMix.value = props.fillMix ?? uniforms().fillMix.value
+    },
+  )
+  createEffect(
+    () => props.strokeOpacity,
+    () => {
+      uniforms().strokeOpacity.value = props.strokeOpacity ?? uniforms().strokeOpacity.value
+    },
+  )
+  createEffect(
+    () => props.thickness,
+    () => {
+      uniforms().thickness.value = props.thickness ?? uniforms().thickness.value
+    },
+  )
+  createEffect(
+    () => props.colorBackfaces,
+    () => {
+      uniforms().colorBackfaces.value = !!props.colorBackfaces
+    },
+  )
+  createEffect(
+    () => props.dash,
+    () => {
+      uniforms().dash.value = !!props.dash
+    },
+  )
+  createEffect(
+    () => props.dashInvert,
+    () => {
+      uniforms().dashInvert.value = !!props.dashInvert
+    },
+  )
+  createEffect(
+    () => props.dashRepeats,
+    () => {
+      uniforms().dashRepeats.value = props.dashRepeats ?? uniforms().dashRepeats.value
+    },
+  )
+  createEffect(
+    () => props.dashLength,
+    () => {
+      uniforms().dashLength.value = props.dashLength ?? uniforms().dashLength.value
+    },
+  )
+  createEffect(
+    () => props.squeeze,
+    () => {
+      uniforms().squeeze.value = !!props.squeeze
+    },
+  )
+  createEffect(
+    () => props.squeezeMin,
+    () => {
+      uniforms().squeezeMin.value = props.squeezeMin ?? uniforms().squeezeMin.value
+    },
+  )
+  createEffect(
+    () => props.squeezeMax,
+    () => {
+      uniforms().squeezeMax.value = props.squeezeMax ?? uniforms().squeezeMax.value
+    },
+  )
+  createEffect(
+    () => props.stroke,
+    () => {
+      uniforms().stroke.value = props.stroke ? new THREE.Color(props.stroke) : uniforms().stroke.value
+    },
+  )
+  createEffect(
+    () => props.fill,
+    () => {
+      uniforms().fill.value = props.fill ? new THREE.Color(props.fill) : uniforms().fill.value
+    },
+  )
+  createEffect(
+    () => props.backfaceStroke,
+    () => {
+      uniforms().backfaceStroke.value = props.backfaceStroke
+        ? new THREE.Color(props.backfaceStroke)
+        : uniforms().backfaceStroke.value
+    },
+  )
 }

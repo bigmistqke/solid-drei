@@ -37,12 +37,15 @@ export function useDreiNormalTexture(
   const texture = useTexture(url, {
     onLoad: (texture: Texture) => {
       texture.wrapS = texture.wrapT = RepeatWrapping
-      createRenderEffect(() => {
-        texture.repeat = new Vector2(config.repeat[0], config.repeat[1])
-        texture.offset = new Vector2(config.offset[0], config.offset[1])
-        texture.anisotropy = config.anisotropy
-        texture.needsUpdate = true
-      })
+      createRenderEffect(
+        () => [config.repeat, config.offset, config.anisotropy] as const,
+        () => {
+          texture.repeat = new Vector2(config.repeat[0], config.repeat[1])
+          texture.offset = new Vector2(config.offset[0], config.offset[1])
+          texture.anisotropy = config.anisotropy
+          texture.needsUpdate = true
+        },
+      )
     },
   })
 

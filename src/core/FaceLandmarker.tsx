@@ -40,13 +40,16 @@ export function FaceLandmarker({
     )
   })
 
-  createEffect(() => {
-    onCleanup(() => {
-      faceLandmarker()?.close()
-      // s3f:  suspend-react caches and can clear the cache, should we clear the cache too?
-      // clear([basePath, opts])
-    })
-  })
+  createEffect(
+    () => faceLandmarker(),
+    () => {
+      onCleanup(() => {
+        faceLandmarker()?.close()
+        // s3f:  suspend-react caches and can clear the cache, should we clear the cache too?
+        // clear([basePath, opts])
+      })
+    },
+  )
 
   return <FaceLandmarkerContext.Provider value={faceLandmarker}>{children}</FaceLandmarkerContext.Provider>
 }

@@ -50,25 +50,34 @@ export function AsciiRenderer(_props: AsciiRendererProps) {
   })
 
   // Styling
-  createRenderEffect(() => {
-    effect().domElement.style.color = props.fgColor
-    effect().domElement.style.backgroundColor = props.bgColor
-  })
+  createRenderEffect(
+    () => [props.fgColor, props.bgColor] as const,
+    () => {
+      effect().domElement.style.color = props.fgColor
+      effect().domElement.style.backgroundColor = props.bgColor
+    },
+  )
 
   // Append on mount, remove on unmount
-  createEffect(() => {
-    store.gl.domElement.style.opacity = '0'
-    store.gl.domElement.parentNode!.appendChild(effect().domElement)
-    onCleanup(() => {
-      store.gl.domElement.style.opacity = '1'
-      store.gl.domElement.parentNode!.removeChild(effect().domElement)
-    })
-  })
+  createEffect(
+    () => effect(),
+    () => {
+      store.gl.domElement.style.opacity = '0'
+      store.gl.domElement.parentNode!.appendChild(effect().domElement)
+      onCleanup(() => {
+        store.gl.domElement.style.opacity = '1'
+        store.gl.domElement.parentNode!.removeChild(effect().domElement)
+      })
+    },
+  )
 
   // Set size
-  createEffect(() => {
-    effect().setSize(store.bounds.width, store.bounds.height)
-  })
+  createEffect(
+    () => [effect(), store.bounds.width, store.bounds.height] as const,
+    () => {
+      effect().setSize(store.bounds.width, store.bounds.height)
+    },
+  )
 
   // Take over render-loop (that is what the index is for)
   useFrame(() => effect().render(store.scene, store.camera))

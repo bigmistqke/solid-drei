@@ -111,22 +111,24 @@ export function Environment(_props: EnvironmentProps) {
     ({ files, path, gl }) => loadEnvironmentTexture(files, path, gl),
   )
 
-  createEffect(() => {
-    const tex = texture()
-    if (!tex) return
+  createEffect(
+    () => [texture(), props.background, props.blur] as const,
+    () => {
+      const tex = texture()
+      if (!tex) return
 
-    const scene = props.scene ?? store.scene
-    const prevEnv = scene.environment
-    const prevBg = scene.background
+      const scene = props.scene ?? store.scene
+      const prevEnv = scene.environment
+      const prevBg = scene.background
 
-    if (props.background !== 'only') scene.environment = tex
-    if (props.background) scene.background = tex
-    if (props.blur !== undefined && props.blur > 0) scene.backgroundBlurriness = props.blur
+      if (props.background !== 'only') scene.environment = tex
+      if (props.background) scene.background = tex
+      if (props.blur !== undefined && props.blur > 0) scene.backgroundBlurriness = props.blur
 
-    onCleanup(() => {
-      scene.environment = prevEnv
-      scene.background = prevBg
-      tex.dispose()
+      onCleanup(() => {
+        scene.environment = prevEnv
+        scene.background = prevBg
+        tex.dispose()
     })
   })
 

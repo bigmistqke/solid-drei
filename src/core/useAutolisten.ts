@@ -26,18 +26,21 @@ export function useAutolisten<
   })
 
   return ((type: any, callback: any, ...options: any[]) => {
-    createRenderEffect(() => {
-      if (callback === undefined || callback === null) return
+    createRenderEffect(
+      () => callback,
+      () => {
+        if (callback === undefined || callback === null) return
 
-      resolve(object).addEventListener(type, callback, ...options)
+        resolve(object).addEventListener(type, callback, ...options)
 
-      const cleanup = () => {
-        resolve(object).removeEventListener(type, callback, ...options)
-        listeners.delete(cleanup)
-      }
+        const cleanup = () => {
+          resolve(object).removeEventListener(type, callback, ...options)
+          listeners.delete(cleanup)
+        }
 
-      listeners.add(cleanup)
-      onCleanup(cleanup)
-    })
+        listeners.add(cleanup)
+        onCleanup(cleanup)
+      },
+    )
   }) as any
 }

@@ -252,10 +252,13 @@ function ScrollCanvas(props: ScrollCanvasProps) {
   const scroll = useScrollContext()
   const store = useThree()
 
-  createEffect(() => {
-    if (typeof props.ref === 'function') props.ref(groupRef)
-    else props.ref = groupRef
-  })
+  createEffect(
+    () => groupRef,
+    () => {
+      if (typeof props.ref === 'function') props.ref(groupRef)
+      else props.ref = groupRef
+    },
+  )
 
   useFrame(() => {
     groupRef.position.x = scroll.horizontal

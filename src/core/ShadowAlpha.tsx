@@ -25,33 +25,36 @@ export function ShadowAlpha(_props: ShadowAlphaProps) {
 
   let ref: THREE.MeshBasicMaterial = null!
 
-  createEffect(() => {
-    const mesh = getMeta(ref)?.parent?.object as THREE.Mesh | undefined
-    if (!mesh) return
+  createEffect(
+    () => [props.visible, props.opacity] as const,
+    () => {
+      const mesh = getMeta(ref)?.parent?.object as THREE.Mesh | undefined
+      if (!mesh) return
 
-    const previousVisible = mesh.visible
-    const previousCastShadow = mesh.castShadow
-    const previousCustomDepthMaterial = mesh.customDepthMaterial
+      const previousVisible = mesh.visible
+      const previousCastShadow = mesh.castShadow
+      const previousCustomDepthMaterial = mesh.customDepthMaterial
 
-    // Make the mesh invisible to the camera
-    mesh.visible = !!props.visible
-    // Ensure it casts shadows
-    mesh.castShadow = true
+      // Make the mesh invisible to the camera
+      mesh.visible = !!props.visible
+      // Ensure it casts shadows
+      mesh.castShadow = true
 
-    // Create a custom depth material for shadow casting that respects opacity/alphaTest
-    const depthMaterial = new THREE.MeshDepthMaterial({
-      depthPacking: THREE.RGBADepthPacking,
-      alphaTest: 1 - props.opacity,
-    })
-    mesh.customDepthMaterial = depthMaterial
+      // Create a custom depth material for shadow casting that respects opacity/alphaTest
+      const depthMaterial = new THREE.MeshDepthMaterial({
+        depthPacking: THREE.RGBADepthPacking,
+        alphaTest: 1 - props.opacity,
+      })
+      mesh.customDepthMaterial = depthMaterial
 
-    onCleanup(() => {
-      mesh.visible = previousVisible
-      mesh.castShadow = previousCastShadow
-      mesh.customDepthMaterial = previousCustomDepthMaterial
-      depthMaterial.dispose()
-    })
-  })
+      onCleanup(() => {
+        mesh.visible = previousVisible
+        mesh.castShadow = previousCastShadow
+        mesh.customDepthMaterial = previousCustomDepthMaterial
+        depthMaterial.dispose()
+      })
+    },
+  )
 
   return (
     <Entity

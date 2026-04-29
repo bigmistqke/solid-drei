@@ -82,13 +82,16 @@ export function Select(props: SelectProps) {
     setActive([object, ...active()])
   }
 
-  createEffect(() => {
-    if (downed()) {
-      config.onChange?.(active())
-    } else {
-      config.onChangePointerUp?.(active())
-    }
-  })
+  createEffect(
+    () => [downed(), active()] as const,
+    () => {
+      if (downed()) {
+        config.onChange?.(active())
+      } else {
+        config.onChangePointerUp?.(active())
+      }
+    },
+  )
 
   function onClick(e: S3.ThreeEvent<MouseEvent>) {
     e.stopPropagation()
@@ -103,10 +106,12 @@ export function Select(props: SelectProps) {
     }
   }
 
-  createEffect(() => {
-    if (!config.box || !config.multiple) return
+  createEffect(
+    () => [config.box, config.multiple] as const,
+    () => {
+      if (!config.box || !config.multiple) return
 
-    const selBox = new SelectionBox(store.camera, group as unknown as Scene)
+      const selBox = new SelectionBox(store.camera, group as unknown as Scene)
 
     const element = document.createElement('div')
     element.style.pointerEvents = 'none'

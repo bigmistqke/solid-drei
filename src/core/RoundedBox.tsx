@@ -69,10 +69,13 @@ export function RoundedBox(props: RoundedBoxProps) {
   const shape = createMemo(() => createShape(args().width, args().height, config.radius))
   const geometry = createMemo(() => {
     const geometry = autodispose(new ExtrudeGeometry(shape(), params))
-    createRenderEffect(() => {
-      geometry.center()
-      toCreasedNormals(geometry, config.creaseAngle)
-    })
+    createRenderEffect(
+      () => config.creaseAngle,
+      () => {
+        geometry.center()
+        toCreasedNormals(geometry, config.creaseAngle)
+      },
+    )
     return geometry
   })
 

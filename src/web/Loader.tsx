@@ -25,11 +25,14 @@ export function Loader(_props: Partial<LoaderOptions>) {
   let progressSpanRef: HTMLSpanElement = null!
   const [shown, setShown] = createSignal(props.initialState(progress.active))
 
-  createEffect(() => {
-    let t: ReturnType<typeof setTimeout>
-    if (progress.active !== shown()) t = setTimeout(() => setShown(progress.active), 300)
-    onCleanup(() => clearTimeout(t))
-  })
+  createEffect(
+    () => [progress.active, shown()] as const,
+    () => {
+      let t: ReturnType<typeof setTimeout>
+      if (progress.active !== shown()) t = setTimeout(() => setShown(progress.active), 300)
+      onCleanup(() => clearTimeout(t))
+    },
+  )
 
   const updateProgress = () => {
     if (!progressSpanRef) return
@@ -40,10 +43,13 @@ export function Loader(_props: Partial<LoaderOptions>) {
     if (progressRef < progress.progress) rafRef = requestAnimationFrame(updateProgress)
   }
 
-  createEffect(() => {
-    updateProgress()
-    onCleanup(() => cancelAnimationFrame(rafRef))
-  })
+  createEffect(
+    () => progress.progress,
+    () => {
+      updateProgress()
+      onCleanup(() => cancelAnimationFrame(rafRef))
+    },
+  )
 
   return (
     <Show when={shown()}>
