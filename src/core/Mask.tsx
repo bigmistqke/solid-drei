@@ -23,19 +23,22 @@ export function Mask(_props: MaskProps) {
   let ref: THREE.Mesh = null!
   useRef(_props, () => ref)
 
-  createRenderEffect(() => {
-    if (!ref) return
-    Object.assign(ref.material, {
-      colorWrite: props.colorWrite,
-      depthWrite: props.depthWrite,
-      stencilWrite: true,
-      stencilRef: props.id,
-      stencilFunc: THREE.AlwaysStencilFunc,
-      stencilFail: THREE.ReplaceStencilOp,
-      stencilZFail: THREE.ReplaceStencilOp,
-      stencilZPass: THREE.ReplaceStencilOp,
-    })
-  })
+  createRenderEffect(
+    () => ({ id: props.id, colorWrite: props.colorWrite, depthWrite: props.depthWrite }),
+    ({ id, colorWrite, depthWrite }) => {
+      if (!ref) return
+      Object.assign(ref.material, {
+        colorWrite,
+        depthWrite,
+        stencilWrite: true,
+        stencilRef: id,
+        stencilFunc: THREE.AlwaysStencilFunc,
+        stencilFail: THREE.ReplaceStencilOp,
+        stencilZFail: THREE.ReplaceStencilOp,
+        stencilZPass: THREE.ReplaceStencilOp,
+      })
+    }
+  )
 
   return <Entity from={Mesh} ref={ref!} renderOrder={-props.id} {...(rest as any)} />
 }

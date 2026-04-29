@@ -48,10 +48,13 @@ export function useAnimations<T extends AnimationClip>(
     mixer.update(delta)
   })
 
-  createRenderEffect(() => {
-    // @ts-expect-error
-    mixer._root = resolveRoot()
-  })
+  createRenderEffect(
+    () => resolveRoot(),
+    (root) => {
+      // @ts-expect-error
+      mixer._root = root
+    }
+  )
 
   createEffect(
     () => clips(),

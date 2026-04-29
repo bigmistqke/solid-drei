@@ -133,109 +133,115 @@ export function Facemesh(_props: FacemeshProps) {
 
   const store = useThree()
 
-  createEffect(() => {
-    meshRef?.geometry.setIndex(FacemeshDatas.TRIANGULATION)
-  })
+  createEffect(
+    () => meshRef?.geometry,
+    (geom) => {
+      geom?.setIndex(FacemeshDatas.TRIANGULATION)
+    }
+  )
 
   const bboxSize = new THREE.Vector3()
 
-  createEffect(() => {
-    const faceGeometry = meshRef.geometry
-    if (!faceGeometry) return
+  createEffect(
+    () => ({ points: props.points, facialTransformationMatrix: props.facialTransformationMatrix, faceBlendshapes: props.faceBlendshapes }),
+    ({ points, facialTransformationMatrix, faceBlendshapes }) => {
+      const faceGeometry = meshRef.geometry
+      if (!faceGeometry) return
 
-    faceGeometry.setFromPoints(props.points as THREE.Vector3[])
-    faceGeometry.setDrawRange(0, FacemeshDatas.TRIANGULATION.length)
+      faceGeometry.setFromPoints(points as THREE.Vector3[])
+      faceGeometry.setDrawRange(0, FacemeshDatas.TRIANGULATION.length)
 
-    if (props.facialTransformationMatrix) {
-      transform.matrix.fromArray(props.facialTransformationMatrix.data)
-      transform.matrix.decompose(transform.position, transform.quaternion, transform.scale)
+      if (facialTransformationMatrix) {
+        transform.matrix.fromArray(facialTransformationMatrix.data)
+        transform.matrix.decompose(transform.position, transform.quaternion, transform.scale)
 
-      transform.rotation.y *= -1
-      transform.rotation.z *= -1
-      sightDirQuaternion.setFromEuler(transform.rotation)
+        transform.rotation.y *= -1
+        transform.rotation.z *= -1
+        sightDirQuaternion.setFromEuler(transform.rotation)
 
-      if (props.offset) {
-        transform.position.y *= -1
-        transform.position.z *= -1
-        offsetRef.position.copy(transform.position.divideScalar(props.offsetScalar))
+        if (props.offset) {
+          transform.position.y *= -1
+          transform.position.z *= -1
+          offsetRef.position.copy(transform.position.divideScalar(props.offsetScalar))
+        } else {
+          offsetRef.position.set(0, 0, 0)
+        }
       } else {
-        offsetRef.position.set(0, 0, 0)
+        normal(
+          points[props.verticalTri[0]] as THREE.Vector3,
+          points[props.verticalTri[1]] as THREE.Vector3,
+          points[props.verticalTri[2]] as THREE.Vector3,
+          sightDir,
+        )
+
+        sightDirQuaternion.setFromUnitVectors(defaultLookAt, sightDir)
       }
-    } else {
-      normal(
-        props.points[props.verticalTri[0]] as THREE.Vector3,
-        props.points[props.verticalTri[1]] as THREE.Vector3,
-        props.points[props.verticalTri[2]] as THREE.Vector3,
-        sightDir,
-      )
 
-      sightDirQuaternion.setFromUnitVectors(defaultLookAt, sightDir)
-    }
+      const sightDirQuaternionInverse = sightDirQuaternion.clone().invert()
 
-    const sightDirQuaternionInverse = sightDirQuaternion.clone().invert()
+      faceGeometry.computeBoundingBox()
+      if (props.debug) store.requestRender()
+      faceGeometry.center()
 
-    faceGeometry.computeBoundingBox()
-    if (props.debug) store.requestRender()
-    faceGeometry.center()
+      faceGeometry.applyQuaternion(sightDirQuaternionInverse)
+      outerRef.setRotationFromQuaternion(sightDirQuaternion)
 
-    faceGeometry.applyQuaternion(sightDirQuaternionInverse)
-    outerRef.setRotationFromQuaternion(sightDirQuaternion)
+      if (props.eyes) {
+        if (!faceBlendshapes) {
+          console.warn('Facemesh `eyes` option only works if `faceBlendshapes` is provided: skipping.')
+        } else {
+          if (eyeRightRef && eyeLeftRef && originRef) {
+            if (props.eyesAsOrigin) {
+              const eyeRightSphere = eyeRightRef._computeSphere(faceGeometry)
+              const eyeLeftSphere = eyeLeftRef._computeSphere(faceGeometry)
+              const eyesCenter = mean(eyeRightSphere.center, eyeLeftSphere.center)
+              props.origin = eyesCenter.negate()
 
-    if (props.eyes) {
-      if (!props.faceBlendshapes) {
-        console.warn('Facemesh `eyes` option only works if `faceBlendshapes` is provided: skipping.')
-      } else {
-        if (eyeRightRef && eyeLeftRef && originRef) {
-          if (props.eyesAsOrigin) {
-            const eyeRightSphere = eyeRightRef._computeSphere(faceGeometry)
-            const eyeLeftSphere = eyeLeftRef._computeSphere(faceGeometry)
-            const eyesCenter = mean(eyeRightSphere.center, eyeLeftSphere.center)
-            props.origin = eyesCenter.negate()
-
-            eyeRightRef._update(faceGeometry, props.faceBlendshapes, eyeRightSphere)
-            eyeLeftRef._update(faceGeometry, props.faceBlendshapes, eyeLeftSphere)
-          } else {
-            eyeRightRef._update(faceGeometry, props.faceBlendshapes)
-            eyeLeftRef._update(faceGeometry, props.faceBlendshapes)
+              eyeRightRef._update(faceGeometry, faceBlendshapes, eyeRightSphere)
+              eyeLeftRef._update(faceGeometry, faceBlendshapes, eyeLeftSphere)
+            } else {
+              eyeRightRef._update(faceGeometry, faceBlendshapes)
+              eyeLeftRef._update(faceGeometry, faceBlendshapes)
+            }
           }
         }
       }
-    }
 
-    if (originRef) {
-      if (props.origin !== undefined) {
-        if (typeof props.origin === 'number') {
-          const position = faceGeometry.getAttribute('position') as THREE.BufferAttribute
-          _origin.set(
-            -position.getX(props.origin),
-            -position.getY(props.origin),
-            -position.getZ(props.origin),
-          )
-        } else if ((props.origin as THREE.Vector3).isVector3) {
-          _origin.copy(props.origin as THREE.Vector3)
+      if (originRef) {
+        if (props.origin !== undefined) {
+          if (typeof props.origin === 'number') {
+            const position = faceGeometry.getAttribute('position') as THREE.BufferAttribute
+            _origin.set(
+              -position.getX(props.origin),
+              -position.getY(props.origin),
+              -position.getZ(props.origin),
+            )
+          } else if ((props.origin as THREE.Vector3).isVector3) {
+            _origin.copy(props.origin as THREE.Vector3)
+          }
+        } else {
+          _origin.setScalar(0)
         }
-      } else {
-        _origin.setScalar(0)
+
+        originRef.position.copy(_origin)
       }
 
-      originRef.position.copy(_origin)
-    }
+      if (scaleRef) {
+        let scale = 1
+        if (props.width || props.height || props.depth) {
+          faceGeometry.boundingBox!.getSize(bboxSize)
+          if (props.width) scale = props.width / bboxSize.x
+          if (props.height) scale = props.height / bboxSize.y
+          if (props.depth) scale = props.depth / bboxSize.z
+        }
 
-    if (scaleRef) {
-      let scale = 1
-      if (props.width || props.height || props.depth) {
-        faceGeometry.boundingBox!.getSize(bboxSize)
-        if (props.width) scale = props.width / bboxSize.x
-        if (props.height) scale = props.height / bboxSize.y
-        if (props.depth) scale = props.depth / bboxSize.z
+        scaleRef.scale.setScalar(scale !== 1 ? scale : 1)
       }
 
-      scaleRef.scale.setScalar(scale !== 1 ? scale : 1)
+      faceGeometry.computeVertexNormals()
+      faceGeometry.attributes.position.needsUpdate = true
     }
-
-    faceGeometry.computeVertexNormals()
-    faceGeometry.attributes.position.needsUpdate = true
-  })
+  )
 
   onMount(() => {
     if (typeof _props.ref === 'function') {

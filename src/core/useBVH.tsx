@@ -32,17 +32,20 @@ export function useBVH(mesh: Accessor<Mesh | undefined>, options?: BVHOptions) {
     maxLeafTris: 10,
     ...options,
   }
-  createEffect(() =>
-    check(mesh, mesh => {
-      mesh.raycast = acceleratedRaycast
-      const geometry = mesh.geometry as any
-      geometry.computeBoundsTree = computeBoundsTree
-      geometry.disposeBoundsTree = disposeBoundsTree
-      geometry.computeBoundsTree(opts)
-      onCleanup(() => {
-        if (geometry.boundsTree) geometry.disposeBoundsTree()
+  createEffect(
+    () => mesh(),
+    (m) => {
+      check(m, mesh => {
+        mesh.raycast = acceleratedRaycast
+        const geometry = mesh.geometry as any
+        geometry.computeBoundsTree = computeBoundsTree
+        geometry.disposeBoundsTree = disposeBoundsTree
+        geometry.computeBoundsTree(opts)
+        onCleanup(() => {
+          if (geometry.boundsTree) geometry.disposeBoundsTree()
+        })
       })
-    }),
+    },
   )
 }
 

@@ -54,10 +54,13 @@ export function useFBO(
 
   target.samples = samples
 
-  createRenderEffect(() => {
-    target.setSize(_width(), _height())
-    if (samples) target.samples = samples
-  })
+  createRenderEffect(
+    () => [_width(), _height()] as const,
+    ([w, h]) => {
+      target.setSize(w, h)
+      if (samples) target.samples = samples
+    }
+  )
 
   return target
 }

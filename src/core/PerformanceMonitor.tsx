@@ -152,11 +152,19 @@ export function usePerformanceMonitor({
 }: Partial<PerformanceMonitorHookApi>) {
   const api = useContext(context)
   const ref = { onIncline, onDecline, onChange, onFallback }
-  createRenderEffect(() => {
-    ref.onIncline = onIncline
-    ref.onDecline = onDecline
-    ref.onChange = onChange
-    ref.onFallback = onFallback
-  })
-  createRenderEffect(() => api?.subscribe(ref))
+  createRenderEffect(
+    () => ({ onIncline, onDecline, onChange, onFallback }),
+    (callbacks) => {
+      ref.onIncline = callbacks.onIncline
+      ref.onDecline = callbacks.onDecline
+      ref.onChange = callbacks.onChange
+      ref.onFallback = callbacks.onFallback
+    }
+  )
+  createRenderEffect(
+    () => api,
+    (a) => {
+      a?.subscribe(ref)
+    }
+  )
 }

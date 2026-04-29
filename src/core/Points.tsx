@@ -145,10 +145,13 @@ function PointsInstances(props: PointsInstancesProps) {
 
   const parent = new ThreePoints()
 
-  createEffect(() => {
-    if (!parent.geometry.attributes.position) return
-    parent.geometry.attributes.position.needsUpdate = true
-  })
+  createEffect(
+    () => parent.geometry.attributes.position,
+    (attr) => {
+      if (!attr) return
+      attr.needsUpdate = true
+    },
+  )
 
   useFrame(() => {
     parent.updateMatrix()

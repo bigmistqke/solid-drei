@@ -107,58 +107,67 @@ export const MeshPortalMaterial = (_props: PortalProps) => {
   const [visible, setVisible] = createSignal(true)
   const [_visRef, setVisRef] = useIntersect(setVisible)
 
-  createRenderEffect(() => {
-    if (!materialRef) return
+  createRenderEffect(
+    () => materialRef,
+    (m) => {
+      if (!m) return
 
-    if (props.blur && !materialRef.sdf) {
-      const parent = (materialRef as unknown as { __r3f?: { parent: THREE.Mesh } }).__r3f?.parent
-      if (!parent || !(parent instanceof THREE.Mesh) || !parent.geometry) return
+      if (props.blur && !m.sdf) {
+        const parent = (m as unknown as { __r3f?: { parent: THREE.Mesh } }).__r3f?.parent
+        if (!parent || !(parent instanceof THREE.Mesh) || !parent.geometry) return
 
-      const tempMesh = new THREE.Mesh(parent.geometry, new THREE.MeshBasicMaterial())
-      const boundingBox = new THREE.Box3().setFromBufferAttribute(
-        tempMesh.geometry.attributes.position as THREE.BufferAttribute,
-      )
-      const orthoCam = new THREE.OrthographicCamera(
-        boundingBox.min.x * (1 + 2 / props.resolution),
-        boundingBox.max.x * (1 + 2 / props.resolution),
-        boundingBox.max.y * (1 + 2 / props.resolution),
-        boundingBox.min.y * (1 + 2 / props.resolution),
-        0.1,
-        1000,
-      )
-      orthoCam.position.set(0, 0, 1)
-      orthoCam.lookAt(0, 0, 0)
+        const tempMesh = new THREE.Mesh(parent.geometry, new THREE.MeshBasicMaterial())
+        const boundingBox = new THREE.Box3().setFromBufferAttribute(
+          tempMesh.geometry.attributes.position as THREE.BufferAttribute,
+        )
+        const orthoCam = new THREE.OrthographicCamera(
+          boundingBox.min.x * (1 + 2 / props.resolution),
+          boundingBox.max.x * (1 + 2 / props.resolution),
+          boundingBox.max.y * (1 + 2 / props.resolution),
+          boundingBox.min.y * (1 + 2 / props.resolution),
+          0.1,
+          1000,
+        )
+        orthoCam.position.set(0, 0, 1)
+        orthoCam.lookAt(0, 0, 0)
 
-      store.gl.setRenderTarget(maskRenderTarget)
-      store.gl.render(tempMesh, orthoCam)
-      const sg = makeSDFGenerator(props.resolution, props.resolution, store.gl)
-      const sdf = sg(maskRenderTarget.texture)
-      const readSdf = new Float32Array(props.resolution * props.resolution)
-      store.gl.readRenderTargetPixels(sdf, 0, 0, props.resolution, props.resolution, readSdf)
-      let min = Infinity
-      for (let i = 0; i < readSdf.length; i++) {
-        if (readSdf[i] < min) min = readSdf[i]
+        store.gl.setRenderTarget(maskRenderTarget)
+        store.gl.render(tempMesh, orthoCam)
+        const sg = makeSDFGenerator(props.resolution, props.resolution, store.gl)
+        const sdf = sg(maskRenderTarget.texture)
+        const readSdf = new Float32Array(props.resolution * props.resolution)
+        store.gl.readRenderTargetPixels(sdf, 0, 0, props.resolution, props.resolution, readSdf)
+        let min = Infinity
+        for (let i = 0; i < readSdf.length; i++) {
+          if (readSdf[i] < min) min = readSdf[i]
+        }
+        min = -min
+        m.size = min
+        m.sdf = sdf.texture
+        store.gl.setRenderTarget(null)
       }
-      min = -min
-      materialRef.size = min
-      materialRef.sdf = sdf.texture
-      store.gl.setRenderTarget(null)
     }
-  })
+  )
 
-  createEffect(() => {
-    props.ref?.(materialRef)
-  })
+  createEffect(
+    () => materialRef,
+    (m) => {
+      props.ref?.(m)
+    }
+  )
 
   const material = new PortalMaterialImpl() as unknown as PortalMaterialType
   material.blend = 0
   material.blur = props.blur
 
-  createEffect(() => {
-    if (materialRef) {
-      materialRef.resolution.set(store.bounds.width, store.bounds.height)
+  createEffect(
+    () => [store.bounds.width, store.bounds.height] as const,
+    ([width, height]) => {
+      if (materialRef) {
+        materialRef.resolution.set(width, height)
+      }
     }
-  })
+  )
 
   return (
     <Entity
@@ -196,9 +205,12 @@ function ManagePortalScene(props: {
   const buffer1 = useFBO()
   const buffer2 = useFBO()
 
-  createRenderEffect(() => {
-    store.scene.matrixAutoUpdate = false
-  })
+  createRenderEffect(
+    () => store,
+    (s) => {
+      s.scene.matrixAutoUpdate = false
+    }
+  )
 
   const memo = createMemo(() => {
     const blend = { value: 0 }

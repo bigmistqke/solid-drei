@@ -196,18 +196,21 @@ export function FaceControls(_props: FaceControlsProps) {
 
   if (typeof _props.ref === 'function') _props.ref(faceControlsApi)
 
-  createEffect(() => {
-    const onVideoFrameCb = (e: THREE.Event) => {
-      if (!props.manualDetect) detect((e as any).texture.source.data, (e as any).time)
-      if (props.onVideoFrame) props.onVideoFrame(e)
+  createEffect(
+    () => ({ manualDetect: props.manualDetect, onVideoFrame: props.onVideoFrame }),
+    ({ manualDetect, onVideoFrame }) => {
+      const onVideoFrameCb = (e: THREE.Event) => {
+        if (!manualDetect) detect((e as any).texture.source.data, (e as any).time)
+        if (onVideoFrame) onVideoFrame(e)
+      }
+
+      faceControlsApi.addEventListener('videoFrame', onVideoFrameCb)
+
+      onCleanup(() => {
+        faceControlsApi.removeEventListener('videoFrame', onVideoFrameCb)
+      })
     }
-
-    faceControlsApi.addEventListener('videoFrame', onVideoFrameCb)
-
-    onCleanup(() => {
-      faceControlsApi.removeEventListener('videoFrame', onVideoFrameCb)
-    })
-  })
+  )
 
   const points = () => faces()?.faceLandmarks[0]
   const facialTransformationMatrix = () => faces()?.facialTransformationMatrixes?.[0]
@@ -281,15 +284,18 @@ function Webcam(_props: WebcamProps) {
     },
   )
 
-  createEffect(() => {
-    faceControls.dispatchEvent({ type: 'stream', stream })
+  createEffect(
+    () => stream(),
+    (s) => {
+      faceControls.dispatchEvent({ type: 'stream', stream })
 
-    onCleanup(() => {
-      stream()
-        ?.getTracks()
-        .forEach(track => track.stop())
-    })
-  })
+      onCleanup(() => {
+        s
+          ?.getTracks()
+          .forEach(track => track.stop())
+      })
+    }
+  )
 
   const api: WebcamApi = {
     get videoTextureApiRef() {
@@ -331,26 +337,31 @@ function VideoTexture(_props: VideoTextureProps) {
   }
   useVideoFrame(video, onVideoFrame)
 
-  createEffect(() => {
-    check(texture, texture => {
-      if (typeof _props.ref === 'function') _props.ref({ texture })
-    })
-  })
+  createEffect(
+    () => texture(),
+    (t) => {
+      check(t, texture => {
+        if (typeof _props.ref === 'function') _props.ref({ texture })
+      })
+    }
+  )
 
   return <></>
 }
 
 function useVideoFrame(video: Accessor<HTMLVideoElement | undefined>, f: (...args: any) => any) {
-  createEffect(() => {
-    const vid = video()
-    if (!vid || !(vid as any).requestVideoFrameCallback) return
-    let handle: number
-    function callback(...args: any) {
-      f(...args)
-      handle = (vid as any).requestVideoFrameCallback(callback)
-    }
-    ;(vid as any).requestVideoFrameCallback(callback)
+  createEffect(
+    () => video(),
+    (vid) => {
+      if (!vid || !(vid as any).requestVideoFrameCallback) return
+      let handle: number
+      function callback(...args: any) {
+        f(...args)
+        handle = (vid as any).requestVideoFrameCallback(callback)
+      }
+      ;(vid as any).requestVideoFrameCallback(callback)
 
-    onCleanup(() => (vid as any).cancelVideoFrameCallback(handle))
-  })
+      onCleanup(() => (vid as any).cancelVideoFrameCallback(handle))
+    }
+  )
 }
