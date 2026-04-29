@@ -1,6 +1,6 @@
 import { awaitMapObject, isRecord, resolve } from '@/utils'
 import type { AccessorMaybe } from '@/utils/types'
-import { createResource, merge, type Resource } from 'solid-js'
+import { createMemo, merge, type Accessor } from 'solid-js'
 import { type S3 } from 'solid-three'
 import { type Loader } from 'three'
 import { LoaderCache, type LoaderRegistry } from './LoaderCache'
@@ -146,7 +146,7 @@ export function useLoader<
   loader: S3.Constructor<TLoader>,
   paths: AccessorMaybe<TPaths>,
   options?: UseLoaderOptions<TLoader, { [TKey in keyof TPaths]: DataFromLoader<TLoader> }>,
-): Resource<{ [TKey in keyof TPaths]: DataFromLoader<TLoader> }>
+): Accessor<{ [TKey in keyof TPaths]: DataFromLoader<TLoader> }>
 
 /**
  * Hook for loading a single Three.js resource with caching.
@@ -175,7 +175,7 @@ export function useLoader<TLoader extends Loader<any, any>>(
   loader: S3.Constructor<TLoader>,
   url: AccessorMaybe<UrlFromLoader<TLoader> | undefined>,
   options?: UseLoaderOptions<TLoader, DataFromLoader<TLoader>>,
-): Resource<DataFromLoader<TLoader>>
+): Accessor<DataFromLoader<TLoader>>
 
 export function useLoader<TLoader extends Loader<object, any>>(
   constructor: S3.Constructor<TLoader>,
@@ -208,30 +208,24 @@ export function useLoader<TLoader extends Loader<object, any>>(
           ),
         )
 
-  const [resource] = createResource(
-    () => [resolve(url), options?.base] as const,
-    async ([url, base]) => {
-      config.onBeforeLoad?.(loader)
+  const resource = createMemo(async () => {
+    const resolvedUrl = resolve(url)
+    const base = options?.base
 
-      url = base ? resolveUrls(base, url) : url
+    config.onBeforeLoad?.(loader)
 
-      if (isRecord(url)) {
-        const result = await awaitMapObject(url, async url => {
-          const resource = await loadUrl(url)
-          return resource
-        })
+    const finalUrl = base ? resolveUrls(base, resolvedUrl) : resolvedUrl
 
-        config?.onLoad?.(result)
-
-        return result
-      }
-
-      const result = await loadUrl(url)
-
+    if (isRecord(finalUrl)) {
+      const result = await awaitMapObject(finalUrl, async u => await loadUrl(u))
       config?.onLoad?.(result)
       return result
-    },
-  )
+    }
+
+    const result = await loadUrl(finalUrl)
+    config?.onLoad?.(result)
+    return result
+  })
   return resource
 }
 
