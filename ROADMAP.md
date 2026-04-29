@@ -30,13 +30,13 @@
 | GradientTexture | ✅ | |
 | Image | ✅ | |
 | Line | ✅ | |
-| MarchingCubes | 🚧 | Component works (frame ordering fixed); story in stories_broken only |
+| MarchingCubes | ✅ | Frame ordering fixed (reset -1, addBall 0, update +1) |
 | Outlines | ✅ | |
 | PositionalAudio | ✅ | |
 | QuadraticBezierLine | ✅ | |
 | Sampler | ✅ | |
 | ScreenSpace | ✅ | |
-| Splat | 🧪 | Full port (streaming loader, Web Worker depth sort, GLSL shader); no story yet |
+| Splat | ✅ | Full port: streaming loader, Web Worker depth sort, GLSL shader |
 | SpriteAnimator | ✅ | |
 | Svg | ✅ | |
 | Text | ✅ | |
@@ -183,7 +183,7 @@
 | Center | ✅ | |
 | Cloud | ✅ | |
 | ContactShadows | ✅ | |
-| Environment | 🚧 | Component ported (HDRI/EXR/cube + presets); story in stories_broken only |
+| Environment | ✅ | HDRI/EXR/cube + 10 presets (Poly Haven CDN) |
 | Float | ✅ | |
 | Lightformer | ✅ | |
 | Resize | ✅ | |
@@ -218,9 +218,6 @@
 
 ## Known Gaps
 
-- **Splat**: needs a Storybook story.
-- **MarchingCubes**: story in `stories_broken/` — needs porting to current API.
-- **Environment**: story in `stories_broken/` — needs porting to current API.
 - **Environment advanced**: `frames`, ground projection, and custom children portal not yet implemented.
 - **FaceControls**: requires `@mediapipe/tasks-vision` — needs install instructions in README.
 - **Publish**: not yet published to npm. Needs final API review + changelog.
