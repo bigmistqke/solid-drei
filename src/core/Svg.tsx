@@ -114,8 +114,8 @@ export function Svg(props: SvgProps) {
               <Show
                 when={
                   !config.skipFill &&
-                  path().userData?.style.fill !== undefined &&
-                  path().userData.style.fill !== 'none'
+                  path().userData?.style?.fill !== undefined &&
+                  path().userData?.style?.fill !== 'none'
                 }
               >
                 <For each={SVGLoader.createShapes(path())}>
@@ -137,8 +137,8 @@ export function Svg(props: SvgProps) {
               <Show
                 when={
                   !config.skipStrokes &&
-                  path().userData?.style.stroke !== undefined &&
-                  path().userData.style.stroke !== 'none'
+                  path().userData?.style?.stroke !== undefined &&
+                  path().userData?.style?.stroke !== 'none'
                 }
               >
                 <For each={path().subPaths}>

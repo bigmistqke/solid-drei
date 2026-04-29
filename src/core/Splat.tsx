@@ -7,7 +7,7 @@
 
 import * as THREE from 'three'
 import type { Ref } from 'solid-js'
-import { onCleanup } from 'solid-js'
+import { createEffect, onCleanup } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { Entity, useFrame, useThree } from 'solid-three'
 import { shaderMaterial } from '@/materials/shaderMaterial'
@@ -706,7 +706,7 @@ export function Splat(props: SplatProps) {
   let shared: SharedState | null = null
   let disconnect: (() => void) | null = null
 
-  (() => {
+  createEffect(() => {
     getSharedState(src, store.gl, chunkSize).then((s) => {
       shared = s
       disconnect = shared.connect(mesh)
