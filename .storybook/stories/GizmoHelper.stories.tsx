@@ -42,8 +42,8 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 function Tokyo() {
-  const { scene } = useGLTF(() => 'LittlestTokyo.glb')
-  return <T.Primitive object={() => scene} scale={0.01} />
+  const gltf = useGLTF(() => 'LittlestTokyo.glb')
+  return <T.Primitive object={() => gltf()?.scene} scale={0.01} />
 }
 
 const GizmoHelperScene1 = (props: ComponentProps<typeof GizmoHelper>) => {
