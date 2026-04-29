@@ -91,11 +91,14 @@ export function Text3D(props: Text3DProps) {
 
   const memo = createMemo(() => getTextFromChildren(config.children))
 
-  createEffect(() => {
-    if (!config.smooth) return
-    mesh.geometry = mergeVertices(mesh.geometry, config.smooth)
-    mesh.geometry.computeVertexNormals()
-  })
+  createEffect(
+    () => config.smooth,
+    (smooth) => {
+      if (!smooth) return
+      mesh.geometry = mergeVertices(mesh.geometry, smooth)
+      mesh.geometry.computeVertexNormals()
+    },
+  )
 
   useRef(config, mesh)
 

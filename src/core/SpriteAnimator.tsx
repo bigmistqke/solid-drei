@@ -228,65 +228,69 @@ export function SpriteAnimator(props: SpriteAnimatorProps) {
   )
 
   createEffect(
-    when(every(aspect, sprite), ([aspect, spriteRef]) => spriteRef.scale.set(1, aspect[1], 1)),
+    () => [aspect(), sprite()] as const,
+    ([aspectVal, spriteRef]) => {
+      if (spriteRef) spriteRef.scale.set(1, aspectVal[1], 1)
+    },
   )
 
   createEffect(
-    when(
-      every(spriteMaterial, spriteTexture),
-      ([spriteMaterial, spriteTexture]) => (spriteMaterial.map = spriteTexture),
-    ),
+    () => [spriteMaterial(), spriteTexture()] as const,
+    ([spriteMat, spriteText]) => {
+      if (spriteMat && spriteText) spriteMat.map = spriteText
+    },
   )
 
   createRenderEffect(
-    when(
-      every(spriteMaterial, spriteData),
-      ([
-        spriteMaterial,
-        {
-          meta: { size: metaInfo },
-          frames,
-        },
-      ]) => {
-        const { w: frameWidth, h: frameHeight } = Array.isArray(frames)
-          ? frames[0]!.sourceSize
-          : config.frameName
-          ? frames[config.frameName]
-            ? /* @ts-ignore-error TODO: fix types */
-              frames[config.frameName][0].sourceSize
-            : { w: 0, h: 0 }
-          : { w: 0, h: 0 }
+    () => [spriteMaterial(), spriteData()] as const,
+    ([spriteMat, sprData]) => {
+      if (!spriteMat || !sprData) return
+      const {
+        meta: { size: metaInfo },
+        frames,
+      } = sprData
 
-        createRenderEffect(
-          () => [spriteTexture(), config.flipX] as const,
-          ([texture, flipX]) => {
-            spriteMaterial.map!.wrapS = spriteMaterial.map!.wrapT = RepeatWrapping
-            spriteMaterial.map!.center.set(0, 0)
-            spriteMaterial.map!.repeat.set(
-              (1 * flipOffset()) / (metaInfo.w / frameWidth),
-              1 / (metaInfo.h / frameHeight),
-            )
-            //const framesH = (metaInfo.w - 1) / frameW
-            const framesV = (metaInfo.h - 1) / frameHeight
-            const frameOffsetY = 1 / framesV
-            spriteMaterial.map!.offset.x = 0.0 //-matRef.map.repeat.x
-            spriteMaterial.map!.offset.y = 1 - frameOffsetY
-            setJsonReady(true)
-            if (config.onStart) {
-              config.onStart({ currentFrameName: config.frameName, currentFrame: currentFrame })
-            }
-          },
-        )
-      },
-    ),
+      const { w: frameWidth, h: frameHeight } = Array.isArray(frames)
+        ? frames[0]!.sourceSize
+        : config.frameName
+        ? frames[config.frameName]
+          ? /* @ts-ignore-error TODO: fix types */
+            frames[config.frameName][0].sourceSize
+          : { w: 0, h: 0 }
+        : { w: 0, h: 0 }
+
+      createRenderEffect(
+        () => [spriteTexture(), config.flipX] as const,
+        ([texture, flipX]) => {
+          spriteMaterial().map!.wrapS = spriteMaterial().map!.wrapT = RepeatWrapping
+          spriteMaterial().map!.center.set(0, 0)
+          spriteMaterial().map!.repeat.set(
+            (1 * flipOffset()) / (metaInfo.w / frameWidth),
+            1 / (metaInfo.h / frameHeight),
+          )
+          //const framesH = (metaInfo.w - 1) / frameW
+          const framesV = (metaInfo.h - 1) / frameHeight
+          const frameOffsetY = 1 / framesV
+          spriteMaterial().map!.offset.x = 0.0 //-matRef.map.repeat.x
+          spriteMaterial().map!.offset.y = 1 - frameOffsetY
+          setJsonReady(true)
+          if (config.onStart) {
+            config.onStart({ currentFrameName: config.frameName, currentFrame: currentFrame })
+          }
+        },
+      )
+    },
   )
 
-  createEffect(() => {
-    if (config.frameName && currentFrameName !== config.frameName) {
-      currentFrame = 0
-      currentFrameName = config.frameName
-    }
-  })
+  createEffect(
+    () => config.frameName,
+    () => {
+      if (config.frameName && currentFrameName !== config.frameName) {
+        currentFrame = 0
+        currentFrameName = config.frameName
+      }
+    },
+  )
 
   // *** Warning! It runs on every frame! ***
   const tick = when(

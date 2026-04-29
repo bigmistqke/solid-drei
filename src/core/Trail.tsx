@@ -176,9 +176,12 @@ export function Trail(
     return m
   })
 
-  createRenderEffect(() => {
-    mat()?.uniforms.resolution.value.set(store.bounds.width, store.bounds.height)
-  })
+  createRenderEffect(
+    () => [store.bounds.width, store.bounds.height] as const,
+    () => {
+      mat()?.uniforms.resolution.value.set(store.bounds.width, store.bounds.height)
+    },
+  )
 
   useFrame(
     when(points, points => {

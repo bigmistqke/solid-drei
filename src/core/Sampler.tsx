@@ -53,40 +53,43 @@ export function useSurfaceSampler(
     { equals: false },
   )
 
-  createRenderEffect(() =>
-    check(mesh, mesh => {
-      const sampler = new MeshSurfaceSampler(mesh)
-      if (weight) sampler.setWeightAttribute(weight)
-      sampler.build()
+  createRenderEffect(
+    () => mesh(),
+    () => {
+      check(mesh, mesh => {
+        const sampler = new MeshSurfaceSampler(mesh)
+        if (weight) sampler.setWeightAttribute(weight)
+        sampler.build()
 
-      const position = new Vector3()
-      const normal = new Vector3()
-      const color = new Color()
-      const dummy = new Object3D()
+        const position = new Vector3()
+        const normal = new Vector3()
+        const color = new Color()
+        const dummy = new Object3D()
 
-      mesh.updateMatrixWorld(true)
+        mesh.updateMatrixWorld(true)
 
-      for (let i = 0; i < count; i++) {
-        sampler.sample(position, normal, color)
+        for (let i = 0; i < count; i++) {
+          sampler.sample(position, normal, color)
 
-        if (typeof transform === 'function') {
-          transform({ dummy, sampledMesh: mesh, position, normal, color }, i)
-        } else {
-          dummy.position.copy(position)
+          if (typeof transform === 'function') {
+            transform({ dummy, sampledMesh: mesh, position, normal, color }, i)
+          } else {
+            dummy.position.copy(position)
+          }
+
+          dummy.updateMatrix()
+          check(instanceMesh, instanceMesh => instanceMesh.setMatrixAt(i, dummy.matrix))
+          untrack(() => dummy.matrix.toArray(buffer().array, i * 16))
         }
 
-        dummy.updateMatrix()
-        check(instanceMesh, instanceMesh => instanceMesh.setMatrixAt(i, dummy.matrix))
-        untrack(() => dummy.matrix.toArray(buffer().array, i * 16))
-      }
+        check(instanceMesh, instanceMesh => (instanceMesh.instanceMatrix.needsUpdate = true))
 
-      check(instanceMesh, instanceMesh => (instanceMesh.instanceMatrix.needsUpdate = true))
-
-      untrack(() => {
-        buffer().needsUpdate = true
-        setBuffer(buffer => buffer.clone() as InstancedBufferAttribute)
+        untrack(() => {
+          buffer().needsUpdate = true
+          setBuffer(buffer => buffer.clone() as InstancedBufferAttribute)
+        })
       })
-    }),
+    },
   )
 
   return buffer
@@ -128,13 +131,16 @@ export function Sampler(_props: SamplerProps) {
   const [instance, setInstance] = createSignal<InstancedMesh>()
   const [meshToSample, setMeshToSample] = createSignal<Mesh>()
 
-  createRenderEffect(() => {
-    setInstance(
-      props.instances ??
-        (group.children.find(c => c.hasOwnProperty('instanceMatrix')) as InstancedMesh),
-    )
-    setMeshToSample(props.mesh ?? (group.children.find(c => c.type === 'Mesh') as Mesh))
-  })
+  createRenderEffect(
+    () => [props.instances, props.mesh] as const,
+    () => {
+      setInstance(
+        props.instances ??
+          (group.children.find(c => c.hasOwnProperty('instanceMatrix')) as InstancedMesh),
+      )
+      setMeshToSample(props.mesh ?? (group.children.find(c => c.type === 'Mesh') as Mesh))
+    },
+  )
 
   useSurfaceSampler(meshToSample, props.count, props.transform, props.weight, instance)
 

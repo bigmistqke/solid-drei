@@ -21,20 +21,23 @@ export const Edges = (props: EdgesProps) => {
   ])
   const lineSegments = new LineSegments()
 
-  createEffect(() => {
-    const parent = lineSegments.parent as Mesh
-    if (parent) {
-      const geom = config.geometry || parent.geometry
-      if (
-        geom !== lineSegments.userData.currentGeom ||
-        config.threshold !== lineSegments.userData.currentThreshold
-      ) {
-        lineSegments.userData.currentGeom = geom
-        lineSegments.userData.currentThreshold = config.threshold
-        lineSegments.geometry = new EdgesGeometry(geom, config.threshold)
+  createEffect(
+    () => [config.geometry, config.threshold] as const,
+    () => {
+      const parent = lineSegments.parent as Mesh
+      if (parent) {
+        const geom = config.geometry || parent.geometry
+        if (
+          geom !== lineSegments.userData.currentGeom ||
+          config.threshold !== lineSegments.userData.currentThreshold
+        ) {
+          lineSegments.userData.currentGeom = geom
+          lineSegments.userData.currentThreshold = config.threshold
+          lineSegments.geometry = new EdgesGeometry(geom, config.threshold)
+        }
       }
-    }
-  })
+    },
+  )
 
   useRef(props, lineSegments)
 

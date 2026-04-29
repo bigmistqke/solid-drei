@@ -128,15 +128,18 @@ export function Outlines(_props: OutlinesProps) {
     }
   })
 
-  createEffect(() => {
-    const mat = outlineMesh?.material as ShaderMaterial | undefined
-    if (!mat?.uniforms) return
-    mat.uniforms.uColor!.value = new Color(props.color as THREE.ColorRepresentation)
-    mat.uniforms.uThickness!.value = props.scale ?? props.thickness
-    mat.uniforms.uOpacity!.value = props.opacity
-    mat.transparent = props.transparent
-    mat.needsUpdate = true
-  })
+  createEffect(
+    () => [props.color, props.scale ?? props.thickness, props.opacity, props.transparent] as const,
+    () => {
+      const mat = outlineMesh?.material as ShaderMaterial | undefined
+      if (!mat?.uniforms) return
+      mat.uniforms.uColor!.value = new Color(props.color as THREE.ColorRepresentation)
+      mat.uniforms.uThickness!.value = props.scale ?? props.thickness
+      mat.uniforms.uOpacity!.value = props.opacity
+      mat.transparent = props.transparent
+      mat.needsUpdate = true
+    },
+  )
 
   return (
     <Entity

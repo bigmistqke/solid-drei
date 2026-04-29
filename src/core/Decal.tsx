@@ -83,8 +83,8 @@ export function Decal(_props: DecalProps) {
           helper.traverse(child => (child.raycast = () => null))
         }
         parent.matrixWorld = matrixWorld
-        onCleanup(() => ref.geometry.dispose())
       }
+      onCleanup(() => ref.geometry.dispose())
     },
   )
 

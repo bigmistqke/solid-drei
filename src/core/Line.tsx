@@ -77,17 +77,28 @@ export function Line(props: LineProps) {
     return { geometry, color: localColor }
   })
 
-  createEffect(when(every(line2, config.points), ([line]) => line.computeLineDistances()))
+  createEffect(
+    () => every(line2, config.points)(),
+    (lineData) => {
+      if (lineData) {
+        const [line] = lineData
+        line.computeLineDistances()
+      }
+    },
+  )
 
-  createRenderEffect(() => {
-    if (config.dashed) {
-      lineMaterial.defines.USE_DASH = ''
-    } else {
-      // Setting lineMaterial.defines.USE_DASH to undefined is apparently not sufficient.
-      delete lineMaterial.defines.USE_DASH
-    }
-    lineMaterial.needsUpdate = true
-  })
+  createRenderEffect(
+    () => config.dashed,
+    (dashed) => {
+      if (dashed) {
+        lineMaterial.defines.USE_DASH = ''
+      } else {
+        // Setting lineMaterial.defines.USE_DASH to undefined is apparently not sufficient.
+        delete lineMaterial.defines.USE_DASH
+      }
+      lineMaterial.needsUpdate = true
+    },
+  )
 
   onCleanup(() => {
     lineGeometry().geometry.dispose()
