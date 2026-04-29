@@ -1,5 +1,4 @@
 import { processProps, useRef } from '@/utils'
-import type { Ref } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { QuadraticBezierCurve3, Vector3 } from 'three'
 import { Line2 } from 'three-stdlib'
@@ -12,7 +11,7 @@ interface QuadraticBezierLineRef extends Line2 {
   setPoints: (start: S3.Vector3, end: S3.Vector3, mid: S3.Vector3) => void
 }
 interface QuadraticBezierLineProps extends Omit<LineProps, 'points' | 'ref' | 'segments'> {
-  ref?: Ref<QuadraticBezierLineRef>
+  ref?: QuadraticBezierLineRef | ((value: S3.Meta<QuadraticBezierLineRef>) => void)
   start?: S3.Vector3
   end?: S3.Vector3
   mid?: S3.Vector3
@@ -72,9 +71,14 @@ export function QuadraticBezierLine(props: QuadraticBezierLineProps) {
             if (line.geometry) line.geometry.setPositions(points.map(p => p.toArray()).flat())
           },
         })
-        useRef(props, quadraticLine)
+        useRef(props, quadraticLine as QuadraticBezierLineRef)
       }}
-      points={getPoints(config)}
+      points={getPoints({
+        start: config.start,
+        end: config.end,
+        mid: config.mid as S3.Vector3,
+        segments: config.segments,
+      })}
       {...rest}
     />
   )

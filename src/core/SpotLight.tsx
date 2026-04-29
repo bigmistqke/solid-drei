@@ -1,6 +1,6 @@
 // SpotLight Inspired by http://john-chapman-graphics.blogspot.com/2013/01/good-enough-volumetrics-for-spotlights.html
 
-import type { ParentProps, Ref } from 'solid-js'
+import type { ParentProps } from 'solid-js'
 import {
   Show,
   createContext,
@@ -12,7 +12,6 @@ import {
 } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { Entity, createT, useFrame, useThree } from 'solid-three'
-import * as THREE from 'three'
 import {
   CylinderGeometry,
   DepthTexture,
@@ -34,8 +33,8 @@ import {
 } from 'three'
 import { FullScreenQuad } from 'three-stdlib'
 import { SpotLightMaterial } from '../materials/SpotLightMaterial'
-// @ts-ignore
 import { processProps, useRef } from '@/utils'
+// @ts-ignore - GLSL ?raw import handled by bundler plugin
 import SpotlightShadowShader from '@/utils/glsl/DefaultSpotlightShadowShadows.glsl?raw'
 
 const T = createT({
@@ -112,7 +111,9 @@ const useSpotLightContext = () => {
 /*                                                                                */
 /**********************************************************************************/
 
-interface VolumetricMeshProps extends S3.Props<typeof SpotLight> {
+interface VolumetricMeshProps extends S3.Props<typeof SpotLightImpl> {
+  distance?: number
+  angle?: number
   depthBuffer?: DepthTexture
   attenuation?: number
   anglePower?: number
@@ -167,7 +168,7 @@ function VolumetricMesh(props: VolumetricMeshProps) {
     <>
       <T.Mesh ref={mesh} geometry={geometry()} raycast={() => null}>
         <Entity
-          object={material}
+          from={material}
           attach="material"
           uniforms-opacity-value={config.opacity}
           uniforms-lightColor-value={config.color}
@@ -252,10 +253,7 @@ function SpotlightShadowWithShader(props: SpotlightShadowWithShaderProps) {
   const renderTarget = createMemo(() => {
     const renderTarget = new WebGLRenderTarget(config.width, config.height, {
       format: RGBAFormat,
-      // TODO: alias encoding
-      encoding: 'LinearEncoding' in THREE ? THREE.LinearEncoding : null,
       stencilBuffer: false,
-      // depthTexture: null!
     })
     onCleanup(() => renderTarget.dispose())
     return renderTarget
@@ -395,7 +393,6 @@ function SpotlightShadowWithoutShader(props: SpotlightShadowWithoutShaderProps) 
 /**********************************************************************************/
 
 interface SpotlightProps extends VolumetricMeshProps {
-  ref?: Ref<SpotLightImpl>
   volumetric?: boolean
 }
 
@@ -414,6 +411,7 @@ function SpotLight(props: SpotlightProps) {
     },
     [
       'ref',
+      'args',
       'opacity',
       'radiusTop',
       'radiusBottom',

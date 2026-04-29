@@ -1,6 +1,6 @@
 import { processProps, useRef } from '@/utils'
 import { version } from '@/utils/constants'
-import { type Accessor, createMemo, type Ref, Show } from 'solid-js'
+import { type Accessor, createMemo, Show } from 'solid-js'
 import { createT, type S3, useFrame, useThree } from 'solid-three'
 import {
   BufferAttribute,
@@ -120,8 +120,7 @@ const T = createT({
 /*                                                                                */
 /**********************************************************************************/
 
-export interface SparklesProps extends S3.Props<Points> {
-  ref: Ref<Points>
+export interface SparklesProps extends S3.Props<typeof Points> {
   /** Number of particles (default: 100) */
   count?: number
   /** Speed of particles (default: 1) */
@@ -148,7 +147,7 @@ export function Sparkles(props: SparklesProps) {
       opacity: 1,
       scale: 1,
     },
-    ['ref', 'noise', 'count', 'speed', 'opacity', 'scale', 'size', 'color', 'children'],
+    ['ref', 'args', 'noise', 'count', 'speed', 'opacity', 'scale', 'size', 'color', 'children'],
   )
 
   let points: Points = null!

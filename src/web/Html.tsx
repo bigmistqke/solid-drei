@@ -23,6 +23,7 @@ import {
   PlaneGeometry,
   Raycaster,
   ShaderMaterial,
+  Vector2,
   Vector3,
 } from 'three'
 import type { Assign } from 'utility-types'
@@ -65,7 +66,7 @@ function isObjectVisible(el: Object3D, camera: Camera, raycaster: Raycaster, occ
   const elPos = v1.setFromMatrixPosition(el.matrixWorld)
   const screenPos = elPos.clone()
   screenPos.project(camera)
-  raycaster.setFromCamera(screenPos as unknown as Vector3, camera)
+  raycaster.setFromCamera(screenPos as unknown as Vector2, camera)
   const intersects = raycaster.intersectObjects(occlude, true)
   if (intersects.length) {
     const intersectionDistance = intersects[0].distance

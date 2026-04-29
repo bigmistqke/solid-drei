@@ -1,6 +1,5 @@
 import { useRef } from '@/utils'
 import ThreeCameraControls from 'camera-controls'
-import type { Ref } from 'solid-js'
 import { createEffect, createMemo, splitProps } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { Entity, useThree } from 'solid-three'
@@ -21,8 +20,8 @@ import { ControlUtils } from './control-utils'
 
 export type CameraControls = ThreeCameraControls
 
-export interface CameraControlsProps extends S3.Props<typeof ThreeCameraControls> {
-  ref?: Ref<ThreeCameraControls>
+export interface CameraControlsProps {
+  ref?: ThreeCameraControls | ((value: S3.Meta<ThreeCameraControls>) => void)
   camera?: PerspectiveCamera | OrthographicCamera
   domElement?: HTMLElement
   makeCurrent?: boolean
@@ -53,11 +52,12 @@ export function CameraControls(props: CameraControlsProps) {
     },
   })
 
-  const [config, rest] = splitProps(props, [
+  const [config] = splitProps(props, [
     'ref',
     'camera',
     'domElement',
     'makeCurrent',
+    'events',
     'onStart',
     'onEnd',
     'onChange',
@@ -88,5 +88,5 @@ export function CameraControls(props: CameraControlsProps) {
 
   useRef(props, controls)
 
-  return <Entity from={controls()} {...rest} />
+  return <Entity from={controls()} />
 }

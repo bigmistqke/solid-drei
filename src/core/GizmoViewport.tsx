@@ -89,20 +89,18 @@ function AxisHead(_props: AxisHeadProps) {
 
   const [active, setActive] = createSignal(false)
   const scale = () => (props.label ? 1 : 0.75) * (active() ? 1.2 : 1) * props.axisHeadScale
-  const handlePointerOver = (e: S3.ThreeEvent<PointerEvent>) => {
-    e.stopPropagation()
+  const handlePointerOver = () => {
     setActive(true)
   }
-  const handlePointerOut = (e: S3.ThreeEvent<PointerEvent>) => {
-    e.stopPropagation()
+  const handlePointerOut = () => {
     setActive(false)
   }
   return (
     <Entity
       from={Sprite}
       scale={scale()}
-      onPointerEnter={!props.disabled ? handlePointerOver : undefined}
-      onPointerLeave={!props.disabled ? props.onClick || handlePointerOut : undefined}
+      onPointerEnter={!props.disabled ? () => handlePointerOver() : undefined}
+      onPointerLeave={!props.disabled ? () => handlePointerOut() : undefined}
       {...rest}
     >
       <Entity

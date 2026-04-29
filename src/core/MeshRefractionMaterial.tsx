@@ -1,21 +1,14 @@
 import { processProps } from '@/utils'
 import { createMemo, onMount } from 'solid-js'
-import { $S3C, S3, T, extend, useFrame, useThree } from 'solid-three'
+import { Entity, type S3, createT, getMeta, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { MeshBVH, MeshBVHUniformStruct, SAH } from 'three-mesh-bvh'
-import { MeshRefractionMaterial as MeshRefractionMaterialImpl } from '../../materials/MeshRefractionMaterial'
+import { MeshRefractionMaterial as MeshRefractionMaterialImpl } from '../materials/MeshRefractionMaterial'
 
-declare global {
-  namespace SolidThree {
-    interface Elements {
-      MeshRefractionMaterial: typeof MeshRefractionMaterialImpl
-    }
-  }
-}
+const T = createT({ MeshRefractionMaterial: MeshRefractionMaterialImpl })
+
 const isCubeTexture = (def: THREE.CubeTexture | THREE.Texture): def is THREE.CubeTexture =>
   def && (def as THREE.CubeTexture).isCubeTexture
-
-extend({ MeshRefractionMaterial: MeshRefractionMaterialImpl })
 
 /**********************************************************************************/
 /*                                                                                */
@@ -23,7 +16,7 @@ extend({ MeshRefractionMaterial: MeshRefractionMaterialImpl })
 /*                                                                                */
 /**********************************************************************************/
 
-interface MeshRefractionMaterialProps extends S3.Props<'ShaderMaterial'> {
+export type MeshRefractionMaterialProps = Omit<S3.Props<typeof MeshRefractionMaterialImpl>, 'envMap' | 'color'> & {
   /** Environment map */
   envMap: THREE.CubeTexture | THREE.Texture
   /** Number of ray-cast bounces, it can be expensive to have too many, 2 */
@@ -43,19 +36,15 @@ interface MeshRefractionMaterialProps extends S3.Props<'ShaderMaterial'> {
 export function MeshRefractionMaterial(_props: MeshRefractionMaterialProps) {
   const [props, rest] = processProps(
     _props,
-    {
-      aberrationStrength: 0,
-      fastChroma: true,
-    },
+    { aberrationStrength: 0, fastChroma: true },
     ['aberrationStrength', 'fastChroma', 'envMap'],
   )
 
-  let material: typeof MeshRefractionMaterialImpl
+  let material: InstanceType<typeof MeshRefractionMaterialImpl> = null!
   const store = useThree()
 
   const defines = createMemo(() => {
     const temp = {} as { [key: string]: string }
-    // Sampler2D and SamplerCube need different defines
     const isCubeMap = isCubeTexture(props.envMap)
     const w = (isCubeMap ? props.envMap.image[0]?.width : props.envMap.image.width) ?? 1024
     const cubeSize = w / 4
@@ -67,16 +56,13 @@ export function MeshRefractionMaterial(_props: MeshRefractionMaterialProps) {
     temp.CUBEUV_TEXEL_WIDTH = `${1.0 / width}`
     temp.CUBEUV_TEXEL_HEIGHT = `${1.0 / height}`
     temp.CUBEUV_MAX_MIP = `${_lodMax}.0`
-    // Add defines from chromatic aberration
     if (props.aberrationStrength > 0) temp.CHROMATIC_ABERRATIONS = ''
     if (props.fastChroma) temp.FAST_CHROMA = ''
     return temp
   })
 
   onMount(() => {
-    // Get the geometry of this materials parent
-    const geometry = material[$S3C]?.parent?.object.geometry
-    // Update the BVH
+    const geometry = getMeta(material)?.parent?.object?.geometry
     if (geometry) {
       material.bvh = new MeshBVHUniformStruct()
       material.bvh.updateFrom(
@@ -93,11 +79,11 @@ export function MeshRefractionMaterial(_props: MeshRefractionMaterialProps) {
   return (
     <T.MeshRefractionMaterial
       defines={defines()}
-      ref={material}
+      ref={material!}
       resolution={[store.bounds.width, store.bounds.height]}
       aberrationStrength={props.aberrationStrength}
       envMap={props.envMap}
-      {...rest}
+      {...(rest as any)}
     />
   )
 }

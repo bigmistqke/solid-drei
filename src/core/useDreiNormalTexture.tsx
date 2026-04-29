@@ -34,15 +34,16 @@ export function useDreiNormalTexture(
     name => `${NORMAL_ROOT}/normals/${name}`,
   )
 
-  const texture = useTexture(url, texture => {
-    texture.wrapS = texture.wrapT = RepeatWrapping
-    createRenderEffect(() => {
-      texture.repeat = new Vector2(config.repeat[0], config.repeat[1])
-      texture.offset = new Vector2(config.offset[0], config.offset[1])
-      texture.anisotropy = config.anisotropy
-      texture.needsUpdate = true
-    })
-    return texture
+  const texture = useTexture(url, {
+    onLoad: (texture: Texture) => {
+      texture.wrapS = texture.wrapT = RepeatWrapping
+      createRenderEffect(() => {
+        texture.repeat = new Vector2(config.repeat[0], config.repeat[1])
+        texture.offset = new Vector2(config.offset[0], config.offset[1])
+        texture.anisotropy = config.anisotropy
+        texture.needsUpdate = true
+      })
+    },
   })
 
   whenEffect(texture, texture => onLoad?.(texture))

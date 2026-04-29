@@ -40,7 +40,7 @@ type TrailConfig = {
 }
 
 // smooth new sample (measurement) based on previous sample (current)
-function smoothAverage(current, measurement, smoothing = 0.9) {
+function smoothAverage(current: number, measurement: number, smoothing = 0.9) {
   return measurement * smoothing + current * (1.0 - smoothing)
 }
 
@@ -102,7 +102,7 @@ class TrailTexture {
     this.canvas.style.width = this.canvas.style.height = `${this.canvas.width}px`
   }
 
-  update(delta) {
+  update(delta: number) {
     this.clear()
 
     // age points
@@ -130,7 +130,7 @@ class TrailTexture {
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
   }
 
-  addTouch(point) {
+  addTouch(point: Point) {
     const last = this.trail[this.trail.length - 1]
 
     if (last) {
@@ -160,7 +160,7 @@ class TrailTexture {
     this.trail.push({ x: point.x, y: point.y, age: 0, force: this.force })
   }
 
-  drawTouch(point) {
+  drawTouch(point: Point) {
     const pos = {
       x: point.x * this.size,
       y: (1 - point.y) * this.size,
@@ -207,7 +207,10 @@ export function useTrailTexture(config: Partial<TrailConfig> = {}): {
     trail().update(delta)
   })
   function update(e: S3.ThreeEvent<MouseEvent | PointerEvent>) {
-    trail().addTouch(e.intersection.uv)
+    const uv = e.intersection.uv
+    if (uv) {
+      trail().addTouch({ x: uv.x, y: uv.y, age: 0, force: 0 })
+    }
   }
 
   return {

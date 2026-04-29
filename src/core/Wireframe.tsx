@@ -45,13 +45,18 @@ function isWireframeGeometry(geometry: any): geometry is WireframeGeometry {
 }
 
 function getUniforms() {
-  const u = {} as {
+  type UniformsMap = {
     [TKey in keyof (typeof WireframeMaterialShaders)['uniforms']]: {
       value: (typeof WireframeMaterialShaders)['uniforms'][TKey]
     }
   }
+  const u = {} as UniformsMap
   for (const key in WireframeMaterialShaders.uniforms) {
-    u[key] = { value: WireframeMaterialShaders.uniforms[key] }
+    const k = key as keyof typeof WireframeMaterialShaders.uniforms
+    // Cast needed: TypeScript can't narrow union keys in indexed assignment
+    ;(u as Record<string, { value: (typeof WireframeMaterialShaders.uniforms)[keyof typeof WireframeMaterialShaders.uniforms] }>)[k] = {
+      value: WireframeMaterialShaders.uniforms[k],
+    }
   }
   return u
 }
@@ -75,7 +80,10 @@ function getBarycentricCoordinates(geometry: BufferGeometry, removeEdge?: boolea
   return new BufferAttribute(Float32Array.from(barycentric), 3)
 }
 
-function getInputGeometry(geo: BufferGeometry | Object3D) {
+function getInputGeometry(geo: BufferGeometry | Object3D | undefined) {
+  if (!geo) {
+    return undefined
+  }
   if (!isGeometry(geo)) {
     // Disallow WireframeGeometry
     if (isWireframeGeometry(geo)) {
@@ -116,7 +124,7 @@ function WireframeWithCustomGeo(props: WireframeProps & WireframeMaterialProps) 
     {
       simplify: false,
     },
-    ['simplify', 'geometry'],
+    ['simplify', 'geometry', 'extensions'],
   )
 
   const geometry = createMemo(() => {
@@ -144,12 +152,6 @@ function WireframeWithCustomGeo(props: WireframeProps & WireframeMaterialProps) 
             polygonOffset={true} //
             polygonOffsetFactor={-4}
             {...rest}
-            extensions={{
-              derivatives: true,
-              fragDepth: false,
-              drawBuffers: false,
-              shaderTextureLOD: false,
-            }}
           />
         </T.Mesh>
       )}

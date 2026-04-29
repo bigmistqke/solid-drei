@@ -1,7 +1,7 @@
 import { awaitMapObject, isRecord, resolve } from '@/utils'
 import type { AccessorMaybe } from '@/utils/types'
 import { createResource, mergeProps, type Resource } from 'solid-js'
-import { load, type S3 } from 'solid-three'
+import { type S3 } from 'solid-three'
 import { type Loader } from 'three'
 import { LoaderCache, type LoaderRegistry } from './LoaderCache'
 
@@ -89,7 +89,10 @@ async function getOrInsertLoaderRegistry<T extends object>(
   if (cachedPromise) {
     return cachedPromise
   }
-  const promise = load(loader, url)
+  // Use the Three.js loader directly since solid-three's load() is typed for specific URL types
+  const promise = new Promise<T>((resolve, reject) =>
+    (loader as Loader<T, string>).load(url as string, resolve, undefined, reject),
+  )
   registry.set(loader, url, promise)
   return promise
 }
@@ -195,7 +198,15 @@ export function useLoader<TLoader extends Loader<object, any>>(
           loader,
           url,
         )
-      : load(loader, url)
+      : new Promise<DataFromLoader<TLoader>>((resolve, reject) =>
+          // TLoader's URL type is string at runtime for these direct load calls
+          (loader as unknown as Loader<DataFromLoader<TLoader>, string>).load(
+            url as string,
+            resolve,
+            undefined,
+            reject,
+          ),
+        )
 
   const [resource] = createResource(
     () => [resolve(url), options?.base] as const,

@@ -15,6 +15,7 @@ import {
 } from 'solid-js'
 import { Entity, type S3, useFrame, useThree } from 'solid-three'
 import {
+  Camera,
   Color,
   type ColorRepresentation,
   DirectionalLight,
@@ -106,7 +107,7 @@ const SoftShadowMaterial = /* @__PURE__ */ shaderMaterial(
     blend: 2.0,
     alphaTest: 0.75,
     opacity: 0,
-    map: null,
+    map: null as Texture | null,
   },
   `varying vec2 vUv;
    void main() {
@@ -260,7 +261,11 @@ export function AccumulativeShadows(
     ),
   )
 
-  useRef(config, api)
+  // AccumulativeShadows exposes AccumulativeContext as ref, not Group
+  useRef(
+    config as unknown as { ref?: AccumulativeContext | ((value: S3.Meta<AccumulativeContext>) => void) },
+    api,
+  )
 
   return (
     <Entity from={Group} {...rest}>
@@ -377,7 +382,13 @@ export function RandomizedLight(
     },
   }
 
-  useRef(config, api)
+  // RandomizedLight exposes AccumulativeLightContext as ref, not Group
+  useRef(
+    config as unknown as {
+      ref?: AccumulativeLightContext | ((value: S3.Meta<AccumulativeLightContext>) => void)
+    },
+    api,
+  )
 
   onMount(() => {
     if (parent) {
@@ -508,11 +519,11 @@ class ProgressiveLightMap {
     this.meshes.forEach(mesh => (mesh.object.material = mesh.material))
   }
 
-  configure(object) {
+  configure(object: Mesh) {
     this.object = object
   }
 
-  update(camera, blendWindow = 100) {
+  update(camera: Camera, blendWindow = 100) {
     if (!this.object) return
     // Set each object's material to the UV Unwrapped Surface Mapping Version
     this.averagingWindow.value = blendWindow

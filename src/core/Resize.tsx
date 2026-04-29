@@ -24,7 +24,7 @@ export function Resize(props: ResizeProps) {
     {
       precise: true,
     },
-    ['ref', 'children', 'width', 'height', 'depth', 'box3', 'precise'],
+    ['ref', 'children', 'args', 'width', 'height', 'depth', 'box3', 'precise'],
   )
 
   const ref = new Group()

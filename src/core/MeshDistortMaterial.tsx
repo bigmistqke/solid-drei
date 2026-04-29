@@ -1,18 +1,10 @@
-import type { Ref } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { Entity, useFrame } from 'solid-three'
 import type { MeshPhysicalMaterialParameters, WebGLProgramParametersWithUniforms } from 'three'
 import { MeshPhysicalMaterial } from 'three'
-// eslint-disable-next-line
-// @ts-ignore
 import { processProps } from '@/utils'
+// @ts-ignore - GLSL file without declaration
 import distort from '@/utils/glsl/distort.vert.glsl'
-
-interface DistortMaterialType extends S3.Props<typeof MeshPhysicalMaterial> {
-  time?: number
-  distort?: number
-  radius?: number
-}
 
 /**********************************************************************************/
 /*                                                                                */
@@ -90,14 +82,13 @@ export class DistortMaterialImpl extends MeshPhysicalMaterial {
 /*                                                                                */
 /**********************************************************************************/
 
-interface MeshDistortMaterialProps extends DistortMaterialType {
-  ref?: Ref<MeshPhysicalMaterial>
+interface MeshDistortMaterialProps extends S3.Props<typeof DistortMaterialImpl> {
   speed?: number
   factor?: number
 }
 
 export function MeshDistortMaterial(props: MeshDistortMaterialProps) {
-  const [config, rest] = processProps(props, { speed: 1 }, ['speed'])
+  const [config, rest] = processProps(props, { speed: 1 }, ['speed', 'factor', 'args'])
   const material = new DistortMaterialImpl()
   useFrame(state => material && (material.time = state.clock.getElapsedTime() * config.speed))
   return <Entity from={material} attach="material" {...rest} />

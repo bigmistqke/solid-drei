@@ -49,7 +49,7 @@ export function Line(props: LineProps) {
     config.segments ? new LineSegments2() : new Line2(),
   )
   const lineMaterial = new LineMaterial()
-  const itemSize = (config.vertexColors?.[0] as number[] | undefined)?.length
+  const itemSize = (config.vertexColors?.[0] as number[] | undefined)?.length as 3 | 4 | undefined
   const lineGeometry = createMemo(() => {
     const geometry = autodispose(config.segments ? new LineSegmentsGeometry() : new LineGeometry())
     let localColor = config.color

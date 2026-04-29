@@ -93,7 +93,7 @@ export function Select(props: SelectProps) {
   function onClick(e: S3.ThreeEvent<MouseEvent>) {
     e.stopPropagation()
     dispatch({
-      object: config.filter([e.object])[0],
+      object: config.filter([e.intersection.object])[0],
       shift: config.multiple && e.nativeEvent.shiftKey,
     })
   }

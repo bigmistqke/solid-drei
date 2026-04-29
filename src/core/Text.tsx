@@ -4,6 +4,7 @@ import { createMemo, createResource, onCleanup, onMount, Show } from 'solid-js'
 import { Entity, type S3 } from 'solid-three'
 import type { Mesh } from 'three'
 import { Font } from 'three-stdlib'
+// @ts-ignore - troika-three-text has no TypeScript declarations
 import { preloadFont, Text as TroikaMesh } from 'troika-three-text'
 
 interface Props extends S3.Props<typeof Mesh> {

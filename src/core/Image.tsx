@@ -33,7 +33,7 @@ const ImageMaterialImpl = shaderMaterial(
     color: new Color('white'),
     scale: [1, 1],
     imageBounds: [1, 1],
-    map: null,
+    map: null as Texture | null,
     zoom: 1,
     grayscale: 0,
     opacity: 1,

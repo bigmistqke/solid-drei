@@ -22,7 +22,7 @@ export function useHelper<T extends Constructor>(
       object3D => {
         const helper = new (helperConstructor as any)(object3D, ...args)
         // Prevent the helpers from blocking rays
-        helper.traverse(child => (child.raycast = () => null))
+        helper.traverse((child: Object3D) => (child.raycast = () => null))
         store.scene.add(helper)
         onCleanup(() => {
           store.scene.remove(helper)

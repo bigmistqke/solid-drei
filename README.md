@@ -43,15 +43,15 @@ import { PerspectiveCamera, PositionalAudio, ... } from 'solid-drei'
           <li>- [x] <a href="#cameracontrols">CameraControls</a></li>
           <li>- [x] <a href="#controls">FlyControls</a></li>
           <li>- [x] <a href="#controls">MapControls</a></li>
-          <li>- [x] <a href="#controls">DeviceOrientationControls</a></li>
+          <li>- [ ] <a href="#controls">DeviceOrientationControls</a></li>
           <li>- [x] <a href="#controls">TrackballControls</a></li>
           <li>- [x] <a href="#controls">ArcballControls</a></li>
           <li>- [x] <a href="#controls">PointerLockControls</a></li>
           <li>- [x] <a href="#controls">FirstPersonControls</a></li>          
-          <li>- [x] <a href="#scrollcontrols">ScrollControls</a></li>
-          <li>- [x] <a href="#presentationcontrols">PresentationControls</a></li>
+          <li>- [ ] <a href="#scrollcontrols">ScrollControls</a></li>
+          <li>- [ ] <a href="#presentationcontrols">PresentationControls</a></li>
           <li>- [x] <a href="#keyboardcontrols">KeyboardControls</a></li>
-          <li>- [ ] <a href="#FaceControls">FaceControls</a></li>
+          <li>- [x] <a href="#FaceControls">FaceControls</a></li>
         </ul>
         <li><a href="#gizmos">Gizmos</a></li>
         <ul>
@@ -70,14 +70,14 @@ import { PerspectiveCamera, PositionalAudio, ... } from 'solid-drei'
           <li>- [x] <a href="#billboard">Billboard</a></li>
           <li>- [x] <a href="#screenspace">ScreenSpace</a></li>
           <li>- [ ] <a href="#effects">Effects</a></li>
-          <li>- [ ] <a href="#gradienttexture">GradientTexture</a></li>
+          <li>- [x] <a href="#gradienttexture">GradientTexture</a></li>
           <li>- [x] <a href="#edges">Edges</a></li>
           <li>- [x] <a href="#trail">Trail</a></li>
           <li>- [x] <a href="#sampler">Sampler</a></li>
-          <li>- [ ] <a href="#computedattribute">Computed Attribute</a></li>
+          <li>- [x] <a href="#computedattribute">Computed Attribute</a></li>
           <li>- [x] <a href="#clone">Clone</a></li>
           <li>- [x] <a href="#useanimations">useAnimations</a></li>
-          <li>- [x] <a href="#marchingcubes">MarchingCubes</a></li>
+          <li>- [ ] <a href="#marchingcubes">MarchingCubes</a></li>
           <li>- [x] <a href="#decal">Decal</a></li>
           <li>- [x] <a href="#svg">Svg</a></li>
           <li>- [x] <a href="#gltf">Gltf</a></li>
@@ -90,7 +90,7 @@ import { PerspectiveCamera, PositionalAudio, ... } from 'solid-drei'
           <li>- [x] <a href="#meshdistortmaterial">MeshDistortMaterial</a></li>
           <li>- [x] <a href="#meshrefractionmaterial">MeshRefractionMaterial</a></li>
           <li>- [x] <a href="#meshtransmissionmaterial">MeshTransmissionMaterial</a></li>
-          <li>- [ ] <a href="#meshdiscardmaterial">MeshDiscardMaterial</a></li>
+          <li>- [x] <a href="#meshdiscardmaterial">MeshDiscardMaterial</a></li>
           <li>- [x] <a href="#pointmaterial">PointMaterial</a></li>
           <li>- [x] <a href="#softshadows">SoftShadows</a></li>
           <li>- [x] <a href="#shadermaterial">shaderMaterial</a></li>
@@ -105,11 +105,11 @@ import { PerspectiveCamera, PositionalAudio, ... } from 'solid-drei'
           <li>- [x] <a href="#html">Html</a></li>
           <li>- [ ] <a href="#cycleraycast">CycleRaycast</a></li>
           <li>- [x] <a href="#select">Select</a></li>
-          <li>- [ ] <a href="#sprite-animator">Sprite Animator</a></li>
+          <li>- [x] <a href="#sprite-animator">Sprite Animator</a></li>
           <li>- [x] <a href="#stats">Stats</a></li>
           <li>- [x] <a href="#stats-gl">StatsGl</a></li>
           <li>- [x] <a href="#wireframe">Wireframe</a></li>
-          <li>- [ ] <a href="#usedepthbuffer">useDepthBuffer</a></li>
+          <li>- [x] <a href="#usedepthbuffer">useDepthBuffer</a></li>
           <li>- [ ] <a href="#usecontextbridge">useContextBridge</a></li>
           <li>- [x] <a href="#usefbo">useFBO</a></li>
           <li>- [x] <a href="#usecamera">useCamera</a></li>
@@ -118,10 +118,10 @@ import { PerspectiveCamera, PositionalAudio, ... } from 'solid-drei'
           <li>- [x] <a href="#useaspect">useAspect</a></li>
           <li>- [x] <a href="#usecursor">useCursor</a></li>
           <li>- [x] <a href="#useintersect">useIntersect</a></li>
-          <li>- [ ] <a href="#useboxprojectedenv">useBoxProjectedEnv</a></li>
+          <li>- [x] <a href="#useboxprojectedenv">useBoxProjectedEnv</a></li>
           <li>- [x] <a href="#useTrail">useTrail</a></li>
           <li>- [x] <a href="#useSurfaceSampler">useSurfaceSampler</a></li>
-          <li>- [ ] <a href="#facelandmarker">FaceLandmarker</a></li>
+          <li>- [x] <a href="#facelandmarker">FaceLandmarker</a></li>
         </ul>
         <li><a href="#loading">Loaders</a></li>
         <ul>
@@ -138,25 +138,25 @@ import { PerspectiveCamera, PositionalAudio, ... } from 'solid-drei'
         </ul>
         <li><a href="#performance">Performance</a></li>
         <ul>
-          <li>- [ ] <a href="#instances">Instances</a></li>
+          <li>- [x] <a href="#instances">Instances</a></li>
           <li>- [ ] <a href="#merged">Merged</a></li>
           <li>- [x] <a href="#points">Points</a></li>
           <li>- [x] <a href="#segments">Segments</a></li>
           <li>- [x] <a href="#detailed">Detailed</a></li>
-          <li>- [ ] <a href="#preload">Preload</a></li>
-          <li>- [ ] <a href="#bakeshadows">BakeShadows</a></li>
-          <li>- [ ] <a href="#meshbounds">meshBounds</a></li>
-          <li>- [x] <a href="#adaptivedpr">AdaptiveDpr</a></li>
+          <li>- [x] <a href="#preload">Preload</a></li>
+          <li>- [x] <a href="#bakeshadows">BakeShadows</a></li>
+          <li>- [x] <a href="#meshbounds">meshBounds</a></li>
+          <li>- [ ] <a href="#adaptivedpr">AdaptiveDpr</a></li>
           <li>- [ ] <a href="#adaptiveevents">AdaptiveEvents</a></li>
-          <li>- [ ] <a href="#bvh">Bvh</a></li>
-          <li>- [ ] <a href="#performancemonitor">PerformanceMonitor</a></li>          
+          <li>- [x] <a href="#bvh">Bvh</a></li>
+          <li>- [x] <a href="#performancemonitor">PerformanceMonitor</a></li>          
         </ul>
         <li><a href="#portals">Portals</a></li>        
         <ul>
-          <li>- [x] <a href="#hud">Hud</a></li>
+          <li>- [ ] <a href="#hud">Hud</a></li>
           <li>- [ ] <a href="#view">View</a></li>
-          <li>- [x] <a href="#rendertexture">RenderTexture</a></li>
-          <li>- [ ] <a href="#mask">Mask</a></li>
+          <li>- [ ] <a href="#rendertexture">RenderTexture</a></li>
+          <li>- [x] <a href="#mask">Mask</a></li>
           <li>- [ ] <a href="#meshportalmaterial">MeshPortalMaterial</a></li>
         </ul>
         <li><a href="#modifiers">Modifiers</a></li>
@@ -204,9 +204,9 @@ import { PerspectiveCamera, PositionalAudio, ... } from 'solid-drei'
           <li>- [x] <a href="#camerashake">CameraShake</a></li>
           <li>- [x] <a href="#float">Float</a></li>
           <li>- [x] <a href="#stage">Stage</a></li>
-          <li>- [ ] <a href="#backdrop">Backdrop</a></li>
+          <li>- [x] <a href="#backdrop">Backdrop</a></li>
           <li>- [x] <a href="#environment">Environment</a></li>
-          <li>- [ ] <a href="#lightformer">Lightformer</a></li>
+          <li>- [x] <a href="#lightformer">Lightformer</a></li>
           <li>- [x] <a href="#spotlight">SpotLight</a></li>
           <li>- [x] <a href="#spotlightshadows">SpotLightShadows</a></li>
           <li>- [x] <a href="#shadow">Shadow</a></li>

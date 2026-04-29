@@ -48,7 +48,7 @@ export function useMatcapTexture(
   const fileName = () => `${fileHash() || DEFAULT_MATCAP()}${getFormatString(resolveFormat())}.png`
   const url = () => `${MATCAP_ROOT}/${resolveFormat()}/${fileName()}`
 
-  const matcapTexture = useTexture(url, onLoad)
+  const matcapTexture = useTexture(url, onLoad ? { onLoad } : undefined)
 
   return [matcapTexture, url, numTot] as const
 }

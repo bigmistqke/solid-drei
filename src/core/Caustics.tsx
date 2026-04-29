@@ -4,7 +4,6 @@
 
 import { processProps, useRef } from '@/utils'
 import { version } from '@/utils/constants'
-import type { Ref } from 'solid-js'
 import { createEffect as onMount, Show } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { createT, useFrame, useThree } from 'solid-three'
@@ -31,6 +30,7 @@ import {
   PlaneGeometry,
   Scene,
   ShaderMaterial,
+  type Side,
   SrcAlphaFactor,
   Texture,
   UnsignedByteType,
@@ -62,7 +62,7 @@ function createVectorArray() {
   ]
 }
 
-function createNormalMaterial(side = FrontSide) {
+function createNormalMaterial(side: Side = FrontSide) {
   const viewMatrix = { value: new Matrix4() }
   return Object.assign(new MeshNormalMaterial({ side }) as CausticsProjectionMaterialType, {
     viewMatrix,
@@ -98,8 +98,8 @@ interface CausticsProjectionMaterialType extends MeshNormalMaterial {
 
 const CausticsProjectionMaterial = shaderMaterial(
   {
-    causticsTexture: null,
-    causticsTextureB: null,
+    causticsTexture: null as Texture | null,
+    causticsTextureB: null as Texture | null,
     color: new Color(),
     lightProjMatrix: new Matrix4(),
     lightViewMatrix: new Matrix4(),
@@ -301,7 +301,6 @@ interface CausticsMaterialType extends ShaderMaterial {
 }
 
 interface CausticsProps extends S3.Props<Group> {
-  ref?: Ref<Scene>
   /** How many frames it will render, set it to Infinity for runtime, default: 1 */
   frames?: number
   /** Enables visual cues to help you stage your scene, default: false */
@@ -570,7 +569,8 @@ export function Caustics(props: CausticsProps) {
 
   onMount(() => scene?.updateWorldMatrix(false, true))
 
-  useRef(config, scene)
+  // CausticsProps extends S3.Props<Group> but we expose a Scene ref at runtime
+  useRef(config as unknown as { ref?: Scene | ((value: S3.Meta<Scene>) => void) }, scene)
 
   return (
     <T.Group {...rest}>

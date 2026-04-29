@@ -1,22 +1,22 @@
-import { createEffect, onCleanup } from 'solid-js'
+import { onCleanup } from 'solid-js'
 import { useThree } from 'solid-three'
+import { usePerformanceMonitor } from './PerformanceMonitor'
 
 export function AdaptiveDpr({ pixelated }: { pixelated?: boolean }) {
   const store = useThree()
+  const initialDpr = store.dpr
 
-  createEffect(() => {
-    const domElement = store.gl.domElement
-    onCleanup(() => {
-      if (store.internal.active) store.setDpr(store.viewport.initialDpr)
-      if (pixelated && domElement) domElement.style.imageRendering = 'auto'
-    })
+  usePerformanceMonitor({
+    onChange: ({ factor }) => {
+      store.gl.setPixelRatio(factor * initialDpr)
+      if (pixelated && store.gl.domElement)
+        store.gl.domElement.style.imageRendering = factor === 1 ? 'auto' : 'pixelated'
+    },
   })
 
-  createEffect(() => {
-    store.setDpr(store.performance.current * store.viewport.initialDpr)
-    if (pixelated && store.gl.domElement)
-      store.gl.domElement.style.imageRendering =
-        store.performance.current === 1 ? 'auto' : 'pixelated'
+  onCleanup(() => {
+    store.gl.setPixelRatio(initialDpr)
+    if (pixelated && store.gl.domElement) store.gl.domElement.style.imageRendering = 'auto'
   })
 
   return null

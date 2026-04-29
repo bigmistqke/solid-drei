@@ -1,7 +1,7 @@
 import { defaultProps } from '@/utils'
 import { version } from '@/utils/constants'
-import { type Ref, createMemo } from 'solid-js'
-import { createT, Entity, useFrame } from 'solid-three'
+import { createMemo } from 'solid-js'
+import { createT, Entity, useFrame, type S3 } from 'solid-three'
 import {
   AdditiveBlending,
   BufferAttribute,
@@ -73,7 +73,7 @@ class StarfieldMaterial extends ShaderMaterial {
 /**********************************************************************************/
 
 type StarProps = {
-  ref?: Ref<Points>
+  ref?: S3.Props<typeof Points>['ref'] | undefined
   radius?: number
   depth?: number
   count?: number

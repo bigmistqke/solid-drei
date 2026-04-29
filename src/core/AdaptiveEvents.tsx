@@ -1,12 +1,20 @@
-import { createEffect, onCleanup } from 'solid-js'
+import { onCleanup } from 'solid-js'
 import { useThree } from 'solid-three'
+import { usePerformanceMonitor } from './PerformanceMonitor'
 
 export function AdaptiveEvents() {
   const store = useThree()
-  createEffect(() => {
-    const enabled = store.events.enabled
-    onCleanup(() => store.setEvents({ enabled }))
+
+  usePerformanceMonitor({
+    onChange: ({ factor }) => {
+      if (store.gl.domElement)
+        store.gl.domElement.style.pointerEvents = factor === 1 ? 'auto' : 'none'
+    },
   })
-  createEffect(() => store.setEvents({ enabled: store.performance.current === 1 }))
+
+  onCleanup(() => {
+    if (store.gl.domElement) store.gl.domElement.style.pointerEvents = 'auto'
+  })
+
   return null
 }

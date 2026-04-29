@@ -8,9 +8,8 @@ import {
   createRenderEffect,
   mergeProps,
   type ParentProps,
-  type Ref,
 } from 'solid-js'
-import { Entity, Portal, useFrame, useThree } from 'solid-three'
+import { Entity, Portal, useFrame, useThree, type S3 } from 'solid-three'
 import { type ColorRepresentation, Group, Mesh, Object3D, Vector2, Vector3 } from 'three'
 
 type TrailOptions = {
@@ -108,7 +107,13 @@ export function useTrail(
   return points
 }
 
-export function Trail(props: ParentProps<TrailProps & { ref?: Ref<Mesh & MeshLineGeometry> }>) {
+export function Trail(
+  props: ParentProps<
+    TrailProps & {
+      ref?: (Mesh & MeshLineGeometry) | ((value: S3.Meta<Mesh & MeshLineGeometry>) => void)
+    }
+  >,
+) {
   const config = defaultProps(props, { ...defaults, color: 'hotpink' })
 
   const store = useThree()
@@ -184,7 +189,12 @@ export function Trail(props: ParentProps<TrailProps & { ref?: Ref<Mesh & MeshLin
   return (
     <Entity from={new Group()}>
       <Portal element={store.scene}>
-        <Entity from={new Mesh()} ref={config.ref} geometry={geometry} material={mat()} />
+        <Entity
+          from={new Mesh()}
+          ref={config.ref as Mesh | ((value: S3.Meta<Mesh>) => void) | undefined}
+          geometry={geometry}
+          material={mat()}
+        />
       </Portal>
       <Entity from={group}>{childs()}</Entity>
     </Entity>

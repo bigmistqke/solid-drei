@@ -5,7 +5,7 @@ import { Show, createEffect, createMemo, mergeProps, splitProps } from 'solid-js
 import { Entity, type S3 } from 'solid-three'
 import { Mesh } from 'three'
 import type { TextGeometryParameters } from 'three-stdlib'
-import { TextGeometry, mergeVertices } from 'three-stdlib'
+import { Font, TextGeometry, mergeVertices } from 'three-stdlib'
 import type { FontData } from './useFont'
 import { useFont } from './useFont'
 
@@ -102,7 +102,12 @@ export function Text3D(props: Text3DProps) {
   return (
     <Entity from={mesh} {...rest}>
       <Show when={options.font && options}>
-        {options => <Entity from={TextGeometry} args={[memo().label, options()]} />}
+        {options => (
+          <Entity
+            from={TextGeometry}
+            args={[memo().label, options() as TextGeometryParameters & { font: Font }]}
+          />
+        )}
       </Show>
       {memo().rest}
     </Entity>
