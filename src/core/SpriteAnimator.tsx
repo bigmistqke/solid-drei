@@ -1,4 +1,3 @@
-import { check, every, when } from '@/utils/conditionals'
 import {
   Show,
   createEffect,
@@ -215,21 +214,19 @@ export function SpriteAnimator(props: SpriteAnimatorProps) {
     return data
   })
 
-  const sprites = createMemo(
-    when(spriteData, spriteData => {
-      if (Array.isArray(spriteData.frames)) return spriteData.frames
-      return spriteDataToSprites(spriteData, config.animationNames)
-    }),
-  )
+  const sprites = createMemo(() => {
+    const data = spriteData()
+    if (!data) return undefined
+    if (Array.isArray(data.frames)) return data.frames
+    return spriteDataToSprites(data, config.animationNames)
+  })
 
-  const aspect = when(
-    sprites,
-    sprites => {
-      const { w, h } = getFirstItem(sprites).sourceSize
-      return calculateAspectRatio(w, h)
-    },
-    () => [1, 1, 1] as [number, number, number],
-  )
+  const aspect = createMemo(() => {
+    const spr = sprites()
+    if (!spr) return [1, 1, 1] as [number, number, number]
+    const { w, h } = getFirstItem(spr).sourceSize
+    return calculateAspectRatio(w, h)
+  })
 
   createEffect(
     () => [aspect(), sprite()] as const,
@@ -297,81 +294,82 @@ export function SpriteAnimator(props: SpriteAnimatorProps) {
   )
 
   // *** Warning! It runs on every frame! ***
-  const tick = when(
-    every(spriteData, spriteMaterial),
-    ([
-      {
-        meta: { size: metaInfo },
-        frames,
-      },
-      spriteMaterial,
-    ]) => {
-      if (!frames || !spriteMaterial.map || config.autoPlay || config.play) return
+  const tick = () => {
+    const sprData = spriteData()
+    const spriteMat = spriteMaterial()
+    if (!sprData || !spriteMat) return
 
-      if (config.autoPlay || config.play) {
-        // run the animation on each frame
+    const {
+      meta: { size: metaInfo },
+      frames,
+    } = sprData
 
-        const now = window.performance.now()
-        const diff = now - timerOffset
+    if (!frames || !spriteMat.map || !config.autoPlay && !config.play) return
 
-        const { w: frameW, h: frameH } = getFirstItem(frames).sourceSize
-        const spriteFrames = Array.isArray(frames)
-          ? frames
-          : config.frameName
-          ? frames[config.frameName]
-          : []
+    if (config.autoPlay || config.play) {
+      // run the animation on each frame
 
-        let finalValX = 0
-        let finalValY = 0
-        const _endFrame = config.endFrame || spriteFrames.length - 1
+      const now = window.performance.now()
+      const diff = now - timerOffset
 
-        if (currentFrame > _endFrame) {
-          currentFrame = config.loop ? config.startFrame ?? 0 : 0
-          if (config.loop) {
-            config.onLoopEnd?.({
-              currentFrameName: config.frameName,
-              currentFrame: currentFrame,
-            })
-          } else {
-            config.onEnd?.({
-              currentFrameName: config.frameName,
-              currentFrame: currentFrame,
-            })
-          }
-          if (!config.loop) return
+      const { w: frameW, h: frameH } = getFirstItem(frames).sourceSize
+      const spriteFrames = Array.isArray(frames)
+        ? frames
+        : config.frameName
+        ? frames[config.frameName]
+        : []
+
+      let finalValX = 0
+      let finalValY = 0
+      const _endFrame = config.endFrame || spriteFrames.length - 1
+
+      if (currentFrame > _endFrame) {
+        currentFrame = config.loop ? config.startFrame ?? 0 : 0
+        if (config.loop) {
+          config.onLoopEnd?.({
+            currentFrameName: config.frameName,
+            currentFrame: currentFrame,
+          })
+        } else {
+          config.onEnd?.({
+            currentFrameName: config.frameName,
+            currentFrame: currentFrame,
+          })
         }
-
-        if (diff <= fpsInterval()) return
-        timerOffset = now - (diff % fpsInterval())
-
-        check(sprite, sprite => {
-          const aspect = calculateAspectRatio(frameW, frameH)
-          sprite.scale.set(1, aspect[1], 1)
-        })
-
-        const framesH = (metaInfo.w - 1) / frameW
-        const framesV = (metaInfo.h - 1) / frameH
-        const {
-          frame: { x: frameX, y: frameY },
-          sourceSize: { w: originalSizeX, h: originalSizeY },
-        } = spriteFrames[currentFrame]!
-        const frameOffsetX = 1 / framesH
-        const frameOffsetY = 1 / framesV
-        finalValX =
-          flipOffset() > 0
-            ? frameOffsetX * (frameX / originalSizeX)
-            : frameOffsetX * (frameX / originalSizeX) - spriteMaterial.map!.repeat.x
-        finalValY = Math.abs(1 - frameOffsetY) - frameOffsetY * (frameY / originalSizeY)
-
-        spriteMaterial.map!.offset.x = finalValX
-        spriteMaterial.map!.offset.y = finalValY
-
-        currentFrame += 1
-
-        config.onFrame?.({ currentFrameName, currentFrame })
+        if (!config.loop) return
       }
-    },
-  )
+
+      if (diff <= fpsInterval()) return
+      timerOffset = now - (diff % fpsInterval())
+
+      const spr = sprite()
+      if (spr) {
+        const aspect = calculateAspectRatio(frameW, frameH)
+        spr.scale.set(1, aspect[1], 1)
+      }
+
+      const framesH = (metaInfo.w - 1) / frameW
+      const framesV = (metaInfo.h - 1) / frameH
+      const {
+        frame: { x: frameX, y: frameY },
+        sourceSize: { w: originalSizeX, h: originalSizeY },
+      } = spriteFrames[currentFrame]!
+      const frameOffsetX = 1 / framesH
+      const frameOffsetY = 1 / framesV
+      finalValX =
+        flipOffset() > 0
+          ? frameOffsetX * (frameX / originalSizeX)
+          : frameOffsetX * (frameX / originalSizeX) - spriteMat.map!.repeat.x
+      finalValY = Math.abs(1 - frameOffsetY) - frameOffsetY * (frameY / originalSizeY)
+
+      spriteMat.map!.offset.x = finalValX
+      spriteMat.map!.offset.y = finalValY
+
+      currentFrame += 1
+
+      config.onFrame?.({ currentFrameName, currentFrame })
+    }
+  }
 
   useFrame(() => {
     if (config.pause) return

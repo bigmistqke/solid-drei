@@ -1,4 +1,3 @@
-import { check } from '@/utils/conditionals'
 import { For, Show, createMemo, onCleanup, omit } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { createT } from 'solid-three'

@@ -1,6 +1,5 @@
 import { easing } from 'maath'
 import { defaultProps } from '@/utils'
-import { when } from '@/utils/conditionals'
 import {
   type ParentProps,
   type Ref,
