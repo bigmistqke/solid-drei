@@ -1,5 +1,5 @@
 import { defaultProps } from '@/utils'
-import { createEffect, onCleanup } from 'solid-js'
+import { createEffect } from 'solid-js'
 import { useThree } from 'solid-three'
 import * as THREE from 'three'
 
@@ -44,40 +44,42 @@ export function CycleRaycast(_props: CycleRaycastProps) {
         renderStatus()
       }
 
-    // Key events
-    const tabEvent = (event: KeyboardEvent) => {
-      if (event.keyCode || event.which === props.keyCode) {
+      // Key events
+      const tabEvent = (event: KeyboardEvent) => {
+        if (event.keyCode || event.which === props.keyCode) {
+          if (props.preventDefault) event.preventDefault()
+          if (hits.length > 1) refresh(current => current + 1)
+        }
+      }
+
+      // Wheel events
+      const wheelEvent = (event: WheelEvent) => {
         if (props.preventDefault) event.preventDefault()
-        if (hits.length > 1) refresh(current => current + 1)
+        let delta = 0
+        if (!event) event = window.event as WheelEvent
+        if ((event as unknown as { wheelDelta: number }).wheelDelta) {
+          delta = (event as unknown as { wheelDelta: number }).wheelDelta / 120
+        } else if (event.detail) {
+          delta = -event.detail / 3
+        }
+        if (hits.length > 1) refresh(current => Math.abs(current - delta))
       }
-    }
 
-    // Wheel events
-    const wheelEvent = (event: WheelEvent) => {
-      if (props.preventDefault) event.preventDefault()
-      let delta = 0
-      if (!event) event = window.event as WheelEvent
-      if ((event as unknown as { wheelDelta: number }).wheelDelta) {
-        delta = (event as unknown as { wheelDelta: number }).wheelDelta / 120
-      } else if (event.detail) {
-        delta = -event.detail / 3
+      // Catch last move event
+      const moveEvent = (event: PointerEvent) => (lastEvent = event)
+
+      document.addEventListener('pointermove', moveEvent, { passive: true })
+      if (props.scroll)
+        document.addEventListener('wheel', wheelEvent, { passive: !props.preventDefault })
+      if (props.keyCode !== undefined) document.addEventListener('keydown', tabEvent)
+
+      return () => {
+        if (props.keyCode !== undefined) document.removeEventListener('keydown', tabEvent)
+        if (props.scroll) document.removeEventListener('wheel', wheelEvent)
+        document.removeEventListener('pointermove', moveEvent)
       }
-      if (hits.length > 1) refresh(current => Math.abs(current - delta))
-    }
-
-    // Catch last move event
-    const moveEvent = (event: PointerEvent) => (lastEvent = event)
-
-    document.addEventListener('pointermove', moveEvent, { passive: true })
-    if (props.scroll) document.addEventListener('wheel', wheelEvent, { passive: !props.preventDefault })
-    if (props.keyCode !== undefined) document.addEventListener('keydown', tabEvent)
-
-    onCleanup(() => {
-      if (props.keyCode !== undefined) document.removeEventListener('keydown', tabEvent)
-      if (props.scroll) document.removeEventListener('wheel', wheelEvent)
-      document.removeEventListener('pointermove', moveEvent)
-    })
-  })
+    },
+  )
 
   return null
 }

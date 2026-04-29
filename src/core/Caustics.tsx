@@ -4,7 +4,7 @@
 
 import { processProps, useRef } from '@/utils'
 import { version } from '@/utils/constants'
-import { createEffect } from 'solid-js'
+import { createEffect, onSettled } from 'solid-js'
 import { Show } from '@solidjs/web'
 import type { S3 } from 'solid-three'
 import { createT, useFrame, useThree } from 'solid-three'
@@ -41,7 +41,7 @@ import {
 import { FullScreenQuad } from 'three-stdlib'
 import { shaderMaterial } from '../materials/shaderMaterial'
 import { Edges } from './Edges'
-import { useFBO } from './unported/useFBO'
+import { useFBO } from './useFBO'
 import { useHelper } from './useHelper'
 
 /**********************************************************************************/
@@ -568,7 +568,7 @@ export function Caustics(props: CausticsProps) {
     }
   })
 
-  createEffect(() => {
+  onSettled(() => {
     scene?.updateWorldMatrix(false, true)
   })
 

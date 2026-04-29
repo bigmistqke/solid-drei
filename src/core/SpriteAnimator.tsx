@@ -118,7 +118,8 @@ export interface SpriteAnimatorProps extends S3.Props<Group> {
 }
 
 export function SpriteAnimator(props: SpriteAnimatorProps) {
-  const rest = omit(props,
+  const rest = omit(
+    props,
     'startFrame',
     'endFrame',
     'fps',
@@ -306,7 +307,7 @@ export function SpriteAnimator(props: SpriteAnimatorProps) {
       frames,
     } = sprData
 
-    if (!frames || !spriteMat.map || !config.autoPlay && !config.play) return
+    if (!frames || !spriteMat.map || (!config.autoPlay && !config.play)) return
 
     if (config.autoPlay || config.play) {
       // run the animation on each frame

@@ -7,18 +7,11 @@ import { MeshBasicMaterial } from 'three'
 
 import { defaultProps } from '@/utils'
 import type { Accessor } from 'solid-js'
-import {
-  createContext,
-  createEffect,
-  createMemo,
-  createSignal,
-  onCleanup,
-  useContext,
-} from 'solid-js'
-import { useVideoTexture } from './useVideoTexture'
+import { createContext, createEffect, createMemo, createSignal, useContext } from 'solid-js'
 import { useFaceLandmarker } from './FaceLandmarker'
 import type { FacemeshApi, FacemeshProps } from './Facemesh'
 import { Facemesh } from './Facemesh'
+import { useVideoTexture } from './useVideoTexture'
 
 type VideoTextureSrc = Parameters<typeof useVideoTexture>[0]
 
@@ -153,8 +146,24 @@ export function FaceControls(_props: FaceControlsProps) {
 
       if (props.smoothTime > 0) {
         const eps = 1e-9
-        easing.damp3(current.position, target.position, props.smoothTime, delta, undefined, undefined, eps)
-        easing.dampE(current.rotation, target.rotation, props.smoothTime, delta, undefined, undefined, eps)
+        easing.damp3(
+          current.position,
+          target.position,
+          props.smoothTime,
+          delta,
+          undefined,
+          undefined,
+          eps,
+        )
+        easing.dampE(
+          current.rotation,
+          target.rotation,
+          props.smoothTime,
+          delta,
+          undefined,
+          undefined,
+          eps,
+        )
       } else {
         current.position.copy(target.position)
         current.rotation.copy(target.rotation)
@@ -178,19 +187,26 @@ export function FaceControls(_props: FaceControlsProps) {
     }
   })
 
-  const faceControlsApi: FaceControlsApi = Object.assign(Object.create(THREE.EventDispatcher.prototype), {
-    detect,
-    computeTarget,
-    update,
-    get facemeshApiRef() { return facemeshApiRef },
-    get webcamApiRef() { return webcamApiRef },
-    play: () => {
-      webcamApiRef?.videoTextureApiRef?.texture.source.data.play()
+  const faceControlsApi: FaceControlsApi = Object.assign(
+    Object.create(THREE.EventDispatcher.prototype),
+    {
+      detect,
+      computeTarget,
+      update,
+      get facemeshApiRef() {
+        return facemeshApiRef
+      },
+      get webcamApiRef() {
+        return webcamApiRef
+      },
+      play: () => {
+        webcamApiRef?.videoTextureApiRef?.texture.source.data.play()
+      },
+      pause: () => {
+        webcamApiRef?.videoTextureApiRef?.texture.source.data.pause()
+      },
     },
-    pause: () => {
-      webcamApiRef?.videoTextureApiRef?.texture.source.data.pause()
-    },
-  })
+  )
 
   if (typeof _props.ref === 'function') _props.ref(faceControlsApi)
 
@@ -204,10 +220,10 @@ export function FaceControls(_props: FaceControlsProps) {
 
       faceControlsApi.addEventListener('videoFrame', onVideoFrameCb)
 
-      onCleanup(() => {
+      return () => {
         faceControlsApi.removeEventListener('videoFrame', onVideoFrameCb)
-      })
-    }
+      }
+    },
   )
 
   const points = () => faces()?.faceLandmarks[0]
@@ -218,14 +234,18 @@ export function FaceControls(_props: FaceControlsProps) {
     <FaceControlsContext value={faceControlsApi}>
       {props.webcam && (
         <Webcam
-          ref={(api) => { webcamApiRef = api }}
+          ref={api => {
+            webcamApiRef = api
+          }}
           autostart={props.autostart}
           videoTextureSrc={props.webcamVideoTextureSrc}
         />
       )}
 
       <Facemesh
-        ref={(api) => { facemeshApiRef = api }}
+        ref={api => {
+          facemeshApiRef = api
+        }}
         {...props.facemesh}
         points={points()}
         depth={props.depth}
@@ -279,15 +299,13 @@ function Webcam(_props: WebcamProps) {
 
   createEffect(
     () => stream(),
-    (s) => {
+    s => {
       faceControls.dispatchEvent({ type: 'stream', stream })
 
-      onCleanup(() => {
-        s
-          ?.getTracks()
-          .forEach(track => track.stop())
-      })
-    }
+      return () => {
+        s?.getTracks().forEach(track => track.stop())
+      }
+    },
   )
 
   const api: WebcamApi = {
@@ -340,7 +358,7 @@ function VideoTexture(_props: VideoTextureProps) {
 function useVideoFrame(video: Accessor<HTMLVideoElement | undefined>, f: (...args: any) => any) {
   createEffect(
     () => video(),
-    (vid) => {
+    vid => {
       if (!vid || !(vid as any).requestVideoFrameCallback) return
       let handle: number
       function callback(...args: any) {
@@ -349,7 +367,7 @@ function useVideoFrame(video: Accessor<HTMLVideoElement | undefined>, f: (...arg
       }
       ;(vid as any).requestVideoFrameCallback(callback)
 
-      onCleanup(() => (vid as any).cancelVideoFrameCallback(handle))
-    }
+      return () => (vid as any).cancelVideoFrameCallback(handle)
+    },
   )
 }

@@ -152,7 +152,10 @@ export function MotionPathControls(props: MotionPathControlsProps) {
       if (focusTarget instanceof Object3D) {
         lookAtDir.copy(focusTarget.position).sub(smoothPos).normalize()
       } else {
-        lookAtDir.copy(focusTarget as Vector3).sub(smoothPos).normalize()
+        lookAtDir
+          .copy(focusTarget as Vector3)
+          .sub(smoothPos)
+          .normalize()
       }
     } else {
       lookAtDir.copy(lookAheadPos).sub(smoothPos).normalize()

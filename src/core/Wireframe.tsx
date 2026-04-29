@@ -1,5 +1,5 @@
 import { processProps } from '@/utils'
-import { Show, createEffect, createMemo, onCleanup } from 'solid-js'
+import { Show, createMemo, onSettled } from 'solid-js'
 import { Entity, createT } from 'solid-three'
 import {
   BufferAttribute,
@@ -54,7 +54,14 @@ function getUniforms() {
   for (const key in WireframeMaterialShaders.uniforms) {
     const k = key as keyof typeof WireframeMaterialShaders.uniforms
     // Cast needed: TypeScript can't narrow union keys in indexed assignment
-    ;(u as Record<string, { value: (typeof WireframeMaterialShaders.uniforms)[keyof typeof WireframeMaterialShaders.uniforms] }>)[k] = {
+    ;(
+      u as Record<
+        string,
+        {
+          value: (typeof WireframeMaterialShaders.uniforms)[keyof typeof WireframeMaterialShaders.uniforms]
+        }
+      >
+    )[k] = {
       value: WireframeMaterialShaders.uniforms[k],
     }
   }
@@ -169,34 +176,33 @@ function WireframeWithoutCustomGeo(
   const uniforms = createMemo(getUniforms)
   useWireframeUniforms(uniforms, rest)
 
-  createEffect(() => {
-      const geometry = getInputGeometry(object3d)
+  onSettled(() => {
+    const geometry = getInputGeometry(object3d)
 
-      if (!geometry) {
-        throw new Error(
-          'Wireframe: Must be a child of a Mesh, Line or Points object or specify a geometry prop.',
-        )
-      }
-      const original = geometry.clone()
+    if (!geometry) {
+      throw new Error(
+        'Wireframe: Must be a child of a Mesh, Line or Points object or specify a geometry prop.',
+      )
+    }
+    const original = geometry.clone()
 
-      setBarycentricCoordinates(geometry, props.simplify)
+    setBarycentricCoordinates(geometry, props.simplify)
 
-      onCleanup(() => {
-        geometry.copy(original)
-        original.dispose()
-      })
-    },
-  )
+    return () => {
+      geometry.copy(original)
+      original.dispose()
+    }
+  })
 
-  (() => {
+  onSettled(() => {
     const parentMesh = object3d.parent as Mesh<BufferGeometry, Material>
     const og = parentMesh.material.clone()
 
     setWireframeOverride(parentMesh.material, uniforms)
-    onCleanup(() => {
+    return () => {
       parentMesh.material.dispose()
       parentMesh.material = og
-    })
+    }
   })
 
   return <Entity from={object3d} />

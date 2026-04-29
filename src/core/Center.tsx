@@ -75,7 +75,21 @@ export function Center(props: CenterProps) {
   const inner = new Group()
 
   createEffect(
-    () => [config.cacheKey, config.precise, config.disable, config.disableX, config.disableY, config.disableZ, config.top, config.bottom, config.left, config.right, config.front, config.back] as const,
+    () =>
+      [
+        config.cacheKey,
+        config.precise,
+        config.disable,
+        config.disableX,
+        config.disableY,
+        config.disableZ,
+        config.top,
+        config.bottom,
+        config.left,
+        config.right,
+        config.front,
+        config.back,
+      ] as const,
     () => {
       outer.matrixWorld.identity()
       const box3 = new Box3().setFromObject(inner, config.precise)

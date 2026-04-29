@@ -1,5 +1,5 @@
 import { processProps } from '@/utils'
-import { createEffect, createMemo, type Ref } from 'solid-js'
+import { createMemo, onSettled, type Ref } from 'solid-js'
 import { createT, Entity, type S3 } from 'solid-three'
 import { CanvasTexture, Color, DoubleSide, Mesh, MeshBasicMaterial, PlaneGeometry } from 'three'
 
@@ -47,7 +47,7 @@ export function Shadow(props: ShadowProps) {
     return canvas
   })
 
-  createEffect(() => {
+  onSettled(() => {
     mat.needsUpdate = true
   })
 

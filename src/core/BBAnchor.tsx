@@ -1,4 +1,4 @@
-import { createEffect, omit } from 'solid-js'
+import { omit, onSettled } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { Entity, useFrame } from 'solid-three'
 import { Box3, Group, Object3D, Vector3 } from 'three'
@@ -31,7 +31,7 @@ export function BBAnchor(props: BBAnchorProps) {
   // Reattach group created by this component to the parent's parent,
   // so it becomes a sibling of its initial parent.
   // We do that so the children have no impact on a bounding box of a parent.
-  createEffect(() => {
+  onSettled(() => {
     if (group?.parent?.parent) {
       parentRef = group.parent
       group.parent.parent.add(group)

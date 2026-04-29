@@ -1,4 +1,4 @@
-import { For, Show, createMemo, onCleanup, omit } from 'solid-js'
+import { For, Show, createMemo, onSettled, omit } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { createT } from 'solid-three'
 import { DoubleSide, Mesh, MeshBasicMaterial, Object3D, ShapeGeometry } from 'three'
@@ -74,7 +74,8 @@ export interface SvgProps extends Omit<S3.Props<Object3D>, 'ref'> {
  * @link https://threejs.org/docs/#examples/en/loaders/SVGLoader
  */
 export function Svg(props: SvgProps) {
-  const rest = omit(props,
+  const rest = omit(
+    props,
     'src',
     'skipFill',
     'skipStrokes',
@@ -85,8 +86,12 @@ export function Svg(props: SvgProps) {
   )
   const config = props
   const resource = createMemo(async () => {
-    const path = !config.src.startsWith('<svg') ? config.src : `data:image/sv>g+xml;utf8,${config.src}`
-    return new Promise<SVGResult>((resolve, reject) => new SVGLoader().load(path, resolve, undefined, reject))
+    const path = !config.src.startsWith('<svg')
+      ? config.src
+      : `data:image/sv>g+xml;utf8,${config.src}`
+    return new Promise<SVGResult>((resolve, reject) =>
+      new SVGLoader().load(path, resolve, undefined, reject),
+    )
   })
 
   const strokeGeometries = createMemo(() => {
@@ -103,7 +108,7 @@ export function Svg(props: SvgProps) {
         )
   })
 
-  onCleanup(() => strokeGeometries()?.forEach(group => group && group.map(g => g.dispose())))
+  onSettled(() => () => strokeGeometries()?.forEach(group => group && group.map(g => g.dispose())))
 
   return (
     <T.Object3D {...rest}>

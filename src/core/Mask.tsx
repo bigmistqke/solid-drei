@@ -14,11 +14,13 @@ export type MaskProps = Omit<S3.Props<typeof Mesh>, 'id'> & {
 }
 
 export function Mask(_props: MaskProps) {
-  const [props, rest] = processProps(
-    _props,
-    { id: 1, colorWrite: false, depthWrite: false },
-    ['ref', 'id', 'colorWrite', 'depthWrite', 'renderOrder'],
-  )
+  const [props, rest] = processProps(_props, { id: 1, colorWrite: false, depthWrite: false }, [
+    'ref',
+    'id',
+    'colorWrite',
+    'depthWrite',
+    'renderOrder',
+  ])
 
   let ref: THREE.Mesh = null!
   useRef(_props, () => ref)
@@ -37,7 +39,7 @@ export function Mask(_props: MaskProps) {
         stencilZFail: THREE.ReplaceStencilOp,
         stencilZPass: THREE.ReplaceStencilOp,
       })
-    }
+    },
   )
 
   return <Entity from={Mesh} ref={ref!} renderOrder={-props.id} {...(rest as any)} />

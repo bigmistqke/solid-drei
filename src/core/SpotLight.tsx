@@ -4,10 +4,10 @@ import type { ParentProps } from 'solid-js'
 import {
   Show,
   createContext,
-  createEffect,
   createMemo,
   createRenderEffect,
   onCleanup,
+  onSettled,
   useContext,
 } from 'solid-js'
 import type { S3 } from 'solid-three'
@@ -285,7 +285,7 @@ function SpotlightShadowWithShader(props: SpotlightShadowWithShaderProps) {
     return fsQuad
   })
 
-  createEffect(() =>
+  onSettled(() =>
     useCommon({
       mesh,
       get spotlight() {
@@ -354,7 +354,7 @@ function SpotlightShadowWithoutShader(props: SpotlightShadowWithoutShaderProps) 
 
   let mesh: Mesh = null!
 
-  createEffect(() =>
+  onSettled(() =>
     useCommon({
       mesh,
       get spotlight() {

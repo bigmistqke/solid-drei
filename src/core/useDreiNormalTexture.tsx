@@ -35,28 +35,25 @@ export function useDreiNormalTexture(
     return `${NORMAL_ROOT}/normals/${name}`
   }
 
-  const texture = useTexture(url, {
-    onLoad: (texture: Texture) => {
-      texture.wrapS = texture.wrapT = RepeatWrapping
-      createRenderEffect(
-        () => [config.repeat, config.offset, config.anisotropy] as const,
-        () => {
-          texture.repeat = new Vector2(config.repeat[0], config.repeat[1])
-          texture.offset = new Vector2(config.offset[0], config.offset[1])
-          texture.anisotropy = config.anisotropy
-          texture.needsUpdate = true
-        },
-      )
-    },
-  })
+  const texture = useTexture(url)
 
-  if (onLoad) {
-    createMemo(() => {
+  createRenderEffect(
+    () => {
       const tex = texture()
-      if (tex) onLoad(tex)
-      return tex
-    })
-  }
+      if (!tex) return null
+      return [tex, config.repeat, config.offset, config.anisotropy] as const
+    },
+    curr => {
+      if (!curr) return
+      const [tex, repeat, offset, anisotropy] = curr
+      tex.wrapS = tex.wrapT = RepeatWrapping
+      tex.repeat = new Vector2(repeat[0], repeat[1])
+      tex.offset = new Vector2(offset[0], offset[1])
+      tex.anisotropy = anisotropy
+      tex.needsUpdate = true
+      onLoad?.(tex)
+    },
+  )
 
   return createMemo(() => {
     const list = normalsList()

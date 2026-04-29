@@ -1,4 +1,4 @@
-import { onCleanup } from 'solid-js'
+import { onSettled } from 'solid-js'
 import { useThree } from 'solid-three'
 import { usePerformanceMonitor } from './PerformanceMonitor'
 
@@ -14,7 +14,7 @@ export function AdaptiveDpr({ pixelated }: { pixelated?: boolean }) {
     },
   })
 
-  onCleanup(() => {
+  onSettled(() => () => {
     store.gl.setPixelRatio(initialDpr)
     if (pixelated && store.gl.domElement) store.gl.domElement.style.imageRendering = 'auto'
   })

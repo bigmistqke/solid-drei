@@ -1,23 +1,20 @@
-import { easing } from 'maath'
 import { defaultProps } from '@/utils'
+import { render } from '@solidjs/web'
+import { easing } from 'maath'
 import {
-  type ParentProps,
-  type Ref,
   createContext,
   createEffect,
   createMemo,
   createRenderEffect,
   createSignal,
-  onCleanup,
   omit,
-  untrack,
   useContext,
   type JSX,
+  type ParentProps,
+  type Ref,
 } from 'solid-js'
-import { Dynamic, render } from '@solidjs/web'
-import { useFrame, useThree } from 'solid-three'
+import { Entity, useFrame, useThree } from 'solid-three'
 import { Group } from 'three'
-import { Entity } from 'solid-three'
 
 /**********************************************************************************/
 /*                                                                                */
@@ -164,9 +161,9 @@ export function ScrollControls(props: ScrollControlsProps) {
       // Init scroll one pixel in to allow upward/leftward scroll
       el[config.horizontal ? 'scrollLeft' : 'scrollTop'] = 1
 
-      onCleanup(() => {
+      return () => {
         if (target().contains(el)) target().removeChild(el)
-      })
+      }
     },
   )
 
@@ -211,17 +208,26 @@ export function ScrollControls(props: ScrollControlsProps) {
       const onWheel = (e: WheelEvent) => (el.scrollLeft += e.deltaY / 2)
       if (config.horizontal) el.addEventListener('wheel', onWheel, { passive: true })
 
-      onCleanup(() => {
+      return () => {
         el.removeEventListener('scroll', onScroll)
         if (config.horizontal) el.removeEventListener('wheel', onWheel)
-      })
+      }
     },
   )
 
   let last = 0
   useFrame((_, delta) => {
     last = state().offset
-    easing.damp(state(), 'offset', scroll, config.damping, delta, config.maxSpeed, undefined, config.eps)
+    easing.damp(
+      state(),
+      'offset',
+      scroll,
+      config.damping,
+      delta,
+      config.maxSpeed,
+      undefined,
+      config.eps,
+    )
     easing.damp(
       state(),
       'delta',
@@ -269,7 +275,11 @@ function ScrollCanvas(props: ScrollCanvasProps) {
       : store.viewport.height * (scroll.pages - 1) * scroll.offset
   })
 
-  return <Entity from={Group} ref={(g: Group) => (groupRef = g)}>{props.children}</Entity>
+  return (
+    <Entity from={Group} ref={(g: Group) => (groupRef = g)}>
+      {props.children}
+    </Entity>
+  )
 }
 
 /**********************************************************************************/
@@ -293,7 +303,7 @@ function ScrollHtml(props: ScrollHtmlProps) {
 
   createEffect(
     () => ref(),
-    (r) => {
+    r => {
       if (r) {
         createEffect(
           () => props.ref,
@@ -317,7 +327,7 @@ function ScrollHtml(props: ScrollHtmlProps) {
 
   createRenderEffect(
     () => scroll.fixed,
-    (fixed) => {
+    fixed => {
       render(
         () => (
           <div
@@ -356,6 +366,8 @@ type ScrollProps = {
 export function Scroll(props: ScrollProps) {
   const rest = omit(props, 'html')
   const config = props
-  const Component = (config.html ? ScrollHtml : ScrollCanvas) as unknown as (p: typeof rest) => JSX.Element
+  const Component = (config.html ? ScrollHtml : ScrollCanvas) as unknown as (
+    p: typeof rest,
+  ) => JSX.Element
   return <Component {...rest} />
 }

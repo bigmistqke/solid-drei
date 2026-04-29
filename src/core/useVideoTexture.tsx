@@ -1,9 +1,9 @@
 import { processProps } from '@/utils'
 import { createEffect, createMemo } from 'solid-js'
-import { useThree } from 'solid-three'
+import { useThree, type S3 } from 'solid-three'
 import * as THREE from 'three'
 
-interface VideoTextureProps extends HTMLVideoElement {
+interface VideoTextureProps extends S3.Props<HTMLVideoElement> {
   unsuspend?: 'canplay' | 'canplaythrough' | 'loadstart' | 'loadedmetadata'
   start?: boolean
 }
@@ -23,18 +23,28 @@ export function useVideoTexture(src: string | MediaStream, _props?: Partial<Vide
   )
 
   const store = useThree()
-  const texture = createMemo(
-    async () =>
+
+  return createMemo(
+    () =>
       new Promise<THREE.VideoTexture>(resolve => {
-        const video = Object.assign(document.createElement('video'), {
-          src: (typeof src === 'string' && src) || undefined,
-          srcObject: (src instanceof MediaStream && src) || undefined,
-          crossOrigin: props.crossOrigin,
-          loop: props.loop,
-          muted: props.muted,
-          ...rest,
-        })
+        const video = (
+          <video
+            src={typeof src === 'string' && src}
+            prop:srcObject={(src instanceof MediaStream && src) || undefined}
+            crossorigin={props.crossOrigin as any}
+            loop={props.loop}
+            muted={props.muted}
+            {...rest}
+          />
+        ) as unknown as HTMLVideoElement
+
         const texture = new THREE.VideoTexture(video)
+
+        createEffect(
+          () => props.start,
+          start => start && texture.image.play(),
+        )
+
         if ('colorSpace' in texture) {
           texture.colorSpace = store.gl.outputColorSpace
         } else {
@@ -45,11 +55,4 @@ export function useVideoTexture(src: string | MediaStream, _props?: Partial<Vide
         video.addEventListener(props.unsuspend, () => resolve(texture))
       }),
   )
-  createEffect(
-    () => props.start,
-    () => {
-      props.start && texture()?.image.play()
-    },
-  )
-  return texture
 }

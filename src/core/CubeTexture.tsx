@@ -9,7 +9,7 @@ export type CubeTextureProps = Options & {
 }
 
 export function CubeTexture(props: CubeTextureProps) {
-  const [texture] = useCubeTexture(() => props.files, { path: props.path })
+  const texture = useCubeTexture(() => props.files, { path: props.path })
 
   return (
     <Show when={texture() as ThreeCubeTexture | undefined}>

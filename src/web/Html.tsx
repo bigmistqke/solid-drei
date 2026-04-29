@@ -1,15 +1,14 @@
 import { processProps } from '@/utils'
-import { check, when } from '@/utils/conditionals'
+import { check } from '@/utils/conditionals'
+import { render } from '@solidjs/web'
 import {
   createEffect,
   createMemo,
   createRenderEffect,
-  onCleanup,
   Show,
   type Accessor,
   type JSX,
 } from 'solid-js'
-import { render } from '@solidjs/web'
 import { createT, Entity, useFrame, useThree, type S3 } from 'solid-three'
 import {
   Camera,
@@ -343,7 +342,7 @@ export function Html(props: HtmlProps) {
   // s3f:   should we have group be a signal and return it back to a renderEffect?
   createEffect(
     () => group,
-    (g) => {
+    g => {
       if (g) {
         store.scene.updateMatrixWorld()
         if (config.transform) {
@@ -356,7 +355,7 @@ export function Html(props: HtmlProps) {
           if (config.prepend) target().prepend(element())
           else target().appendChild(element())
         }
-        onCleanup(() => check(target, target => target.removeChild(element())))
+        return () => check(target, target => target.removeChild(element()))
       }
     },
   )
@@ -371,7 +370,15 @@ export function Html(props: HtmlProps) {
   )
 
   createRenderEffect(
-    () => [config.transform, styles(), transformInnerStyles(), config.class, config.style, config.children] as const,
+    () =>
+      [
+        config.transform,
+        styles(),
+        transformInnerStyles(),
+        config.class,
+        config.style,
+        config.children,
+      ] as const,
     () => {
       isMeshSizeSet = false
 
@@ -394,7 +401,12 @@ export function Html(props: HtmlProps) {
       } else {
         render(
           () => (
-            <div ref={config.ref} style={styles()} class={config.class} children={config.children} />
+            <div
+              ref={config.ref}
+              style={styles()}
+              class={config.class}
+              children={config.children}
+            />
           ),
           element(),
         )
@@ -430,12 +442,7 @@ export function Html(props: HtmlProps) {
 
       const previouslyVisible = visible
       if (raytraceTarget) {
-        const isvisible = isObjectVisible(
-          group,
-          store.camera,
-          store.raycaster,
-          raytraceTarget,
-        )
+        const isvisible = isObjectVisible(group, store.camera, store.raycaster, raytraceTarget)
         visible = isvisible && !isBehindCamera
       } else {
         visible = !isBehindCamera

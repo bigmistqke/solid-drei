@@ -1,5 +1,5 @@
 import type { JSX } from 'solid-js'
-import { children, createEffect, onCleanup } from 'solid-js'
+import { children, createEffect } from 'solid-js'
 import { Entity, getMeta } from 'solid-three'
 import * as THREE from 'three'
 
@@ -32,9 +32,9 @@ export function MultiMaterial(props: MultiMaterialProps) {
       if (materials.length === 0) return
       const previous = parent.material
       parent.material = materials as THREE.Material[]
-      onCleanup(() => {
+      return () => {
         parent.material = previous
-      })
+      }
     },
   )
 

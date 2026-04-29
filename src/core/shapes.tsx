@@ -1,6 +1,6 @@
 import { useRef } from '@/utils'
 import type { Args } from '@/utils/types'
-import { createEffect, omit, type JSX } from 'solid-js'
+import { omit, onSettled, type JSX } from 'solid-js'
 import { autodispose, Entity, type S3 } from 'solid-three'
 import {
   Box3,
@@ -64,7 +64,7 @@ function create<TKind extends GeometryKind>(Geometry: GeometryKind, effect?: (me
 
     const mesh = new Mesh()
 
-    createEffect(() => effect?.(mesh))
+    onSettled(() => effect?.(mesh))
 
     useRef(props, mesh)
 

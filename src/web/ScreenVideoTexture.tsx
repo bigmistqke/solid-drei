@@ -1,3 +1,5 @@
+import { resolve } from '@/utils'
+import type { AccessorMaybe } from '@/utils/types'
 import { createMemo, onCleanup } from 'solid-js'
 import { useThree } from 'solid-three'
 import * as THREE from 'three'
@@ -7,42 +9,46 @@ export interface ScreenVideoTextureOptions {
 }
 
 export function useScreenVideoTexture(
-  constraints?: DisplayMediaStreamOptions,
+  constraints?: AccessorMaybe<DisplayMediaStreamOptions | undefined>,
   options?: ScreenVideoTextureOptions,
 ) {
   const store = useThree()
 
-  const texture = createMemo(async () =>
-    navigator.mediaDevices
-      .getDisplayMedia(constraints)
-      .then(stream => {
-        const video = document.createElement('video')
-        video.srcObject = stream
-        video.muted = true
-        video.playsInline = true
-        video.autoplay = true
+  const texture = createMemo(async () => {
+    const constraintsValue = resolve(constraints)
 
-        const texture = new THREE.VideoTexture(video)
-        if (options?.colorSpace !== undefined) {
-          texture.colorSpace = options.colorSpace
-        } else if ('colorSpace' in texture) {
-          texture.colorSpace = store.gl.outputColorSpace
-        } else {
-          // @ts-expect-error legacy encoding
-          texture.encoding = store.gl.outputEncoding
-        }
+    let stream: MediaStream | undefined
+    let tex: THREE.VideoTexture | undefined
+    let disposed = false
 
-        video.play()
+    onCleanup(() => {
+      disposed = true
+      stream?.getTracks().forEach(t => t.stop())
+      tex?.dispose()
+    })
 
-        onCleanup(() => {
-          stream.getTracks().forEach(track => track.stop())
-          video.srcObject = null
-          texture.dispose()
-        })
+    stream = await navigator.mediaDevices.getDisplayMedia(constraintsValue)
+    if (disposed) { stream.getTracks().forEach(t => t.stop()); return undefined }
 
-        return texture
-      }),
-  )
+    const video = document.createElement('video')
+    video.srcObject = stream
+    video.muted = true
+    video.playsInline = true
+    video.autoplay = true
+
+    tex = new THREE.VideoTexture(video)
+    if (options?.colorSpace !== undefined) {
+      tex.colorSpace = options.colorSpace
+    } else if ('colorSpace' in tex) {
+      tex.colorSpace = store.gl.outputColorSpace
+    } else {
+      // @ts-expect-error legacy encoding
+      tex.encoding = store.gl.outputEncoding
+    }
+
+    video.play()
+    return tex
+  })
 
   return texture
 }

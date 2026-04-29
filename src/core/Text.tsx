@@ -1,6 +1,6 @@
 import { processProps, resolve } from '@/utils'
 import type { JSX } from 'solid-js'
-import { createMemo, onCleanup, Show } from 'solid-js'
+import { createMemo, onSettled, Show } from 'solid-js'
 import { Entity, type S3 } from 'solid-three'
 import type { Mesh } from 'three'
 import { Font } from 'three-stdlib'
@@ -148,7 +148,7 @@ export function Text(props: Props) {
   })
 
   troikaMesh.sync(() => config.onSync && config.onSync(troikaMesh))
-  onCleanup(() => troikaMesh.dispose())
+  onSettled(() => () => troikaMesh.dispose())
 
   return (
     <Show when={font()}>

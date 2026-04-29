@@ -1,5 +1,13 @@
 import { processProps } from '@/utils'
-import { For, Show, createMemo, type Component, type JSX } from 'solid-js'
+import {
+  For,
+  Show,
+  createMemo,
+  type Accessor,
+  type Component,
+  type JSX,
+  type JSXElement,
+} from 'solid-js'
 import { Entity, createEntity, type S3 } from 'solid-three'
 import { Group, Mesh, Object3D } from 'three'
 import { SkeletonUtils } from 'three-stdlib'
@@ -20,10 +28,31 @@ export type CloneProps = {
 } & S3.Props<typeof Group>
 
 const DEFAULT_KEYS = [
-  'near', 'far', 'color', 'distance', 'decay', 'penumbra', 'angle', 'intensity',
-  'skeleton', 'visible', 'castShadow', 'receiveShadow', 'morphTargetDictionary',
-  'morphTargetInfluences', 'name', 'geometry', 'material', 'position', 'rotation',
-  'scale', 'up', 'userData', 'bindMode', 'bindMatrix', 'bindMatrixInverse',
+  'near',
+  'far',
+  'color',
+  'distance',
+  'decay',
+  'penumbra',
+  'angle',
+  'intensity',
+  'skeleton',
+  'visible',
+  'castShadow',
+  'receiveShadow',
+  'morphTargetDictionary',
+  'morphTargetInfluences',
+  'name',
+  'geometry',
+  'material',
+  'position',
+  'rotation',
+  'scale',
+  'up',
+  'userData',
+  'bindMode',
+  'bindMatrix',
+  'bindMatrixInverse',
 ]
 
 function pickFromObject(obj: any, keys: string[]): Record<string, any> {
@@ -54,13 +83,23 @@ function createSpread(
 
 export function Clone(_props: CloneProps) {
   const [props, rest] = processProps(_props, { isChild: false }, [
-    'ref', 'isChild', 'object', 'children', 'deep', 'castShadow', 'receiveShadow', 'inject', 'keys',
+    'ref',
+    'isChild',
+    'object',
+    'children',
+    'deep',
+    'castShadow',
+    'receiveShadow',
+    'inject',
+    'keys',
   ])
 
   const object = createMemo(() => {
     if (props.isChild === false && !Array.isArray(props.object)) {
       let isSkinned = false
-      props.object.traverse(o => { if ((o as any).isSkinnedMesh) isSkinned = true })
+      props.object.traverse(o => {
+        if ((o as any).isSkinnedMesh) isSkinned = true
+      })
       if (isSkinned) return SkeletonUtils.clone(props.object)
     }
     return props.object
@@ -75,23 +114,54 @@ export function Clone(_props: CloneProps) {
       fallback={
         <Entity from={Group} ref={_props.ref as any} {...(rest as any)}>
           <For each={object() as Object3D[]}>
-            {o => <Clone object={o()} keys={props.keys} deep={props.deep} inject={props.inject} castShadow={props.castShadow} receiveShadow={props.receiveShadow} />}
+            {o => (
+              <Clone
+                object={o()}
+                keys={props.keys}
+                deep={props.deep}
+                inject={props.inject}
+                castShadow={props.castShadow}
+                receiveShadow={props.receiveShadow}
+              />
+            )}
           </For>
           {props.children}
         </Entity>
       }
     >
-      {(obj: Object3D) => {
-        const { children: injectChildren, ...spread } = createSpread(obj, { keys: props.keys, deep: props.deep, inject: props.inject, castShadow: props.castShadow, receiveShadow: props.receiveShadow })
-        const El = createEntity(obj.constructor as new (...args: any[]) => any) as Component<any>
+      {(obj: Accessor<Object3D>) => {
+        const { children: injectChildren, ...spread } = createSpread(obj(), {
+          keys: props.keys,
+          deep: props.deep,
+          inject: props.inject,
+          castShadow: props.castShadow,
+          receiveShadow: props.receiveShadow,
+        })
+        const El = createEntity(obj().constructor as new (...args: any[]) => any) as Component<any>
         return (
           <El {...(spread as any)} {...(rest as any)} ref={_props.ref as any}>
-            <For each={obj.children}>
-              {child => {
-                const childValue = child()
-                if ((childValue as any).type === 'Bone') return <Entity from={childValue} keys={props.keys} deep={props.deep} inject={props.inject} castShadow={props.castShadow} receiveShadow={props.receiveShadow} />
-                return <Clone object={childValue} keys={props.keys} deep={props.deep} inject={props.inject} castShadow={props.castShadow} receiveShadow={props.receiveShadow} isChild />
-              }}
+            <For each={obj().children}>
+              {child =>
+                createMemo(() => {
+                  const _child = child()
+
+                  if ((_child as any).type === 'Bone') {
+                    return <Entity from={_child} />
+                  }
+
+                  return (
+                    <Clone
+                      object={_child}
+                      keys={props.keys}
+                      deep={props.deep}
+                      inject={props.inject}
+                      castShadow={props.castShadow}
+                      receiveShadow={props.receiveShadow}
+                      isChild
+                    />
+                  )
+                }) as unknown as JSXElement
+              }
             </For>
             {props.children}
             {injectChildren}

@@ -8,7 +8,9 @@ type MergedProps = {
   /** Array of meshes to create instanced versions of */
   meshes: THREE.Mesh[]
   /** Children receive one instanced-mesh component per input mesh */
-  children: (...components: ((props: Omit<InstanceProps, 'context'>) => JSX.Element)[]) => JSX.Element
+  children: (
+    ...components: ((props: Omit<InstanceProps, 'context'>) => JSX.Element)[]
+  ) => JSX.Element
   /** Max instances per mesh, defaults to 1000 */
   limit?: number
   /** Frames to render, defaults to Infinity */
@@ -47,7 +49,9 @@ function MergedTree(treeProps: {
   frames: number
   index: number
   factories: Array<(p: Omit<InstanceProps, 'context'>) => JSX.Element>
-  children: (...components: ((props: Omit<InstanceProps, 'context'>) => JSX.Element)[]) => JSX.Element
+  children: (
+    ...components: ((props: Omit<InstanceProps, 'context'>) => JSX.Element)[]
+  ) => JSX.Element
 }): JSX.Element {
   const { meshes, limit, frames, index, factories, children } = treeProps
 
@@ -64,7 +68,7 @@ function MergedTree(treeProps: {
       limit={limit}
       frames={frames}
     >
-      {(Inst) => {
+      {Inst => {
         // Register this slot's factory (idempotent — same index always same factory)
         const nextFactories = [...factories]
         nextFactories[index] = (p: Omit<InstanceProps, 'context'>) => <Inst {...p} />

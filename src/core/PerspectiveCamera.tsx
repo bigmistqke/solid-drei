@@ -1,10 +1,10 @@
 import { processProps, useRef } from '@/utils'
 import type { JSX, Ref } from 'solid-js'
-import { Show, createEffect, createMemo, onCleanup } from 'solid-js'
+import { Show, createEffect, createMemo } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { Entity, useFrame, useThree } from 'solid-three'
 import { Color, Group, Scene, Texture, PerspectiveCamera as ThreePerspectiveCamera } from 'three'
-import { useFBO } from './unported/useFBO'
+import { useFBO } from './useFBO'
 
 interface PerspectiveCameraProps extends Omit<S3.Props<ThreePerspectiveCamera>, 'children'> {
   ref?: Ref<ThreePerspectiveCamera>
@@ -89,7 +89,7 @@ export function PerspectiveCamera(props: PerspectiveCameraProps) {
 
   createEffect(
     () => offspring().isFunctional,
-    (isFunctional) => {
+    isFunctional => {
       if (!isFunctional) return
       const scene = store.scene
       if (!(scene instanceof Scene)) return
@@ -106,7 +106,7 @@ export function PerspectiveCamera(props: PerspectiveCameraProps) {
           frameCount++
         }
       })
-    }
+    },
   )
 
   createEffect(
@@ -114,20 +114,21 @@ export function PerspectiveCamera(props: PerspectiveCameraProps) {
     ([manual, width, height]) => {
       if (manual || !height) return
       camera().aspect = width / height
-    }
+    },
   )
 
   createEffect(
-    () => {
-      if (config.makeCurrent) {
-        onCleanup(store.setCamera(camera()))
-      }
-    }
+    () => config.makeCurrent ? camera() : null,
+    (cam) => {
+      if (!cam) return
+      return store.setCamera(cam)
+    },
   )
 
-  createEffect(() => {
-    camera().updateProjectionMatrix()
-  })
+  createEffect(
+    () => camera(),
+    cam => cam.updateProjectionMatrix(),
+  )
 
   useRef(props, camera)
 

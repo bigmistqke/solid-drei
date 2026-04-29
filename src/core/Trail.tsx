@@ -1,5 +1,5 @@
 import { createWritable, defaultProps, resolve } from '@/utils'
-import { check, when } from '@/utils/conditionals'
+import { check } from '@/utils/conditionals'
 import { MeshLineGeometry, MeshLineMaterial } from 'meshline'
 import {
   type Accessor,
@@ -183,11 +183,10 @@ export function Trail(
     },
   )
 
-  useFrame(
-    when(points, points => {
-      geometry.setPoints(points, config.attenuation)
-    }),
-  )
+  useFrame(() => {
+    const p = points()
+    if (p) geometry.setPoints(p, config.attenuation)
+  })
 
   return (
     <Entity from={new Group()}>

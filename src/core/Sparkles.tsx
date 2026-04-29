@@ -13,7 +13,7 @@ import {
   Vector3,
   Vector4,
 } from 'three'
-import { shaderMaterial } from '../../materials/shaderMaterial'
+import { shaderMaterial } from '../materials/shaderMaterial'
 
 /**********************************************************************************/
 /*                                                                                */

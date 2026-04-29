@@ -1,6 +1,6 @@
 import { createWritable, defaultProps, useRef } from '@/utils'
 import type { Ref } from 'solid-js'
-import { createEffect, onCleanup } from 'solid-js'
+import { createEffect } from 'solid-js'
 import { useFrame, useThree } from 'solid-three'
 import { Euler } from 'three'
 import { SimplexNoise } from 'three-stdlib'
@@ -79,14 +79,14 @@ export function CameraShake(props: CameraShakeProps) {
 
   createEffect(
     () => props.controls,
-    (controls) => {
+    controls => {
       if (controls) {
         const callback = () => void (initialRotation = store.camera.rotation.clone())
         controls.addEventListener('change', callback)
         callback()
-        onCleanup(() => {
+        return () => {
           controls?.removeEventListener('change', callback)
-        })
+        }
       }
     },
   )

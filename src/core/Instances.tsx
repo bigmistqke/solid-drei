@@ -1,17 +1,16 @@
 import { processProps } from '@/utils'
 import {
+  createContext,
+  createSignal,
+  omit,
+  onSettled,
+  useContext,
   type Context,
   type JSX,
-  createContext,
-  createEffect,
-  createSignal,
-  onCleanup,
-  omit,
-  useContext,
 } from 'solid-js'
 import { Entity, createT, useFrame, type S3 } from 'solid-three'
-import { Group, InstancedMesh, DynamicDrawUsage } from 'three'
 import * as THREE from 'three'
+import { DynamicDrawUsage, InstancedMesh } from 'three'
 
 // PositionMesh: a virtual Group that carries per-instance position/color
 // and delegates raycasting back to the parent InstancedMesh.
@@ -91,9 +90,7 @@ export function Instance(_props: InstanceProps) {
 
   let positionMesh: PositionMesh = null!
 
-  createEffect(() => {
-    onCleanup(subscribe(positionMesh))
-  })
+  onSettled(() => subscribe(positionMesh))
 
   return (
     <T.PositionMesh
@@ -112,13 +109,19 @@ export function Instance(_props: InstanceProps) {
 }
 
 export function Instances(_props: InstancesProps) {
-  const [props, rest] = processProps(
-    _props,
-    { limit: 1000, frames: Infinity },
-    ['ref', 'children', 'range', 'limit', 'frames'],
-  )
+  const [props, rest] = processProps(_props, { limit: 1000, frames: Infinity }, [
+    'ref',
+    'children',
+    'range',
+    'limit',
+    'frames',
+  ])
 
-  const { context, Context: ContextComponent, instance } = (() => {
+  const {
+    context,
+    Context: ContextComponent,
+    instance,
+  } = (() => {
     const ctx = createContext<Api | undefined>()
     const Context = ctx
     return {

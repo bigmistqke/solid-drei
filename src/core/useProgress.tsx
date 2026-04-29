@@ -39,10 +39,10 @@ DefaultLoadingManager.onStart = (item, loaded, total) => {
   }))
 }
 DefaultLoadingManager.onLoad = () => {
-  setProgress((state) => ({ ...state, active: false }))
+  setProgress(state => ({ ...state, active: false }))
 }
 DefaultLoadingManager.onError = (item: string) => {
-  setProgress((state) => ({ ...state, errors: [...state.errors, item] }))
+  setProgress(state => ({ ...state, errors: [...state.errors, item] }))
 }
 DefaultLoadingManager.onProgress = (item, loaded, total) => {
   if (loaded === total) {

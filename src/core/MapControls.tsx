@@ -1,6 +1,5 @@
 import { processProps } from '@/utils'
-import { whenComputed } from '@/utils/conditionals'
-import { createRenderEffect, createMemo, onCleanup, type JSXElement, type Ref } from 'solid-js'
+import { createEffect, createRenderEffect, createMemo, type JSXElement, type Ref } from 'solid-js'
 import { autodispose, useFrame, useProps, useThree, type S3 } from 'solid-three'
 import { OrthographicCamera, PerspectiveCamera, type Event } from 'three'
 import { MapControls as MapControlsImpl } from 'three-stdlib'
@@ -42,37 +41,33 @@ export function useMapControls(options?: MapControlsOptions) {
     const controls = autodispose(new MapControlsImpl(config.camera))
     const autolisten = useAutolisten(controls)
 
-    whenComputed(
-      () => config.enabled,
-      () => {
-        controls.enabled = true
-        onCleanup(() => (controls.enabled = false))
-
-        createRenderEffect(
-          () => config.domElement,
-          () => controls.connect(config.domElement),
-        )
-
-        createRenderEffect(
-          () => config.onStart,
-          () => autolisten('start', config.onStart),
-        )
-        createRenderEffect(
-          () => config.onChange,
-          () => autolisten('change', config.onChange),
-        )
-        createRenderEffect(
-          () => config.onEnd,
-          () => autolisten('end', config.onEnd),
-        )
-
-        useProps(controls, rest, store)
-
-        useFrame(controls.update)
-      },
+    createRenderEffect(
+      () => config.domElement,
+      (elem) => controls.connect(elem),
     )
+    createRenderEffect(
+      () => config.onStart,
+      (onStart) => autolisten('start', onStart),
+    )
+    createRenderEffect(
+      () => config.onChange,
+      (onChange) => autolisten('change', onChange),
+    )
+    createRenderEffect(
+      () => config.onEnd,
+      (onEnd) => autolisten('end', onEnd),
+    )
+
+    useProps(controls, rest, store)
+    useFrame(() => controls.update())
+
     return controls
   })
+
+  createEffect(
+    () => config.enabled,
+    (enabled) => { controls().enabled = enabled },
+  )
 
   return { controls }
 }

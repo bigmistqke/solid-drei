@@ -1,9 +1,9 @@
 import { processProps, useRef } from '@/utils'
 import type { Ref } from 'solid-js'
-import { createEffect, onCleanup } from 'solid-js'
+import { createEffect } from 'solid-js'
 import { Entity, getMeta, type S3 } from 'solid-three'
 import * as THREE from 'three'
-import { BackSide, Color, FrontSide, Mesh, MeshBasicMaterial, ShaderMaterial } from 'three'
+import { BackSide, Color, Mesh, ShaderMaterial } from 'three'
 
 /**********************************************************************************/
 /*                                                                                */
@@ -45,7 +45,17 @@ export function Outlines(_props: OutlinesProps) {
       transparent: false,
       toneMapped: true,
     },
-    ['ref', 'color', 'thickness', 'scale', 'screenspace', 'opacity', 'transparent', 'toneMapped', 'angle'],
+    [
+      'ref',
+      'color',
+      'thickness',
+      'scale',
+      'screenspace',
+      'opacity',
+      'transparent',
+      'toneMapped',
+      'angle',
+    ],
   )
 
   let outlineMesh: Mesh = null!
@@ -120,13 +130,13 @@ export function Outlines(_props: OutlinesProps) {
     }
   }
 
-  (() => {
+  ;() => {
     // Share parent mesh geometry
     const parentMesh = getMeta(outlineMesh)?.parent?.object as THREE.Mesh | undefined
     if (parentMesh?.geometry) {
       outlineMesh.geometry = parentMesh.geometry
     }
-  })
+  }
 
   createEffect(
     () => [props.color, props.scale ?? props.thickness, props.opacity, props.transparent] as const,

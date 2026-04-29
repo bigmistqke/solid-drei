@@ -1,5 +1,5 @@
 import { defaultProps } from '@/utils'
-import { createEffect, onCleanup } from 'solid-js'
+import { createEffect } from 'solid-js'
 import { useFrame } from 'solid-three'
 import StatsImpl from 'stats.js'
 
@@ -37,7 +37,7 @@ export function Stats(props: Props): null {
       useFrame(() => stats.begin(), { priority: -Infinity })
       useFrame(() => stats.end(), { priority: Infinity, stage: 'after' })
 
-      onCleanup(() => node?.removeChild(stats.dom))
+      return () => node?.removeChild(stats.dom)
     },
   )
 

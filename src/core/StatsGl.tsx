@@ -1,4 +1,4 @@
-import { createEffect, onCleanup, omit } from 'solid-js'
+import { createEffect, omit } from 'solid-js'
 import { useFrame, useThree } from 'solid-three'
 import Stats from 'stats-gl'
 
@@ -26,9 +26,8 @@ export function StatsGl(_props: Props) {
 
       return { stats, node }
     },
-    (prev) => {
-      if (prev?.node && prev?.stats)
-        prev.node.removeChild(prev.stats.domElement)
+    prev => {
+      if (prev?.node && prev?.stats) prev.node.removeChild(prev.stats.domElement)
     },
   )
 

@@ -5,13 +5,13 @@
 //   Paul Henschel twitter.com/0xca0a
 // Ported to SolidJS by solid-drei contributors
 
-import * as THREE from 'three'
-import type { Ref } from 'solid-js'
-import { createEffect, onCleanup } from 'solid-js'
+import { shaderMaterial } from '@/materials/shaderMaterial'
+import { processProps, useRef } from '@/utils'
+import { version } from '@/utils/constants'
+import { type Ref, createEffect } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { Entity, useFrame, useThree } from 'solid-three'
-import { shaderMaterial } from '@/materials/shaderMaterial'
-import { version } from '@/utils/constants'
+import * as THREE from 'three'
 
 /**********************************************************************************/
 /*                                                                                */
@@ -28,7 +28,10 @@ export type SplatMaterialType = {
   focal?: number
 }
 
-export type TargetMesh = THREE.Mesh<THREE.InstancedBufferGeometry, THREE.ShaderMaterial & SplatMaterialType> & {
+export type TargetMesh = THREE.Mesh<
+  THREE.InstancedBufferGeometry,
+  THREE.ShaderMaterial & SplatMaterialType
+> & {
   ready: boolean
   sorted: boolean
   pm: THREE.Matrix4
@@ -242,14 +245,16 @@ function createWorker(self: Worker & typeof globalThis) {
     return depthIndex
   }
 
-  self.onmessage = (e: MessageEvent<{
-    method: string
-    length: number
-    key: string
-    view: Float32Array
-    matrices: Float32Array
-    hashed: boolean
-  }>) => {
+  self.onmessage = (
+    e: MessageEvent<{
+      method: string
+      length: number
+      key: string
+      view: Float32Array
+      matrices: Float32Array
+      hashed: boolean
+    }>,
+  ) => {
     if (e.data.method === 'push') {
       if (offset === 0) matrices = new Float32Array(e.data.length)
       const new_matrices = new Float32Array(e.data.matrices)
@@ -341,8 +346,12 @@ async function load(shared: SharedState) {
   shared.bufferTextureWidth = maxTextureSize
   shared.bufferTextureHeight = Math.floor((shared.numVertices - 1) / maxTextureSize) + 1
 
-  shared.centerAndScaleData = new Float32Array(shared.bufferTextureWidth * shared.bufferTextureHeight * 4)
-  shared.covAndColorData = new Uint32Array(shared.bufferTextureWidth * shared.bufferTextureHeight * 4)
+  shared.centerAndScaleData = new Float32Array(
+    shared.bufferTextureWidth * shared.bufferTextureHeight * 4,
+  )
+  shared.covAndColorData = new Uint32Array(
+    shared.bufferTextureWidth * shared.bufferTextureHeight * 4,
+  )
   shared.centerAndScaleTexture = new THREE.DataTexture(
     shared.centerAndScaleData,
     shared.bufferTextureWidth,
@@ -392,7 +401,10 @@ async function lazyLoad(shared: SharedState) {
 
       chunks.push(value)
       const bytesRemains = bytesDownloaded - bytesProcessed
-      if (shared.totalDownloadBytes != undefined && bytesRemains > shared.rowLength * shared.chunkSize) {
+      if (
+        shared.totalDownloadBytes != undefined &&
+        bytesRemains > shared.rowLength * shared.chunkSize
+      ) {
         const vertexCount = Math.floor(bytesRemains / shared.rowLength)
         const concatenatedChunksbuffer = new Uint8Array(bytesRemains)
         let offset = 0
@@ -403,14 +415,22 @@ async function lazyLoad(shared: SharedState) {
         chunks.length = 0
         if (bytesRemains > vertexCount * shared.rowLength) {
           const extra_data = new Uint8Array(bytesRemains - vertexCount * shared.rowLength)
-          extra_data.set(concatenatedChunksbuffer.subarray(bytesRemains - extra_data.length, bytesRemains), 0)
+          extra_data.set(
+            concatenatedChunksbuffer.subarray(bytesRemains - extra_data.length, bytesRemains),
+            0,
+          )
           chunks.push(extra_data)
         }
         const buffer = new Uint8Array(vertexCount * shared.rowLength)
         buffer.set(concatenatedChunksbuffer.subarray(0, buffer.byteLength), 0)
         const matrices = pushDataBuffer(shared, buffer.buffer, vertexCount)
         shared.worker.postMessage(
-          { method: 'push', src: shared.url, length: shared.numVertices * 16, matrices: matrices.buffer },
+          {
+            method: 'push',
+            src: shared.url,
+            length: shared.numVertices * 16,
+            matrices: matrices.buffer,
+          },
           [matrices.buffer],
         )
         bytesProcessed += vertexCount * shared.rowLength
@@ -466,9 +486,10 @@ function update(camera: THREE.Camera, shared: SharedState, target: TargetMesh, h
       target.modelViewMatrix.elements[10]!,
       target.modelViewMatrix.elements[14]!,
     ])
-    shared.worker.postMessage({ method: 'sort', src: shared.url, key: target.uuid, view: view.buffer, hashed }, [
-      view.buffer,
-    ])
+    shared.worker.postMessage(
+      { method: 'sort', src: shared.url, key: target.uuid, view: view.buffer, hashed },
+      [view.buffer],
+    )
     if (hashed && shared.loaded) target.sorted = true
   }
 }
@@ -513,15 +534,19 @@ function connect(shared: SharedState, target: TargetMesh) {
 
   async function wait() {
     while (true) {
-      const centerAndScaleTextureProperties = shared.gl.properties.get(shared.centerAndScaleTexture) as Record<string, unknown>
-      const covAndColorTextureProperties = shared.gl.properties.get(shared.covAndColorTexture) as Record<string, unknown>
+      const centerAndScaleTextureProperties = shared.gl.properties.get(
+        shared.centerAndScaleTexture,
+      ) as Record<string, unknown>
+      const covAndColorTextureProperties = shared.gl.properties.get(
+        shared.covAndColorTexture,
+      ) as Record<string, unknown>
       if (
         centerAndScaleTextureProperties?.__webglTexture &&
         covAndColorTextureProperties?.__webglTexture &&
         shared.loadedVertexCount > 0
       )
         break
-      await new Promise<void>((resolve) => setTimeout(resolve, 10))
+      await new Promise<void>(resolve => setTimeout(resolve, 10))
     }
     target.ready = true
   }
@@ -550,8 +575,16 @@ function pushDataBuffer(shared: SharedState, buffer: ArrayBufferLike, vertexCoun
       -(u_buffer[32 * i + 28 + 0]! - 128) / 128.0,
     )
     quat.invert()
-    const center = new THREE.Vector3(f_buffer[8 * i + 0]!, f_buffer[8 * i + 1]!, -f_buffer[8 * i + 2]!)
-    const scale = new THREE.Vector3(f_buffer[8 * i + 3 + 0]!, f_buffer[8 * i + 3 + 1]!, f_buffer[8 * i + 3 + 2]!)
+    const center = new THREE.Vector3(
+      f_buffer[8 * i + 0]!,
+      f_buffer[8 * i + 1]!,
+      -f_buffer[8 * i + 2]!,
+    )
+    const scale = new THREE.Vector3(
+      f_buffer[8 * i + 3 + 0]!,
+      f_buffer[8 * i + 3 + 1]!,
+      f_buffer[8 * i + 3 + 2]!,
+    )
 
     const mtx = new THREE.Matrix4()
     mtx.makeRotationFromQuaternion(quat)
@@ -565,7 +598,8 @@ function pushDataBuffer(shared: SharedState, buffer: ArrayBufferLike, vertexCoun
     const cov_indexes = [0, 1, 2, 5, 6, 10]
     let max_value = 0.0
     for (let j = 0; j < cov_indexes.length; j++)
-      if (Math.abs(mtx.elements[cov_indexes[j]!]!) > max_value) max_value = Math.abs(mtx.elements[cov_indexes[j]!]!)
+      if (Math.abs(mtx.elements[cov_indexes[j]!]!) > max_value)
+        max_value = Math.abs(mtx.elements[cov_indexes[j]!]!)
 
     let destOffset = shared.loadedVertexCount * 4 + i * 4
     shared.centerAndScaleData[destOffset + 0] = center.x
@@ -612,7 +646,9 @@ function pushDataBuffer(shared: SharedState, buffer: ArrayBufferLike, vertexCoun
       height = 1
     }
 
-    const centerAndScaleTextureProperties = shared.gl.properties.get(shared.centerAndScaleTexture) as Record<string, WebGLTexture>
+    const centerAndScaleTextureProperties = shared.gl.properties.get(
+      shared.centerAndScaleTexture,
+    ) as Record<string, WebGLTexture>
     context.bindTexture(context.TEXTURE_2D, centerAndScaleTextureProperties.__webglTexture)
     context.texSubImage2D(
       context.TEXTURE_2D,
@@ -627,7 +663,9 @@ function pushDataBuffer(shared: SharedState, buffer: ArrayBufferLike, vertexCoun
       shared.loadedVertexCount * 4,
     )
 
-    const covAndColorTextureProperties = shared.gl.properties.get(shared.covAndColorTexture) as Record<string, WebGLTexture>
+    const covAndColorTextureProperties = shared.gl.properties.get(
+      shared.covAndColorTexture,
+    ) as Record<string, WebGLTexture>
     context.bindTexture(context.TEXTURE_2D, covAndColorTextureProperties.__webglTexture)
     context.texSubImage2D(
       context.TEXTURE_2D,
@@ -683,66 +721,64 @@ function getSharedState(
 /**********************************************************************************/
 
 export function Splat(props: SplatProps) {
-  const {
-    src,
-    toneMapped = false,
-    alphaTest = 0,
-    alphaHash = false,
-    chunkSize = 25000,
-    ref,
-    ...rest
-  } = props
+  const [config, rest] = processProps(
+    props,
+    { toneMapped: false, alphaTest: 0, alphaHash: false, chunkSize: 25000 },
+    ['src', 'toneMapped', 'alphaTest', 'alphaHash', 'chunkSize', 'ref'],
+  )
 
   const store = useThree()
-
-  // Create the target mesh eagerly
   const mesh = new THREE.Mesh() as TargetMesh
-
-  // Expose ref
-  if (typeof ref === 'function') {
-    ref(mesh)
-  }
-
-  let shared: SharedState | null = null
-  let disconnect: (() => void) | null = null
-
-  createEffect(() => {
-    getSharedState(src, store.gl, chunkSize).then((s) => {
-      shared = s
-      disconnect = shared.connect(mesh)
-    })
-  })
-
-  onCleanup(() => {
-    disconnect?.()
-    disconnect = null
-  })
-
-  useFrame(({ camera }) => {
-    if (shared) {
-      shared.update(mesh, camera, alphaHash)
-    }
-  })
-
   const material = new SplatMaterial() as InstanceType<typeof SplatMaterial> & SplatMaterialType
-  material.transparent = !alphaHash
   material.depthTest = true
-  material.alphaTest = alphaHash ? 0 : alphaTest
-  material.depthWrite = alphaHash ? true : alphaTest > 0
-  material.blending = alphaHash ? THREE.NormalBlending : THREE.CustomBlending
   material.blendSrcAlpha = THREE.OneFactor
-  material.alphaHash = !!alphaHash
-  material.toneMapped = toneMapped
-
-  // Attach textures once shared state resolves
-  getSharedState(src, store.gl, chunkSize).then((s) => {
-    material.centerAndScaleTexture = s.centerAndScaleTexture
-    material.covAndColorTexture = s.covAndColorTexture
-    material.needsUpdate = true
-  })
 
   mesh.material = material as THREE.ShaderMaterial & SplatMaterialType
   mesh.frustumCulled = false
+
+  let shared: SharedState | null = null
+
+  createEffect(
+    () => ({ src: config.src, chunkSize: config.chunkSize }),
+    ({ src, chunkSize }) => {
+      let disconnect: (() => void) | null = null
+      getSharedState(src, store.gl, chunkSize).then(s => {
+        shared = s
+        disconnect = s.connect(mesh)
+        material.centerAndScaleTexture = s.centerAndScaleTexture
+        material.covAndColorTexture = s.covAndColorTexture
+        material.needsUpdate = true
+      })
+      return () => {
+        disconnect?.()
+        disconnect = null
+        shared = null
+      }
+    },
+  )
+
+  createEffect(
+    () => ({
+      alphaHash: config.alphaHash,
+      alphaTest: config.alphaTest,
+      toneMapped: config.toneMapped,
+    }),
+    ({ alphaHash, alphaTest, toneMapped }) => {
+      material.transparent = !alphaHash
+      material.alphaTest = alphaHash ? 0 : alphaTest
+      material.depthWrite = alphaHash ? true : alphaTest > 0
+      material.blending = alphaHash ? THREE.NormalBlending : THREE.CustomBlending
+      material.alphaHash = !!alphaHash
+      material.toneMapped = toneMapped
+      material.needsUpdate = true
+    },
+  )
+
+  useFrame(({ camera }) => {
+    if (shared) shared.update(mesh, camera, config.alphaHash)
+  })
+
+  useRef(props, mesh)
 
   return (
     <Entity from={mesh as THREE.Mesh} frustumCulled={false} {...(rest as S3.Props<THREE.Mesh>)} />

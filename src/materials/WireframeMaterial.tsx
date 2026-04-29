@@ -315,7 +315,9 @@ export function useWireframeUniforms(
   createEffect(
     () => props.stroke,
     () => {
-      uniforms().stroke.value = props.stroke ? new THREE.Color(props.stroke) : uniforms().stroke.value
+      uniforms().stroke.value = props.stroke
+        ? new THREE.Color(props.stroke)
+        : uniforms().stroke.value
     },
   )
   createEffect(

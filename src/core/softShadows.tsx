@@ -14,7 +14,7 @@
 */
 
 import { defaultProps } from '@/utils'
-import { createEffect, onCleanup } from 'solid-js'
+import { createEffect } from 'solid-js'
 import { useThree } from 'solid-three'
 import { Camera, Material, Scene, ShaderChunk, WebGLRenderer } from 'three'
 
@@ -176,11 +176,12 @@ export function SoftShadows(props: SoftShadowsProps) {
 
       reset(store.gl, store.scene, store.camera)
 
-      onCleanup(() => {
+      return () => {
         ShaderChunk.shadowmap_pars_fragment = original
         reset(store.gl, store.scene, store.camera)
-    })
-  })
+      }
+    },
+  )
 
   return null
 }

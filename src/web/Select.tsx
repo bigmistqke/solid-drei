@@ -114,100 +114,101 @@ export function Select(props: SelectProps) {
 
       const selBox = new SelectionBox(store.camera, group as unknown as Scene)
 
-    const element = document.createElement('div')
-    element.style.pointerEvents = 'none'
-    element.style.border = config.border
-    element.style.backgroundColor = config.backgroundColor
-    element.style.position = 'fixed'
+      const element = document.createElement('div')
+      element.style.pointerEvents = 'none'
+      element.style.border = config.border
+      element.style.backgroundColor = config.backgroundColor
+      element.style.position = 'fixed'
 
-    const startPoint = new Vector2()
-    const pointTopLeft = new Vector2()
-    const pointBottomRight = new Vector2()
+      const startPoint = new Vector2()
+      const pointTopLeft = new Vector2()
+      const pointBottomRight = new Vector2()
 
-    // s3f: was using get(). before, hence the untrack
-    // const oldRaycasterEnabled = untrack(() => store.events.enabled)
-    // const oldControlsEnabled = (store.controls as any)?.enabled
+      // s3f: was using get(). before, hence the untrack
+      // const oldRaycasterEnabled = untrack(() => store.events.enabled)
+      // const oldControlsEnabled = (store.controls as any)?.enabled
 
-    function prepareRay(event: PointerEvent, vector: Vector3) {
-      const { offsetX, offsetY } = event
-      const { width, height } = store.bounds
-      vector.set((offsetX / width) * 2 - 1, -(offsetY / height) * 2 + 1, vector.z)
-    }
-
-    function onSelectStart(event: PointerEvent) {
-      // if (store.controls) (store.controls as any).enabled = false
-      // store.setEvents({ enabled: false })
-      store.gl.domElement.parentElement?.appendChild(element)
-      element.style.left = `${event.clientX}px`
-      element.style.top = `${event.clientY}px`
-      element.style.width = '0px'
-      element.style.height = '0px'
-      startPoint.x = event.clientX
-      startPoint.y = event.clientY
-    }
-
-    function onSelectMove(event: PointerEvent) {
-      pointBottomRight.x = Math.max(startPoint.x, event.clientX)
-      pointBottomRight.y = Math.max(startPoint.y, event.clientY)
-      pointTopLeft.x = Math.min(startPoint.x, event.clientX)
-      pointTopLeft.y = Math.min(startPoint.y, event.clientY)
-      element.style.left = `${pointTopLeft.x}px`
-      element.style.top = `${pointTopLeft.y}px`
-      element.style.width = `${pointBottomRight.x - pointTopLeft.x}px`
-      element.style.height = `${pointBottomRight.y - pointTopLeft.y}px`
-    }
-
-    function onSelectOver() {
-      if (downed()) {
-        // if (store.controls) (store.controls as any).enabled = oldControlsEnabled
-        // store.setEvents({ enabled: oldRaycasterEnabled })
-        element.parentElement?.removeChild(element)
+      function prepareRay(event: PointerEvent, vector: Vector3) {
+        const { offsetX, offsetY } = event
+        const { width, height } = store.bounds
+        vector.set((offsetX / width) * 2 - 1, -(offsetY / height) * 2 + 1, vector.z)
       }
-    }
 
-    let previous: Mesh<BufferGeometry, Material | Material[]>[] = []
+      function onSelectStart(event: PointerEvent) {
+        // if (store.controls) (store.controls as any).enabled = false
+        // store.setEvents({ enabled: false })
+        store.gl.domElement.parentElement?.appendChild(element)
+        element.style.left = `${event.clientX}px`
+        element.style.top = `${event.clientY}px`
+        element.style.width = '0px'
+        element.style.height = '0px'
+        startPoint.x = event.clientX
+        startPoint.y = event.clientY
+      }
 
-    autolisten(
-      'pointerdown',
-      (event: PointerEvent) => {
-        if (event.shiftKey) {
-          onSelectStart(event)
-          prepareRay(event, selBox.startPoint)
-        }
-      },
-      { passive: true },
-    )
-    autolisten(
-      'pointermove',
-      (event: PointerEvent) => {
+      function onSelectMove(event: PointerEvent) {
+        pointBottomRight.x = Math.max(startPoint.x, event.clientX)
+        pointBottomRight.y = Math.max(startPoint.y, event.clientY)
+        pointTopLeft.x = Math.min(startPoint.x, event.clientX)
+        pointTopLeft.y = Math.min(startPoint.y, event.clientY)
+        element.style.left = `${pointTopLeft.x}px`
+        element.style.top = `${pointTopLeft.y}px`
+        element.style.width = `${pointBottomRight.x - pointTopLeft.x}px`
+        element.style.height = `${pointBottomRight.y - pointTopLeft.y}px`
+      }
+
+      function onSelectOver() {
         if (downed()) {
-          onSelectMove(event)
-          prepareRay(event, selBox.endPoint)
-          const allSelected = selBox
-            .select()
-            .sort((o: Object3D) => (o.uuid as unknown as number))
-            .filter(o => o.isMesh)
-
-          console.log(allSelected)
-
-          // if (!shallow(allSelected, previous)) {
-          // previous = allSelected
-          // dispatch({ object: props.filter(allSelected) })
-          // }
+          // if (store.controls) (store.controls as any).enabled = oldControlsEnabled
+          // store.setEvents({ enabled: oldRaycasterEnabled })
+          element.parentElement?.removeChild(element)
         }
-      },
-      { passive: true, capture: true },
-    )
-    autolisten(
-      'pointerup',
-      () => {
-        if (downed()) {
-          onSelectOver()
-        }
-      },
-      { passive: true },
-    )
-  })
+      }
+
+      let previous: Mesh<BufferGeometry, Material | Material[]>[] = []
+
+      autolisten(
+        'pointerdown',
+        (event: PointerEvent) => {
+          if (event.shiftKey) {
+            onSelectStart(event)
+            prepareRay(event, selBox.startPoint)
+          }
+        },
+        { passive: true },
+      )
+      autolisten(
+        'pointermove',
+        (event: PointerEvent) => {
+          if (downed()) {
+            onSelectMove(event)
+            prepareRay(event, selBox.endPoint)
+            const allSelected = selBox
+              .select()
+              .sort((o: Object3D) => o.uuid as unknown as number)
+              .filter(o => o.isMesh)
+
+            console.log(allSelected)
+
+            // if (!shallow(allSelected, previous)) {
+            // previous = allSelected
+            // dispatch({ object: props.filter(allSelected) })
+            // }
+          }
+        },
+        { passive: true, capture: true },
+      )
+      autolisten(
+        'pointerup',
+        () => {
+          if (downed()) {
+            onSelectOver()
+          }
+        },
+        { passive: true },
+      )
+    },
+  )
 
   return (
     <Entity

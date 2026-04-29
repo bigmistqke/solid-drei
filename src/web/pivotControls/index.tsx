@@ -110,7 +110,12 @@ interface PivotControlsProps extends ParentProps {
   /** CSS Classname applied to the HTML annotations */
   annotationsClass?: string
   onDragStart?: (props: OnDragStartProps) => void
-  onDrag?: (l: THREE.Matrix4, deltaL: THREE.Matrix4, w: THREE.Matrix4, deltaW: THREE.Matrix4) => void
+  onDrag?: (
+    l: THREE.Matrix4,
+    deltaL: THREE.Matrix4,
+    w: THREE.Matrix4,
+    deltaW: THREE.Matrix4,
+  ) => void
   onDragEnd?: () => void
   /** Set this to false if you want the gizmo to be visible through faces */
   depthTest?: boolean
@@ -257,22 +262,52 @@ export function PivotControls(_props: PivotControlsProps) {
           if (config.onDragEnd) config.onDragEnd()
         },
         translation,
-        get translationLimits() { return config.translationLimits },
-        get rotationLimits() { return config.rotationLimits },
-        get axisColors() { return config.axisColors },
-        get hoveredColor() { return config.hoveredColor },
-        get opacity() { return config.opacity },
-        get scale() { return config.scale },
-        get lineWidth() { return config.lineWidth },
-        get fixed() { return config.fixed },
-        get depthTest() { return config.depthTest },
-        get userData() { return config.userData },
-        get annotations() { return config.annotations },
-        get annotationsClass() { return config.annotationsClass },
+        get translationLimits() {
+          return config.translationLimits
+        },
+        get rotationLimits() {
+          return config.rotationLimits
+        },
+        get axisColors() {
+          return config.axisColors
+        },
+        get hoveredColor() {
+          return config.hoveredColor
+        },
+        get opacity() {
+          return config.opacity
+        },
+        get scale() {
+          return config.scale
+        },
+        get lineWidth() {
+          return config.lineWidth
+        },
+        get fixed() {
+          return config.fixed
+        },
+        get depthTest() {
+          return config.depthTest
+        },
+        get userData() {
+          return config.userData
+        },
+        get annotations() {
+          return config.annotations
+        },
+        get annotationsClass() {
+          return config.annotationsClass
+        },
       }}
     >
       <Entity from={Group} ref={parentRef!}>
-        <Entity from={Group} ref={ref!} matrix={config.matrix} matrixAutoUpdate={false} {...(rest as any)}>
+        <Entity
+          from={Group}
+          ref={ref!}
+          matrix={config.matrix}
+          matrixAutoUpdate={false}
+          {...(rest as any)}
+        >
           <Entity
             from={Group}
             visible={config.visible}
@@ -302,7 +337,9 @@ export function PivotControls(_props: PivotControlsProps) {
               <AxisRotator axis={0} dir1={yDir} dir2={zDir} />
             )}
           </Entity>
-          <Entity from={Group} ref={childrenRef!}>{config.children}</Entity>
+          <Entity from={Group} ref={childrenRef!}>
+            {config.children}
+          </Entity>
         </Entity>
       </Entity>
     </Context>

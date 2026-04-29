@@ -2,15 +2,9 @@ import { DiscardMaterial } from '@/materials/DiscardMaterial'
 import { shaderMaterial } from '@/materials/shaderMaterial'
 import { processProps, useRef } from '@/utils'
 import { version } from '@/utils/constants'
-import type { Ref } from 'solid-js'
-import {
-  createContext,
-  createEffect,
-  createMemo,
-  onCleanup,
-  useContext,
-} from 'solid-js'
 import { For } from '@solidjs/web'
+import type { Ref } from 'solid-js'
+import { createContext, createEffect, createMemo, onSettled, useContext } from 'solid-js'
 import { Entity, type S3, useFrame, useThree } from 'solid-three'
 import {
   Camera,
@@ -241,14 +235,14 @@ export function AccumulativeShadows(
 
   createEffect(
     () => plm(),
-    (_plm) => {
+    _plm => {
       _plm.configure(plane)
 
-      onCleanup(() => {
+      return () => {
         // Clean up render targets
         _plm.progressiveLightMap1.dispose()
         _plm.progressiveLightMap2.dispose()
-      })
+      }
     },
   )
 
@@ -263,7 +257,9 @@ export function AccumulativeShadows(
 
   // AccumulativeShadows exposes AccumulativeContext as ref, not Group
   useRef(
-    config as unknown as { ref?: AccumulativeContext | ((value: S3.Meta<AccumulativeContext>) => void) },
+    config as unknown as {
+      ref?: AccumulativeContext | ((value: S3.Meta<AccumulativeContext>) => void)
+    },
     api,
   )
 
@@ -390,11 +386,11 @@ export function RandomizedLight(
     api,
   )
 
-  createEffect(() => {
+  onSettled(() => {
     if (parent) {
       parent.lights.set(lightGroup.uuid, api)
+      return () => void parent.lights.delete(lightGroup.uuid)
     }
-    onCleanup(() => void parent.lights.delete(lightGroup.uuid))
   })
 
   return (

@@ -1,6 +1,5 @@
 import { processProps } from '@/utils'
-import { check } from '@/utils/conditionals'
-import { type Accessor, createEffect, onCleanup } from 'solid-js'
+import { createEffect, type Accessor } from 'solid-js'
 import { Entity, useThree, type S3 } from 'solid-three'
 import { Group, Mesh, Raycaster } from 'three'
 import { SAH, acceleratedRaycast, computeBoundsTree, disposeBoundsTree } from 'three-mesh-bvh'
@@ -34,17 +33,16 @@ export function useBVH(mesh: Accessor<Mesh | undefined>, options?: BVHOptions) {
   }
   createEffect(
     () => mesh(),
-    (m) => {
-      check(m, mesh => {
-        mesh.raycast = acceleratedRaycast
-        const geometry = mesh.geometry as any
-        geometry.computeBoundsTree = computeBoundsTree
-        geometry.disposeBoundsTree = disposeBoundsTree
-        geometry.computeBoundsTree(opts)
-        onCleanup(() => {
-          if (geometry.boundsTree) geometry.disposeBoundsTree()
-        })
-      })
+    m => {
+      if (!m) return
+      m.raycast = acceleratedRaycast
+      const geometry = m.geometry as any
+      geometry.computeBoundsTree = computeBoundsTree
+      geometry.disposeBoundsTree = disposeBoundsTree
+      geometry.computeBoundsTree(opts)
+      return () => {
+        if (geometry.boundsTree) geometry.disposeBoundsTree()
+      }
     },
   )
 }
@@ -61,42 +59,61 @@ export function Bvh(_props: BvhProps) {
       maxDepth: 40,
       maxLeafTris: 10,
     },
-    ['ref', 'enabled', 'firstHitOnly', 'children', 'strategy', 'verbose', 'setBoundingBox', 'maxDepth', 'maxLeafTris'],
+    [
+      'ref',
+      'enabled',
+      'firstHitOnly',
+      'children',
+      'strategy',
+      'verbose',
+      'setBoundingBox',
+      'maxDepth',
+      'maxLeafTris',
+    ],
   )
 
   const store = useThree()
   let group: Group = null!
 
-  createEffect(() => {
-    if (props.enabled) {
-      const options = {
-        strategy: props.strategy,
-        verbose: props.verbose,
-        setBoundingBox: props.setBoundingBox,
-        maxDepth: props.maxDepth,
-        maxLeafTris: props.maxLeafTris,
-      }
-      ;(store.raycaster as Raycaster & { firstHitOnly?: boolean }).firstHitOnly = props.firstHitOnly
-      group.traverse(child => {
-        if (isMesh(child) && !(child.geometry as any).boundsTree && child.raycast === Mesh.prototype.raycast) {
-          child.raycast = acceleratedRaycast
-          const geo = child.geometry as any
-          geo.computeBoundsTree = computeBoundsTree
-          geo.disposeBoundsTree = disposeBoundsTree
-          geo.computeBoundsTree(options)
-        }
-      })
-      onCleanup(() => {
-        delete (store.raycaster as any).firstHitOnly
+  createEffect(
+    () => ({
+      enabled: props.enabled,
+      strategy: props.strategy,
+      verbose: props.verbose,
+      setBoundingBox: props.setBoundingBox,
+      maxDepth: props.maxDepth,
+      maxLeafTris: props.maxLeafTris,
+      firstHitOnly: props.firstHitOnly,
+    }),
+    ({ enabled, strategy, verbose, setBoundingBox, maxDepth, maxLeafTris, firstHitOnly }) => {
+      if (enabled) {
+        const options = { strategy, verbose, setBoundingBox, maxDepth, maxLeafTris }
+        ;(store.raycaster as Raycaster & { firstHitOnly?: boolean }).firstHitOnly = firstHitOnly
         group.traverse(child => {
-          if (isMesh(child) && (child.geometry as any).boundsTree) {
-            ;(child.geometry as any).disposeBoundsTree()
-            child.raycast = Mesh.prototype.raycast
+          if (
+            isMesh(child) &&
+            !(child.geometry as any).boundsTree &&
+            child.raycast === Mesh.prototype.raycast
+          ) {
+            child.raycast = acceleratedRaycast
+            const geo = child.geometry as any
+            geo.computeBoundsTree = computeBoundsTree
+            geo.disposeBoundsTree = disposeBoundsTree
+            geo.computeBoundsTree(options)
           }
         })
-      })
-    }
-  })
+        return () => {
+          delete (store.raycaster as any).firstHitOnly
+          group.traverse(child => {
+            if (isMesh(child) && (child.geometry as any).boundsTree) {
+              ;(child.geometry as any).disposeBoundsTree()
+              child.raycast = Mesh.prototype.raycast
+            }
+          })
+        }
+      }
+    },
+  )
 
   return (
     <Entity from={Group} ref={group!} {...(rest as any)}>

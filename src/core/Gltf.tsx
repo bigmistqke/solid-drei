@@ -25,6 +25,10 @@ interface GltfProps extends Intersect<[S3.Props<Group>, UseGLTFOptions]> {
 
 export const Gltf = (props: GltfProps) => {
   const rest = omit(props, 'url', 'useDraco', 'useMeshOpt', 'extendLoader')
-  const gltf = useGLTF(() => props.url, { useDraco: props.useDraco, useMeshOpt: props.useMeshOpt, extendLoader: props.extendLoader })
+  const gltf = useGLTF(() => props.url, {
+    useDraco: props.useDraco,
+    useMeshOpt: props.useMeshOpt,
+    extendLoader: props.extendLoader,
+  })
   return <Entity from={gltf()?.scene} {...rest} />
 }

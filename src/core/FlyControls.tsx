@@ -1,5 +1,4 @@
 import { processProps, useRef } from '@/utils'
-import { whenEffect } from '@/utils/conditionals'
 import type { JSXElement, Ref } from 'solid-js'
 import { createEffect, createMemo } from 'solid-js'
 import type { S3 } from 'solid-three'
@@ -44,28 +43,28 @@ export function useFlyControls(props: FlyControlsProps) {
   // Attach event-listeners
   createEffect(
     () => config.onChange,
-    (onChange) => autolisten('change', onChange)
+    onChange => autolisten('change', onChange),
   )
 
-  whenEffect(
+  // Connect controls to DOM
+  createEffect(
+    () => [controls(), config.domElement] as const,
+    ([ctrl, elem]) => ctrl.connect(elem),
+  )
+
+  createEffect(
     () => config.enabled,
-    () => {
-      // Connect controls to DOM
-      createEffect(
-        () => [controls(), config.domElement] as const,
-        ([ctrl, elem]) => ctrl.connect(elem)
-      )
-
-      // Attach controls to props.ref
-      useRef(props, controls)
-
-      // Update controls with props
-      useProps(controls, rest)
-
-      // Update controls on each frame
-      useFrame((_, delta) => controls().update(delta))
-    },
+    (enabled) => { (controls() as ThreeFlyControls & { enabled: boolean }).enabled = enabled },
   )
+
+  // Attach controls to props.ref
+  useRef(props, controls)
+
+  // Update controls with props
+  useProps(controls, rest)
+
+  // Update controls on each frame
+  useFrame((_, delta) => controls().update(delta))
 
   return {
     get controls() {

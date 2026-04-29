@@ -1,5 +1,5 @@
 import { defaultProps } from '@/utils'
-import { Show, createEffect, createSignal, onCleanup, type JSX } from 'solid-js'
+import { Show, createEffect, createSignal, type JSX } from 'solid-js'
 import { Entity, Portal, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { Group } from 'three'
@@ -20,7 +20,14 @@ function computeContainerPosition(
   canvasSize: CanvasSize,
   trackRect: DOMRect,
 ): {
-  position: { width: number; height: number; left: number; top: number; bottom: number; right: number }
+  position: {
+    width: number
+    height: number
+    left: number
+    top: number
+    bottom: number
+    right: number
+  }
   isOffscreen: boolean
 } {
   const { right, top, left: trackLeft, bottom: trackBottom, width, height } = trackRect
@@ -57,7 +64,7 @@ function Container(props: ContainerProps) {
   let frameCount = 0
 
   useFrame(
-    (state) => {
+    state => {
       if (props.frames === Infinity || frameCount <= props.frames) {
         props.rect = props.track.getBoundingClientRect()
         frameCount++

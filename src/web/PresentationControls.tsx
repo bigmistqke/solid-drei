@@ -1,7 +1,7 @@
 import { defaultProps } from '@/utils'
-import { createEffect, createSignal, onCleanup, type JSX } from 'solid-js'
+import { createEffect, createSignal, type JSX } from 'solid-js'
 import { Entity, useThree } from 'solid-three'
-import { Group, MathUtils, Quaternion, Vector2 } from 'three'
+import { Group, MathUtils, Vector2 } from 'three'
 
 export type PresentationControlProps = {
   snap?: boolean
@@ -38,11 +38,11 @@ export function PresentationControls(_props: PresentationControlProps) {
   const rAzimuthMin = () => props.rotation[1] + props.azimuth[0]
   const rAzimuthMax = () => props.rotation[1] + props.azimuth[1]
 
-  const [rotX, setRotX] = createSignal(
-    () => MathUtils.clamp(props.rotation[0], rPolarMin(), rPolarMax()),
+  const [rotX, setRotX] = createSignal(() =>
+    MathUtils.clamp(props.rotation[0], rPolarMin(), rPolarMax()),
   )
-  const [rotY, setRotY] = createSignal(
-    () => MathUtils.clamp(props.rotation[1], rAzimuthMin(), rAzimuthMax()),
+  const [rotY, setRotY] = createSignal(() =>
+    MathUtils.clamp(props.rotation[1], rAzimuthMin(), rAzimuthMax()),
   )
   const [scale, setScale] = createSignal(1)
 
@@ -65,65 +65,66 @@ export function PresentationControls(_props: PresentationControlProps) {
       }
 
       const onPointerMove = (e: PointerEvent) => {
-      if (!isDragging || !props.enabled) return
-      const dx = e.clientX - last.x
-      const dy = e.clientY - last.y
-      last.set(e.clientX, e.clientY)
+        if (!isDragging || !props.enabled) return
+        const dx = e.clientX - last.x
+        const dy = e.clientY - last.y
+        last.set(e.clientX, e.clientY)
 
-      const { width, height } = store.bounds
-      const newY = MathUtils.clamp(
-        rotX() + (dy / height) * Math.PI * props.speed,
-        rPolarMin(),
-        rPolarMax(),
-      )
-      const newX = MathUtils.clamp(
-        rotY() + (dx / width) * Math.PI * props.speed,
-        rAzimuthMin(),
-        rAzimuthMax(),
-      )
-      setRotX(newY)
-      setRotY(newX)
+        const { width, height } = store.bounds
+        const newY = MathUtils.clamp(
+          rotX() + (dy / height) * Math.PI * props.speed,
+          rPolarMin(),
+          rPolarMax(),
+        )
+        const newX = MathUtils.clamp(
+          rotY() + (dx / width) * Math.PI * props.speed,
+          rAzimuthMin(),
+          rAzimuthMax(),
+        )
+        setRotX(newY)
+        setRotY(newX)
 
-      if (newY > (rPolarMin() + rPolarMax()) / 2) {
-        setScale(props.zoom)
-      } else {
-        setScale(1)
+        if (newY > (rPolarMin() + rPolarMax()) / 2) {
+          setScale(props.zoom)
+        } else {
+          setScale(1)
+        }
       }
-    }
 
-    const onPointerUp = () => {
-      isDragging = false
-      if (props.cursor) domEl.style.cursor = props.global ? 'grab' : 'auto'
-      if (props.snap) {
-        setRotX(MathUtils.clamp(props.rotation[0], rPolarMin(), rPolarMax()))
-        setRotY(MathUtils.clamp(props.rotation[1], rAzimuthMin(), rAzimuthMax()))
-        setScale(1)
+      const onPointerUp = () => {
+        isDragging = false
+        if (props.cursor) domEl.style.cursor = props.global ? 'grab' : 'auto'
+        if (props.snap) {
+          setRotX(MathUtils.clamp(props.rotation[0], rPolarMin(), rPolarMax()))
+          setRotY(MathUtils.clamp(props.rotation[1], rAzimuthMin(), rAzimuthMax()))
+          setScale(1)
+        }
       }
-    }
 
-    const onHoverIn = () => {
-      if (props.cursor && !props.global && props.enabled) domEl.style.cursor = 'grab'
-    }
-    const onHoverOut = () => {
-      if (props.cursor && !props.global && props.enabled) domEl.style.cursor = 'auto'
-    }
+      const onHoverIn = () => {
+        if (props.cursor && !props.global && props.enabled) domEl.style.cursor = 'grab'
+      }
+      const onHoverOut = () => {
+        if (props.cursor && !props.global && props.enabled) domEl.style.cursor = 'auto'
+      }
 
-    if (props.global) {
-      if (props.cursor) domEl.style.cursor = 'grab'
-      domEl.addEventListener('pointerdown', onPointerDown)
-      domEl.addEventListener('pointermove', onPointerMove)
-      domEl.addEventListener('pointerup', onPointerUp)
-    }
-
-    onCleanup(() => {
       if (props.global) {
-        if (props.cursor) domEl.style.cursor = 'default'
-        domEl.removeEventListener('pointerdown', onPointerDown)
-        domEl.removeEventListener('pointermove', onPointerMove)
-        domEl.removeEventListener('pointerup', onPointerUp)
+        if (props.cursor) domEl.style.cursor = 'grab'
+        domEl.addEventListener('pointerdown', onPointerDown)
+        domEl.addEventListener('pointermove', onPointerMove)
+        domEl.addEventListener('pointerup', onPointerUp)
       }
-    })
-  })
+
+      return () => {
+        if (props.global) {
+          if (props.cursor) domEl.style.cursor = 'default'
+          domEl.removeEventListener('pointerdown', onPointerDown)
+          domEl.removeEventListener('pointermove', onPointerMove)
+          domEl.removeEventListener('pointerup', onPointerUp)
+        }
+      }
+    },
+  )
 
   return (
     <Entity

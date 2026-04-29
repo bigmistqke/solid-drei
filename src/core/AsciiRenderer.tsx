@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createRenderEffect, merge, onCleanup } from 'solid-js'
+import { createEffect, createMemo, createRenderEffect, merge } from 'solid-js'
 import { useFrame, useThree } from 'solid-three'
 import { AsciiEffect } from 'three-stdlib'
 
@@ -64,10 +64,10 @@ export function AsciiRenderer(_props: AsciiRendererProps) {
     () => {
       store.gl.domElement.style.opacity = '0'
       store.gl.domElement.parentNode!.appendChild(effect().domElement)
-      onCleanup(() => {
+      return () => {
         store.gl.domElement.style.opacity = '1'
         store.gl.domElement.parentNode!.removeChild(effect().domElement)
-      })
+      }
     },
   )
 

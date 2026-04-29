@@ -1,5 +1,5 @@
 import { processProps } from '@/utils'
-import { createEffect, createMemo, onCleanup, type JSX } from 'solid-js'
+import { createEffect, createMemo, type JSX } from 'solid-js'
 import { useThree } from 'solid-three'
 import * as THREE from 'three'
 import { EXRLoader, RGBELoader } from 'three-stdlib'
@@ -112,24 +112,24 @@ export function Environment(_props: EnvironmentProps) {
 
   createEffect(
     () => [texture(), props.background, props.blur] as const,
-    () => {
-      const tex = texture()
+    ([tex, background, blur]) => {
       if (!tex) return
 
       const scene = props.scene ?? store.scene
       const prevEnv = scene.environment
       const prevBg = scene.background
 
-      if (props.background !== 'only') scene.environment = tex
-      if (props.background) scene.background = tex
-      if (props.blur !== undefined && props.blur > 0) scene.backgroundBlurriness = props.blur
+      if (background !== 'only') scene.environment = tex
+      if (background) scene.background = tex
+      if (blur !== undefined && blur > 0) scene.backgroundBlurriness = blur
 
-      onCleanup(() => {
+      return () => {
         scene.environment = prevEnv
         scene.background = prevBg
         tex.dispose()
-    })
-  })
+      }
+    },
+  )
 
   return null
 }

@@ -1,32 +1,29 @@
 import type { AccessorMaybe } from '@/utils/types'
 import { merge, type Accessor } from 'solid-js'
-import { useThree } from 'solid-three'
+import { useLoader, useThree } from 'solid-three'
 import { Texture, TextureLoader } from 'three'
-import { useLoader, type UseLoaderOptions } from './useLoader'
+
+type TextureOptions = {
+  onLoad?: (texture: Texture) => void
+}
 
 export function useTexture<T extends string | undefined>(
   input: AccessorMaybe<T>,
-  options?: UseLoaderOptions<TextureLoader, Texture>,
+  options?: TextureOptions,
 ): Accessor<Texture>
 
 export function useTexture<T extends Record<string, string | undefined>>(
   input: AccessorMaybe<T>,
-  options?: UseLoaderOptions<TextureLoader, Texture>,
+  options?: TextureOptions,
 ): Accessor<{ [TKey in keyof T]: Texture }>
 
-export function useTexture<T extends string>(
-  input: AccessorMaybe<T | undefined>,
-  options?: UseLoaderOptions<TextureLoader, Texture>,
-): any {
+export function useTexture(input: any, options?: TextureOptions): any {
   const store = useThree()
-  return useLoader(
-    TextureLoader,
-    input,
-    merge(options, {
-      onLoad(texture: Texture) {
-        store.gl.initTexture(texture)
-        options?.onLoad?.(texture)
-      },
-    }),
-  )
+  return useLoader(TextureLoader, input, {
+    onLoad(texture: any) {
+      const tex = texture as Texture
+      store.gl.initTexture(tex)
+      options?.onLoad?.(tex)
+    },
+  })
 }

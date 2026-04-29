@@ -1,6 +1,6 @@
 import { useRef } from '@/utils'
 import type { Ref } from 'solid-js'
-import { createEffect, onCleanup, omit } from 'solid-js'
+import { createEffect, omit } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { autodispose, Entity, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
@@ -29,7 +29,7 @@ export function DeviceOrientationControls(props: DeviceOrientationControlsProps)
         if (props.onChange) props.onChange(e)
       }
       controls.addEventListener?.('change', callback)
-      onCleanup(() => controls.removeEventListener?.('change', callback))
+      return () => controls.removeEventListener?.('change', callback)
     },
   )
 
@@ -40,7 +40,7 @@ export function DeviceOrientationControls(props: DeviceOrientationControlsProps)
     () => {
       const current = controls
       current.connect()
-      onCleanup(() => current.dispose())
+      return () => current.dispose()
     },
   )
 

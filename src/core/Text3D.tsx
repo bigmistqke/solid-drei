@@ -93,7 +93,7 @@ export function Text3D(props: Text3DProps) {
 
   createEffect(
     () => config.smooth,
-    (smooth) => {
+    smooth => {
       if (!smooth) return
       mesh.geometry = mergeVertices(mesh.geometry, smooth)
       mesh.geometry.computeVertexNormals()

@@ -1,6 +1,5 @@
-import { when } from '@/utils/conditionals'
 import type { Accessor } from 'solid-js'
-import { createEffect, onCleanup } from 'solid-js'
+import { createEffect } from 'solid-js'
 import { useFrame, type S3 } from 'solid-three'
 import type { Event } from 'three'
 
@@ -32,8 +31,8 @@ function connect(controls: Accessor<ControlProto>, element: Accessor<HTMLElement
     () => [controls(), element()] as const,
     ([ctrl, elem]) => {
       ctrl.connect(elem)
-      onCleanup(() => ctrl.dispose())
-    }
+      return () => ctrl.dispose()
+    },
   )
 }
 function makeCurrent(
@@ -45,13 +44,14 @@ function makeCurrent(
 }
 function update(controls: Accessor<ControlProto>) {
   createEffect(
-    when(controls, controls => {
-      if ('enabled' in controls) {
-        useFrame((_, delta) => controls.enabled && controls.update(delta))
+    () => controls(),
+    (ctrl) => {
+      if ('enabled' in ctrl) {
+        useFrame((_, delta) => ctrl.enabled && ctrl.update(delta))
       } else {
-        useFrame((_, delta) => controls.update(delta))
+        useFrame((_, delta) => ctrl.update(delta))
       }
-    }),
+    },
   )
 }
 function getDomElement(store: any, config: { domElement?: HTMLElement }) {
@@ -72,11 +72,12 @@ function addEventHandler<
   selector: (event: Event<TEventName, TControl>) => void,
 ) {
   createEffect(
-    when(controls, controls => {
+    () => controls(),
+    (ctrl) => {
       const callback = (e: Event<TEventName, TControl>) => selector(e)
-      controls.addEventListener?.(eventType, callback)
-      onCleanup(() => controls.removeEventListener?.(eventType, callback))
-    }),
+      ctrl.addEventListener?.(eventType, callback)
+      return () => ctrl.removeEventListener?.(eventType, callback)
+    },
   )
 }
 export const ControlUtils = {

@@ -16,7 +16,10 @@ const isCubeTexture = (def: THREE.CubeTexture | THREE.Texture): def is THREE.Cub
 /*                                                                                */
 /**********************************************************************************/
 
-export type MeshRefractionMaterialProps = Omit<S3.Props<typeof MeshRefractionMaterialImpl>, 'envMap' | 'color'> & {
+export type MeshRefractionMaterialProps = Omit<
+  S3.Props<typeof MeshRefractionMaterialImpl>,
+  'envMap' | 'color'
+> & {
   /** Environment map */
   envMap: THREE.CubeTexture | THREE.Texture
   /** Number of ray-cast bounces, it can be expensive to have too many, 2 */
@@ -34,11 +37,11 @@ export type MeshRefractionMaterialProps = Omit<S3.Props<typeof MeshRefractionMat
 }
 
 export function MeshRefractionMaterial(_props: MeshRefractionMaterialProps) {
-  const [props, rest] = processProps(
-    _props,
-    { aberrationStrength: 0, fastChroma: true },
-    ['aberrationStrength', 'fastChroma', 'envMap'],
-  )
+  const [props, rest] = processProps(_props, { aberrationStrength: 0, fastChroma: true }, [
+    'aberrationStrength',
+    'fastChroma',
+    'envMap',
+  ])
 
   let material: InstanceType<typeof MeshRefractionMaterialImpl> = null!
   const store = useThree()

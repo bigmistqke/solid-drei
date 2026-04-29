@@ -1,8 +1,7 @@
 import { processProps } from '@/utils'
-import { every, when } from '@/utils/conditionals'
 import type { Intersect } from '@/utils/types'
 import type { Ref } from 'solid-js'
-import { createEffect, createMemo, createRenderEffect, onCleanup } from 'solid-js'
+import { createEffect, createMemo, createRenderEffect, onSettled } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { autodispose, Entity, useThree } from 'solid-three'
 import type { ColorRepresentation } from 'three'
@@ -78,18 +77,13 @@ export function Line(props: LineProps) {
   })
 
   createEffect(
-    () => every(line2, config.points)(),
-    (lineData) => {
-      if (lineData) {
-        const [line] = lineData
-        line.computeLineDistances()
-      }
-    },
+    () => [line2(), lineGeometry()] as const,
+    ([line]) => { line.computeLineDistances() },
   )
 
   createRenderEffect(
     () => config.dashed,
-    (dashed) => {
+    dashed => {
       if (dashed) {
         lineMaterial.defines.USE_DASH = ''
       } else {
@@ -100,7 +94,7 @@ export function Line(props: LineProps) {
     },
   )
 
-  onCleanup(() => {
+  onSettled(() => () => {
     lineGeometry().geometry.dispose()
     lineMaterial.dispose()
   })

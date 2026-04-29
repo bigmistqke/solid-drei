@@ -1,5 +1,4 @@
-import { when } from '@/utils/conditionals'
-import { createEffect, createSignal, onCleanup } from 'solid-js'
+import { createEffect, createSignal } from 'solid-js'
 import { useFrame } from 'solid-three'
 import { Object3D } from 'three'
 
@@ -10,18 +9,27 @@ export function useIntersect<T extends Object3D>(onChange: (visible: boolean) =>
 
   createEffect(
     () => ref(),
-    (r) => {
-      when(r, ref => {
-        useFrame(() => { check = false }, { priority: -Infinity })
-        const oldOnRender = ref.onBeforeRender
-        ref.onBeforeRender = () => (check = true)
-        useFrame(() => {
+    r => {
+      if (!r) return
+      const unsubFirst = useFrame(
+        () => {
+          check = false
+        },
+        { priority: -Infinity },
+      )
+      const oldOnRender = r.onBeforeRender
+      r.onBeforeRender = () => (check = true)
+      const unsubLast = useFrame(
+        () => {
           if (check !== temp) onChange((temp = check))
-        }, { priority: Infinity, stage: 'after' })
-        onCleanup(() => {
-          ref.onBeforeRender = oldOnRender
-        })
-      })
+        },
+        { priority: Infinity, stage: 'after' },
+      )
+      return () => {
+        r.onBeforeRender = oldOnRender
+        unsubFirst()
+        unsubLast()
+      }
     },
   )
 

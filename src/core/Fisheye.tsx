@@ -6,15 +6,10 @@
  * Based on drei's Fisheye implementation.
  */
 import { defaultProps } from '@/utils'
-import { onCleanup } from 'solid-js'
+import { onSettled } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { Entity, useFrame, useThree } from 'solid-three'
-import {
-  CubeCamera,
-  HalfFloatType,
-  ShaderMaterial,
-  WebGLCubeRenderTarget,
-} from 'three'
+import { CubeCamera, HalfFloatType, ShaderMaterial, WebGLCubeRenderTarget } from 'three'
 import { ScreenQuad } from './ScreenQuad'
 
 /**********************************************************************************/
@@ -83,7 +78,7 @@ export function Fisheye(_props: FisheyeProps) {
   // Create the cube render target
   const fbo = new WebGLCubeRenderTarget(props.resolution)
   fbo.texture.type = HalfFloatType
-  onCleanup(() => fbo.dispose())
+  onSettled(() => () => fbo.dispose())
 
   // Create the cube camera
   const cubeCamera = new CubeCamera(0.1, 1000, fbo)
@@ -100,7 +95,7 @@ export function Fisheye(_props: FisheyeProps) {
     depthTest: false,
     depthWrite: false,
   })
-  onCleanup(() => material.dispose())
+  onSettled(() => () => material.dispose())
 
   // Render the cube camera every frame, then update uniforms
   useFrame(() => {

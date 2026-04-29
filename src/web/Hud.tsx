@@ -1,5 +1,5 @@
 import type { ParentProps } from 'solid-js'
-import { createSignal, onCleanup } from 'solid-js'
+import { createSignal, onSettled } from 'solid-js'
 import { Portal, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
 
@@ -22,9 +22,7 @@ export function Hud(props: HudProps) {
     { priority: props.renderPriority ?? 1 },
   )
 
-  onCleanup(() => {
-    scene().clear()
-  })
+  onSettled(() => () => scene().clear())
 
   return <Portal element={scene()}>{props.children}</Portal>
 }

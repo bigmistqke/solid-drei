@@ -104,7 +104,7 @@ export const AxisRotator: Component<{
       divRef.style.display = 'block'
     }
     e.stopPropagation()
-    const clickPoint = e.point.clone()
+    const clickPoint = e.intersection.point.clone()
     const origin = new THREE.Vector3().setFromMatrixPosition(objRef.matrixWorld)
     const e1 = new THREE.Vector3().setFromMatrixColumn(objRef.matrixWorld, 0).normalize()
     const e2 = new THREE.Vector3().setFromMatrixColumn(objRef.matrixWorld, 1).normalize()
@@ -124,7 +124,7 @@ export const AxisRotator: Component<{
       const { clickPoint, origin, e1, e2, normal, plane } = clickInfo
       const [min, max] = rotationLimits?.[props.axis] || [undefined, undefined]
 
-      ray.copy(e.ray)
+      ray.copy(store.raycaster.ray)
       ray.intersectPlane(plane, intersection)
       ray.direction.negate()
       ray.intersectPlane(plane, intersection)
@@ -182,7 +182,7 @@ export const AxisRotator: Component<{
     return new THREE.Matrix4().makeBasis(dir1N, dir2N, dir1N.clone().cross(dir2N))
   })
 
-  const r = () => fixed ? 0.65 : scale * 0.65
+  const r = () => (fixed ? 0.65 : scale * 0.65)
 
   const arc = createMemo(() => {
     const segments = 32
@@ -201,7 +201,7 @@ export const AxisRotator: Component<{
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
-      onPointerOut={onPointerOut}
+      onPointerLeave={onPointerOut}
       matrix={matrixL()}
       matrixAutoUpdate={false}
     >

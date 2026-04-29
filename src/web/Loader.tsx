@@ -1,5 +1,5 @@
 import { defaultProps } from '@/utils'
-import { Show, createEffect, createSignal, onCleanup } from 'solid-js'
+import { Show, createEffect, createSignal } from 'solid-js'
 import { useProgress } from '../core/useProgress'
 
 interface LoaderOptions {
@@ -27,10 +27,10 @@ export function Loader(_props: Partial<LoaderOptions>) {
 
   createEffect(
     () => [progress.active, shown()] as const,
-    () => {
-      let t: ReturnType<typeof setTimeout>
-      if (progress.active !== shown()) t = setTimeout(() => setShown(progress.active), 300)
-      onCleanup(() => clearTimeout(t))
+    ([active, shown]) => {
+      if (active === shown) return
+      const t = setTimeout(() => setShown(active), 300)
+      return () => clearTimeout(t)
     },
   )
 
@@ -47,7 +47,7 @@ export function Loader(_props: Partial<LoaderOptions>) {
     () => progress.progress,
     () => {
       updateProgress()
-      onCleanup(() => cancelAnimationFrame(rafRef))
+      return () => cancelAnimationFrame(rafRef)
     },
   )
 

@@ -1,6 +1,5 @@
 import { useRef } from '@/utils'
-import { whenComputed } from '@/utils/conditionals'
-import { createSignal, type JSX, type Ref } from 'solid-js'
+import { createEffect, createSignal, type JSX, type Ref } from 'solid-js'
 import { Suspense } from '@solidjs/web'
 import { Entity, Portal } from 'solid-three'
 import type { Curve, Vector3 } from 'three'
@@ -31,9 +30,9 @@ export const CurveModifier = (props: CurveModifierProps) => {
           if (children[0] instanceof Mesh) {
             const modifier = new Flow(children[0])
             setModifier(modifier)
-            whenComputed(
+            createEffect(
               () => props.curve,
-              curve => modifier.updateCurve(0, curve),
+              (curve) => { if (curve) modifier.updateCurve(0, curve) },
             )
           }
         }}

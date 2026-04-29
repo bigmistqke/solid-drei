@@ -95,7 +95,9 @@ export function useBoxProjectedEnv(
   }))
   createRenderEffect(
     () => resolve(position) && resolve(size),
-    (value) => { if (value) ref.needsUpdate = true },
+    value => {
+      if (value) ref.needsUpdate = true
+    },
   )
   return spread
 }

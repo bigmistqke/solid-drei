@@ -20,7 +20,8 @@ export interface ArcballControlsProps extends S3.Props<ThreeArcballControls> {
 }
 
 export function ArcballControls(props: ArcballControlsProps) {
-  const rest = omit(props,
+  const rest = omit(
+    props,
     'ref',
     'camera',
     'makeCurrent',

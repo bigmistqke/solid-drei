@@ -59,7 +59,7 @@ export function useFBO(
     ([w, h]) => {
       target.setSize(w, h)
       if (samples) target.samples = samples
-    }
+    },
   )
 
   return target

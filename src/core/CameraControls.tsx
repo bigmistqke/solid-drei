@@ -61,27 +61,27 @@ export function CameraControls(props: CameraControlsProps) {
 
   createEffect(
     () => props.onChange,
-    (onChange) => {
+    onChange => {
       if (!onChange) return
       ControlUtils.addEventHandler(controls, 'control', onChange)
       ControlUtils.addEventHandler(controls, 'update', onChange)
       ControlUtils.addEventHandler(controls, 'transitionstart', onChange)
       ControlUtils.addEventHandler(controls, 'wake', onChange)
-    }
+    },
   )
   createEffect(
     () => props.onStart,
-    (onStart) => {
+    onStart => {
       if (!onStart) return
       ControlUtils.addEventHandler(controls, 'controlstart', onStart)
-    }
+    },
   )
   createEffect(
     () => props.onEnd,
-    (onEnd) => {
+    onEnd => {
       if (!onEnd) return
       ControlUtils.addEventHandler(controls, 'controlend', onEnd)
-    }
+    },
   )
 
   useRef(props, controls)

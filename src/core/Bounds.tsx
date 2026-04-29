@@ -1,5 +1,10 @@
 import { defaultProps } from '@/utils'
-import { createContext, createRenderEffect, onCleanup, type ParentProps, useContext } from 'solid-js'
+import {
+  createContext,
+  createRenderEffect,
+  type ParentProps,
+  useContext,
+} from 'solid-js'
 import { Entity, useFrame, useThree, type S3 } from 'solid-three'
 import { Group, type Camera, type OrthographicCamera, type Vector3 } from 'three'
 import * as THREE from 'three'
@@ -135,7 +140,13 @@ export function Bounds(_props: BoundsProps) {
       store.requestRender()
       return this
     },
-    to({ position, target }: { position: [number, number, number]; target?: [number, number, number] }) {
+    to({
+      position,
+      target,
+    }: {
+      position: [number, number, number]
+      target?: [number, number, number]
+    }) {
       current.camera.copy(store.camera.position)
       const { center } = getSize()
       goal.camera.set(...position)
@@ -161,7 +172,8 @@ export function Bounds(_props: BoundsProps) {
       goal.focus.copy(center)
       if (isOrthographic(store.camera)) {
         current.zoom = store.camera.zoom
-        let maxHeight = 0, maxWidth = 0
+        let maxHeight = 0,
+          maxWidth = 0
         const vertices = [
           new THREE.Vector3(box.min.x, box.min.y, box.min.z),
           new THREE.Vector3(box.min.x, box.max.y, box.min.z),
@@ -206,12 +218,11 @@ export function Bounds(_props: BoundsProps) {
 
   createRenderEffect(
     () => controls(),
-    (c) => {
-      if (c) {
-        const stop = () => (current.animating = false)
-        c.addEventListener('start', stop)
-        onCleanup(() => c.removeEventListener('start', stop))
-      }
+    c => {
+      if (!c) return
+      const stop = () => (current.animating = false)
+      c.addEventListener('start', stop)
+      return () => c.removeEventListener('start', stop)
     },
   )
 

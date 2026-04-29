@@ -1,9 +1,7 @@
-/* eslint react-hooks/exhaustive-deps: 1 */
 import type { FaceLandmarkerOptions } from '@mediapipe/tasks-vision'
 import { FaceLandmarker as FaceLandmarkerImpl, FilesetResolver } from '@mediapipe/tasks-vision'
-
 import type { Accessor } from 'solid-js'
-import { createContext, createEffect, createMemo, onCleanup, useContext, type JSX } from 'solid-js'
+import { createContext, createEffect, createMemo, useContext, type JSX } from 'solid-js'
 
 const FaceLandmarkerContext = createContext((() => {}) as Accessor<FaceLandmarkerImpl | undefined>)
 
@@ -33,19 +31,19 @@ export function FaceLandmarker({
   children,
 }: FaceLandmarkerProps) {
   const faceLandmarker = createMemo(async () => {
-    return await FilesetResolver.forVisionTasks(basePath).then((vision) =>
-      FaceLandmarkerImpl.createFromOptions(vision, options)
+    return await FilesetResolver.forVisionTasks(basePath).then(vision =>
+      FaceLandmarkerImpl.createFromOptions(vision, options),
     )
   })
 
   createEffect(
     () => faceLandmarker(),
     () => {
-      onCleanup(() => {
+      return () => {
         faceLandmarker()?.close()
         // s3f:  suspend-react caches and can clear the cache, should we clear the cache too?
         // clear([basePath, opts])
-      })
+      }
     },
   )
 

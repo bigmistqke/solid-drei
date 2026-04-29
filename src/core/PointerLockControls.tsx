@@ -1,6 +1,5 @@
 import { processProps } from '@/utils'
-import { every, whenEffect } from '@/utils/conditionals'
-import { createEffect, createSignal, onCleanup, type JSXElement } from 'solid-js'
+import { createEffect, createSignal, type JSXElement } from 'solid-js'
 import { autodispose, CenterRaycaster, useProps, useThree, type S3 } from 'solid-three'
 import * as THREE from 'three'
 // import type { EventDispatcher } from 'node_modules/three-stdlib/controls/EventDispatcher'
@@ -79,44 +78,46 @@ export function usePointerLockControls(options: PointerLockControlsProps) {
   autolisten('lock', event => (setLocked(true), config.onLock?.(event)))
   autolisten('unlock', event => (setLocked(false), config.onUnlock?.(event)))
 
-  whenEffect(
+  createEffect(
     () => config.enabled,
-    () => {
+    (enabled) => {
+      if (!enabled) return
+
       // If useCenterRaycaster isn't disabled
       // we push a CenterRaycaster to the raycaster-stack
-      whenEffect(
-        every(locked, () => config.useCenterRaycaster),
-        () => {
-          const cleanup = store.setRaycaster(new CenterRaycaster())
-          onCleanup(cleanup)
+      createEffect(
+        () => locked() && config.useCenterRaycaster,
+        (should) => {
+          if (!should) return
+          return store.setRaycaster(new CenterRaycaster())
         },
       )
 
       // Connect controls to domElement (defaults to store.canvas)
       createEffect(
         () => [controls, config.domElement] as const,
-        ([ctrl, elem]) => ctrl.connect(elem)
+        ([ctrl, elem]) => ctrl.connect(elem),
       )
 
       // Attach event listener
       createEffect(
         () => config.onChange,
-        (onChange) => autolisten('change', onChange)
+        onChange => autolisten('change', onChange),
       )
 
       // Bind lock to either the domElement (defaults to store.canvas)
       // or elements selected by given selector
       createEffect(
-        () => [config.selector, config.domElement, controls] as const,
-        ([selector, domElement, ctrl]) => {
+        () => [config.selector, config.domElement] as const,
+        ([selector, domElement]) => {
           if (selector) {
-            document.querySelectorAll(selector).forEach((element) => {
-              useAutolisten(element)('click', ctrl.lock.bind(ctrl))
+            document.querySelectorAll(selector).forEach(element => {
+              useAutolisten(element)('click', controls.lock.bind(controls))
             })
           } else {
-            useAutolisten(domElement)('click', ctrl.lock.bind(ctrl))
+            useAutolisten(domElement)('click', controls.lock.bind(controls))
           }
-        }
+        },
       )
     },
   )

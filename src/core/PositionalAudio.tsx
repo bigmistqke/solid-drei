@@ -1,6 +1,5 @@
 import { processProps } from '@/utils'
-import { when } from '@/utils/conditionals'
-import { type Ref, createEffect, createMemo, onCleanup } from 'solid-js'
+import { type Ref, createEffect, createMemo, onSettled } from 'solid-js'
 import { Entity, type S3, useThree } from 'solid-three'
 import { AudioListener, AudioLoader, PositionalAudio as PositionalAudioImpl } from 'three'
 
@@ -27,25 +26,29 @@ export function PositionalAudio(props: PositionalAudioProps) {
   const store = useThree()
   const buffer = createMemo(async () => {
     const url = config.url
-    return new Promise<AudioBuffer>((resolve, reject) => new AudioLoader().load(url, resolve, reject))
+    return new Promise<AudioBuffer>((resolve, reject) =>
+      new AudioLoader().load(url, resolve, reject),
+    )
   })
 
   createEffect(
-    when(buffer, buffer => {
+    () => ({ buffer: buffer(), distance: config.distance, loop: config.loop, autoplay: config.autoplay }),
+    ({ buffer, distance, loop, autoplay }) => {
+      if (!buffer) return
       positionalAudio.setBuffer(buffer)
-      positionalAudio.setRefDistance(config.distance)
-      positionalAudio.setLoop(config.loop)
-      if (config.autoplay && !positionalAudio.isPlaying) {
+      positionalAudio.setRefDistance(distance)
+      positionalAudio.setLoop(loop)
+      if (autoplay && !positionalAudio.isPlaying) {
         positionalAudio.play()
       }
-    }),
+    },
   )
 
-  createEffect(() => {
+  onSettled(() => {
     store.camera.add(listener)
   })
 
-  onCleanup(() => {
+  onSettled(() => () => {
     store.camera.remove(listener)
     if (positionalAudio.isPlaying) positionalAudio.stop()
     if (positionalAudio.source && (positionalAudio.source as any)._connected)

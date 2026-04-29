@@ -155,17 +155,17 @@ export function usePerformanceMonitor({
   const ref = { onIncline, onDecline, onChange, onFallback }
   createRenderEffect(
     () => ({ onIncline, onDecline, onChange, onFallback }),
-    (callbacks) => {
+    callbacks => {
       ref.onIncline = callbacks.onIncline
       ref.onDecline = callbacks.onDecline
       ref.onChange = callbacks.onChange
       ref.onFallback = callbacks.onFallback
-    }
+    },
   )
   createRenderEffect(
     () => api,
-    (a) => {
+    a => {
       a?.subscribe(ref)
-    }
+    },
   )
 }

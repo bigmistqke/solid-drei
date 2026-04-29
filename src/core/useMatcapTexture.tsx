@@ -27,9 +27,7 @@ export function useMatcapTexture(
   format: number | Accessor<number> = 1024,
   onLoad?: (texture: Texture) => void,
 ) {
-  const matcapList = createMemo(async () =>
-    fetch(LIST_URL).then(res => res.json()),
-  )
+  const matcapList = createMemo(async () => fetch(LIST_URL).then(res => res.json()))
 
   const numTot = () => {
     const list = matcapList()

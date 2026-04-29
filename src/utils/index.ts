@@ -118,7 +118,7 @@ export function useRef<T>(
 ) {
   createRenderEffect(
     () => resolve(value),
-    (result) => {
+    result => {
       if (typeof props.ref === 'function') {
         ;(props.ref as (value: S3.Meta<T>) => void)(result as S3.Meta<T>)
       } else {
@@ -148,7 +148,7 @@ import { createMemo, createSignal } from 'solid-js'
  * // Now getValue() will return the value of props.value, and setValue can be used to update it.
  */
 export function createWritable<T>(fn: () => T, options?: SignalOptions<T>) {
-  const signal = createMemo(() => createSignal(fn(), options))
+  const signal = createMemo(() => createSignal(fn() as Exclude<T, Function>, options))
   const get = () => signal()[0]()
   const set = (v: any) => signal()[1](v)
   return [get, set] as ReturnType<typeof createSignal<T>>

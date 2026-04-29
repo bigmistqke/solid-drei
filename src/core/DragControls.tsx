@@ -1,12 +1,5 @@
 import { useRef } from '@/utils'
-import {
-  children,
-  createEffect,
-  createMemo,
-  onCleanup,
-  type JSX,
-  type Ref,
-} from 'solid-js'
+import { children, createEffect, createMemo, type JSX, type Ref } from 'solid-js'
 import { autodispose, useThree } from 'solid-three'
 import { Object3D } from 'three'
 import { DragControls as DragControlsImpl, type DragControlsEventMap } from 'three-stdlib'
@@ -40,15 +33,15 @@ export function DragControls(props: DragControlsProps) {
   const objects = createMemo<Object3D[]>(() => {
     if (props.objects) return props.objects
 
-    return (resolved.toArray() as unknown[]).filter((item): item is Object3D => item instanceof Object3D)
+    return (resolved.toArray() as unknown[]).filter(
+      (item): item is Object3D => item instanceof Object3D,
+    )
   })
 
   const domElement = () => props.domElement ?? store.gl.domElement
 
   const controls = createMemo(() => {
-    const ctrl = autodispose(
-      new DragControlsImpl(objects(), store.camera, domElement()),
-    )
+    const ctrl = autodispose(new DragControlsImpl(objects(), store.camera, domElement()))
     return ctrl
   })
 
@@ -60,7 +53,7 @@ export function DragControls(props: DragControlsProps) {
       const current = ctrl.getObjects()
       current.length = 0
       current.push(...objs)
-    }
+    },
   )
 
   // Toggle enabled
@@ -68,7 +61,7 @@ export function DragControls(props: DragControlsProps) {
     () => [controls(), props.enabled] as const,
     ([ctrl, enabled]) => {
       ctrl.enabled = enabled !== false
-    }
+    },
   )
 
   // Event listeners
@@ -78,8 +71,8 @@ export function DragControls(props: DragControlsProps) {
       if (!onDragStart) return
       const cb = (e: DragControlsEventMap['dragstart']) => onDragStart!(e)
       ctrl.addEventListener('dragstart', cb)
-      onCleanup(() => ctrl.removeEventListener('dragstart', cb))
-    }
+      return () => ctrl.removeEventListener('dragstart', cb)
+    },
   )
 
   createEffect(
@@ -88,8 +81,8 @@ export function DragControls(props: DragControlsProps) {
       if (!onDrag) return
       const cb = (e: DragControlsEventMap['drag']) => onDrag!(e)
       ctrl.addEventListener('drag', cb)
-      onCleanup(() => ctrl.removeEventListener('drag', cb))
-    }
+      return () => ctrl.removeEventListener('drag', cb)
+    },
   )
 
   createEffect(
@@ -98,8 +91,8 @@ export function DragControls(props: DragControlsProps) {
       if (!onDragEnd) return
       const cb = (e: DragControlsEventMap['dragend']) => onDragEnd!(e)
       ctrl.addEventListener('dragend', cb)
-      onCleanup(() => ctrl.removeEventListener('dragend', cb))
-    }
+      return () => ctrl.removeEventListener('dragend', cb)
+    },
   )
 
   createEffect(
@@ -108,8 +101,8 @@ export function DragControls(props: DragControlsProps) {
       if (!onHoverOn) return
       const cb = (e: DragControlsEventMap['hoveron']) => onHoverOn!(e)
       ctrl.addEventListener('hoveron', cb)
-      onCleanup(() => ctrl.removeEventListener('hoveron', cb))
-    }
+      return () => ctrl.removeEventListener('hoveron', cb)
+    },
   )
 
   createEffect(
@@ -118,8 +111,8 @@ export function DragControls(props: DragControlsProps) {
       if (!onHoverOff) return
       const cb = (e: DragControlsEventMap['hoveroff']) => onHoverOff!(e)
       ctrl.addEventListener('hoveroff', cb)
-      onCleanup(() => ctrl.removeEventListener('hoveroff', cb))
-    }
+      return () => ctrl.removeEventListener('hoveroff', cb)
+    },
   )
 
   useRef(props, controls)

@@ -1,5 +1,5 @@
 import { processProps, useRef } from '@/utils'
-import { type Accessor, type JSX, Show, createEffect, onCleanup } from 'solid-js'
+import { type Accessor, type JSX, Show, createEffect } from 'solid-js'
 import { Entity, type S3 } from 'solid-three'
 import * as THREE from 'three'
 import { AxesHelper, BoxGeometry, Euler, Mesh, MeshNormalMaterial, Object3D, Vector3 } from 'three'
@@ -21,31 +21,42 @@ function isArray(vec: any): vec is number[] {
   return Array.isArray(vec)
 }
 
-function vecToArray(vec: number[] | S3.Vector3 | S3.Euler | number = [0, 0, 0]): [number, number, number] {
+function vecToArray(
+  vec: number[] | S3.Vector3 | S3.Euler | number = [0, 0, 0],
+): [number, number, number] {
   if (isArray(vec)) return vec as [number, number, number]
-  if (typeof vec === 'object' && 'x' in vec) return [vec.x as number, vec.y as number, vec.z as number]
+  if (typeof vec === 'object' && 'x' in vec)
+    return [vec.x as number, vec.y as number, vec.z as number]
   if (typeof vec === 'number') return [vec, vec, vec]
   return [0, 0, 0]
 }
 
 export function Decal(_props: DecalProps) {
-  const [props, rest] = processProps(
-    _props,
-    { depthTest: false, polygonOffsetFactor: -1 },
-    ['ref', 'debug', 'depthTest', 'polygonOffsetFactor', 'map', 'mesh', 'children', 'position', 'rotation', 'scale'],
-  )
+  const [props, rest] = processProps(_props, { depthTest: false, polygonOffsetFactor: -1 }, [
+    'ref',
+    'debug',
+    'depthTest',
+    'polygonOffsetFactor',
+    'map',
+    'mesh',
+    'children',
+    'position',
+    'rotation',
+    'scale',
+  ])
 
   let ref: Mesh = null!
   let helper: Mesh = null!
   useRef(_props, () => ref)
 
   createEffect(
-    () => [
-      props.mesh,
-      ...vecToArray(props.position),
-      ...vecToArray(props.scale),
-      ...vecToArray(props.rotation as any),
-    ] as const,
+    () =>
+      [
+        props.mesh,
+        ...vecToArray(props.position),
+        ...vecToArray(props.scale),
+        ...vecToArray(props.rotation as any),
+      ] as const,
     () => {
       const parent = props.mesh?.() || (ref?.parent instanceof Mesh ? ref.parent : null)
       if (!(parent instanceof Mesh)) {
@@ -84,7 +95,7 @@ export function Decal(_props: DecalProps) {
         }
         parent.matrixWorld = matrixWorld
       }
-      onCleanup(() => ref.geometry.dispose())
+      return () => ref.geometry.dispose()
     },
   )
 

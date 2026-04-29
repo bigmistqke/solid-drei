@@ -1,5 +1,5 @@
 import { processProps } from '@/utils'
-import { createEffect, onCleanup } from 'solid-js'
+import { createEffect } from 'solid-js'
 import { Entity, getMeta } from 'solid-three'
 import * as THREE from 'three'
 
@@ -47,21 +47,14 @@ export function ShadowAlpha(_props: ShadowAlphaProps) {
       })
       mesh.customDepthMaterial = depthMaterial
 
-      onCleanup(() => {
+      return () => {
         mesh.visible = previousVisible
         mesh.castShadow = previousCastShadow
         mesh.customDepthMaterial = previousCustomDepthMaterial
         depthMaterial.dispose()
-      })
+      }
     },
   )
 
-  return (
-    <Entity
-      from={THREE.MeshBasicMaterial}
-      ref={ref!}
-      colorWrite={false}
-      attach="material"
-    />
-  )
+  return <Entity from={THREE.MeshBasicMaterial} ref={ref!} colorWrite={false} attach="material" />
 }

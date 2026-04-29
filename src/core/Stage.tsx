@@ -2,16 +2,21 @@ import { processProps } from '@/utils'
 import { Show, createEffect, createSignal, type ParentProps } from 'solid-js'
 import { Entity, type S3 } from 'solid-three'
 import { AmbientLight, Group, PointLight, SpotLight } from 'three'
-import { AccumulativeShadows, RandomizedLight, type AccumulativeShadowsProps, type RandomizedLightProps } from './AccumulativeShadows'
+import {
+  AccumulativeShadows,
+  RandomizedLight,
+  type AccumulativeShadowsProps,
+  type RandomizedLightProps,
+} from './AccumulativeShadows'
 import { Bounds, useBounds } from './Bounds'
 import { Center, type CenterProps } from './Center'
 import { ContactShadows, type ContactShadowsProps } from './ContactShadows'
 
 const presets = {
   rembrandt: { main: [1, 2, 1], fill: [-2, -0.5, -2] },
-  portrait:  { main: [-1, 2, 0.5], fill: [-1, 0.5, -1.5] },
-  upfront:   { main: [0, 2, 1], fill: [-1, 0.5, -1.5] },
-  soft:      { main: [-2, 4, 4], fill: [-1, 0.5, -1.5] },
+  portrait: { main: [-1, 2, 0.5], fill: [-1, 0.5, -1.5] },
+  upfront: { main: [0, 2, 1], fill: [-1, 0.5, -1.5] },
+  soft: { main: [-2, 4, 4], fill: [-1, 0.5, -1.5] },
 } as const
 
 type StageShadows = Partial<AccumulativeShadowsProps> &
@@ -52,18 +57,21 @@ export function Stage(_props: StageProps) {
       adjustCamera: true as boolean | number,
       intensity: 0.5,
       shadows: 'contact' as boolean | 'contact' | 'accumulative' | StageShadows,
-      preset: 'rembrandt' as keyof typeof presets | { main: [number, number, number]; fill: [number, number, number] },
+      preset: 'rembrandt' as
+        | keyof typeof presets
+        | { main: [number, number, number]; fill: [number, number, number] },
     },
     ['children', 'center', 'adjustCamera', 'intensity', 'shadows', 'preset'],
   )
 
-  const config = () => (typeof props.preset === 'string' ? presets[props.preset as keyof typeof presets] : props.preset!)
+  const config = () =>
+    typeof props.preset === 'string' ? presets[props.preset as keyof typeof presets] : props.preset!
   const [dimensions, setDimensions] = createSignal({ radius: 0, width: 0, height: 0, depth: 0 })
 
-  const shadowBias    = () => (props.shadows as StageShadows)?.bias ?? -0.0001
-  const normalBias    = () => (props.shadows as StageShadows)?.normalBias ?? 0
-  const shadowSize    = () => (props.shadows as StageShadows)?.size ?? 1024
-  const shadowOffset  = () => (props.shadows as StageShadows)?.offset ?? 0
+  const shadowBias = () => (props.shadows as StageShadows)?.bias ?? -0.0001
+  const normalBias = () => (props.shadows as StageShadows)?.normalBias ?? 0
+  const shadowSize = () => (props.shadows as StageShadows)?.size ?? 1024
+  const shadowOffset = () => (props.shadows as StageShadows)?.offset ?? 0
   const contactShadow = () =>
     props.shadows === 'contact' || (props.shadows as StageShadows)?.type === 'contact'
   const accumulativeShadow = () =>

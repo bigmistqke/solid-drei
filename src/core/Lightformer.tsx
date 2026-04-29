@@ -2,14 +2,7 @@ import { processProps, useRef } from '@/utils'
 import { createRenderEffect } from 'solid-js'
 import { Entity, type S3 } from 'solid-three'
 import * as THREE from 'three'
-import {
-  DoubleSide,
-  Mesh,
-  MeshBasicMaterial,
-  PlaneGeometry,
-  RingGeometry,
-  Vector3,
-} from 'three'
+import { DoubleSide, Mesh, MeshBasicMaterial, PlaneGeometry, RingGeometry, Vector3 } from 'three'
 
 export type LightProps = Omit<S3.Props<typeof Mesh>, 'scale'> & {
   args?: any[]
@@ -33,14 +26,26 @@ export function Lightformer(_props: LightProps) {
       intensity: 1,
       scale: 1 as number | [number, number, number] | [number, number],
     },
-    ['ref', 'args', 'map', 'toneMapped', 'color', 'form', 'intensity', 'scale', 'target', 'children'],
+    [
+      'ref',
+      'args',
+      'map',
+      'toneMapped',
+      'color',
+      'form',
+      'intensity',
+      'scale',
+      'target',
+      'children',
+    ],
   )
 
   let mesh: Mesh = null!
   useRef(_props, () => mesh)
 
   createRenderEffect(
-    () => [props.color, props.intensity, props.target, props.children, (rest as any).material] as const,
+    () =>
+      [props.color, props.intensity, props.target, props.children, (rest as any).material] as const,
     () => {
       if (!mesh) return
       if (!props.children && !(rest as any).material) {
@@ -52,7 +57,9 @@ export function Lightformer(_props: LightProps) {
       }
       if (props.target) {
         mesh.lookAt(
-          Array.isArray(props.target) ? new Vector3(...(props.target as [number,number,number])) : props.target as Vector3,
+          Array.isArray(props.target)
+            ? new Vector3(...(props.target as [number, number, number]))
+            : (props.target as Vector3),
         )
       }
     },
@@ -74,18 +81,16 @@ export function Lightformer(_props: LightProps) {
       ) : (
         <Entity from={PlaneGeometry} />
       )}
-      {props.children
-        ? props.children
-        : !(rest as any).material
-        ? (
-          <Entity
-            from={MeshBasicMaterial}
-            toneMapped={props.toneMapped}
-            map={props.map}
-            side={DoubleSide}
-          />
-        )
-        : null}
+      {props.children ? (
+        props.children
+      ) : !(rest as any).material ? (
+        <Entity
+          from={MeshBasicMaterial}
+          toneMapped={props.toneMapped}
+          map={props.map}
+          side={DoubleSide}
+        />
+      ) : null}
     </Entity>
   )
 }

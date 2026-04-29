@@ -4,6 +4,7 @@ import {
   createContext,
   createEffect,
   createSignal,
+  onSettled,
   Show,
   omit,
   useContext,
@@ -147,7 +148,7 @@ function PointsInstances(props: PointsInstancesProps) {
 
   createEffect(
     () => parent.geometry.attributes.position,
-    (attr) => {
+    attr => {
       if (!attr) return
       attr.needsUpdate = true
     },
@@ -248,9 +249,7 @@ export function Point(props: S3.Props<PositionPoint>) {
   const positionPoint = new PositionPoint()
   const pointContext = usePointContext()
 
-  createEffect(() => {
-    pointContext.subscribe(positionPoint)
-  })
+  onSettled(() => pointContext.subscribe(positionPoint))
 
   useRef(props, positionPoint)
 

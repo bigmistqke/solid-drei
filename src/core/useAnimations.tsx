@@ -1,11 +1,5 @@
 import { resolve } from '@/utils'
-import {
-  type Accessor,
-  createEffect,
-  createMemo,
-  createRenderEffect,
-  onCleanup,
-} from 'solid-js'
+import { type Accessor, createEffect, createMemo, createRenderEffect, onSettled } from 'solid-js'
 import { useFrame } from 'solid-three'
 import { AnimationAction, AnimationClip, AnimationMixer, Object3D } from 'three'
 
@@ -50,29 +44,29 @@ export function useAnimations<T extends AnimationClip>(
 
   createRenderEffect(
     () => resolveRoot(),
-    (root) => {
+    root => {
       // @ts-expect-error
       mixer._root = root
-    }
+    },
   )
 
   createEffect(
     () => clips(),
-    (clipsValue) => {
+    clipsValue => {
       const currentRoot = resolveRoot()
       const currentActions = actions()
-      onCleanup(() => {
+      return () => {
         // Clean up only when clips change, wipe out lazy actions and uncache clips
         lazyActions = {}
         if (!currentRoot) return
         Object.values(currentActions).forEach(action => {
           mixer.uncacheAction(action as AnimationClip, currentRoot)
         })
-      })
+      }
     },
   )
 
-  onCleanup(() => mixer.stopAllAction())
+  onSettled(() => () => mixer.stopAllAction())
 
   return {
     get actions() {

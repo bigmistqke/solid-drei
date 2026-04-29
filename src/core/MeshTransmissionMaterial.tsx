@@ -336,7 +336,8 @@ class MeshTransmissionMaterialImpl extends THREE.MeshPhysicalMaterial {
     Object.keys(this.uniforms).forEach(name =>
       Object.defineProperty(this, name, {
         get: () => this.uniforms[name as keyof typeof this.uniforms].value,
-        set: v => ((this.uniforms[name as keyof typeof this.uniforms] as Uniform<unknown>).value = v),
+        set: v =>
+          ((this.uniforms[name as keyof typeof this.uniforms] as Uniform<unknown>).value = v),
       }),
     )
   }
@@ -407,7 +408,6 @@ export function MeshTransmissionMaterial(_props: MeshTransmissionMaterialProps) 
 
         state.gl.setRenderTarget(fboMain)
         state.gl.render(state.scene, state.camera)
-
         ;(parent.material as MeshTransmissionMaterialImpl).thickness = props.thickness!
         ;(parent.material as MeshTransmissionMaterialImpl).side = props.side!
         ;(parent.material as MeshTransmissionMaterialImpl).buffer = fboMain.texture

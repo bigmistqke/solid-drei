@@ -1,7 +1,6 @@
 import { processProps } from '@/utils'
-import { whenComputed } from '@/utils/conditionals'
 import type { Ref } from 'solid-js'
-import { createRenderEffect, createMemo, onCleanup } from 'solid-js'
+import { createEffect, createRenderEffect, createMemo } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { autodispose, useFrame, useProps, useThree } from 'solid-three'
 import * as THREE from 'three'
@@ -34,51 +33,48 @@ export function useTrackballControls(props: TrackballControlsProps) {
     ['camera', 'domElement', 'enabled', 'regress', 'onChange', 'onStart', 'onEnd'],
   )
 
-  const controls = createMemo(() =>
-    autodispose(new TreeTrackballControls(props.camera || store.camera)),
-  )
-  const autolisten = useAutolisten(controls)
+  const controls = createMemo(() => {
+    const ctrl = autodispose(new TreeTrackballControls(props.camera || store.camera))
+    const autolisten = useAutolisten(() => ctrl)
 
-  whenComputed(
+    // Connect to domElement (defaults to store.canvas)
+    createRenderEffect(
+      () => config.domElement,
+      (elem) => ctrl.connect(elem),
+    )
+
+    // Attach event-listeners
+    createRenderEffect(
+      () => config.onStart,
+      (onStart) => autolisten('start', onStart),
+    )
+    createRenderEffect(
+      () => config.onChange,
+      (onChange) => autolisten('change', onChange),
+    )
+    createRenderEffect(
+      () => config.onEnd,
+      (onEnd) => autolisten('end', onEnd),
+    )
+
+    // Call resize-handler whenever store.bounds updates
+    createRenderEffect(
+      () => store.bounds,
+      () => { ctrl.handleResize() },
+    )
+
+    // Apply props
+    useProps(ctrl, rest, store)
+
+    // Update controls on each frame
+    useFrame(() => ctrl.update())
+
+    return ctrl
+  })
+
+  createEffect(
     () => config.enabled,
-    () => {
-      // Enable OrbitControls
-      controls().enabled = true
-      // Disable OrbitControls on cleanup
-      onCleanup(() => (controls().enabled = false))
-
-      // Connect to domElement (defaults to store.canvas)
-      createRenderEffect(
-        () => config.domElement,
-        () => controls().connect(config.domElement),
-      )
-
-      // Attach event-listeners
-      createRenderEffect(
-        () => config.onStart,
-        () => autolisten('start', config.onStart),
-      )
-      createRenderEffect(
-        () => config.onChange,
-        () => autolisten('change', config.onChange),
-      )
-      createRenderEffect(
-        () => config.onEnd,
-        () => autolisten('end', config.onEnd),
-      )
-
-      // Call resize-handler whenever store.bounds updates
-      createRenderEffect(
-        () => store.bounds,
-        () => { controls().handleResize() }
-      )
-
-      // Apply props
-      useProps(controls(), rest, store)
-
-      // Update controls on each frame
-      useFrame(controls().update)
-    },
+    (enabled) => { controls().enabled = enabled },
   )
 
   return {

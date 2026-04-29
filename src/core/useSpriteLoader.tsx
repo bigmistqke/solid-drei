@@ -1,7 +1,7 @@
-import { createSignal, createEffect, onCleanup, type Accessor } from 'solid-js'
+import { createEffect, createSignal, onSettled, type Accessor } from 'solid-js'
 import { useFrame } from 'solid-three'
 import { RepeatWrapping, Sprite, SpriteMaterial, TextureLoader } from 'three'
-import { useLoader } from './useLoader'
+import { useLoader } from 'solid-three'
 
 /**********************************************************************************/
 /*                                                                                */
@@ -58,10 +58,7 @@ export interface SpriteLoaderResult {
 /**********************************************************************************/
 
 /** Build a flat frame list from an atlas JSON filtered by optional animation name delimiters */
-function buildFrameList(
-  atlas: AtlasData,
-  animationNames?: string[],
-): AtlasFrameEntry[] {
+function buildFrameList(atlas: AtlasData, animationNames?: string[]): AtlasFrameEntry[] {
   const { frames } = atlas
 
   if (Array.isArray(frames)) {
@@ -191,9 +188,10 @@ export function useSpriteLoader(
   // Recompute frame list once we have both texture and atlas
   createEffect(
     () => texture(),
-    () => {
-      const tex = texture()
-      if (!tex) return
+    tex => {
+      if (!tex) {
+        return
+      }
 
       // Apply texture to material
       tex.wrapS = tex.wrapT = RepeatWrapping
@@ -203,76 +201,91 @@ export function useSpriteLoader(
       const finalize = (atlas: AtlasData) => {
         resolvedAtlas = atlas
         frameList = buildFrameList(atlas, animationNames)
+
         if (animationNames && animationNames.length > 0) {
           animationMap = buildAnimationMap(atlas, animationNames)
         }
 
-      const totalF = frameList.length
+        const totalF = frameList.length
 
-      // Set initial UV repeat based on first frame sourceSize
-      const firstFrame = frameList[0]
-      if (firstFrame) {
-        const { w: fw, h: fh } = firstFrame.sourceSize
-        const { w: mw, h: mh } = atlas.meta.size
-        tex.repeat.set(fw / mw, fh / mh)
-        tex.offset.set(0, 1 - fh / mh)
-        spriteObj.scale.set(1, fh / fw, 1)
+        // Set initial UV repeat based on first frame sourceSize
+        const firstFrame = frameList[0]
+        if (firstFrame) {
+          const { w: fw, h: fh } = firstFrame.sourceSize
+          const { w: mw, h: mh } = atlas.meta.size
+          tex.repeat.set(fw / mw, fh / mh)
+          tex.offset.set(0, 1 - fh / mh)
+          spriteObj.scale.set(1, fh / fw, 1)
+        }
+
+        tex.needsUpdate = true
+
+        if (onLoad) {
+          onLoad({
+            spriteObj,
+            currentFrame,
+            totalFrames: totalF,
+            play,
+            pause,
+          })
+        }
       }
 
-      tex.needsUpdate = true
-
-      if (onLoad) {
-        onLoad({
-          spriteObj,
-          currentFrame,
-          totalFrames: totalF,
-          play,
-          pause,
+      if (resolvedAtlas) {
+        finalize(resolvedAtlas)
+      } else if (jsonFetchPromise) {
+        jsonFetchPromise.then(atlas => {
+          if (atlas) finalize(atlas)
         })
+      } else if (config && 'frameWidth' in config) {
+        const w = tex.image?.width as number
+        const h = tex.image?.height as number
+        if (w && h) {
+          finalize(atlasFromConfig(w, h, config as SpriteConfig))
+        }
       }
-    }
-
-    if (resolvedAtlas) {
-      finalize(resolvedAtlas)
-    } else if (jsonFetchPromise) {
-      jsonFetchPromise.then(atlas => {
-        if (atlas) finalize(atlas)
-      })
-    } else if (config && 'frameWidth' in config) {
-      const w = tex.image?.width as number
-      const h = tex.image?.height as number
-      if (w && h) {
-        finalize(atlasFromConfig(w, h, config as SpriteConfig))
-      }
-    }
-  })
+    },
+  )
 
   // --- Animation tick -----------------------------------------------------
   let timerOffset = performance.now()
   const fpsInterval = () => 1000 / fps
 
   useFrame(() => {
-    if (!isPlaying()) return
+    if (!isPlaying()) {
+      return
+    }
+
     const tex = texture()
-    if (!tex || !resolvedAtlas) return
+
+    if (!tex || !resolvedAtlas) {
+      return
+    }
 
     const now = performance.now()
     const diff = now - timerOffset
-    if (diff < fpsInterval()) return
+
+    if (diff < fpsInterval()) {
+      return
+    }
+
     timerOffset = now - (diff % fpsInterval())
 
-    const frames = activeAnim()
-      ? (animationMap[activeAnim()!] ?? frameList)
-      : frameList
+    const frames = activeAnim() ? animationMap[activeAnim()!] ?? frameList : frameList
 
-    if (frames.length === 0) return
+    if (frames.length === 0) {
+      return
+    }
 
     const nextFrame = (currentFrame() + 1) % frames.length
     setCurrentFrame(nextFrame)
 
     const entry = frames[nextFrame]!
     const { w: mw, h: mh } = resolvedAtlas.meta.size
-    const { frame: { x: fx, y: fy, w: fw, h: fh }, sourceSize: { w: sw, h: sh } } = entry
+    const {
+      frame: { x: fx, y: fy, w: fw, h: fh },
+      sourceSize: { w: sw, h: sh },
+    } = entry
 
     tex.repeat.set(fw / mw, fh / mh)
     // UV Y is flipped — texture origin is bottom-left in WebGL
@@ -304,9 +317,7 @@ export function useSpriteLoader(
     pause,
   }
 
-  onCleanup(() => {
-    material.dispose()
-  })
+  onSettled(() => () => material.dispose())
 
   return result
 }

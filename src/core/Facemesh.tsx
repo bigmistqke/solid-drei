@@ -61,12 +61,7 @@ const normal = (function () {
   const ab = new THREE.Vector3()
   const ac = new THREE.Vector3()
 
-  return function (
-    v1: THREE.Vector3,
-    v2: THREE.Vector3,
-    v3: THREE.Vector3,
-    v: THREE.Vector3,
-  ) {
+  return function (v1: THREE.Vector3, v2: THREE.Vector3, v3: THREE.Vector3, v: THREE.Vector3) {
     a.copy(v1)
     b.copy(v2)
     c.copy(v3)
@@ -135,15 +130,19 @@ export function Facemesh(_props: FacemeshProps) {
 
   createEffect(
     () => meshRef?.geometry,
-    (geom) => {
+    geom => {
       geom?.setIndex(FacemeshDatas.TRIANGULATION)
-    }
+    },
   )
 
   const bboxSize = new THREE.Vector3()
 
   createEffect(
-    () => ({ points: props.points, facialTransformationMatrix: props.facialTransformationMatrix, faceBlendshapes: props.faceBlendshapes }),
+    () => ({
+      points: props.points,
+      facialTransformationMatrix: props.facialTransformationMatrix,
+      faceBlendshapes: props.faceBlendshapes,
+    }),
     ({ points, facialTransformationMatrix, faceBlendshapes }) => {
       const faceGeometry = meshRef.geometry
       if (!faceGeometry) return
@@ -188,7 +187,9 @@ export function Facemesh(_props: FacemeshProps) {
 
       if (props.eyes) {
         if (!faceBlendshapes) {
-          console.warn('Facemesh `eyes` option only works if `faceBlendshapes` is provided: skipping.')
+          console.warn(
+            'Facemesh `eyes` option only works if `faceBlendshapes` is provided: skipping.',
+          )
         } else {
           if (eyeRightRef && eyeLeftRef && originRef) {
             if (props.eyesAsOrigin) {
@@ -240,7 +241,7 @@ export function Facemesh(_props: FacemeshProps) {
 
       faceGeometry.computeVertexNormals()
       faceGeometry.attributes.position.needsUpdate = true
-    }
+    },
   )
 
   createEffect(() => {
@@ -274,14 +275,28 @@ export function Facemesh(_props: FacemeshProps) {
             <Entity from={Group} ref={originRef!}>
               {props.eyes && props.faceBlendshapes && (
                 <Entity from={Group} name="eyes">
-                  <FacemeshEye side="left" ref={(api) => { eyeRightRef = api }} debug={props.debug} />
-                  <FacemeshEye side="right" ref={(api) => { eyeLeftRef = api }} debug={props.debug} />
+                  <FacemeshEye
+                    side="left"
+                    ref={api => {
+                      eyeRightRef = api
+                    }}
+                    debug={props.debug}
+                  />
+                  <FacemeshEye
+                    side="right"
+                    ref={api => {
+                      eyeLeftRef = api
+                    }}
+                    debug={props.debug}
+                  />
                 </Entity>
               )}
               <Entity from={Mesh} ref={meshRef!} name="face">
                 {props.children}
 
-                {props.debug ? <>{bbox() && <Entity from={THREE.Box3Helper} args={[bbox()!]} />}</> : null}
+                {props.debug ? (
+                  <>{bbox() && <Entity from={THREE.Box3Helper} args={[bbox()!]} />}</>
+                ) : null}
               </Entity>
             </Entity>
           </Entity>
@@ -379,8 +394,12 @@ export function FacemeshEye(_props: FacemeshEyeProps) {
   }
 
   const api: FacemeshEyeApi = {
-    get eyeMeshRef() { return eyeMeshRef()! },
-    get irisDirRef() { return irisDirRef()! },
+    get eyeMeshRef() {
+      return eyeMeshRef()!
+    },
+    get irisDirRef() {
+      return irisDirRef()!
+    },
     _computeSphere,
     _update,
   }
@@ -423,12 +442,12 @@ export const FacemeshDatas = {
   ],
   // My face as default (captured with a 640x480 webcam)
   SAMPLE_FACE: {
-    "keypoints": [] as any[],
-    "box": { "xMin": 0, "yMin": 0, "xMax": 0, "yMax": 0, "width": 0, "height": 0 },
+    keypoints: [] as any[],
+    box: { xMin: 0, yMin: 0, xMax: 0, yMax: 0, width: 0, height: 0 },
   },
   SAMPLE_FACELANDMARKER_RESULT: {
-    "faceLandmarks": [[]] as any[][],
-    "faceBlendshapes": [{ "categories": [] as any[], "headIndex": -1, "headName": "" }],
-    "facialTransformationMatrixes": [{ "rows": 4, "columns": 4, "data": [] as number[] }],
+    faceLandmarks: [[]] as any[][],
+    faceBlendshapes: [{ categories: [] as any[], headIndex: -1, headName: '' }],
+    facialTransformationMatrixes: [{ rows: 4, columns: 4, data: [] as number[] }],
   },
 }

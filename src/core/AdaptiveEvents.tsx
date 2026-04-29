@@ -1,4 +1,4 @@
-import { onCleanup } from 'solid-js'
+import { onSettled } from 'solid-js'
 import { useThree } from 'solid-three'
 import { usePerformanceMonitor } from './PerformanceMonitor'
 
@@ -12,7 +12,7 @@ export function AdaptiveEvents() {
     },
   })
 
-  onCleanup(() => {
+  onSettled(() => () => {
     if (store.gl.domElement) store.gl.domElement.style.pointerEvents = 'auto'
   })
 

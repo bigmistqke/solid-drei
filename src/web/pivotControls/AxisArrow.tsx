@@ -75,7 +75,7 @@ export const AxisArrow: Component<{ direction: THREE.Vector3; axis: 0 | 1 | 2 }>
     }
     e.stopPropagation()
     const rotation = new THREE.Matrix4().extractRotation(objRef.matrixWorld)
-    const clickPoint = e.point.clone()
+    const clickPoint = e.intersection.point.clone()
     const origin = new THREE.Vector3().setFromMatrixPosition(objRef.matrixWorld)
     const dir = props.direction.clone().applyMatrix4(rotation).normalize()
     clickInfo = { clickPoint, dir }
@@ -94,7 +94,12 @@ export const AxisArrow: Component<{ direction: THREE.Vector3; axis: 0 | 1 | 2 }>
       const { clickPoint, dir } = clickInfo
       const [min, max] = translationLimits?.[props.axis] || [undefined, undefined]
 
-      let offset = calculateOffset(clickPoint, dir, e.ray.origin, e.ray.direction)
+      let offset = calculateOffset(
+        clickPoint,
+        dir,
+        store.raycaster.ray.origin,
+        store.raycaster.ray.direction,
+      )
       if (min !== undefined) {
         offset = Math.max(offset, min - offset0)
       }
@@ -122,8 +127,7 @@ export const AxisArrow: Component<{ direction: THREE.Vector3; axis: 0 | 1 | 2 }>
     e.target.releasePointerCapture(e.pointerId)
   }
 
-  const onPointerOut = (e: S3.ThreeEvent<PointerEvent>) => {
-    e.stopPropagation()
+  const onPointerOut = () => {
     setIsHovered(false)
   }
 
@@ -139,7 +143,7 @@ export const AxisArrow: Component<{ direction: THREE.Vector3; axis: 0 | 1 | 2 }>
     return { cylinderLength, coneWidth, coneLength, matrixL }
   })
 
-  const color_ = () => isHovered() ? hoveredColor : axisColors[props.axis]
+  const color_ = () => (isHovered() ? hoveredColor : axisColors[props.axis])
 
   return (
     <Entity from={Group} ref={objRef!}>
@@ -150,7 +154,7 @@ export const AxisArrow: Component<{ direction: THREE.Vector3; axis: 0 | 1 | 2 }>
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
-        onPointerOut={onPointerOut}
+        onPointerLeave={onPointerOut}
       >
         {annotations && (
           <Html position={[0, -memo().coneLength, 0]}>

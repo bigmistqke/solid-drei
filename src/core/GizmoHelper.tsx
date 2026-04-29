@@ -165,9 +165,9 @@ export const GizmoHelper = (props: GizmoHelperProps): any => {
 
   createEffect(
     () => store.camera.up,
-    (up) => {
+    up => {
       defaultUp.copy(up)
-    }
+    },
   )
 
   return (

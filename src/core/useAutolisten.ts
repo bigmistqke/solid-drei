@@ -6,7 +6,7 @@
 
 import { resolve } from '@/utils'
 import type { AccessorMaybe } from '@/utils/types'
-import { createRenderEffect, onCleanup } from 'solid-js'
+import { createRenderEffect } from 'solid-js'
 
 export function useAutolisten<
   TTarget extends {
@@ -17,14 +17,6 @@ export function useAutolisten<
   object: AccessorMaybe<TTarget>,
 ): TTarget['addEventListener'] &
   ((type: string, listener: ((...args: any[]) => void) | undefined, options?: any) => void) {
-  const listeners = new Set<() => void>()
-
-  // Clean up all listeners when autolisten's owner cleans up
-  onCleanup(() => {
-    listeners.forEach(cleanup => cleanup())
-    listeners.clear()
-  })
-
   return ((type: any, callback: any, ...options: any[]) => {
     createRenderEffect(
       () => callback,
@@ -33,13 +25,7 @@ export function useAutolisten<
 
         resolve(object).addEventListener(type, callback, ...options)
 
-        const cleanup = () => {
-          resolve(object).removeEventListener(type, callback, ...options)
-          listeners.delete(cleanup)
-        }
-
-        listeners.add(cleanup)
-        onCleanup(cleanup)
+        return () => resolve(object).removeEventListener(type, callback, ...options)
       },
     )
   }) as any

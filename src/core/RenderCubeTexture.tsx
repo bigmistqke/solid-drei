@@ -32,7 +32,16 @@ export const RenderCubeTexture = (props: Props) => {
     },
     props,
   )
-  const rest = omit(merged, 'ref', 'children', 'resolution', 'near', 'far', 'renderPriority', 'frames')
+  const rest = omit(
+    merged,
+    'ref',
+    'children',
+    'resolution',
+    'near',
+    'far',
+    'renderPriority',
+    'frames',
+  )
   const config = merged
 
   const cubeRenderTarget = new WebGLCubeRenderTarget(config.resolution)

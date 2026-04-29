@@ -1,13 +1,12 @@
+import type { Accessor } from 'solid-js'
 import {
   createContext,
   createEffect,
   createRenderEffect,
-  onCleanup,
+  createStore,
   useContext,
   type JSX,
 } from 'solid-js'
-import type { Accessor } from 'solid-js'
-import { createStore } from 'solid-js'
 
 type KeyboardControlsState<T extends string = string> = { [K in T]: boolean }
 type KeyboardControls<T extends string = string> = [Subscribe, KeyboardControlsState]
@@ -56,7 +55,7 @@ export function KeyboardControls(props: KeyboardControlsProps) {
         up,
         fn: (value: boolean) => {
           // Set solid store
-          setControls((state) => ({ ...state, [name]: value }))
+          setControls(state => ({ ...state, [name]: value }))
           // Inform callback
           if (props.onChange) props.onChange(name, value, controls)
         },
@@ -91,10 +90,10 @@ export function KeyboardControls(props: KeyboardControlsProps) {
         passive: true,
       })
 
-      onCleanup(() => {
+      return () => {
         source.removeEventListener('keydown', downHandler as EventListener)
         source.removeEventListener('keyup', upHandler as EventListener)
-      })
+      }
     },
   )
 

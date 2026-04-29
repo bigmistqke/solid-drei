@@ -109,7 +109,7 @@ export const MeshPortalMaterial = (_props: PortalProps) => {
 
   createRenderEffect(
     () => materialRef,
-    (m) => {
+    m => {
       if (!m) return
 
       if (props.blur && !m.sdf) {
@@ -146,14 +146,14 @@ export const MeshPortalMaterial = (_props: PortalProps) => {
         m.sdf = sdf.texture
         store.gl.setRenderTarget(null)
       }
-    }
+    },
   )
 
   createEffect(
     () => materialRef,
-    (m) => {
+    m => {
       props.ref?.(m)
-    }
+    },
   )
 
   const material = new PortalMaterialImpl() as unknown as PortalMaterialType
@@ -166,13 +166,15 @@ export const MeshPortalMaterial = (_props: PortalProps) => {
       if (materialRef) {
         materialRef.resolution.set(width, height)
       }
-    }
+    },
   )
 
   return (
     <Entity
       from={material as unknown as THREE.ShaderMaterial}
-      ref={(m: THREE.ShaderMaterial) => { materialRef = m as unknown as PortalMaterialType }}
+      ref={(m: THREE.ShaderMaterial) => {
+        materialRef = m as unknown as PortalMaterialType
+      }}
       attach="material"
     >
       <RenderTexture
@@ -207,9 +209,9 @@ function ManagePortalScene(props: {
 
   createRenderEffect(
     () => store,
-    (s) => {
+    s => {
       s.scene.matrixAutoUpdate = false
-    }
+    },
   )
 
   const memo = createMemo(() => {
@@ -245,7 +247,7 @@ function ManagePortalScene(props: {
   })
 
   useFrame(
-    (state) => {
+    state => {
       const material = props.material()
       const parent = material
         ? (material as unknown as { __r3f?: { parent: THREE.Object3D } }).__r3f?.parent
@@ -278,7 +280,11 @@ function ManagePortalScene(props: {
   return <></>
 }
 
-const makeSDFGenerator = (clientWidth: number, clientHeight: number, renderer: THREE.WebGLRenderer) => {
+const makeSDFGenerator = (
+  clientWidth: number,
+  clientHeight: number,
+  renderer: THREE.WebGLRenderer,
+) => {
   const finalTarget = new THREE.WebGLRenderTarget(clientWidth, clientHeight, {
     minFilter: THREE.LinearMipmapLinearFilter,
     magFilter: THREE.LinearFilter,

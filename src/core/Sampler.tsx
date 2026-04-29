@@ -1,8 +1,22 @@
 import { processProps } from '@/utils'
 import { check } from '@/utils/conditionals'
-import { type Accessor, type ParentProps, createRenderEffect, createSignal, untrack } from 'solid-js'
+import {
+  type Accessor,
+  type ParentProps,
+  createRenderEffect,
+  createSignal,
+  untrack,
+} from 'solid-js'
 import { Entity, type S3 } from 'solid-three'
-import { Color, Group, InstancedBufferAttribute, InstancedMesh, Mesh, Object3D, Vector3 } from 'three'
+import {
+  Color,
+  Group,
+  InstancedBufferAttribute,
+  InstancedMesh,
+  Mesh,
+  Object3D,
+  Vector3,
+} from 'three'
 import { MeshSurfaceSampler } from 'three-stdlib'
 
 type SamplePayload = {
@@ -118,14 +132,18 @@ type SamplerProps = ParentProps<{
    */
   transform?: TransformFn
   count?: number
-}> & S3.Props<typeof Group>
+}> &
+  S3.Props<typeof Group>
 
 export function Sampler(_props: SamplerProps) {
-  const [props, rest] = processProps(
-    _props,
-    { count: 16 },
-    ['children', 'weight', 'transform', 'instances', 'mesh', 'count'],
-  )
+  const [props, rest] = processProps(_props, { count: 16 }, [
+    'children',
+    'weight',
+    'transform',
+    'instances',
+    'mesh',
+    'count',
+  ])
 
   let group: Group = null!
   const [instance, setInstance] = createSignal<InstancedMesh>()

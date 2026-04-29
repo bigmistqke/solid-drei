@@ -1,6 +1,5 @@
 import { processProps } from '@/utils'
-import { whenComputed } from '@/utils/conditionals'
-import { createMemo, createRenderEffect, onCleanup, type JSXElement, type Ref } from 'solid-js'
+import { createEffect, createMemo, createRenderEffect, type JSXElement, type Ref } from 'solid-js'
 import { autodispose, useFrame, useProps, useThree, type S3 } from 'solid-three'
 import { OrthographicCamera, PerspectiveCamera, type Event } from 'three'
 import { OrbitControls as ThreeOrbitControls } from 'three-stdlib'
@@ -57,43 +56,33 @@ export function useOrbitControls(options?: OrbitControlsOptions) {
     const controls = autodispose(new ThreeOrbitControls(config.camera))
     const autolisten = useAutolisten(controls)
 
-    whenComputed(
-      () => config.enabled,
-      () => {
-        // Enable OrbitControls
-        controls.enabled = true
-        // Disable OrbitControls on cleanup
-        onCleanup(() => (controls.enabled = false))
-
-        // Connect to domElement (defaults to store.canvas)
-        createRenderEffect(
-          () => config.domElement,
-          () => controls.connect(config.domElement),
-        )
-
-        // Attach event-listeners
-        createRenderEffect(
-          () => config.onStart,
-          () => autolisten('start', config.onStart),
-        )
-        createRenderEffect(
-          () => config.onChange,
-          () => autolisten('change', config.onChange),
-        )
-        createRenderEffect(
-          () => config.onEnd,
-          () => autolisten('end', config.onEnd),
-        )
-
-        // Apply props
-        useProps(controls, rest, store)
-
-        // Update controls on each frame
-        useFrame(controls.update)
-      },
+    createRenderEffect(
+      () => config.domElement,
+      (elem) => controls.connect(elem),
     )
+    createRenderEffect(
+      () => config.onStart,
+      (onStart) => autolisten('start', onStart),
+    )
+    createRenderEffect(
+      () => config.onChange,
+      (onChange) => autolisten('change', onChange),
+    )
+    createRenderEffect(
+      () => config.onEnd,
+      (onEnd) => autolisten('end', onEnd),
+    )
+
+    useProps(controls, rest, store)
+    useFrame(() => controls.update())
+
     return controls
   })
+
+  createEffect(
+    () => config.enabled,
+    (enabled) => { controls().enabled = enabled },
+  )
 
   return {
     controls,
