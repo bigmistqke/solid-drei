@@ -7,11 +7,10 @@ import {
   createContext,
   createEffect,
   createMemo,
-  Index,
   onCleanup,
-  onMount,
   useContext,
 } from 'solid-js'
+import { For } from '@solidjs/web'
 import { Entity, type S3, useFrame, useThree } from 'solid-three'
 import {
   Camera,
@@ -268,7 +267,7 @@ export function AccumulativeShadows(
   return (
     <Entity from={Group} {...rest}>
       <Entity traverse={() => null} from={lights}>
-        <accumulativeContext.Provider value={api}>{config.children}</accumulativeContext.Provider>
+        <accumulativeContext value={api}>{config.children}</accumulativeContext>
       </Entity>
       <Entity from={plane} receiveShadow scale={config.scale} rotation={[-Math.PI / 2, 0, 0]}>
         <Entity from={new PlaneGeometry()} />
@@ -388,7 +387,7 @@ export function RandomizedLight(
     api,
   )
 
-  onMount(() => {
+  createEffect(() => {
     if (parent) {
       parent.lights.set(lightGroup.uuid, api)
     }
@@ -397,7 +396,7 @@ export function RandomizedLight(
 
   return (
     <Entity from={lightGroup} {...rest}>
-      <Index each={Array.from({ length: config.amount })}>
+      <For each={Array.from({ length: config.amount })} fallback={null}>
         {() => (
           <Entity
             from={DirectionalLight}
@@ -413,7 +412,7 @@ export function RandomizedLight(
             />
           </Entity>
         )}
-      </Index>
+      </For>
     </Entity>
   )
 }

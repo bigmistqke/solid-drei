@@ -5,7 +5,7 @@ export function useContextBridge(...contexts: Array<Context<any>>) {
   const values = contexts.map(ctx => useContext(ctx))
   return (props: { children: JSX.Element }) =>
     contexts.reduceRight<() => JSX.Element>(
-      (acc, Ctx, i) => () => <Ctx.Provider value={values[i]}>{acc()}</Ctx.Provider>,
+      (acc, Ctx, i) => () => <Ctx value={values[i]}>{acc()}</Ctx>,
       () => props.children,
     )()
 }

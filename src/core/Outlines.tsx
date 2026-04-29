@@ -1,6 +1,6 @@
 import { processProps, useRef } from '@/utils'
 import type { Ref } from 'solid-js'
-import { createEffect, onCleanup, onMount } from 'solid-js'
+import { createEffect, onCleanup } from 'solid-js'
 import { Entity, getMeta, type S3 } from 'solid-three'
 import * as THREE from 'three'
 import { BackSide, Color, FrontSide, Mesh, MeshBasicMaterial, ShaderMaterial } from 'three'
@@ -120,7 +120,7 @@ export function Outlines(_props: OutlinesProps) {
     }
   }
 
-  onMount(() => {
+  (() => {
     // Share parent mesh geometry
     const parentMesh = getMeta(outlineMesh)?.parent?.object as THREE.Mesh | undefined
     if (parentMesh?.geometry) {

@@ -7,7 +7,6 @@ import {
   createMemo,
   createRenderEffect,
   onCleanup,
-  onMount,
   useContext,
 } from 'solid-js'
 import type { S3 } from 'solid-three'
@@ -284,7 +283,7 @@ function SpotlightShadowWithShader(props: SpotlightShadowWithShaderProps) {
     return fsQuad
   })
 
-  onMount(() =>
+  (() =>
     useCommon({
       mesh,
       get spotlight() {
@@ -353,7 +352,7 @@ function SpotlightShadowWithoutShader(props: SpotlightShadowWithoutShaderProps) 
 
   let mesh: Mesh = null!
 
-  onMount(() =>
+  (() =>
     useCommon({
       mesh,
       get spotlight() {
@@ -459,7 +458,7 @@ function SpotLight(props: SpotlightProps) {
           />
         </Show>
       </Entity>
-      <spotLightContext.Provider
+      <spotLightContext
         value={{
           spotlight: spotLight,
           get debug() {
@@ -468,7 +467,7 @@ function SpotLight(props: SpotlightProps) {
         }}
       >
         {config.children}
-      </spotLightContext.Provider>
+      </spotLightContext>
       <T.SpotLightHelper args={[spotLight]} />
     </T.Group>
   )

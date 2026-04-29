@@ -1,5 +1,5 @@
 import { defaultProps } from '@/utils'
-import { Show, createEffect, createSignal, onCleanup, onMount, type JSX } from 'solid-js'
+import { Show, createEffect, createSignal, onCleanup, type JSX } from 'solid-js'
 import { Entity, Portal, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { Group } from 'three'

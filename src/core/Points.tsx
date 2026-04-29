@@ -4,7 +4,6 @@ import {
   createContext,
   createEffect,
   createSignal,
-  onMount,
   Show,
   omit,
   useContext,
@@ -220,7 +219,7 @@ function PointsInstances(props: PointsInstancesProps) {
           usage={DynamicDrawUsage}
         />
       </T.BufferGeometry>
-      <pointContext.Provider
+      <pointContext
         value={{
           getParent: () => parent,
           subscribe: ref => {
@@ -231,7 +230,7 @@ function PointsInstances(props: PointsInstancesProps) {
         }}
       >
         {config.children}
-      </pointContext.Provider>
+      </pointContext>
     </Entity>
   )
 }
@@ -248,7 +247,7 @@ export function Point(props: S3.Props<PositionPoint>) {
   const positionPoint = new PositionPoint()
   const pointContext = usePointContext()
 
-  onMount(() => {
+  (() => {
     pointContext.subscribe(positionPoint)
   })
 

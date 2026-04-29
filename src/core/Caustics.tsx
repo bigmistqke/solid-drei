@@ -4,7 +4,8 @@
 
 import { processProps, useRef } from '@/utils'
 import { version } from '@/utils/constants'
-import { createEffect as onMount, Show } from 'solid-js'
+import { createEffect } from 'solid-js'
+import { Show } from '@solidjs/web'
 import type { S3 } from 'solid-three'
 import { createT, useFrame, useThree } from 'solid-three'
 import {
@@ -567,7 +568,7 @@ export function Caustics(props: CausticsProps) {
     }
   })
 
-  onMount(() => scene?.updateWorldMatrix(false, true))
+  (() => scene?.updateWorldMatrix(false, true))
 
   // CausticsProps extends S3.Props<Group> but we expose a Scene ref at runtime
   useRef(config as unknown as { ref?: Scene | ((value: S3.Meta<Scene>) => void) }, scene)

@@ -1,6 +1,6 @@
 import { processProps, useRef } from '@/utils'
 import type { JSX, Ref } from 'solid-js'
-import { createContext, createSignal, onMount, useContext } from 'solid-js'
+import { createContext, createSignal, useContext } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { autodispose, Entity, useFrame } from 'solid-three'
 import { Color, Vector2, Vector3 } from 'three'
@@ -107,7 +107,7 @@ export function Segments(props: SegmentsProps) {
         linewidth={config.lineWidth}
         {...rest}
       />
-      <segmentsContext.Provider
+      <segmentsContext
         value={{
           subscribe(ref: SegmentObject) {
             setSegments(segments => [...segments, ref])
@@ -116,7 +116,7 @@ export function Segments(props: SegmentsProps) {
         }}
       >
         {config.children}
-      </segmentsContext.Provider>
+      </segmentsContext>
     </Entity>
   )
 }
@@ -148,7 +148,7 @@ export function Segment(props: SegmentProps) {
   const api = useSegments()
   const segmentObject = new SegmentObject()
 
-  onMount(() => {
+  (() => {
     api.subscribe(segmentObject)
   })
 

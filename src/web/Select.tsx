@@ -219,7 +219,7 @@ export function Select(props: SelectProps) {
       onClickMissed={onClickMissed}
       // {...rest}
     >
-      <context.Provider value={active}>{config.children}</context.Provider>
+      <context value={active}>{config.children}</context>
     </Entity>
   )
 }

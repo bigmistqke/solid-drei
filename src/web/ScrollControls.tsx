@@ -233,7 +233,7 @@ export function ScrollControls(props: ScrollControlsProps) {
     )
     if (state().delta > config.eps) store.requestRender()
   })
-  return <scrollContext.Provider value={state()}>{config.children}</scrollContext.Provider>
+  return <scrollContext value={state()}>{config.children}</scrollContext>
 }
 
 /**********************************************************************************/
@@ -330,7 +330,7 @@ function ScrollHtml(props: ScrollHtmlProps) {
             }}
             {...rest}
           >
-            <scrollContext.Provider value={scroll}>{config.children}</scrollContext.Provider>
+            <scrollContext value={scroll}>{config.children}</scrollContext>
           </div>
         ),
         fixed,

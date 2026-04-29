@@ -49,7 +49,7 @@ export function FaceLandmarker({
     },
   )
 
-  return <FaceLandmarkerContext.Provider value={faceLandmarker}>{children}</FaceLandmarkerContext.Provider>
+  return <FaceLandmarkerContext value={faceLandmarker}>{children}</FaceLandmarkerContext>
 }
 
 export function useFaceLandmarker() {

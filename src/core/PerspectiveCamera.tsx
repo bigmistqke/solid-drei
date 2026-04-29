@@ -1,6 +1,6 @@
 import { processProps, useRef } from '@/utils'
 import type { JSX, Ref } from 'solid-js'
-import { Show, createEffect, createMemo, onCleanup, onMount } from 'solid-js'
+import { Show, createEffect, createMemo, onCleanup } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { Entity, useFrame, useThree } from 'solid-three'
 import { Color, Group, Scene, Texture, PerspectiveCamera as ThreePerspectiveCamera } from 'three'
@@ -126,7 +126,7 @@ export function PerspectiveCamera(props: PerspectiveCameraProps) {
     }
   )
 
-  onMount(() => camera().updateProjectionMatrix())
+  (() => camera().updateProjectionMatrix())
 
   useRef(props, camera)
 

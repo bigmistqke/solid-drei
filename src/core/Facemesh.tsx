@@ -1,7 +1,7 @@
 /* eslint react-hooks/exhaustive-deps: 1 */
 import { defaultProps, processProps } from '@/utils'
 import { check } from '@/utils/conditionals'
-import { createEffect, createMemo, createSignal, onMount } from 'solid-js'
+import { createEffect, createMemo, createSignal } from 'solid-js'
 import { Entity, type S3, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { Group, Mesh } from 'three'
@@ -243,7 +243,7 @@ export function Facemesh(_props: FacemeshProps) {
     }
   )
 
-  onMount(() => {
+  createEffect(() => {
     if (typeof _props.ref === 'function') {
       _props.ref({ outerRef, meshRef, eyeRightRef, eyeLeftRef })
     }

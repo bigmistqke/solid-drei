@@ -171,7 +171,7 @@ export const GizmoHelper = (props: GizmoHelperProps): any => {
 
   return (
     <Hud renderPriority={config.renderPriority}>
-      <gizmoHelperContext.Provider
+      <gizmoHelperContext
         value={{
           tweenCamera,
         }}
@@ -180,7 +180,7 @@ export const GizmoHelper = (props: GizmoHelperProps): any => {
         <Entity from={Group} ref={gizmo!} position={position()}>
           {config.children}
         </Entity>
-      </gizmoHelperContext.Provider>
+      </gizmoHelperContext>
     </Hud>
   )
 }

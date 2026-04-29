@@ -215,7 +215,7 @@ export function FaceControls(_props: FaceControlsProps) {
   const faceBlendshapes = () => faces()?.faceBlendshapes?.[0]
 
   return (
-    <FaceControlsContext.Provider value={faceControlsApi}>
+    <FaceControlsContext value={faceControlsApi}>
       {props.webcam && (
         <Webcam
           ref={(api) => { webcamApiRef = api }}
@@ -241,7 +241,7 @@ export function FaceControls(_props: FaceControlsProps) {
       >
         <Entity from={MeshBasicMaterial} side={THREE.DoubleSide} />
       </Facemesh>
-    </FaceControlsContext.Provider>
+    </FaceControlsContext>
   )
 }
 

@@ -253,7 +253,7 @@ export function Bounds(_props: BoundsProps) {
 
   return (
     <Entity from={group}>
-      <boundsContext.Provider value={api}>{props.children}</boundsContext.Provider>
+      <boundsContext value={api}>{props.children}</boundsContext>
     </Entity>
   )
 }

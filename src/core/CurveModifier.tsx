@@ -1,6 +1,7 @@
 import { useRef } from '@/utils'
 import { whenComputed } from '@/utils/conditionals'
-import { createSignal, Suspense, type JSX, type Ref } from 'solid-js'
+import { createSignal, type JSX, type Ref } from 'solid-js'
+import { Suspense } from '@solidjs/web'
 import { Entity, Portal } from 'solid-three'
 import type { Curve, Vector3 } from 'three'
 import { Mesh, Scene } from 'three'

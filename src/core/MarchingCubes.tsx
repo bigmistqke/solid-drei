@@ -50,9 +50,9 @@ export function MarchingCubes(_props: MarchingCubesProps) {
   return (
     <>
       <Entity from={marchingCubes()} {...(rest as unknown as S3.Props<MarchingCubesImpl>)} ref={(m: MarchingCubesImpl) => { marchingCubesRef = m }}>
-        <globalContext.Provider value={{ getParent: () => marchingCubesRef }}>
+        <globalContext value={{ getParent: () => marchingCubesRef }}>
           {props.children}
-        </globalContext.Provider>
+        </globalContext>
       </Entity>
     </>
   )

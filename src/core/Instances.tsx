@@ -4,7 +4,6 @@ import {
   type JSX,
   createContext,
   createSignal,
-  onMount,
   onCleanup,
   omit,
   useContext,
@@ -89,7 +88,7 @@ export function Instance(_props: InstanceProps) {
 
   let positionMesh: PositionMesh = null!
 
-  onMount(() => {
+  (() => {
     onCleanup(subscribe(positionMesh))
   })
 
@@ -204,9 +203,9 @@ export function Instances(_props: InstancesProps) {
         usage={DynamicDrawUsage}
       />
       {typeof props.children === 'function' ? (
-        <context.Provider value={api}>{props.children(instance)}</context.Provider>
+        <context value={api}>{props.children(instance)}</context>
       ) : (
-        <globalContext.Provider value={api}>{props.children}</globalContext.Provider>
+        <globalContext value={api}>{props.children}</globalContext>
       )}
     </Entity>
   )

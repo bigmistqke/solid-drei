@@ -1,5 +1,5 @@
 import { defaultProps } from '@/utils'
-import { createMemo, createSignal, For, Index, onMount, type JSX } from 'solid-js'
+import { createMemo, createSignal, For, createEffect, type JSX } from 'solid-js'
 import { Entity, useThree, type S3 } from 'solid-three'
 import { BoxGeometry, CanvasTexture, Group, Mesh, MeshBasicMaterial, Vector3 } from 'three'
 import { useGizmoContext } from './GizmoHelper'
@@ -129,9 +129,9 @@ function FaceCube(props: GenericProps) {
         })
       }
     >
-      <Index each={[...Array(6)]}>
-        {(_, index) => <FaceMaterial index={index} hover={hover() === index} {...props} />}
-      </Index>
+      <For each={[...Array(6)]} fallback={null}>
+        {(_, index) => <FaceMaterial index={index()} hover={hover() === index()} {...props} />}
+      </For>
       <Entity from={BoxGeometry} />
     </Entity>
   )
@@ -175,7 +175,7 @@ function EdgeCube(props: EdgeCubeProps): JSX.Element {
 }
 
 export function GizmoViewcube(props: GenericProps) {
-  onMount(() => console.log('mount this doogie'))
+  createEffect(() => console.log('mount this doogie'))
   return (
     <Entity from={Group} scale={[60, 60, 60]}>
       <FaceCube {...props} />

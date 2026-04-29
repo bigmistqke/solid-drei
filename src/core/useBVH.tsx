@@ -1,6 +1,6 @@
 import { processProps } from '@/utils'
 import { check } from '@/utils/conditionals'
-import { type Accessor, createEffect, onCleanup, onMount } from 'solid-js'
+import { type Accessor, createEffect, onCleanup } from 'solid-js'
 import { Entity, useThree, type S3 } from 'solid-three'
 import { Group, Mesh, Raycaster } from 'three'
 import { SAH, acceleratedRaycast, computeBoundsTree, disposeBoundsTree } from 'three-mesh-bvh'
@@ -67,7 +67,7 @@ export function Bvh(_props: BvhProps) {
   const store = useThree()
   let group: Group = null!
 
-  onMount(() => {
+  (() => {
     if (props.enabled) {
       const options = {
         strategy: props.strategy,

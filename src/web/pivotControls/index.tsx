@@ -236,7 +236,7 @@ export function PivotControls(_props: PivotControlsProps) {
   })
 
   return (
-    <context.Provider
+    <context
       value={{
         onDragStart: (props: OnDragStartProps) => {
           mL0.copy(ref.matrix)
@@ -305,6 +305,6 @@ export function PivotControls(_props: PivotControlsProps) {
           <Entity from={Group} ref={childrenRef!}>{config.children}</Entity>
         </Entity>
       </Entity>
-    </context.Provider>
+    </context>
   )
 }

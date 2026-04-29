@@ -52,9 +52,9 @@ export function MarchingCubes(_props: MarchingCubesProps) {
   return (
     <>
       <Entity from={marchingCubes()} {...rest} ref={marchingCubesRef}>
-        <globalContext.Provider value={{ getParent: () => marchingCubesRef }}>
+        <globalContext value={{ getParent: () => marchingCubesRef }}>
           {props.children}
-        </globalContext.Provider>
+        </globalContext>
       </Entity>
     </>
   )

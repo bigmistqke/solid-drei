@@ -1,5 +1,5 @@
 import { processProps } from '@/utils'
-import { Show, createEffect, createMemo, onCleanup, onMount } from 'solid-js'
+import { Show, createEffect, createMemo, onCleanup } from 'solid-js'
 import { Entity, createT } from 'solid-three'
 import {
   BufferAttribute,
@@ -190,7 +190,7 @@ function WireframeWithoutCustomGeo(
     },
   )
 
-  onMount(() => {
+  (() => {
     const parentMesh = object3d.parent as Mesh<BufferGeometry, Material>
     const og = parentMesh.material.clone()
 

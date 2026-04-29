@@ -1,5 +1,5 @@
 import { processProps } from '@/utils'
-import { createMemo, onMount } from 'solid-js'
+import { createMemo } from 'solid-js'
 import { Entity, type S3, createT, getMeta, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { MeshBVH, MeshBVHUniformStruct, SAH } from 'three-mesh-bvh'
@@ -61,7 +61,7 @@ export function MeshRefractionMaterial(_props: MeshRefractionMaterialProps) {
     return temp
   })
 
-  onMount(() => {
+  (() => {
     const geometry = getMeta(material)?.parent?.object?.geometry
     if (geometry) {
       material.bvh = new MeshBVHUniformStruct()

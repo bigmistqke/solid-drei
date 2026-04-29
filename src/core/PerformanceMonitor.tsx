@@ -141,7 +141,7 @@ export function PerformanceMonitor({
       }
     }
   })
-  return <context.Provider value={api}>{children}</context.Provider>
+  return <context value={api}>{children}</context>
 }
 
 export function usePerformanceMonitor({

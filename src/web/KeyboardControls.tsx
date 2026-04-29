@@ -104,7 +104,7 @@ export function KeyboardControls(props: KeyboardControlsProps) {
     )
   }
 
-  return <keyboardControlsContext.Provider value={[sub, controls]} children={props.children} />
+  return <keyboardControlsContext value={[sub, controls]} children={props.children} />
 }
 
 type Selector<T extends string = string> = (state: KeyboardControlsState<T>) => boolean
