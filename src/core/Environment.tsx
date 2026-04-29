@@ -1,5 +1,5 @@
 import { processProps } from '@/utils'
-import { createEffect, createResource, onCleanup, type JSX } from 'solid-js'
+import { createEffect, createMemo, onCleanup, type JSX } from 'solid-js'
 import { useThree } from 'solid-three'
 import * as THREE from 'three'
 import { EXRLoader, RGBELoader } from 'three-stdlib'
@@ -106,10 +106,9 @@ export function Environment(_props: EnvironmentProps) {
     return props.path ?? ''
   }
 
-  const [texture] = createResource(
-    () => ({ files: resolvedFiles(), path: resolvedPath(), gl: store.gl }),
-    ({ files, path, gl }) => loadEnvironmentTexture(files, path, gl),
-  )
+  const texture = createMemo(async () => {
+    return loadEnvironmentTexture(resolvedFiles(), resolvedPath(), store.gl)
+  })
 
   createEffect(
     () => [texture(), props.background, props.blur] as const,

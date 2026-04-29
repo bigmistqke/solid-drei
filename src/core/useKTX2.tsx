@@ -1,9 +1,8 @@
 import type { Accessor } from 'solid-js'
-import { createEffect } from 'solid-js'
+import { createEffect, createMemo } from 'solid-js'
 import { useLoader, useThree } from 'solid-three'
 import { CompressedTexture, Texture } from 'three'
 import { KTX2Loader } from 'three-stdlib'
-import { check } from '@/utils/conditionals'
 
 const cdn = 'https://cdn.jsdelivr.net/gh/pmndrs/drei-assets@master'
 
@@ -35,14 +34,14 @@ export function useKTX2<Url extends string[] | string | Record<string, string>>(
 
   // https://github.com/mrdoob/three.js/issues/22696
   // Upload the texture to the GPU immediately instead of waiting for the first render
-  createEffect(
-    () => textures(),
-    () =>
-      check(textures, tex => {
-        const array = Array.isArray(tex) ? tex : [tex]
-        array.forEach((t: any) => store.gl.initTexture(t))
-      }),
-  )
+  createMemo(() => {
+    const tex = textures()
+    if (tex) {
+      const array = Array.isArray(tex) ? tex : [tex]
+      array.forEach((t: any) => store.gl.initTexture(t))
+    }
+    return tex
+  })
 
   return () => {
     const loaded = textures()

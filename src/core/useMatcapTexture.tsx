@@ -1,5 +1,4 @@
 import { resolve } from '@/utils'
-import { when } from '@/utils/conditionals'
 import { type Accessor, createMemo } from 'solid-js'
 import { Texture } from 'three'
 import { useTexture } from './useTexture'
@@ -32,7 +31,10 @@ export function useMatcapTexture(
     fetch(LIST_URL).then(res => res.json()),
   )
 
-  const numTot = when(matcapList, matcapList => Object.keys(matcapList).length)
+  const numTot = () => {
+    const list = matcapList()
+    return list ? Object.keys(list).length : undefined
+  }
 
   const fileHash = () => {
     const _id = resolve(id)

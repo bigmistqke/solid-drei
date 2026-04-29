@@ -1,5 +1,4 @@
 import { defaultProps } from '@/utils'
-import { every, when, whenEffect } from '@/utils/conditionals'
 import { createMemo, createRenderEffect, type Accessor } from 'solid-js'
 import { RepeatWrapping, Texture, Vector2 } from 'three'
 import { useTexture } from './useTexture'
@@ -29,10 +28,12 @@ export function useDreiNormalTexture(
 ) {
   const config = defaultProps(settings, { repeat: [1, 1], anisotropy: 1, offset: [0, 0] })
 
-  const url = when(
-    () => normalsList()?.list[id()] ?? normalsList()?.list[0],
-    name => `${NORMAL_ROOT}/normals/${name}`,
-  )
+  const url = () => {
+    const list = normalsList()?.list
+    if (!list) return undefined
+    const name = list[id()] ?? list[0]
+    return `${NORMAL_ROOT}/normals/${name}`
+  }
 
   const texture = useTexture(url, {
     onLoad: (texture: Texture) => {
@@ -49,13 +50,23 @@ export function useDreiNormalTexture(
     },
   })
 
-  whenEffect(texture, texture => onLoad?.(texture))
+  if (onLoad) {
+    createMemo(() => {
+      const tex = texture()
+      if (tex) onLoad(tex)
+      return tex
+    })
+  }
 
-  return createMemo(
-    when(every(normalsList, url, texture), ([{ count }, url, texture]) => ({
-      count,
-      url,
-      texture,
-    })),
-  )
+  return createMemo(() => {
+    const list = normalsList()
+    const url_ = url()
+    const texture_ = texture()
+    if (!list || !url_ || !texture_) return undefined
+    return {
+      count: list.count,
+      url: url_,
+      texture: texture_,
+    }
+  })
 }

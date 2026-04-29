@@ -6,7 +6,6 @@ import * as THREE from 'three'
 import { MeshBasicMaterial } from 'three'
 
 import { defaultProps } from '@/utils'
-import { check } from '@/utils/conditionals'
 import type { Accessor } from 'solid-js'
 import {
   createContext,
@@ -329,14 +328,11 @@ function VideoTexture(_props: VideoTextureProps) {
   }
   useVideoFrame(video, onVideoFrame)
 
-  createEffect(
-    () => texture(),
-    (t) => {
-      check(t, texture => {
-        if (typeof _props.ref === 'function') _props.ref({ texture })
-      })
-    }
-  )
+  createMemo(() => {
+    const t = texture()
+    if (t && typeof _props.ref === 'function') _props.ref({ texture: t })
+    return t
+  })
 
   return <></>
 }
