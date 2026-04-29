@@ -136,7 +136,7 @@ function Container(props: {
         count++
       }
     },
-    () => props.renderPriority,
+    { priority: props.renderPriority },
   )
   return <>{props.children}</>
 }

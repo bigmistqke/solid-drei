@@ -48,7 +48,7 @@ export function MarchingCubes(_props: MarchingCubesProps) {
   useFrame(() => {
     marchingCubes().update()
     marchingCubes().reset()
-  }, -1) // To make sure the reset runs before the balls or planes are added
+  }, { priority: -1 }) // To make sure the reset runs before the balls or planes are added
 
   return (
     <>

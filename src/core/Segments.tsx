@@ -1,6 +1,6 @@
 import { processProps, useRef } from '@/utils'
 import type { JSX, Ref } from 'solid-js'
-import { createContext, createSignal, useContext } from 'solid-js'
+import { createContext, createEffect, createSignal, useContext } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { autodispose, Entity, useFrame } from 'solid-three'
 import { Color, Vector2, Vector3 } from 'three'
@@ -149,7 +149,7 @@ export function Segment(props: SegmentProps) {
   const api = useSegments()
   const segmentObject = new SegmentObject()
 
-  (() => {
+  createEffect(() => {
     api.subscribe(segmentObject)
   })
 

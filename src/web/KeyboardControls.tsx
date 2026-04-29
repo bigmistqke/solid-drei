@@ -56,7 +56,7 @@ export function KeyboardControls(props: KeyboardControlsProps) {
         up,
         fn: (value: boolean) => {
           // Set solid store
-          setControls(name, value)
+          setControls((state) => ({ ...state, [name]: value }))
           // Inform callback
           if (props.onChange) props.onChange(name, value, controls)
         },

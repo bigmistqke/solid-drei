@@ -169,9 +169,7 @@ function WireframeWithoutCustomGeo(
   const uniforms = createMemo(getUniforms)
   useWireframeUniforms(uniforms, rest)
 
-  createEffect(
-    () => object3d,
-    () => {
+  createEffect(() => {
       const geometry = getInputGeometry(object3d)
 
       if (!geometry) {

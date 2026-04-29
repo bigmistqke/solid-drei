@@ -40,10 +40,10 @@ export function Lightformer(_props: LightProps) {
   useRef(_props, () => mesh)
 
   createRenderEffect(
-    () => [props.color, props.intensity, props.target, props.children, rest.material] as const,
+    () => [props.color, props.intensity, props.target, props.children, (rest as any).material] as const,
     () => {
       if (!mesh) return
-      if (!props.children && !rest.material) {
+      if (!props.children && !(rest as any).material) {
         const mat = mesh.material as MeshBasicMaterial
         if (mat?.color) {
           mat.color.set(props.color as THREE.ColorRepresentation)
@@ -76,7 +76,7 @@ export function Lightformer(_props: LightProps) {
       )}
       {props.children
         ? props.children
-        : !rest.material
+        : !(rest as any).material
         ? (
           <Entity
             from={MeshBasicMaterial}

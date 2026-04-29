@@ -118,15 +118,16 @@ export function PerspectiveCamera(props: PerspectiveCameraProps) {
   )
 
   createEffect(
-    () => config.makeCurrent,
-    (makeCurrent) => {
-      if (makeCurrent) {
+    () => {
+      if (config.makeCurrent) {
         onCleanup(store.setCamera(camera()))
       }
     }
   )
 
-  (() => camera().updateProjectionMatrix())
+  createEffect(() => {
+    camera().updateProjectionMatrix()
+  })
 
   useRef(props, camera)
 

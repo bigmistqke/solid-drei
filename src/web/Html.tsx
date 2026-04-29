@@ -506,16 +506,16 @@ export function Html(props: HtmlProps) {
             const { isOrthographicCamera } = store.camera as OrthographicCamera
 
             if (isOrthographicCamera || config.geometry) {
-              if (rest.scale) {
-                if (!Array.isArray(rest.scale)) {
-                  occlusionMeshRef.scale.setScalar(1 / (rest.scale as number))
-                } else if (rest.scale instanceof Vector3) {
-                  occlusionMeshRef.scale.copy(rest.scale.clone().divideScalar(1))
+              if ((rest as any).scale) {
+                if (!Array.isArray((rest as any).scale)) {
+                  occlusionMeshRef.scale.setScalar(1 / ((rest as any).scale as number))
+                } else if ((rest as any).scale instanceof Vector3) {
+                  occlusionMeshRef.scale.copy((rest as any).scale.clone().divideScalar(1))
                 } else {
                   occlusionMeshRef.scale.set(
-                    1 / rest.scale[0],
-                    1 / rest.scale[1],
-                    1 / rest.scale[2],
+                    1 / (rest as any).scale[0],
+                    1 / (rest as any).scale[1],
+                    1 / (rest as any).scale[2],
                   )
                 }
               }

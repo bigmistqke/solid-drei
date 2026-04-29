@@ -67,7 +67,7 @@ export function Bvh(_props: BvhProps) {
   const store = useThree()
   let group: Group = null!
 
-  (() => {
+  createEffect(() => {
     if (props.enabled) {
       const options = {
         strategy: props.strategy,

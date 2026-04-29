@@ -131,7 +131,7 @@ export function MeshReflectorMaterial(props: MeshReflectorMaterialProps) {
         return hasBlur()
       },
       get 'defines-USE_BLUR'() {
-        return hasBlur() || rest.roughnessMap ? '' : undefined
+        return hasBlur() || (rest as any).roughnessMap ? '' : undefined
       },
       get 'defines-USE_DEPTH'() {
         return config.depthScale > 0 ? '' : undefined

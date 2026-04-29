@@ -248,7 +248,7 @@ export function Point(props: S3.Props<PositionPoint>) {
   const positionPoint = new PositionPoint()
   const pointContext = usePointContext()
 
-  (() => {
+  createEffect(() => {
     pointContext.subscribe(positionPoint)
   })
 

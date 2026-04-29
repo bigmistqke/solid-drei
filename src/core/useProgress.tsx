@@ -29,29 +29,33 @@ function useProgress<T>(selector?: (progress: Data) => T) {
 }
 
 DefaultLoadingManager.onStart = (item, loaded, total) => {
-  setProgress({
+  setProgress(() => ({
     active: true,
     item,
     loaded,
     total,
     progress: ((loaded - saveLastTotalLoaded) / (total - saveLastTotalLoaded)) * 100,
-  })
+    errors: [],
+  }))
 }
 DefaultLoadingManager.onLoad = () => {
-  setProgress({ active: false })
+  setProgress((state) => ({ ...state, active: false }))
 }
-DefaultLoadingManager.onError = (item: string) => setProgress(state => ({ errors: [...state.errors, item] }))
+DefaultLoadingManager.onError = (item: string) => {
+  setProgress((state) => ({ ...state, errors: [...state.errors, item] }))
+}
 DefaultLoadingManager.onProgress = (item, loaded, total) => {
   if (loaded === total) {
     saveLastTotalLoaded = total
   }
-  setProgress({
+  setProgress(() => ({
     active: true,
     item,
     loaded,
     total,
     progress: ((loaded - saveLastTotalLoaded) / (total - saveLastTotalLoaded)) * 100 || 100,
-  })
+    errors: [],
+  }))
 }
 
 export { useProgress }

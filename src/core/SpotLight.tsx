@@ -4,6 +4,7 @@ import type { ParentProps } from 'solid-js'
 import {
   Show,
   createContext,
+  createEffect,
   createMemo,
   createRenderEffect,
   onCleanup,
@@ -284,11 +285,11 @@ function SpotlightShadowWithShader(props: SpotlightShadowWithShaderProps) {
     return fsQuad
   })
 
-  (() =>
+  createEffect(() =>
     useCommon({
       mesh,
       get spotlight() {
-        return rest.spotlight
+        return (rest as any).spotlight
       },
       get width() {
         return config.width
@@ -320,7 +321,7 @@ function SpotlightShadowWithShader(props: SpotlightShadowWithShaderProps) {
         alphaMap={renderTarget().texture}
         alphaMap-wrapS={RepeatWrapping}
         alphaMap-wrapT={RepeatWrapping}
-        opacity={rest.debug ? 1 : 0}
+        opacity={(rest as any).debug ? 1 : 0}
       >
         {config.children}
       </T.MeshBasicMaterial>
@@ -353,11 +354,11 @@ function SpotlightShadowWithoutShader(props: SpotlightShadowWithoutShaderProps) 
 
   let mesh: Mesh = null!
 
-  (() =>
+  createEffect(() =>
     useCommon({
       mesh,
       get spotlight() {
-        return rest.spotlight
+        return (rest as any).spotlight
       },
       get width() {
         return config.width
@@ -381,7 +382,7 @@ function SpotlightShadowWithoutShader(props: SpotlightShadowWithoutShaderProps) 
         alphaMap={config.map}
         alphaMap-wrapS={RepeatWrapping}
         alphaMap-wrapT={RepeatWrapping}
-        opacity={rest.debug ? 1 : 0}
+        opacity={(rest as any).debug ? 1 : 0}
       >
         {config.children}
       </T.MeshBasicMaterial>

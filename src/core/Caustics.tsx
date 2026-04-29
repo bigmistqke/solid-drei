@@ -568,7 +568,9 @@ export function Caustics(props: CausticsProps) {
     }
   })
 
-  (() => scene?.updateWorldMatrix(false, true))
+  createEffect(() => {
+    scene?.updateWorldMatrix(false, true)
+  })
 
   // CausticsProps extends S3.Props<Group> but we expose a Scene ref at runtime
   useRef(config as unknown as { ref?: Scene | ((value: S3.Meta<Scene>) => void) }, scene)

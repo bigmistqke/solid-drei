@@ -3,6 +3,7 @@ import {
   type Context,
   type JSX,
   createContext,
+  createEffect,
   createSignal,
   onCleanup,
   omit,
@@ -74,7 +75,7 @@ export type InstancesProps = Omit<S3.Props<typeof InstancedMesh>, 'children'> & 
   children?: JSX.Element | ((instance: (props: InstanceProps) => JSX.Element) => JSX.Element)
 }
 
-const globalContext = createContext<Api>(null!)
+const globalContext = createContext<Api | undefined>()
 const GlobalContext = globalContext
 const parentMatrix = new THREE.Matrix4()
 const instanceMatrix = new THREE.Matrix4()
@@ -85,11 +86,12 @@ const scale = new THREE.Vector3()
 
 export function Instance(_props: InstanceProps) {
   const rest = omit(_props, 'context', 'ref', 'children')
-  const { subscribe, getParent } = useContext(_props.context || globalContext)!
+  const contextValue = useContext(_props.context || globalContext)
+  const { subscribe, getParent } = contextValue!
 
   let positionMesh: PositionMesh = null!
 
-  (() => {
+  createEffect(() => {
     onCleanup(subscribe(positionMesh))
   })
 
@@ -117,7 +119,7 @@ export function Instances(_props: InstancesProps) {
   )
 
   const { context, Context: ContextComponent, instance } = (() => {
-    const ctx = createContext<Api>(null!)
+    const ctx = createContext<Api | undefined>()
     const Context = ctx
     return {
       context: ctx,

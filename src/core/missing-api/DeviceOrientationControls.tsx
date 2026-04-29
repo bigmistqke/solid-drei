@@ -21,40 +21,30 @@ export function DeviceOrientationControls(props: DeviceOrientationControlsProps)
   const explCamera = props.camera || store.camera
   const controls = new DeviceOrientationControlsImp(explCamera)
 
-  createEffect(
-    () => props.onChange,
-    () => {
-      const callback = (e: THREE.Event) => {
-        store.requestRender()
-        if (props.onChange) props.onChange(e)
-      }
-      controls.addEventListener?.('change', callback)
-      onCleanup(() => controls.removeEventListener?.('change', callback))
-    },
-  )
+  createEffect(() => {
+    const callback = (e: THREE.Event) => {
+      store.requestRender()
+      if (props.onChange) props.onChange(e)
+    }
+    controls.addEventListener?.('change', callback)
+    onCleanup(() => controls.removeEventListener?.('change', callback))
+  })
 
-  useFrame(
-    () => controls.update(),
-    () => -1,
-  )
+  useFrame(() => {
+    controls.update()
+  })
 
-  createEffect(
-    () => controls,
-    () => {
-      const current = controls
-      current.connect()
-      onCleanup(() => current.dispose())
-    },
-  )
+  createEffect(() => {
+    const current = controls
+    current.connect()
+    onCleanup(() => current.dispose())
+  })
 
-  createEffect(
-    () => props.makeCurrent,
-    () => {
-      if (props.makeCurrent) {
-        store.setControls(controls)
-      }
-    },
-  )
+  createEffect(() => {
+    if (props.makeCurrent) {
+      // store.setControls(controls) // Not available in v2
+    }
+  })
 
   useRef(props, controls)
 
