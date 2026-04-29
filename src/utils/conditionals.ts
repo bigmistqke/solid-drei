@@ -129,7 +129,10 @@ export function whenEffect<
     : Exclude<TAccessor, null | undefined | false>,
   const TResult,
 >(accessor: TAccessor, callback: (value: TValues) => TResult) {
-  createEffect(when(accessor, callback))
+  createEffect(
+    () => (typeof accessor === 'function' ? (accessor as () => TValues)() : accessor) as TValues | null | undefined | false,
+    (value) => { if (value) callback(value as TValues) }
+  )
 }
 
 export function whenMemo<
@@ -151,5 +154,8 @@ export function whenComputed<
     : Exclude<TAccessor, null | undefined | false>,
   const TResult,
 >(accessor: TAccessor, callback: (value: TValues) => TResult) {
-  createRenderEffect(when(accessor, callback))
+  createRenderEffect(
+    () => (typeof accessor === 'function' ? (accessor as () => TValues)() : accessor) as TValues | null | undefined | false,
+    (value) => { if (value) callback(value as TValues) }
+  )
 }

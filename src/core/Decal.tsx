@@ -1,5 +1,5 @@
 import { processProps, useRef } from '@/utils'
-import { type Accessor, type JSX, Show, createEffect, on, onCleanup } from 'solid-js'
+import { type Accessor, type JSX, Show, createEffect, onCleanup } from 'solid-js'
 import { Entity, type S3 } from 'solid-three'
 import * as THREE from 'three'
 import { AxesHelper, BoxGeometry, Euler, Mesh, MeshNormalMaterial, Object3D, Vector3 } from 'three'
@@ -40,54 +40,52 @@ export function Decal(_props: DecalProps) {
   useRef(_props, () => ref)
 
   createEffect(
-    on(
-      () => [
-        props.mesh,
-        ...vecToArray(props.position),
-        ...vecToArray(props.scale),
-        ...vecToArray(props.rotation as any),
-      ],
-      () => {
-        const parent = props.mesh?.() || (ref?.parent instanceof Mesh ? ref.parent : null)
-        if (!(parent instanceof Mesh)) {
-          throw new Error('Decal must have a Mesh as parent or specify its "mesh" prop')
+    () => [
+      props.mesh,
+      ...vecToArray(props.position),
+      ...vecToArray(props.scale),
+      ...vecToArray(props.rotation as any),
+    ] as const,
+    () => {
+      const parent = props.mesh?.() || (ref?.parent instanceof Mesh ? ref.parent : null)
+      if (!(parent instanceof Mesh)) {
+        throw new Error('Decal must have a Mesh as parent or specify its "mesh" prop')
+      }
+
+      const state = {
+        position: new Vector3(),
+        rotation: new Euler(),
+        scale: new Vector3(1, 1, 1),
+      }
+
+      if (parent && ref) {
+        if (props.position) state.position.set(...vecToArray(props.position))
+        if (props.scale) state.scale.set(...vecToArray(props.scale))
+
+        const matrixWorld = parent.matrixWorld.clone()
+        parent.matrixWorld.identity()
+
+        if (!props.rotation || typeof props.rotation === 'number') {
+          const o = new Object3D()
+          o.position.copy(state.position)
+          o.lookAt(parent.position)
+          if (typeof props.rotation === 'number') o.rotateZ(props.rotation)
+          state.rotation.copy(o.rotation)
+        } else {
+          state.rotation.set(...vecToArray(props.rotation))
         }
 
-        const state = {
-          position: new Vector3(),
-          rotation: new Euler(),
-          scale: new Vector3(1, 1, 1),
+        ref.geometry = new DecalGeometry(parent, state.position, state.rotation, state.scale)
+        if (helper) {
+          helper.position.copy(state.position)
+          helper.rotation.copy(state.rotation)
+          helper.scale.copy(state.scale)
+          helper.traverse(child => (child.raycast = () => null))
         }
-
-        if (parent && ref) {
-          if (props.position) state.position.set(...vecToArray(props.position))
-          if (props.scale) state.scale.set(...vecToArray(props.scale))
-
-          const matrixWorld = parent.matrixWorld.clone()
-          parent.matrixWorld.identity()
-
-          if (!props.rotation || typeof props.rotation === 'number') {
-            const o = new Object3D()
-            o.position.copy(state.position)
-            o.lookAt(parent.position)
-            if (typeof props.rotation === 'number') o.rotateZ(props.rotation)
-            state.rotation.copy(o.rotation)
-          } else {
-            state.rotation.set(...vecToArray(props.rotation))
-          }
-
-          ref.geometry = new DecalGeometry(parent, state.position, state.rotation, state.scale)
-          if (helper) {
-            helper.position.copy(state.position)
-            helper.rotation.copy(state.rotation)
-            helper.scale.copy(state.scale)
-            helper.traverse(child => (child.raycast = () => null))
-          }
-          parent.matrixWorld = matrixWorld
-          onCleanup(() => ref.geometry.dispose())
-        }
-      },
-    ),
+        parent.matrixWorld = matrixWorld
+        onCleanup(() => ref.geometry.dispose())
+      }
+    },
   )
 
   return (

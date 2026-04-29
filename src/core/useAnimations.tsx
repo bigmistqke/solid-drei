@@ -4,7 +4,6 @@ import {
   createEffect,
   createMemo,
   createRenderEffect,
-  on,
   onCleanup,
 } from 'solid-js'
 import { useFrame } from 'solid-three'
@@ -55,7 +54,8 @@ export function useAnimations<T extends AnimationClip>(
   })
 
   createEffect(
-    on(clips, () => {
+    () => clips(),
+    (clipsValue) => {
       const currentRoot = resolveRoot()
       const currentActions = actions()
       onCleanup(() => {
@@ -66,7 +66,7 @@ export function useAnimations<T extends AnimationClip>(
           mixer.uncacheAction(action as AnimationClip, currentRoot)
         })
       })
-    }),
+    },
   )
 
   onCleanup(() => mixer.stopAllAction())

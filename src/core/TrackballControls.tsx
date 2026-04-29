@@ -1,7 +1,7 @@
 import { processProps } from '@/utils'
 import { whenComputed } from '@/utils/conditionals'
 import type { Ref } from 'solid-js'
-import { createRenderEffect, createMemo, on, onCleanup } from 'solid-js'
+import { createRenderEffect, createMemo, onCleanup } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { autodispose, useFrame, useProps, useThree } from 'solid-three'
 import * as THREE from 'three'
@@ -56,7 +56,10 @@ export function useTrackballControls(props: TrackballControlsProps) {
       createRenderEffect(() => autolisten('end', config.onEnd))
 
       // Call resize-handler whenever store.bounds updates
-      createRenderEffect(on(() => store.bounds, controls().handleResize.bind(controls())))
+      createRenderEffect(
+        () => store.bounds,
+        () => { controls().handleResize() }
+      )
 
       // Apply props
       useProps(controls(), rest, store)

@@ -9,7 +9,6 @@ import {
   createMemo,
   createRenderEffect,
   createSignal,
-  on,
   onCleanup,
   splitProps,
   untrack,
@@ -301,29 +300,27 @@ function ScrollHtml(props: ScrollHtmlProps) {
   )
 
   createRenderEffect(
-    on(
-      () => scroll.fixed,
-      () => {
-        render(
-          () => (
-            <div
-              ref={setRef}
-              style={{
-                ...config.style,
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                'will-change': 'transform',
-              }}
-              {...rest}
-            >
-              <scrollContext.Provider value={scroll}>{config.children}</scrollContext.Provider>
-            </div>
-          ),
-          scroll.fixed,
-        )
-      },
-    ),
+    () => scroll.fixed,
+    (fixed) => {
+      render(
+        () => (
+          <div
+            ref={setRef}
+            style={{
+              ...config.style,
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              'will-change': 'transform',
+            }}
+            {...rest}
+          >
+            <scrollContext.Provider value={scroll}>{config.children}</scrollContext.Provider>
+          </div>
+        ),
+        fixed,
+      )
+    },
   )
   return null
 }

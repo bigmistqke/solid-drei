@@ -1,5 +1,5 @@
 import { processProps } from '@/utils'
-import { Show, createEffect, createSignal, on, type ParentProps } from 'solid-js'
+import { Show, createEffect, createSignal, type ParentProps } from 'solid-js'
 import { Entity, type S3 } from 'solid-three'
 import { AmbientLight, Group, PointLight, SpotLight } from 'three'
 import { AccumulativeShadows, RandomizedLight, type AccumulativeShadowsProps, type RandomizedLightProps } from './AccumulativeShadows'
@@ -37,10 +37,8 @@ export type StageProps = ParentProps<{
 function Refit(props: { radius: number; adjustCamera: number | boolean }) {
   const api = useBounds()
   createEffect(
-    on(
-      () => [props.radius, props.adjustCamera],
-      () => { if (props.adjustCamera) api?.refresh().clip().fit() },
-    ),
+    () => [props.radius, props.adjustCamera] as const,
+    ([radius, adjustCamera]) => { if (adjustCamera) api?.refresh().clip().fit() },
   )
   return null
 }

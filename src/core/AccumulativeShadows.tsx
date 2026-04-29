@@ -8,7 +8,6 @@ import {
   createEffect,
   createMemo,
   Index,
-  on,
   onCleanup,
   onMount,
   useContext,
@@ -250,15 +249,12 @@ export function AccumulativeShadows(
   })
 
   createEffect(
-    on(
-      // Track dependencies that should trigger a reset
-      () => [config.frames, config.blend, config.limit, config.temporal, config.resolution],
-      () => {
-        // Reset internals, buffers, ...
-        api.reset()
-        if (!api.temporal && api.frames !== Infinity) api.update(api.blend)
-      },
-    ),
+    () => [config.frames, config.blend, config.limit, config.temporal, config.resolution] as const,
+    () => {
+      // Reset internals, buffers, ...
+      api.reset()
+      if (!api.temporal && api.frames !== Infinity) api.update(api.blend)
+    },
   )
 
   // AccumulativeShadows exposes AccumulativeContext as ref, not Group

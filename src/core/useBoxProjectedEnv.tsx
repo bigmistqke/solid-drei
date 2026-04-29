@@ -1,5 +1,5 @@
 import { resolve } from '@/utils'
-import { createMemo, createRenderEffect, on } from 'solid-js'
+import { createMemo, createRenderEffect } from 'solid-js'
 import * as THREE from 'three'
 
 // credits for the box-projecting shader code go to codercat (https://codercat.tk)
@@ -94,10 +94,8 @@ export function useBoxProjectedEnv(
       JSON.stringify(resolve(position).toArray()) + JSON.stringify(resolve(size).toArray()),
   }))
   createRenderEffect(
-    on(
-      () => resolve(position) && resolve(size),
-      boolean => boolean && (ref.needsUpdate = true),
-    ),
+    () => resolve(position) && resolve(size),
+    (value) => { if (value) ref.needsUpdate = true },
   )
   return spread
 }

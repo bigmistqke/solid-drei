@@ -2,7 +2,6 @@ import {
   createContext,
   createEffect,
   createRenderEffect,
-  on,
   onCleanup,
   useContext,
   type JSX,
@@ -46,7 +45,8 @@ export function KeyboardControls(props: KeyboardControlsProps) {
   })
 
   createEffect(
-    on(key, () => {
+    () => key(),
+    (keyValue) => {
       const config = props.map.map(({ name, keys, up }) => ({
         keys,
         up,
@@ -91,11 +91,14 @@ export function KeyboardControls(props: KeyboardControlsProps) {
         source.removeEventListener('keydown', downHandler as EventListener)
         source.removeEventListener('keyup', upHandler as EventListener)
       })
-    }),
+    },
   )
 
   function sub<T extends boolean>(boolean: Accessor<T>, effect: (pressed: T) => void) {
-    createRenderEffect(on(boolean, effect))
+    createRenderEffect(
+      () => boolean(),
+      (value) => effect(value),
+    )
   }
 
   return <keyboardControlsContext.Provider value={[sub, controls]} children={props.children} />
