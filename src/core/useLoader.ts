@@ -1,6 +1,6 @@
 import { awaitMapObject, isRecord, resolve } from '@/utils'
 import type { AccessorMaybe } from '@/utils/types'
-import { createResource, mergeProps, type Resource } from 'solid-js'
+import { createResource, merge, type Resource } from 'solid-js'
 import { type S3 } from 'solid-three'
 import { type Loader } from 'three'
 import { LoaderCache, type LoaderRegistry } from './LoaderCache'
@@ -182,7 +182,7 @@ export function useLoader<TLoader extends Loader<object, any>>(
   url: AccessorMaybe<UrlFromLoader<TLoader> | Record<string, UrlFromLoader<TLoader>>>,
   options?: UseLoaderOptions<TLoader, any>,
 ) {
-  const config = mergeProps({ cache: true }, options)
+  const config = merge({ cache: true }, options)
 
   let loader = LOADER_CACHE.get(constructor) as TLoader
 

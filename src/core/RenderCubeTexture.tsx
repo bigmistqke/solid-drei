@@ -1,6 +1,6 @@
 import { useRef } from '@/utils'
 import type { JSX, Ref } from 'solid-js'
-import { mergeProps, splitProps } from 'solid-js'
+import { merge, omit } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { Entity, Portal, useFrame, useThree } from 'solid-three'
 import { CubeCamera, CubeTexture, HalfFloatType, Scene, WebGLCubeRenderTarget } from 'three'
@@ -22,19 +22,18 @@ type Props = S3.Props<CubeTexture> & {
 }
 
 export const RenderCubeTexture = (props: Props) => {
-  const [config, rest] = splitProps(
-    mergeProps(
-      {
-        resolution: 256,
-        near: 0.1,
-        far: 1000,
-        renderPriority: 0,
-        frames: Infinity,
-      },
-      props,
-    ),
-    ['ref', 'children', 'resolution', 'near', 'far', 'renderPriority', 'frames'],
+  const merged = merge(
+    {
+      resolution: 256,
+      near: 0.1,
+      far: 1000,
+      renderPriority: 0,
+      frames: Infinity,
+    },
+    props,
   )
+  const rest = omit(merged, 'ref', 'children', 'resolution', 'near', 'far', 'renderPriority', 'frames')
+  const config = merged
 
   const cubeRenderTarget = new WebGLCubeRenderTarget(config.resolution)
   cubeRenderTarget.texture.type = HalfFloatType

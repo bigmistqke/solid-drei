@@ -1,5 +1,5 @@
 import { check } from '@/utils/conditionals'
-import { For, Show, createMemo, createResource, onCleanup, splitProps } from 'solid-js'
+import { For, Show, createMemo, createResource, onCleanup, omit } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { createT } from 'solid-three'
 import { DoubleSide, Mesh, MeshBasicMaterial, Object3D, ShapeGeometry } from 'three'
@@ -75,7 +75,7 @@ export interface SvgProps extends Omit<S3.Props<Object3D>, 'ref'> {
  * @link https://threejs.org/docs/#examples/en/loaders/SVGLoader
  */
 export function Svg(props: SvgProps) {
-  const [config, rest] = splitProps(props, [
+  const rest = omit(props,
     'src',
     'skipFill',
     'skipStrokes',
@@ -83,7 +83,8 @@ export function Svg(props: SvgProps) {
     'strokeMaterial',
     'fillMeshProps',
     'strokeMeshProps',
-  ])
+  )
+  const config = props
   const [resource] = createResource<SVGResult, string>(
     () => (!config.src.startsWith('<svg') ? config.src : `data:image/sv>g+xml;utf8,${config.src}`),
     path =>

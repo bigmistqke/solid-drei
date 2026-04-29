@@ -1,6 +1,6 @@
 import { useRef } from '@/utils'
 import type { JSX, Ref } from 'solid-js'
-import { mergeProps, splitProps } from 'solid-js'
+import { merge, omit } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { Entity, Portal, useFrame, useThree } from 'solid-three'
 import { Group, Object3D, Scene, Texture, WebGLRenderTarget } from 'three'
@@ -33,34 +33,34 @@ type Props = S3.Props<Texture> & {
 }
 
 export const RenderTexture = (props: Props) => {
-  const [config, rest] = splitProps(
-    mergeProps(
-      {
-        samples: 8,
-        renderPriority: 0,
-        eventPriority: 0,
-        frames: Infinity,
-        stencilBuffer: false,
-        depthBuffer: false,
-        generateMipmaps: false,
-      },
-      props,
-    ),
-    [
-      'ref',
-      'children',
-      'compute',
-      'width',
-      'height',
-      'samples',
-      'renderPriority',
-      'eventPriority',
-      'frames',
-      'stencilBuffer',
-      'depthBuffer',
-      'generateMipmaps',
-    ],
+  const merged = merge(
+    {
+      samples: 8,
+      renderPriority: 0,
+      eventPriority: 0,
+      frames: Infinity,
+      stencilBuffer: false,
+      depthBuffer: false,
+      generateMipmaps: false,
+    },
+    props,
   )
+  const rest = omit(
+    merged,
+    'ref',
+    'children',
+    'compute',
+    'width',
+    'height',
+    'samples',
+    'renderPriority',
+    'eventPriority',
+    'frames',
+    'stencilBuffer',
+    'depthBuffer',
+    'generateMipmaps',
+  )
+  const config = merged
 
   const context = useThree()
   const fbo = useFBO(

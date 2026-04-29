@@ -6,7 +6,7 @@ import {
   createSignal,
   onMount,
   Show,
-  splitProps,
+  omit,
   useContext,
 } from 'solid-js'
 import type { S3 } from 'solid-three'
@@ -240,7 +240,7 @@ function PointsInstances(props: PointsInstancesProps) {
 /**********************************************************************************/
 
 export function Point(props: S3.Props<PositionPoint>) {
-  const [config, rest] = splitProps(props, ['ref', 'children'])
+  const rest = omit(props, 'ref', 'children')
 
   const positionPoint = new PositionPoint()
   const pointContext = usePointContext()
@@ -249,11 +249,11 @@ export function Point(props: S3.Props<PositionPoint>) {
     pointContext.subscribe(positionPoint)
   })
 
-  useRef(config, positionPoint)
+  useRef(props, positionPoint)
 
   return (
     <Entity from={positionPoint} instance={pointContext.getParent()} {...rest}>
-      {config.children}
+      {props.children}
     </Entity>
   )
 }

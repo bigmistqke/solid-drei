@@ -8,7 +8,6 @@ import { processProps, useRef } from '@/utils'
 import { version } from '@/utils/constants'
 import type { Intersect } from '@/utils/types'
 import type { Ref } from 'solid-js'
-import { splitProps } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { createT, Entity, useFrame } from 'solid-three'
 import type { ColorRepresentation, ShaderMaterial, Side, Uniform } from 'three'
@@ -168,20 +167,6 @@ export function Grid(props: GridProps) {
       'side',
     ],
   )
-  const [uniforms1] = splitProps(config, [
-    'cellSize',
-    'sectionSize',
-    'cellColor',
-    'sectionColor',
-    'cellThickness',
-    'sectionThickness',
-  ])
-  const [uniforms2] = splitProps(config, [
-    'fadeDistance',
-    'fadeStrength',
-    'infiniteGrid',
-    'followCamera',
-  ])
 
   const mesh = new Mesh()
   const plane = new Plane()
@@ -217,8 +202,16 @@ export function Grid(props: GridProps) {
         transparent
         extensions-derivatives
         side={config.side}
-        {...uniforms1}
-        {...uniforms2}
+        cellSize={config.cellSize}
+        sectionSize={config.sectionSize}
+        cellColor={config.cellColor}
+        sectionColor={config.sectionColor}
+        cellThickness={config.cellThickness}
+        sectionThickness={config.sectionThickness}
+        fadeDistance={config.fadeDistance}
+        fadeStrength={config.fadeStrength}
+        infiniteGrid={config.infiniteGrid}
+        followCamera={config.followCamera}
       />
       <T.PlaneGeometry args={config.args} />
     </Entity>

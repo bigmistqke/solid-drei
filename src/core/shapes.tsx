@@ -1,6 +1,6 @@
 import { useRef } from '@/utils'
 import type { Args } from '@/utils/types'
-import { onMount, splitProps, type JSX } from 'solid-js'
+import { onMount, omit, type JSX } from 'solid-js'
 import { autodispose, Entity, type S3 } from 'solid-three'
 import {
   Box3,
@@ -60,7 +60,7 @@ interface GeometryProps<T extends GeometryKind> extends Omit<S3.Props<typeof Mes
 
 function create<TKind extends GeometryKind>(Geometry: GeometryKind, effect?: (mesh: Mesh) => void) {
   return function Shape(props: GeometryProps<TKind>) {
-    const [config, rest] = splitProps(props, ['args', 'children', 'ref'])
+    const rest = omit(props, 'args', 'children', 'ref')
 
     const mesh = new Mesh()
 
@@ -73,11 +73,11 @@ function create<TKind extends GeometryKind>(Geometry: GeometryKind, effect?: (me
         <Entity
           from={autodispose(
             // @ts-ignore - union constructor args cannot be statically narrowed
-            new Geometry(...(config.args ?? [])),
+            new Geometry(...(props.args ?? [])),
           )}
           attach="geometry"
         />
-        {config.children}
+        {props.children}
       </Entity>
     )
   }

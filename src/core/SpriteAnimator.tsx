@@ -6,7 +6,7 @@ import {
   createRenderEffect,
   createResource,
   createSignal,
-  splitProps,
+  omit,
   untrack,
 } from 'solid-js'
 import { createT, useFrame, type S3 } from 'solid-three'
@@ -120,7 +120,7 @@ export interface SpriteAnimatorProps extends S3.Props<Group> {
 }
 
 export function SpriteAnimator(props: SpriteAnimatorProps) {
-  const [config, rest] = splitProps(props, [
+  const rest = omit(props,
     'startFrame',
     'endFrame',
     'fps',
@@ -140,7 +140,8 @@ export function SpriteAnimator(props: SpriteAnimatorProps) {
     'flipX',
     'alphaTest',
     'children',
-  ])
+  )
+  const config = props
   const [isJsonReady, setJsonReady] = createSignal(false)
   const [sprite, setSprite] = createSignal<Sprite>()
   const [spriteMaterial, setSpriteMaterial] = createSignal<SpriteMaterial>()

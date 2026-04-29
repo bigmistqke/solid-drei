@@ -3,7 +3,7 @@ import {
   createEffect,
   createMemo,
   onCleanup,
-  splitProps,
+  omit,
   type Accessor,
   type JSX,
   type Ref,
@@ -43,7 +43,7 @@ export interface TransformControlsProps
 }
 
 export function TransformControls(props: TransformControlsProps) {
-  const [config, rest] = splitProps(props, [
+  const rest = omit(props,
     'camera',
     'children',
     'domElement',
@@ -53,9 +53,9 @@ export function TransformControls(props: TransformControlsProps) {
     'onObjectChange',
     'object',
     'makeCurrent',
-  ])
+  )
 
-  const [transformProps, objectProps] = splitProps(rest, [
+  const objectProps = omit(rest,
     'ref',
     'enabled',
     'axis',
@@ -68,38 +68,38 @@ export function TransformControls(props: TransformControlsProps) {
     'showX',
     'showY',
     'showZ',
-  ])
+  )
 
   const store = useThree()
   const group = new Group()
 
   const controls = createMemo(() => {
     const controls = new ThreeTransformControls(
-      config.camera ?? store.camera,
-      config.domElement ?? store.canvas,
+      props.camera ?? store.camera,
+      props.domElement ?? store.canvas,
     )
     const autolisten = useAutolisten(controls)
     createEffect(
-      () => config.onChange,
+      () => props.onChange,
       (onChange) => autolisten('change', onChange)
     )
     createEffect(
-      () => config.onMouseUp,
+      () => props.onMouseUp,
       (onMouseUp) => autolisten('mouseUp', onMouseUp)
     )
     createEffect(
-      () => config.onMouseDown,
+      () => props.onMouseDown,
       (onMouseDown) => autolisten('mouseDown', onMouseDown)
     )
     createEffect(
-      () => config.onObjectChange,
+      () => props.onObjectChange,
       (onObjectChange) => autolisten('objectChange', onObjectChange)
     )
     return controls
   })
 
   createEffect(
-    () => [controls(), resolve(config.object)] as const,
+    () => [controls(), resolve(props.object)] as const,
     ([ctrl, obj]) => {
       ctrl.attach(obj || group)
       onCleanup(ctrl.detach.bind(ctrl))
@@ -109,10 +109,10 @@ export function TransformControls(props: TransformControlsProps) {
   return (
     <>
       <Entity from={group} {...objectProps}>
-        {config.children}
+        {props.children}
       </Entity>
       <Portal>
-        <Entity from={controls()} {...transformProps} />
+        <Entity from={controls()} ref={rest.ref} enabled={rest.enabled} axis={rest.axis} mode={rest.mode} translationSnap={rest.translationSnap} rotationSnap={rest.rotationSnap} scaleSnap={rest.scaleSnap} space={rest.space} size={rest.size} showX={rest.showX} showY={rest.showY} showZ={rest.showZ} />
       </Portal>
     </>
   )

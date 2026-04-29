@@ -1,4 +1,4 @@
-import { createEffect, onCleanup, splitProps } from 'solid-js'
+import { createEffect, onCleanup, omit } from 'solid-js'
 import { useFrame, useThree } from 'solid-three'
 import Stats from 'stats-gl'
 
@@ -8,17 +8,17 @@ type Props = ConstructorParameters<typeof Stats>[0] & {
 }
 
 export function StatsGl(_props: Props) {
-  const [props, rest] = splitProps(_props, ['className', 'parent'])
+  const rest = omit(_props, 'className', 'parent')
   const store = useThree()
 
   createEffect(async () => {
     const stats = new Stats(rest)
     await stats.init(store.gl.domElement)
 
-    const node = props.parent || document.body
+    const node = _props.parent || document.body
     node?.appendChild(stats.domElement)
-    if (props.className)
-      stats.domElement.classList.add(...props.className.split(' ').filter(Boolean))
+    if (_props.className)
+      stats.domElement.classList.add(..._props.className.split(' ').filter(Boolean))
 
     useFrame(() => stats.begin(), { priority: -Infinity })
     useFrame(() => stats.end(), { priority: Infinity, stage: 'after' })

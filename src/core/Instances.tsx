@@ -6,7 +6,7 @@ import {
   createSignal,
   onMount,
   onCleanup,
-  splitProps,
+  omit,
   useContext,
 } from 'solid-js'
 import { Entity, createT, useFrame, type S3 } from 'solid-three'
@@ -84,8 +84,8 @@ const rotation = new THREE.Quaternion()
 const scale = new THREE.Vector3()
 
 export function Instance(_props: InstanceProps) {
-  const [props, rest] = splitProps(_props, ['context', 'ref', 'children'])
-  const { subscribe, getParent } = useContext(props.context || globalContext)!
+  const rest = omit(_props, 'context', 'ref', 'children')
+  const { subscribe, getParent } = useContext(_props.context || globalContext)!
 
   let positionMesh: PositionMesh = null!
 
@@ -98,13 +98,13 @@ export function Instance(_props: InstanceProps) {
       ref={v => {
         positionMesh = v
         v.instanceKey = v
-        if (typeof props.ref === 'function') props.ref(v as any)
-        else if (props.ref !== undefined) (props as any).ref = v
+        if (typeof _props.ref === 'function') _props.ref(v as any)
+        else if (_props.ref !== undefined) (_props as any).ref = v
       }}
       instance={getParent()}
       {...(rest as any)}
     >
-      {props.children}
+      {_props.children}
     </T.PositionMesh>
   )
 }

@@ -10,7 +10,7 @@ import {
   createRenderEffect,
   createSignal,
   onCleanup,
-  splitProps,
+  omit,
   untrack,
   useContext,
   type JSX,
@@ -275,7 +275,8 @@ interface ScrollHtmlProps extends ParentProps {
 }
 
 function ScrollHtml(props: ScrollHtmlProps) {
-  const [config, rest] = splitProps(props, ['children', 'style', 'ref'])
+  const rest = omit(props, 'children', 'style', 'ref')
+  const config = props
   const [ref, setRef] = createSignal<HTMLDivElement>()
 
   const scroll = useScrollContext()!
@@ -338,7 +339,8 @@ type ScrollProps = {
 }
 
 export function Scroll(props: ScrollProps) {
-  const [config, rest] = splitProps(props, ['html'])
+  const rest = omit(props, 'html')
+  const config = props
   const Component = (config.html ? ScrollHtml : ScrollCanvas) as unknown as (p: typeof rest) => JSX.Element
   return <Component {...rest} />
 }

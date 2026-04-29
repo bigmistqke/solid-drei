@@ -1,7 +1,7 @@
 import { ControlUtils } from '@/core/control-utils'
 import { useRef } from '@/utils'
 import type { Ref } from 'solid-js'
-import { createMemo, splitProps } from 'solid-js'
+import { createMemo, omit } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { Entity, useThree } from 'solid-three'
 import type { Event, OrthographicCamera, PerspectiveCamera } from 'three'
@@ -20,7 +20,7 @@ export interface ArcballControlsProps extends S3.Props<ThreeArcballControls> {
 }
 
 export function ArcballControls(props: ArcballControlsProps) {
-  const [config, rest] = splitProps(props, [
+  const rest = omit(props,
     'ref',
     'camera',
     'makeCurrent',
@@ -29,16 +29,16 @@ export function ArcballControls(props: ArcballControlsProps) {
     'onChange',
     'onStart',
     'onEnd',
-  ])
+  )
   const store = useThree()
-  const camera = () => config.camera || store.camera
-  const element = () => ControlUtils.getDomElement(store, config)
+  const camera = () => props.camera || store.camera
+  const element = () => ControlUtils.getDomElement(store, props)
   const controls = createMemo(() => new ThreeArcballControls(camera()))
 
-  ControlUtils.initialize(controls, element, store, config)
-  ControlUtils.addEventHandler(controls, 'change', event => config.onChange?.(event))
-  ControlUtils.addEventHandler(controls, 'start', event => config.onStart?.(event))
-  ControlUtils.addEventHandler(controls, 'end', event => config.onEnd?.(event))
+  ControlUtils.initialize(controls, element, store, props)
+  ControlUtils.addEventHandler(controls, 'change', event => props.onChange?.(event))
+  ControlUtils.addEventHandler(controls, 'start', event => props.onStart?.(event))
+  ControlUtils.addEventHandler(controls, 'end', event => props.onEnd?.(event))
 
   useRef(props, controls)
 
