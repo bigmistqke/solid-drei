@@ -104,6 +104,7 @@ interface PointContext {
 }
 
 const pointContext = /*@__PURE__*/ createContext<PointContext>(null!)
+const PointContext = pointContext
 const usePointContext = () => {
   const context = useContext(pointContext)
   if (!context) throw 'usePoint should be used inside `<PointInstances/>'
@@ -219,7 +220,7 @@ function PointsInstances(props: PointsInstancesProps) {
           usage={DynamicDrawUsage}
         />
       </T.BufferGeometry>
-      <pointContext
+      <PointContext
         value={{
           getParent: () => parent,
           subscribe: ref => {
@@ -230,7 +231,7 @@ function PointsInstances(props: PointsInstancesProps) {
         }}
       >
         {config.children}
-      </pointContext>
+      </PointContext>
     </Entity>
   )
 }

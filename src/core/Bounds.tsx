@@ -45,6 +45,7 @@ const isBox3 = (def: any): def is THREE.Box3 => def && (def as THREE.Box3).isBox
 export const boundsControlsContext = createContext<ControlsProto | null>(null)
 
 const boundsContext = createContext<BoundsApi>(null!)
+const BoundsContext = boundsContext
 
 export function Bounds(_props: BoundsProps) {
   const props = defaultProps(_props, {
@@ -253,7 +254,7 @@ export function Bounds(_props: BoundsProps) {
 
   return (
     <Entity from={group}>
-      <boundsContext value={api}>{props.children}</boundsContext>
+      <BoundsContext value={api}>{props.children}</BoundsContext>
     </Entity>
   )
 }

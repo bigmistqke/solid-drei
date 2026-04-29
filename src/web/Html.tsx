@@ -9,7 +9,7 @@ import {
   type Accessor,
   type JSX,
 } from 'solid-js'
-import { render } from 'solid-js/web'
+import { render } from '@solidjs/web'
 import { createT, Entity, useFrame, useThree, type S3 } from 'solid-three'
 import {
   Camera,

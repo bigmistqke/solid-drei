@@ -41,6 +41,7 @@ export interface ScrollContext {
 }
 
 const scrollContext = createContext<ScrollContext>(null!)
+const ScrollContext = scrollContext
 export function useScrollContext() {
   const context = useContext(scrollContext)
   if (!context) throw 'scrollContext is undefined'
@@ -233,7 +234,7 @@ export function ScrollControls(props: ScrollControlsProps) {
     )
     if (state().delta > config.eps) store.requestRender()
   })
-  return <scrollContext value={state()}>{config.children}</scrollContext>
+  return <ScrollContext value={state()}>{config.children}</ScrollContext>
 }
 
 /**********************************************************************************/

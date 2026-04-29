@@ -71,7 +71,7 @@ export class BlurPass {
     this.scene.add(this.screen)
   }
 
-  render(renderer, inputBuffer, outputBuffer) {
+  render(renderer: any, inputBuffer: any, outputBuffer: any) {
     const scene = this.scene
     const camera = this.camera
     const renderTargetA = this.renderTargetA

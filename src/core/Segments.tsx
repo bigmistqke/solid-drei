@@ -33,6 +33,7 @@ interface SegmentsContext {
   subscribe: (ref: SegmentObject) => void
 }
 const segmentsContext = createContext<SegmentsContext>()
+const SegmentsContext = segmentsContext
 function useSegments() {
   const context = useContext(segmentsContext)
   if (!context) throw '<Segment/> should be a descendant of <Segments/>'
@@ -107,7 +108,7 @@ export function Segments(props: SegmentsProps) {
         linewidth={config.lineWidth}
         {...rest}
       />
-      <segmentsContext
+      <SegmentsContext
         value={{
           subscribe(ref: SegmentObject) {
             setSegments(segments => [...segments, ref])
@@ -116,7 +117,7 @@ export function Segments(props: SegmentsProps) {
         }}
       >
         {config.children}
-      </segmentsContext>
+      </SegmentsContext>
     </Entity>
   )
 }

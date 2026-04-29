@@ -8,7 +8,7 @@ import { AxisArrow } from './AxisArrow'
 import { AxisRotator } from './AxisRotator'
 import { PlaneSlider } from './PlaneSlider'
 import type { OnDragStartProps } from './context'
-import { context } from './context'
+import { context, Context } from './context'
 
 const tV0 = new THREE.Vector3()
 const tV1 = new THREE.Vector3()
@@ -236,7 +236,7 @@ export function PivotControls(_props: PivotControlsProps) {
   })
 
   return (
-    <context
+    <Context
       value={{
         onDragStart: (props: OnDragStartProps) => {
           mL0.copy(ref.matrix)
@@ -305,6 +305,6 @@ export function PivotControls(_props: PivotControlsProps) {
           <Entity from={Group} ref={childrenRef!}>{config.children}</Entity>
         </Entity>
       </Entity>
-    </context>
+    </Context>
   )
 }

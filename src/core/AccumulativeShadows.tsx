@@ -99,6 +99,9 @@ export const accumulativeContext = createContext<AccumulativeContext>(
   null as unknown as AccumulativeContext,
 )
 
+// Capitalized alias for use in JSX
+const AccumulativeContext = accumulativeContext
+
 const SoftShadowMaterial = /* @__PURE__ */ shaderMaterial(
   {
     color: /* @__PURE__ */ new Color(),
@@ -267,7 +270,7 @@ export function AccumulativeShadows(
   return (
     <Entity from={Group} {...rest}>
       <Entity traverse={() => null} from={lights}>
-        <accumulativeContext value={api}>{config.children}</accumulativeContext>
+        <AccumulativeContext value={api}>{config.children}</AccumulativeContext>
       </Entity>
       <Entity from={plane} receiveShadow scale={config.scale} rotation={[-Math.PI / 2, 0, 0]}>
         <Entity from={new PlaneGeometry()} />

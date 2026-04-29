@@ -36,6 +36,7 @@ type GizmoHelperContext = {
   tweenCamera: (direction: Vector3) => void
 }
 const gizmoHelperContext = createContext<GizmoHelperContext>()
+const GizmoHelperContext = gizmoHelperContext
 export const useGizmoContext = () => assertedNotNullish(useContext(gizmoHelperContext))
 
 /**********************************************************************************/
@@ -171,7 +172,7 @@ export const GizmoHelper = (props: GizmoHelperProps): any => {
 
   return (
     <Hud renderPriority={config.renderPriority}>
-      <gizmoHelperContext
+      <GizmoHelperContext
         value={{
           tweenCamera,
         }}
@@ -180,7 +181,7 @@ export const GizmoHelper = (props: GizmoHelperProps): any => {
         <Entity from={Group} ref={gizmo!} position={position()}>
           {config.children}
         </Entity>
-      </gizmoHelperContext>
+      </GizmoHelperContext>
     </Hud>
   )
 }

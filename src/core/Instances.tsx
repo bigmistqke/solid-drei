@@ -75,6 +75,7 @@ export type InstancesProps = Omit<S3.Props<typeof InstancedMesh>, 'children'> & 
 }
 
 const globalContext = createContext<Api>(null!)
+const GlobalContext = globalContext
 const parentMatrix = new THREE.Matrix4()
 const instanceMatrix = new THREE.Matrix4()
 const tempMatrix = new THREE.Matrix4()
@@ -115,10 +116,12 @@ export function Instances(_props: InstancesProps) {
     ['ref', 'children', 'range', 'limit', 'frames'],
   )
 
-  const { context, instance } = (() => {
+  const { context, Context: ContextComponent, instance } = (() => {
     const ctx = createContext<Api>(null!)
+    const Context = ctx
     return {
       context: ctx,
+      Context,
       instance: (p: InstanceProps) => <Instance context={ctx} {...p} />,
     }
   })()
@@ -203,9 +206,9 @@ export function Instances(_props: InstancesProps) {
         usage={DynamicDrawUsage}
       />
       {typeof props.children === 'function' ? (
-        <context value={api}>{props.children(instance)}</context>
+        <ContextComponent value={api}>{props.children(instance)}</ContextComponent>
       ) : (
-        <globalContext value={api}>{props.children}</globalContext>
+        <GlobalContext value={api}>{props.children}</GlobalContext>
       )}
     </Entity>
   )

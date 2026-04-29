@@ -75,7 +75,7 @@ export const RenderTexture = (props: Props) => {
   )
   const vScene = new Scene()
 
-  const uvCompute = (event, state, previous) => {
+  const uvCompute = (event: any, state: any, previous: any) => {
     // Since this is only a texture it does not have an easy way to obtain the parent, which we
     // need to transform event coordinates to local coordinates. We use r3f internals to find the
     // next Object3D.

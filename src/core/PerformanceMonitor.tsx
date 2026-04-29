@@ -54,6 +54,7 @@ type PerformanceMonitorProps = {
 }
 
 const context = createContext<PerformanceMonitorApi>(null!)
+const Context = context
 
 export function PerformanceMonitor({
   iterations = 10,
@@ -141,7 +142,7 @@ export function PerformanceMonitor({
       }
     }
   })
-  return <context value={api}>{children}</context>
+  return <Context value={api}>{children}</Context>
 }
 
 export function usePerformanceMonitor({

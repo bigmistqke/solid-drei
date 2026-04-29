@@ -12,6 +12,7 @@ type Api = {
 }
 
 const globalContext = createContext<Api>(null!)
+const GlobalContext = globalContext
 
 export interface MarchingCubesProps extends S3.Props<Group> {
   resolution?: number
@@ -50,9 +51,9 @@ export function MarchingCubes(_props: MarchingCubesProps) {
   return (
     <>
       <Entity from={marchingCubes()} {...(rest as unknown as S3.Props<MarchingCubesImpl>)} ref={(m: MarchingCubesImpl) => { marchingCubesRef = m }}>
-        <globalContext value={{ getParent: () => marchingCubesRef }}>
+        <GlobalContext value={{ getParent: () => marchingCubesRef }}>
           {props.children}
-        </globalContext>
+        </GlobalContext>
       </Entity>
     </>
   )

@@ -28,3 +28,4 @@ export type PivotContext = {
 }
 
 export const context = createContext<PivotContext>(null!)
+export const Context = context

@@ -35,6 +35,7 @@ interface KeyboardControlsProps {
 }
 
 const keyboardControlsContext = /*@__PURE__*/ createContext<KeyboardControls>()
+const KeyboardControlsContext = keyboardControlsContext
 
 export function KeyboardControls(props: KeyboardControlsProps) {
   const key = () => props.map.map(item => item.name + item.keys).join('-')
@@ -104,7 +105,7 @@ export function KeyboardControls(props: KeyboardControlsProps) {
     )
   }
 
-  return <keyboardControlsContext value={[sub, controls]} children={props.children} />
+  return <KeyboardControlsContext value={[sub, controls]}>{props.children}</KeyboardControlsContext>
 }
 
 type Selector<T extends string = string> = (state: KeyboardControlsState<T>) => boolean

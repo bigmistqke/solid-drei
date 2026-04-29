@@ -16,6 +16,7 @@ import {
 import { SelectionBox } from 'three-stdlib'
 
 const context = createContext<Accessor<Object3D[]>>(() => [])
+const Context = context
 
 export interface SelectProps extends S3.Props<Group> {
   /** Allow multi select, default: false */
@@ -219,7 +220,7 @@ export function Select(props: SelectProps) {
       onClickMissed={onClickMissed}
       // {...rest}
     >
-      <context value={active}>{config.children}</context>
+      <Context value={active}>{config.children}</Context>
     </Entity>
   )
 }

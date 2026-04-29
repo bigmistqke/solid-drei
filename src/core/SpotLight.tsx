@@ -99,6 +99,7 @@ function useCommon(arg: {
 /**********************************************************************************/
 
 const spotLightContext = createContext<{ spotlight: SpotLightImpl; debug: boolean }>()
+const SpotLightContext = spotLightContext
 const useSpotLightContext = () => {
   const context = useContext(spotLightContext)
   if (!context) {
@@ -458,7 +459,7 @@ function SpotLight(props: SpotlightProps) {
           />
         </Show>
       </Entity>
-      <spotLightContext
+      <SpotLightContext
         value={{
           spotlight: spotLight,
           get debug() {
@@ -467,7 +468,7 @@ function SpotLight(props: SpotlightProps) {
         }}
       >
         {config.children}
-      </spotLightContext>
+      </SpotLightContext>
       <T.SpotLightHelper args={[spotLight]} />
     </T.Group>
   )
