@@ -1,4 +1,3 @@
-import { Entity } from 'solid-three'
 import type { Meta, StoryObj } from 'storybook-solidjs-vite'
 import { useSpriteLoader } from '../../src'
 import { Setup } from '../Setup'

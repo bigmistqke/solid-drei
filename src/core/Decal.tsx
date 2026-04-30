@@ -42,13 +42,16 @@ export function Decal(_props: DecalProps) {
   createEffect(
     on(
       () => [
-        props.mesh,
+        props.mesh?.(),
+        props.position != null,
+        props.scale != null,
+        props.rotation,
         ...vecToArray(props.position),
         ...vecToArray(props.scale),
         ...vecToArray(props.rotation as any),
-      ],
-      () => {
-        const parent = props.mesh?.() || (ref?.parent instanceof Mesh ? ref.parent : null)
+      ] as const,
+      ([meshValue, hasPosition, hasScale, rotation, px, py, pz, sx, sy, sz, rx, ry, rz]) => {
+        const parent = (meshValue as Mesh | null) || (ref?.parent instanceof Mesh ? ref.parent : null)
         if (!(parent instanceof Mesh)) {
           throw new Error('Decal must have a Mesh as parent or specify its "mesh" prop')
         }
@@ -60,20 +63,20 @@ export function Decal(_props: DecalProps) {
         }
 
         if (parent && ref) {
-          if (props.position) state.position.set(...vecToArray(props.position))
-          if (props.scale) state.scale.set(...vecToArray(props.scale))
+          if (hasPosition) state.position.set(px as number, py as number, pz as number)
+          if (hasScale) state.scale.set(sx as number, sy as number, sz as number)
 
           const matrixWorld = parent.matrixWorld.clone()
           parent.matrixWorld.identity()
 
-          if (!props.rotation || typeof props.rotation === 'number') {
+          if (!rotation || typeof rotation === 'number') {
             const o = new Object3D()
             o.position.copy(state.position)
             o.lookAt(parent.position)
-            if (typeof props.rotation === 'number') o.rotateZ(props.rotation)
+            if (typeof rotation === 'number') o.rotateZ(rotation)
             state.rotation.copy(o.rotation)
           } else {
-            state.rotation.set(...vecToArray(props.rotation))
+            state.rotation.set(rx as number, ry as number, rz as number)
           }
 
           ref.geometry = new DecalGeometry(parent, state.position, state.rotation, state.scale)

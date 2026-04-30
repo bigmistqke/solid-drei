@@ -1,4 +1,4 @@
-import { createSignal, onMount, Suspense, type JSX } from 'solid-js'
+import { createSignal, Suspense, type JSX } from 'solid-js'
 import type { Meta, StoryObj } from 'storybook-solidjs-vite'
 import { DoubleSide } from 'three'
 import { Html, Plane, useScreenVideoTexture } from '../../src'

@@ -1,6 +1,5 @@
-import { createSignal, Suspense } from 'solid-js'
+import { Suspense } from 'solid-js'
 import type { Meta, StoryObj } from 'storybook-solidjs-vite'
-import * as THREE from 'three'
 import { useCubeTexture } from '../../src'
 import { Setup } from '../Setup'
 import { T } from '../t'

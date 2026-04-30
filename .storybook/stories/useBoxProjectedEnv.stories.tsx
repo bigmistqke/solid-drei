@@ -1,4 +1,3 @@
-import { createMemo } from 'solid-js'
 import type { Meta, StoryObj } from 'storybook-solidjs-vite'
 import * as THREE from 'three'
 import { useBoxProjectedEnv } from '../../src'
@@ -58,10 +57,11 @@ function UseBoxProjectedEnvScene() {
         <T.MeshStandardMaterial wireframe transparent opacity={0.1} color="blue" />
       </T.Mesh>
 
-      {/* Reflective plane - spread envProps to apply box-projection shader modifications */}
+      {/* Reflective plane - envProps applies box-projection shader modifications */}
       <T.Mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2, 0]}>
         <T.PlaneGeometry args={[10, 10]} />
         <T.MeshStandardMaterial
+          {...envProps()}
           color="white"
           roughness={0.1}
           metalness={0.9}

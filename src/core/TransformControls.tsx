@@ -2,7 +2,7 @@ import { resolve } from '@/utils'
 import {
   createEffect,
   createMemo,
-  onCleanup,
+  createRenderEffect,
   splitProps,
   type Accessor,
   type JSX,
@@ -12,7 +12,6 @@ import type { S3 } from 'solid-three'
 import { Entity, Portal, useThree } from 'solid-three'
 import { Group, Object3D, type Event as ThreeEvent } from 'three'
 import { TransformControls as ThreeTransformControls } from 'three-stdlib'
-import { useAutolisten } from './useAutolisten'
 
 export interface TransformControlsProps
   extends Omit<
@@ -78,18 +77,48 @@ export function TransformControls(props: TransformControlsProps) {
       config.camera ?? store.camera,
       config.domElement ?? store.canvas,
     )
-    const autolisten = useAutolisten(controls)
-    createEffect(() => autolisten('change', config.onChange))
-    createEffect(() => autolisten('mouseUp', config.onMouseUp))
-    createEffect(() => autolisten('mouseDown', config.onMouseDown))
-    createEffect(() => autolisten('objectChange', config.onObjectChange))
+    createRenderEffect(
+      () => config.onChange,
+      onChange => {
+        if (!onChange) return
+        controls.addEventListener('change', onChange as any)
+        return () => controls.removeEventListener('change', onChange as any)
+      },
+    )
+    createRenderEffect(
+      () => config.onMouseUp,
+      onMouseUp => {
+        if (!onMouseUp) return
+        controls.addEventListener('mouseUp', onMouseUp as any)
+        return () => controls.removeEventListener('mouseUp', onMouseUp as any)
+      },
+    )
+    createRenderEffect(
+      () => config.onMouseDown,
+      onMouseDown => {
+        if (!onMouseDown) return
+        controls.addEventListener('mouseDown', onMouseDown as any)
+        return () => controls.removeEventListener('mouseDown', onMouseDown as any)
+      },
+    )
+    createRenderEffect(
+      () => config.onObjectChange,
+      onObjectChange => {
+        if (!onObjectChange) return
+        controls.addEventListener('objectChange', onObjectChange as any)
+        return () => controls.removeEventListener('objectChange', onObjectChange as any)
+      },
+    )
     return controls
   })
 
-  createEffect(() => {
-    controls().attach(resolve(config.object) || group)
-    onCleanup(controls().detach.bind(controls()))
-  })
+  createEffect(
+    () => [controls(), resolve(config.object) || group] as [ThreeTransformControls, Object3D],
+    (pair: [ThreeTransformControls, Object3D]) => {
+      pair[0].attach(pair[1])
+      return () => { pair[0].detach() }
+    },
+  )
 
   return (
     <>

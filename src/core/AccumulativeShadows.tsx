@@ -252,11 +252,11 @@ export function AccumulativeShadows(
   createEffect(
     on(
       // Track dependencies that should trigger a reset
-      () => [config.frames, config.blend, config.limit, config.temporal, config.resolution],
-      () => {
+      () => [config.frames, config.blend, config.limit, config.temporal, config.resolution] as const,
+      ([frames, blend, _limit, temporal]) => {
         // Reset internals, buffers, ...
         api.reset()
-        if (!api.temporal && api.frames !== Infinity) api.update(api.blend)
+        if (!temporal && frames !== Infinity) api.update(blend)
       },
     ),
   )

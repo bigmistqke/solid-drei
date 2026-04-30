@@ -1,7 +1,7 @@
-import { createSignal, type Accessor, type JSX } from 'solid-js'
+import { createSignal, type JSX } from 'solid-js'
 import type { Meta, StoryObj } from 'storybook-solidjs-vite'
-import { type Mesh } from 'three'
-import { Html, Sphere, Torus, useSurfaceSampler } from '../../src'
+import { type InstancedMesh, type Mesh } from 'three'
+import { Html, Torus, useSurfaceSampler } from '../../src'
 import { Setup } from '../Setup'
 import { T } from '../t'
 
@@ -28,18 +28,18 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {
   render() {
     const [torusMesh, setTorusMesh] = createSignal<Mesh | undefined>()
-    const [instanceMesh, setInstanceMesh] = createSignal<Mesh | undefined>()
+    const [instanceMesh, setInstanceMesh] = createSignal<InstancedMesh | undefined>()
 
     // Sample 64 points on the torus surface
     const sampleCount = 64
     const buffer = useSurfaceSampler(
-      torusMesh as Accessor<Mesh | undefined>,
+      torusMesh,
       sampleCount,
       ({ position }, i) => {
         // Transform callback is optional - points will be positioned at sampled locations
       },
       undefined,
-      instanceMesh as Accessor<Mesh | undefined>,
+      instanceMesh,
     )
 
     return (
@@ -57,9 +57,7 @@ export const Default: Story = {
         {/* InstancedMesh displaying sampled points */}
         <T.InstancedMesh
           args={[undefined, undefined, sampleCount]}
-          ref={el => {
-            if (el) setInstanceMesh(el)
-          }}
+          ref={setInstanceMesh}
         >
           <T.SphereGeometry args={[0.1, 8, 8]} />
           <T.MeshStandardMaterial color="#ff6b6b" emissive="#ff6b6b" emissiveIntensity={0.5} />
@@ -95,11 +93,11 @@ export const Default: Story = {
 export const WithTransform: Story = {
   render() {
     const [torusMesh, setTorusMesh] = createSignal<Mesh | undefined>()
-    const [instanceMesh, setInstanceMesh] = createSignal<Mesh | undefined>()
+    const [instanceMesh, setInstanceMesh] = createSignal<InstancedMesh | undefined>()
 
     const sampleCount = 48
     const buffer = useSurfaceSampler(
-      torusMesh as Accessor<Mesh | undefined>,
+      torusMesh,
       sampleCount,
       ({ position, normal, dummy }) => {
         // Position at sampled point
@@ -109,7 +107,7 @@ export const WithTransform: Story = {
         dummy.scale.set(0.08, 0.08, 0.08)
       },
       undefined,
-      instanceMesh as Accessor<Mesh | undefined>,
+      instanceMesh,
     )
 
     return (
@@ -129,9 +127,7 @@ export const WithTransform: Story = {
         {/* InstancedMesh with custom transform */}
         <T.InstancedMesh
           args={[undefined, undefined, sampleCount]}
-          ref={el => {
-            if (el) setInstanceMesh(el)
-          }}
+          ref={setInstanceMesh}
         >
           <T.OctahedronGeometry args={[1, 0]} />
           <T.MeshStandardMaterial color="#ffd43b" emissive="#ffd43b" emissiveIntensity={0.4} />

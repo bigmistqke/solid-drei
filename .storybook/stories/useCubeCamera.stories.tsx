@@ -1,4 +1,3 @@
-import { createEffect } from 'solid-js'
 import { useFrame } from 'solid-three'
 import type { Meta, StoryObj } from 'storybook-solidjs-vite'
 import { useCubeCamera } from '../../src'
