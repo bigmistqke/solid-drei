@@ -1,5 +1,5 @@
 {
-  "name": "solid-drei",
+  "name": "@bigmistqke/solid-drei",
   "version": "0.0.1",
   "description": "solid port of react-three-fiber",
   "license": "MIT",
