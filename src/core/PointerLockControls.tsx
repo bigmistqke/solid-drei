@@ -74,10 +74,14 @@ export function usePointerLockControls(options: PointerLockControlsProps) {
 
   // Attach lock/unlock listeners
   onSettled(() => {
-    const ac = new AbortController()
-    controls.addEventListener('lock', event => (setLocked(true), config.onLock?.(event)), { signal: ac.signal })
-    controls.addEventListener('unlock', event => (setLocked(false), config.onUnlock?.(event)), { signal: ac.signal })
-    return () => ac.abort()
+    const onLock = (event: any) => (setLocked(true), config.onLock?.(event))
+    const onUnlock = (event: any) => (setLocked(false), config.onUnlock?.(event))
+    controls.addEventListener('lock', onLock)
+    controls.addEventListener('unlock', onUnlock)
+    return () => {
+      controls.removeEventListener('lock', onLock)
+      controls.removeEventListener('unlock', onUnlock)
+    }
   })
 
   createEffect(
@@ -102,9 +106,8 @@ export function usePointerLockControls(options: PointerLockControlsProps) {
         () => config.onChange,
         onChange => {
           if (!onChange) return
-          const ac = new AbortController()
-          controls.addEventListener('change', onChange, { signal: ac.signal })
-          return () => ac.abort()
+          controls.addEventListener('change', onChange)
+          return () => controls.removeEventListener('change', onChange)
         },
       )
 

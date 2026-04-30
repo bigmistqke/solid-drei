@@ -75,36 +75,32 @@ export function TransformControls(props: TransformControlsProps) {
       () => props.onChange,
       onChange => {
         if (!onChange) return
-        const ac = new AbortController()
-        controls.addEventListener('change', onChange, { signal: ac.signal })
-        return () => ac.abort()
+        controls.addEventListener('change', onChange)
+        return () => controls.removeEventListener('change', onChange)
       },
     )
     createEffect(
       () => props.onMouseUp,
       onMouseUp => {
         if (!onMouseUp) return
-        const ac = new AbortController()
-        controls.addEventListener('mouseUp', onMouseUp, { signal: ac.signal })
-        return () => ac.abort()
+        controls.addEventListener('mouseUp', onMouseUp)
+        return () => controls.removeEventListener('mouseUp', onMouseUp)
       },
     )
     createEffect(
       () => props.onMouseDown,
       onMouseDown => {
         if (!onMouseDown) return
-        const ac = new AbortController()
-        controls.addEventListener('mouseDown', onMouseDown, { signal: ac.signal })
-        return () => ac.abort()
+        controls.addEventListener('mouseDown', onMouseDown)
+        return () => controls.removeEventListener('mouseDown', onMouseDown)
       },
     )
     createEffect(
       () => props.onObjectChange,
       onObjectChange => {
         if (!onObjectChange) return
-        const ac = new AbortController()
-        controls.addEventListener('objectChange', onObjectChange, { signal: ac.signal })
-        return () => ac.abort()
+        controls.addEventListener('objectChange', onObjectChange)
+        return () => controls.removeEventListener('objectChange', onObjectChange)
       },
     )
     return controls

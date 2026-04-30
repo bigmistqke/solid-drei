@@ -37,41 +37,41 @@ export function useTrackballControls(props: TrackballControlsProps) {
 
     createRenderEffect(
       () => config.domElement,
-      domElement => controls.connect(domElement),
+      domElement => ctrl.connect(domElement),
     )
     createRenderEffect(
       () => config.onStart,
       onStart => {
         if (!onStart) return
-        controls.addEventListener('start', onStart)
-        return () => controls.removeEventListener('start', onStart)
+        ctrl.addEventListener('start', onStart)
+        return () => ctrl.removeEventListener('start', onStart)
       },
     )
     createRenderEffect(
       () => config.onChange,
       onChange => {
         if (!onChange) return
-        controls.addEventListener('change', onChange)
-        return () => controls.removeEventListener('change', onChange)
+        ctrl.addEventListener('change', onChange)
+        return () => ctrl.removeEventListener('change', onChange)
       },
     )
     createRenderEffect(
       () => config.onEnd,
       onEnd => {
         if (!onEnd) return
-        controls.addEventListener('end', onEnd)
-        return () => controls.removeEventListener('end', onEnd)
+        ctrl.addEventListener('end', onEnd)
+        return () => ctrl.removeEventListener('end', onEnd)
       },
     )
     createRenderEffect(
       () => store.bounds,
-      () => { controls.handleResize() },
+      () => { ctrl.handleResize() },
     )
 
-    useProps(controls, rest, store)
-    useFrame(() => controls.update())
+    useProps(ctrl, rest, store)
+    useFrame(() => ctrl.update())
 
-    return controls
+    return ctrl
   })
 
   createEffect(
