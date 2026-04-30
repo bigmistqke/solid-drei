@@ -3,13 +3,13 @@
   <img width="100%" src="https://assets.solidjs.com/banner?type=solid-drei&background=tiles&project=%20" alt="solid-drei">
 </p>
 
-[![Version](https://img.shields.io/npm/v/solid-drei?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/solid-drei)
-[![Downloads](https://img.shields.io/npm/dt/solid-drei.svg?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/solid-drei)
+[![Version](https://img.shields.io/npm/v/@bigmistqke%2Fsolid-drei?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/@bigmistqke%2Fsolid-drei)
+[![Downloads](https://img.shields.io/npm/dt/@bigmistqke%2Fsolid-drei.svg?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/@bigmistqke%2Fsolid-drei)
 
 A growing collection of useful helpers and fully functional, ready-made abstractions for [solid-three](https://github.com/solidjs-community/solid-three). If you make a component that is generic enough to be useful to others, think about [CONTRIBUTING](CONTRIBUTING.md)!
 
 ```bash
-npm install solid-drei
+npm install @bigmistqke/solid-drei
 ```
 
 :point_right: this package is using the stand-alone [`three-stdlib`](https://github.com/pmndrs/three-stdlib) instead of [`three/examples/jsm`](https://github.com/mrdoob/three.js/tree/master/examples/jsm). :point_left:
@@ -17,7 +17,7 @@ npm install solid-drei
 ### Basic usage:
 
 ```jsx
-import { PerspectiveCamera, PositionalAudio, ... } from 'solid-drei'
+import { PerspectiveCamera, PositionalAudio, ... } from '@bigmistqke/solid-drei'
 ```
 
 ### Index
@@ -2640,7 +2640,7 @@ $ curl https://storage.googleapis.com/mediapipe-models/face_landmarker/face_land
 ```
 
 ```tsx
-import { FaceLandmarkerDefaults } from 'solid-drei'
+import { FaceLandmarkerDefaults } from '@bigmistqke/solid-drei'
 
 const visionBasePath = new URL("/tasks-vision-wasm", import.meta.url).toString()
 const modelAssetPath = new URL("/face_landmarker.task", import.meta.url).toString()
