@@ -5,8 +5,6 @@
 
 [![Version](https://img.shields.io/npm/v/solid-drei?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/solid-drei)
 [![Downloads](https://img.shields.io/npm/dt/solid-drei.svg?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/solid-drei)
-[![Discord Shield](https://img.shields.io/discord/740090768164651008?style=flat&colorA=000000&colorB=000000&label=discord&logo=discord&logoColor=ffffff)](https://discord.com/channels/740090768164651008/741751532592038022)
-[![Open in GitHub Codespaces](https://img.shields.io/static/v1?&message=Open%20in%20%20Codespaces&style=flat&colorA=000000&colorB=000000&label=GitHub&logo=github&logoColor=ffffff)](https://github.com/codespaces/new?template_repository=pmndrs%2Fdrei)
 
 A growing collection of useful helpers and fully functional, ready-made abstractions for [solid-three](https://github.com/solidjs-community/solid-three). If you make a component that is generic enough to be useful to others, think about [CONTRIBUTING](CONTRIBUTING.md)!
 
@@ -240,7 +238,6 @@ import { PerspectiveCamera, PositionalAudio, ... } from 'solid-drei'
 
 #### PerspectiveCamera
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/camera-perspectivecamera--perspective-camera-scene-st)
 
 ```tsx
 type Props = Omit<ThreeProps<'PerspectiveCamera'>, 'children'> & {
@@ -294,7 +291,6 @@ You can use the PerspectiveCamera to film contents into a RenderTarget, similar 
 
 #### OrthographicCamera
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/camera-orthographiccamera--orthographic-camera-scene-st)
 
 A responsive [THREE.OrthographicCamera](https://threejs.org/docs/#api/en/cameras/OrthographicCamera) that can set itself as the default.
 
@@ -318,7 +314,6 @@ You can use the OrthographicCamera to film contents into a RenderTarget, it has 
 
 #### CubeCamera
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/camera-cubecamera--default-story)
 
 A [THREE.CubeCamera](https://threejs.org/docs/#api/en/cameras/CubeCamera) that returns its texture as a render-prop. It makes children invisible while rendering to the internal buffer so that they are not included in the reflection.
 
@@ -370,7 +365,6 @@ If available controls have damping enabled by default, they manage their own upd
 const controls = useThree((state) => state.controls)
 ```
 
-Drei currently exports OrbitControls [![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/controls-orbitcontrols--orbit-controls-story), MapControls [![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/controls-mapcontrols--map-controls-scene-st), TrackballControls, ArcballControls, FlyControls, DeviceOrientationControls, PointerLockControls [![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/controls-pointerlockcontrols--pointer-lock-controls-scene-st), FirstPersonControls [![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/controls-firstpersoncontrols--first-person-controls-story) CameraControls [![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/controls-cameracontrols--camera-controls-story) and FaceControls [![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/controls-facecontrols)
 
 All controls react to the default camera. If you have a `<PerspectiveCamera makeCurrent />` in your scene, they will control it. If you need to inject an imperative camera or one that isn't the default, use the `camera` prop: `<OrbitControls defaultCamera={MyCamera} />`.
 
@@ -610,7 +604,6 @@ function Foo() {
 
 #### FaceControls
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/controls-facecontrols)
 
 The camera follows your face.
 
@@ -759,7 +752,6 @@ useFrame((_, delta) => {
 
 #### GizmoHelper
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/gizmos-gizmohelper--gizmo-helper-story)
 
 Used by widgets that visualize and control camera position.
 
@@ -853,7 +845,6 @@ return (
 
 #### TransformControls
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/gizmos-transformcontrols--transform-controls-story)
 
 <p>
   <a href="https://codesandbox.io/s/btsbj"><img width="20%" src="https://codesandbox.io/api/v1/sandboxes/btsbj/screenshot.png" alt="Tranform controls"/></a>
@@ -885,7 +876,6 @@ If you are using other controls (Orbit, Trackball, etc), you will notice how the
 
 #### Grid
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/gizmos-grid--use-grid-scene-st)
 
 <p>
   <a href="https://codesandbox.io/s/19uq2u"><img width="20%" src="https://codesandbox.io/api/v1/sandboxes/19uq2u/screenshot.png" alt="Demo"/></a>
@@ -929,7 +919,6 @@ export type GridProps = GridMaterialType & {
 
 #### useHelper
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/misc-usehelper--default-story)
 
 A hook for a quick way to add helpers to existing nodes in the scene. It handles removal of the helper on unmount and auto-updates it by default.
 
@@ -997,7 +986,6 @@ A triangle that fills the screen, ideal for full-screen fragment shader work (ra
 
 #### Line
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/abstractions-line--basic-line)
 
 Renders a THREE.Line2 or THREE.LineSegments2 (depending on the value of `segments`).
 
@@ -1016,7 +1004,6 @@ Renders a THREE.Line2 or THREE.LineSegments2 (depending on the value of `segment
 
 #### QuadraticBezierLine
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/abstractions-line--quadratic-bezier)
 
 <p>
   <a href="https://codesandbox.io/s/2ij9u"><img width="20%" src="https://codesandbox.io/api/v1/sandboxes/2ij9u/screenshot.png" alt="Demo"/></a>
@@ -1055,7 +1042,6 @@ return <QuadraticBezierLine ref={ref} />
 
 #### CubicBezierLine
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/abstractions-line--cubic-bezier)
 
 Renders a THREE.Line2 using THREE.CubicBezierCurve3 for interpolation.
 
@@ -1076,7 +1062,6 @@ Renders a THREE.Line2 using THREE.CubicBezierCurve3 for interpolation.
 
 #### CatmullRomLine
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/abstractions-line--catmull-rom)
 
 Renders a THREE.Line2 using THREE.CatmullRomCurve3 for interpolation.
 
@@ -1097,7 +1082,6 @@ Renders a THREE.Line2 using THREE.CatmullRomCurve3 for interpolation.
 
 #### Facemesh
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/shapes-facemesh--facemesh-st)
 
 Renders an oriented [MediaPipe face mesh](https://developers.google.com/mediapipe/solutions/vision/face_landmarker/web_js#handle_and_display_results):
 
@@ -1218,7 +1202,6 @@ To make the material transparent:
 
 #### Text
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/abstractions-text--text-st) ![](https://img.shields.io/badge/-suspense-brightgreen)
 
 <p>
   <a href="https://codesandbox.io/s/yup2o"><img width="20%" src="https://codesandbox.io/api/v1/sandboxes/yup2o/screenshot.png" alt="Demo"/></a>
@@ -1242,7 +1225,6 @@ Text will suspend while loading the font data, but in order to completely avoid 
 
 #### Text3D
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/abstractions-text3d--text-3-d-st) ![](https://img.shields.io/badge/-suspense-brightgreen)
 
 <p>
   <a href="https://codesandbox.io/s/x6obrb"><img width="20%" src="https://codesandbox.io/api/v1/sandboxes/x6obrb/screenshot.png" alt="Demo"/></a>
@@ -1297,7 +1279,6 @@ extend({ SSAOPass })
   <a href="https://codesandbox.io/s/gkfhr"><img width="20%" src="https://codesandbox.io/api/v1/sandboxes/gkfhr/screenshot.png" alt="Demo"/></a>
 </p>
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/abstractions-positionalaudio--positional-audio-scene-st) ![](https://img.shields.io/badge/-suspense-brightgreen)
 
 A wrapper around [THREE.PositionalAudio](https://threejs.org/docs/#api/en/audio/PositionalAudio). Add this to groups or meshes to tie them to a sound that plays when the camera comes near.
 
@@ -1312,7 +1293,6 @@ A wrapper around [THREE.PositionalAudio](https://threejs.org/docs/#api/en/audio/
 
 #### Billboard
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/abstractions-billboard--billboard-st)
 
 Adds a `<group />` that always faces the camera.
 
@@ -1329,7 +1309,6 @@ Adds a `<group />` that always faces the camera.
 
 #### ScreenSpace
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/abstractions-screenspace--screen-space-story)
 
 Adds a `<group />` that aligns objects to screen space.
 
@@ -1405,7 +1384,6 @@ Abstracts [THREE.EdgesGeometry](https://threejs.org/docs/#api/en/geometries/Edge
 
 #### Trail
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/misc-trail--use-trail-st)
 
 A declarative, `three.MeshLine` based Trails implementation. You can attach it to any mesh and it will give it a beautiful trail.
 
@@ -1438,7 +1416,6 @@ Props defined below with their default values.
 
 #### Sampler
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/misc-sampler--sampler-st)
 
 <p>
   <a href="https://codesandbox.io/s/ehflx3">
@@ -1490,7 +1467,6 @@ return <>
 
 #### ComputedAttribute
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/misc-sampler--sampler-weight-st)
 
 Create and attach an attribute declaratively.
 
@@ -1566,7 +1542,6 @@ Or make inserts conditional:
 
 #### useAnimations
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/abstractions-useanimations--use-animations-st)
 
 <p>
   <a href="https://codesandbox.io/s/pecl6"><img width="20%" src="https://codesandbox.io/api/v1/sandboxes/pecl6/screenshot.png" alt="Demo"/></a>
@@ -1597,7 +1572,6 @@ return <Entity from={gltf()?.scene} />
 
 #### MarchingCubes
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/abstractions-marchingcubes--marching-cubes-story)
 
 An abstraction for threes [MarchingCubes](https://threejs.org/examples/#webgl_marchingcubes)
 
@@ -1611,7 +1585,6 @@ An abstraction for threes [MarchingCubes](https://threejs.org/examples/#webgl_ma
 
 #### Decal
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/misc-decal--decal-st)
 
 <p>
   <a href="https://codesandbox.io/s/ymb5d9"><img width="20%" src="https://codesandbox.io/api/v1/sandboxes/ymb5d9/screenshot.png" alt="Demo"/></a>
@@ -1658,7 +1631,6 @@ If declarative composition is not possible, use the `mesh` prop to define the su
 
 #### Svg
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/abstractions-svg--svg-st)
 
 Wrapper around the `three` [svg loader](https://threejs.org/examples/?q=sv#webgl_loader_svg) demo.
 
@@ -1712,7 +1684,6 @@ type AsciiRendererProps = {
 
 #### MeshReflectorMaterial
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/shaders-meshreflectormaterial--reflector-st)
 
 <p>
   <a href="https://codesandbox.io/s/lx2h8"><img width="20%" src="https://codesandbox.io/api/v1/sandboxes/lx2h8/screenshot.png" alt="Demo"/></a>
@@ -1751,7 +1722,6 @@ Easily add reflections and/or blur to any mesh. It takes surface roughness into 
 
 #### MeshWobbleMaterial
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/shaders-meshwobblematerial--mesh-wobble-material-st)
 
 This material makes your geometry wobble and wave around. It was taken from the [threejs-examples](https://threejs.org/examples/#webgl_materials_modified) and adapted into a self-contained material.
 
@@ -1764,7 +1734,6 @@ This material makes your geometry wobble and wave around. It was taken from the 
 
 #### MeshDistortMaterial
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/shaders-meshdistortmaterial--mesh-distort-material-st)
 
 <p>
   <a href="https://codesandbox.io/s/l03yb"><img width="20%" src="https://codesandbox.io/api/v1/sandboxes/l03yb/screenshot.png" alt="Demo"/></a>
@@ -1986,7 +1955,6 @@ Injects percent closer soft shadows (pcss) into threes shader chunk. Mounting an
 
 #### shaderMaterial
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/shaders-shadermaterial--shader-material-story)
 
 <p>
   <a href="https://codesandbox.io/s/ni6v4"><img width="20%" src="https://codesandbox.io/api/v1/sandboxes/ni6v4/screenshot.png" alt="Demo"/></a>
@@ -2045,7 +2013,6 @@ extend({ ColorShiftMaterial })
 
 #### CurveModifier
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/modifiers-curvemodifier)
 
 Given a curve will replace the children of this component with a mesh that move along said curve calling the property `moveAlongCurve` on the passed ref. Uses [three's Curve Modifier](https://threejs.org/examples/#webgl_modifier_curve)
 
@@ -2067,7 +2034,6 @@ return (
 
 #### useContextBridge
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/misc-usecontextbridge--use-context-bridge-st)
 
 Allows you to forward contexts provided above the `<Canvas />` to be consumed from within the `<Canvas />` normally
 
@@ -2098,7 +2064,6 @@ function Scene() {
 
 #### Example
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/misc-example--example-st)
 
 > **Warning** solely for [`CONTRIBUTING`](CONTRIBUTING.md#example) purposes
 
@@ -2133,7 +2098,6 @@ type ExampleApi = {
 
 #### Html
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/misc-html--html-st) ![](https://img.shields.io/badge/-Dom only-red)
 
 <p>
   <a href="https://codesandbox.io/s/0n9it"><img width="20%" src="https://codesandbox.io/api/v1/sandboxes/0n9it/screenshot.png" alt="Demo"/></a>
@@ -2360,7 +2324,6 @@ Notes:
 
 #### Stats
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/misc-stats--default-story)
 
 Adds [stats](https://github.com/mrdoob/stats.js/) to document.body. It takes over the render-loop!
 
@@ -2384,7 +2347,6 @@ return <Stats parent={parent} />
 
 #### StatsGl
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/misc-statsgl--default-story)
 
 Adds [stats-gl](https://github.com/RenaudRohlinger/stats-gl/) to document.body. It takes over the render-loop!
 
@@ -2394,7 +2356,6 @@ Adds [stats-gl](https://github.com/RenaudRohlinger/stats-gl/) to document.body. 
 
 #### Wireframe
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/staging-wireframe--wireframe-st)
 
 <p>
   <a href="https://codesandbox.io/s/2572o5"><img width="20%" src="https://codesandbox.io/api/v1/sandboxes/2572o5/screenshot.png" alt="Demo"/></a>
@@ -2455,7 +2416,6 @@ return <SomethingThatNeedsADepthBuffer depthBuffer={depthBuffer} />
 
 #### useFBO
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/misc-usefbo--use-fbo-st)
 
 Creates a `THREE.WebGLRenderTarget`.
 
@@ -2485,7 +2445,6 @@ The rendertarget is automatically disposed when unmounted.
 
 #### useCamera
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/misc-usecamera--use-camera-st)
 
 <p>
   <a href="https://codesandbox.io/s/py4db"><img width="20%" src="https://codesandbox.io/api/v1/sandboxes/py4db/screenshot.png" alt="Demo"/></a>
@@ -2499,7 +2458,6 @@ A hook for the rare case when you are using non-default cameras for heads-up-dis
 
 #### useCubeCamera
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/misc-usecubecamera)
 
 Creates a [`THREE.CubeCamera`](https://threejs.org/docs/#api/en/cameras/CubeCamera) that renders into a `fbo` renderTarget and that you can `update()`.
 
@@ -2524,7 +2482,6 @@ const { fbo, camera, update } = useCubeCamera()
 
 #### useDetectGPU
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/misc-usedetectgpu)
 
 This hook uses [DetectGPU by @TimvanScherpenzeel](https://github.com/TimvanScherpenzeel/detect-gpu), wrapped into suspense, to determine what tier should be assigned to the user's GPU.
 
@@ -2543,7 +2500,6 @@ function App() {
 
 #### useAspect
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/misc-useaspect--default-story)
 
 This hook calculates aspect ratios (for now only what in css would be `image-size: cover` is supported). You can use it to make an image fill the screen. It is responsive and adapts to viewport resize. Just give the hook the image bounds in pixels. It returns an array: `[width, height, 1]`.
 
@@ -2611,7 +2567,6 @@ const projection = useBoxProjectedEnv(
 
 #### useTrail
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/misc-trail--use-trail-st)
 
 A hook to obtain an array of points that make up a [Trail](#trail). You can use this array to drive your own `MeshLine` or make a trail out of anything you please.
 
@@ -2637,7 +2592,6 @@ useFrame(() => {
 
 #### useSurfaceSampler
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/misc-decal--decal-st)
 
 A hook to obtain the result of the [`<Sampler />`](#sampler) as a buffer. Useful for driving anything other than `InstancedMesh` via the Sampler.
 
@@ -2733,7 +2687,6 @@ You can override styles, too.
 
 #### useProgress
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/misc-useprogress--use-progress-scene-st)
 
 A convenience hook that wraps `THREE.DefaultLoadingManager`'s progress status.
 
@@ -2760,7 +2713,6 @@ const errors = useProgress((state) => state.errors)
 
 #### useGLTF
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/loaders-gltf)
 
 A convenience hook that uses `useLoader` and `GLTFLoader`, it defaults to CDN loaded draco binaries (`https://www.gstatic.com/draco/v1/decoders/`) which are only loaded for compressed models.
 
@@ -2793,7 +2745,6 @@ useGLTF.preload(url)
 
 #### useFBX
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/loaders-fbx)
 
 A convenience hook that uses `useLoader` and `FBXLoader`:
 
@@ -2808,7 +2759,6 @@ function SuzanneFBX() {
 
 #### useTexture
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/loaders-texture)
 
 A convenience hook that uses `useLoader` and `TextureLoader`
 
@@ -2829,7 +2779,6 @@ return <T.MeshStandardMaterial {...props()} />
 
 #### useKTX2
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/loaders-ktx2--use-ktx-2-scene-st)
 
 A convenience hook that uses `useLoader` and `KTX2Loader`
 
@@ -2842,7 +2791,6 @@ return <T.MeshStandardMaterial map={texture} />
 
 #### useCubeTexture
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/loaders-cubetexture)
 
 A convenience hook that uses `useLoader` and `CubeTextureLoader`
 
@@ -2852,7 +2800,6 @@ const envMap = useCubeTexture(['px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png',
 
 #### useVideoTexture
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/loaders-videotexture) ![](https://img.shields.io/badge/-suspense-brightgreen)
 
 <p>
   <a href="https://codesandbox.io/s/39hg8"><img width="20%" src="https://codesandbox.io/api/v1/sandboxes/39hg8/screenshot.png" alt="Demo"/></a>
@@ -3080,7 +3027,6 @@ If you just want to use buffers for position, color and size, you can use the al
 
 #### Segments
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/performance-segments--many-segments)
 
 A wrapper around [THREE.LineSegments](https://threejs.org/docs/#api/en/objects/LineSegments). This allows you to use thousands of segments under the same geometry.
 
@@ -3115,7 +3061,6 @@ useFrame(() => {
 
 #### Detailed
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/abstractions-detailed--detailed-st)
 
 <p>
   <a href="https://codesandbox.io/s/12nmp"><img width="20%" src="https://codesandbox.io/api/v1/sandboxes/12nmp/screenshot.png" alt="Demo"/></a>
@@ -3157,7 +3102,6 @@ Sets `gl.shadowMap.autoUpdate` to `false` while mounted and requests a single `g
 
 #### meshBounds
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/misc-meshbounds--mesh-bounds-st)
 
 A very fast, but often good-enough bounds-only raycast for meshes. You can use this if performance has precedence over pointer precision.
 
@@ -3183,7 +3127,6 @@ Drop this component into your scene and it will switch off the raycaster while t
 
 #### Bvh
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/performance-usebvh--default-story)
 
 An abstraction around [gkjohnson/three-mesh-bvh](https://github.com/gkjohnson/three-mesh-bvh) to speed up raycasting exponentially. Use this component to wrap your scene, a sub-graph, a model or single mesh, and it will automatically compute boundsTree and assign acceleratedRaycast. This component is side-effect free, once unmounted or disabled it will revert to the original raycast.
 
@@ -3557,7 +3500,6 @@ It is also possible to _enter_ the portal. If blend is 0 your scene will render 
 
 #### Center
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/staging-center--default-story)
 
 <p>
   <a href="https://codesandbox.io/s/x6obrb"><img width="20%" src="https://codesandbox.io/api/v1/sandboxes/x6obrb/screenshot.png" alt="Demo"/></a>
@@ -3626,7 +3568,6 @@ function ScaledModel() {
 
 #### Resize
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/staging-resize)
 
 <p>
   <a href="https://codesandbox.io/s/6yg0i3"><img width="20%" src="https://user-images.githubusercontent.com/76580/234665568-2be311d2-1896-4f82-ae20-b10b44c1e952.png" alt="Demo"/></a>
@@ -3665,7 +3606,6 @@ You can also specify the dimension to be constrained by:
 
 #### BBAnchor
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/misc-bbanchor--bb-anchor-with-html)
 
 A component using AABB (Axis-aligned bounding boxes) to offset children position by specified multipliers (`anchor` property) on each axis. You can use this component to change children positioning in regard of the parent's bounding box, eg. pinning [Html](#html) component to one of the parent's corners. Multipliers determine the offset value based on the `AABB`'s size:
 
@@ -3732,7 +3672,6 @@ function Foo() {
 
 #### CameraShake
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/staging-camerashake--camera-shake-story)
 
 <p>
   <a href="https://codesandbox.io/s/t4l0f"><img width="20%" src="https://codesandbox.io/api/v1/sandboxes/t4l0f/screenshot.png" alt="Demo"/></a>
@@ -3788,7 +3727,6 @@ This component makes its contents float or hover.
 
 #### Stage
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/staging-stage--stage-st)
 
 <p>
   <a href="https://codesandbox.io/s/57iefg"><img width="20%" src="https://codesandbox.io/api/v1/sandboxes/57iefg/screenshot.png" alt="Demo"/></a>
@@ -3869,7 +3807,6 @@ A curved plane, like a studio backdrop. This is for presentational purposes, to 
 
 #### Shadow
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.vercel.app/?path=/story/misc-shadow--shadow-st)
 
 A cheap canvas-texture-based circular gradient.
 
@@ -3953,7 +3890,6 @@ let lightSource
 
 #### ContactShadows
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/staging-contactshadows--contact-shadow-st)
 
 <p>
   <a href="https://codesandbox.io/s/qxjoj"><img width="20%" src="https://codesandbox.io/api/v1/sandboxes/qxjoj/screenshot.png" alt="Demo"/></a>
@@ -4104,7 +4040,6 @@ function Foo() {
 
 #### SpotLightShadows
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/staging-spotlight--spotlight-shadows-st)
 
 <p>
   <a href="https://codesandbox.io/s/yyk6gv"><img width="20%" src="https://codesandbox.io/api/v1/sandboxes/yyk6gv/screenshot.png" alt="Demo"/></a>
@@ -4143,7 +4078,6 @@ gl_FragColor = vec4(vec3(0.), 1.); // Transparent
 
 #### Environment
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/staging-environment--environment-story)
 
 <p>
   <a href="https://codesandbox.io/s/t4l0f"><img width="20%" src="https://codesandbox.io/api/v1/sandboxes/t4l0f/screenshot.png" alt="Demo"/></a>
@@ -4263,7 +4197,6 @@ This component draws flat rectangles, circles or rings, mimicking the look of a 
 
 #### Sky
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/staging-sky--sky-st)
 
 <p>
   <a href="https://codesandbox.io/s/vkgi6"><img width="20%" src="https://codesandbox.io/api/v1/sandboxes/vkgi6/screenshot.png" alt="Demo"/></a>
@@ -4277,7 +4210,6 @@ Adds a [sky](https://threejs.org/examples/#webgl_shaders_sky) to your scene.
 
 #### Stars
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/staging-stars--stars-st)
 
 Adds a blinking shader-based starfield to your scene.
 
@@ -4328,7 +4260,6 @@ attribute vec3 color;
 
 #### Cloud
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/staging-cloud--cloud-st) ![](https://img.shields.io/badge/-suspense-brightgreen)
 
 <p>
   <a href="https://codesandbox.io/s/mbfzf"><img width="20%" src="https://codesandbox.io/api/v1/sandboxes/mbfzf/screenshot.png" alt="Demo"/></a>
@@ -4377,7 +4308,6 @@ const cubeTexture = useEnvironment({ files: ['px', 'nx', 'py', 'ny', 'pz', 'nz']
 
 #### useMatcapTexture
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/staging-usematcaptexture--use-matcap-texture-st) ![](https://img.shields.io/badge/-suspense-brightgreen)
 
 Loads matcap textures from this repository: https://github.com/emmelleppi/matcaps
 
@@ -4408,7 +4338,6 @@ const [matcap] = useMatcapTexture('3E2335_D36A1B_8E4A2E_2842A5')
 
 #### useNormalTexture
 
-[![](https://img.shields.io/badge/-storybook-%23ff69b4)](https://drei.pmnd.rs/?path=/story/staging-usenormaltexture--use-normal-texture-st) ![](https://img.shields.io/badge/-suspense-brightgreen)
 
 Loads normal textures from this repository: https://github.com/emmelleppi/normal-maps
 
