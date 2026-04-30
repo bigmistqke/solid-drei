@@ -1,7 +1,7 @@
 {
   "name": "@bigmistqke/solid-drei",
   "version": "0.0.1",
-  "description": "solid port of react-three-fiber",
+  "description": "useful helpers for solid-three | solid port of drei",
   "license": "MIT",
   "author": "bigmistqke",
   "contributors": [],
@@ -119,7 +119,10 @@
     "vitest": "^1.6.0"
   },
   "keywords": [
-    "solid"
+    "solid",
+    "drei",
+    "solid-three",
+    "three"
   ],
   "packageManager": "pnpm@9.1.1",
   "engines": {
