@@ -13,7 +13,7 @@ import {
   Vector3,
   Vector4,
 } from 'three'
-import { shaderMaterial } from '../../materials/shaderMaterial'
+import { shaderMaterial } from '../materials/shaderMaterial'
 
 /**********************************************************************************/
 /*                                                                                */
@@ -185,14 +185,13 @@ export function Sparkles(props: SparklesProps) {
   )
 
   useFrame(state => {
-    // TODO: implement store.clock in solid-three
     if (points && points.material) (points.material as any).time = state.clock.elapsedTime
   })
 
-  useRef(props, points)
+  useRef(props, () => points)
 
   return (
-    <T.Points {...rest}>
+    <T.Points ref={points} {...rest}>
       <T.BufferGeometry>
         <T.BufferAttribute attach="attributes-position" args={[positions(), 3]} />
         <T.BufferAttribute attach="attributes-size" args={[sizes(), 1]} />
