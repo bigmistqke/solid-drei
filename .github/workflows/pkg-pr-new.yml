@@ -1,35 +1,36 @@
-name: pkg-pr-new
+name: Publish to pkg.pr.new
 
 on:
   push:
-    branches:
-      - solid-drei
-      - solid-drei-2
-  pull_request: {}
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  pull_request:
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v2.2.4
+      - name: install latest corepack
+        run: npm install corepack@latest -g
 
-      - uses: actions/setup-node@v3
+      - run: corepack enable
+
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
           cache: pnpm
 
       - name: Install dependencies
         run: pnpm install
 
+      - name: Typecheck
+        run: pnpm lint:types
+
       - name: Build
-        run: pnpm run build
+        run: pnpm build
 
       - name: Publish preview
-        run: npx pkg-pr-new publish
+        run: pnpx pkg-pr-new publish --compact
