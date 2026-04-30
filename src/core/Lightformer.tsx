@@ -46,8 +46,7 @@ export function Lightformer(_props: LightProps) {
   const c = children(() => props.children)
 
   createRenderEffect(
-    () =>
-      [props.color, props.intensity, props.target, c(), (rest as any).material] as const,
+    () => [props.color, props.intensity, props.target, c(), (rest as any).material] as const,
     () => {
       if (!mesh) return
       if (!c() && !(rest as any).material) {
@@ -68,10 +67,10 @@ export function Lightformer(_props: LightProps) {
   )
 
   const scale = () => {
-    const s = props.scale
-    return Array.isArray(s) && s.length === 2
-      ? ([s[0], s[1], 1] as [number, number, number])
-      : (s as number | [number, number, number])
+    const _scale = props.scale
+    return Array.isArray(_scale) && _scale.length === 2
+      ? ([_scale[0], _scale[1], 1] as [number, number, number])
+      : (_scale as number | [number, number, number])
   }
 
   return (
@@ -83,9 +82,7 @@ export function Lightformer(_props: LightProps) {
       ) : (
         <Entity from={PlaneGeometry} />
       )}
-      {c() ? (
-        c()
-      ) : !(rest as any).material ? (
+      {c() ?? !(rest as any).material ? (
         <Entity
           from={MeshBasicMaterial}
           toneMapped={props.toneMapped}
