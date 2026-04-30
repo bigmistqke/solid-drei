@@ -74,7 +74,7 @@ export const PlaneSlider: Component<{
   let offsetY0: number = 0
   const [isHovered, setIsHovered] = createSignal(false)
 
-  const onPointerDown = (e: S3.Event<PointerEvent>) => {
+  const onPointerDown = (e: S3.ThreeEvent<PointerEvent>) => {
     if (annotations) {
       divRef.innerText = `${translation[(props.axis + 1) % 3].toFixed(2)}, ${translation[
         (props.axis + 2) % 3
@@ -82,7 +82,7 @@ export const PlaneSlider: Component<{
       divRef.style.display = 'block'
     }
     e.stopPropagation()
-    const clickPoint = e.point.clone()
+    const clickPoint = e.intersection.point.clone()
     const origin = new THREE.Vector3().setFromMatrixPosition(objRef.matrixWorld)
     const e1 = new THREE.Vector3().setFromMatrixColumn(objRef.matrixWorld, 0).normalize()
     const e2 = new THREE.Vector3().setFromMatrixColumn(objRef.matrixWorld, 1).normalize()
@@ -97,7 +97,7 @@ export const PlaneSlider: Component<{
     e.target.setPointerCapture(e.pointerId)
   }
 
-  const onPointerMove = (e: S3.Event<PointerEvent>) => {
+  const onPointerMove = (e: S3.ThreeEvent<PointerEvent>) => {
     e.stopPropagation()
     if (!isHovered()) setIsHovered(true)
 
@@ -106,7 +106,7 @@ export const PlaneSlider: Component<{
       const [minX, maxX] = translationLimits?.[(props.axis + 1) % 3] || [undefined, undefined]
       const [minY, maxY] = translationLimits?.[(props.axis + 2) % 3] || [undefined, undefined]
 
-      ray.copy(e.ray)
+      ray.copy(store.raycaster.ray)
       ray.intersectPlane(plane, intersection)
       ray.direction.negate()
       ray.intersectPlane(plane, intersection)
@@ -140,7 +140,7 @@ export const PlaneSlider: Component<{
     }
   }
 
-  const onPointerUp = (e: S3.Event<PointerEvent>) => {
+  const onPointerUp = (e: S3.ThreeEvent<PointerEvent>) => {
     if (annotations) {
       divRef.style.display = 'none'
     }
@@ -152,8 +152,7 @@ export const PlaneSlider: Component<{
     e.target.releasePointerCapture(e.pointerId)
   }
 
-  const onPointerOut = (e: S3.Event<PointerEvent>) => {
-    e.stopPropagation()
+  const onPointerLeave = (_e: S3.ThreeEvent<PointerEvent, { stoppable: false }>) => {
     setIsHovered(false)
   }
 
@@ -200,7 +199,7 @@ export const PlaneSlider: Component<{
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
-          onPointerOut={onPointerOut}
+          onPointerLeave={onPointerLeave}
           scale={length()}
           userData={userData}
         >

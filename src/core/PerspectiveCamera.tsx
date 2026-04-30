@@ -4,7 +4,7 @@ import { Show, createEffect, createMemo, onCleanup, onMount } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { Entity, useFrame, useThree } from 'solid-three'
 import { Color, Group, Scene, Texture, PerspectiveCamera as ThreePerspectiveCamera } from 'three'
-import { useFBO } from './unported/useFBO'
+import { useFBO } from './useFBO'
 
 interface PerspectiveCameraProps extends Omit<S3.Props<ThreePerspectiveCamera>, 'children'> {
   ref?: Ref<ThreePerspectiveCamera>

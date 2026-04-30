@@ -1,4 +1,4 @@
-import { Component, createMemo, createSignal, useContext } from 'solid-js'
+import { type Component, createMemo, createSignal, useContext } from 'solid-js'
 import { Entity, type S3, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { ConeGeometry, CylinderGeometry, Group, Mesh, MeshBasicMaterial } from 'three'
@@ -75,7 +75,7 @@ export const AxisArrow: Component<{ direction: THREE.Vector3; axis: 0 | 1 | 2 }>
     }
     e.stopPropagation()
     const rotation = new THREE.Matrix4().extractRotation(objRef.matrixWorld)
-    const clickPoint = e.point.clone()
+    const clickPoint = e.intersection.point.clone()
     const origin = new THREE.Vector3().setFromMatrixPosition(objRef.matrixWorld)
     const dir = props.direction.clone().applyMatrix4(rotation).normalize()
     clickInfo = { clickPoint, dir }
@@ -94,7 +94,7 @@ export const AxisArrow: Component<{ direction: THREE.Vector3; axis: 0 | 1 | 2 }>
       const { clickPoint, dir } = clickInfo
       const [min, max] = translationLimits?.[props.axis] || [undefined, undefined]
 
-      let offset = calculateOffset(clickPoint, dir, e.ray.origin, e.ray.direction)
+      let offset = calculateOffset(clickPoint, dir, store.raycaster.ray.origin, store.raycaster.ray.direction)
       if (min !== undefined) {
         offset = Math.max(offset, min - offset0)
       }
@@ -122,8 +122,7 @@ export const AxisArrow: Component<{ direction: THREE.Vector3; axis: 0 | 1 | 2 }>
     e.target.releasePointerCapture(e.pointerId)
   }
 
-  const onPointerOut = (e: S3.ThreeEvent<PointerEvent>) => {
-    e.stopPropagation()
+  const onPointerLeave = (_e: S3.ThreeEvent<PointerEvent, { stoppable: false }>) => {
     setIsHovered(false)
   }
 
@@ -150,7 +149,7 @@ export const AxisArrow: Component<{ direction: THREE.Vector3; axis: 0 | 1 | 2 }>
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
-        onPointerOut={onPointerOut}
+        onPointerLeave={onPointerLeave}
       >
         {annotations && (
           <Html position={[0, -memo().coneLength, 0]}>

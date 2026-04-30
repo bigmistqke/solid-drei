@@ -40,7 +40,7 @@ import {
 import { FullScreenQuad } from 'three-stdlib'
 import { shaderMaterial } from '../materials/shaderMaterial'
 import { Edges } from './Edges'
-import { useFBO } from './unported/useFBO'
+import { useFBO } from './useFBO'
 import { useHelper } from './useHelper'
 
 /**********************************************************************************/

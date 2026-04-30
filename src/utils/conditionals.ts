@@ -146,7 +146,7 @@ export function whenMemo<
     : Exclude<TAccessor, null | undefined | false>,
   const TResult,
 >(accessor: TAccessor, callback: (value: TValues, prev?: NoInfer<TResult> | undefined) => TResult) {
-  return createMemo<TResult | undefined>(prev => check(accessor, value => callback(value, prev)))
+  return createMemo<TResult | undefined>(prev => check(accessor, (value: TValues) => callback(value, prev)))
 }
 
 export function whenComputed<

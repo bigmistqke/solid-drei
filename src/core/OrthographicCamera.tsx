@@ -5,7 +5,7 @@ import { createEffect, createMemo, onCleanup, Show } from 'solid-js'
 import { Entity, useFrame, useThree, type S3 } from 'solid-three'
 import * as THREE from 'three'
 import { OrthographicCamera as ThreeOrthographicCamera } from 'three'
-import { useFBO } from './unported/useFBO'
+import { useFBO } from './useFBO'
 
 type OrthographicCameraProps = S3.Props<ThreeOrthographicCamera> & {
   ref?: THREE.Camera | ((value: S3.Meta<THREE.Camera>) => void)

@@ -1,4 +1,4 @@
-import { Component, createMemo, createSignal, useContext } from 'solid-js'
+import { type Component, createMemo, createSignal, useContext } from 'solid-js'
 import { Entity, type S3, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { Group } from 'three'
@@ -104,7 +104,7 @@ export const AxisRotator: Component<{
       divRef.style.display = 'block'
     }
     e.stopPropagation()
-    const clickPoint = e.point.clone()
+    const clickPoint = e.intersection.point.clone()
     const origin = new THREE.Vector3().setFromMatrixPosition(objRef.matrixWorld)
     const e1 = new THREE.Vector3().setFromMatrixColumn(objRef.matrixWorld, 0).normalize()
     const e2 = new THREE.Vector3().setFromMatrixColumn(objRef.matrixWorld, 1).normalize()
@@ -124,7 +124,7 @@ export const AxisRotator: Component<{
       const { clickPoint, origin, e1, e2, normal, plane } = clickInfo
       const [min, max] = rotationLimits?.[props.axis] || [undefined, undefined]
 
-      ray.copy(e.ray)
+      ray.copy(store.raycaster.ray)
       ray.intersectPlane(plane, intersection)
       ray.direction.negate()
       ray.intersectPlane(plane, intersection)
@@ -171,8 +171,7 @@ export const AxisRotator: Component<{
     e.target.releasePointerCapture(e.pointerId)
   }
 
-  const onPointerOut = (e: any) => {
-    e.stopPropagation()
+  const onPointerLeave = (_e: S3.ThreeEvent<PointerEvent, { stoppable: false }>) => {
     setIsHovered(false)
   }
 
@@ -201,7 +200,7 @@ export const AxisRotator: Component<{
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
-      onPointerOut={onPointerOut}
+      onPointerLeave={onPointerLeave}
       matrix={matrixL()}
       matrixAutoUpdate={false}
     >
