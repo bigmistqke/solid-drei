@@ -1,12 +1,5 @@
 import { processProps } from '@/utils'
-import { check } from '@/utils/conditionals'
-import {
-  type Accessor,
-  type ParentProps,
-  createRenderEffect,
-  createSignal,
-  untrack,
-} from 'solid-js'
+import { type Accessor, type ParentProps, createRenderEffect, createSignal } from 'solid-js'
 import { Entity, type S3 } from 'solid-three'
 import {
   Color,
@@ -68,41 +61,54 @@ export function useSurfaceSampler(
   )
 
   createRenderEffect(
-    () => mesh(),
     () => {
-      check(mesh, mesh => {
-        const sampler = new MeshSurfaceSampler(mesh)
-        if (weight) sampler.setWeightAttribute(weight)
-        sampler.build()
+      const _mesh = mesh()
+      if (!_mesh) {
+        return [] as const
+      }
 
-        const position = new Vector3()
-        const normal = new Vector3()
-        const color = new Color()
-        const dummy = new Object3D()
+      const sampler = new MeshSurfaceSampler(_mesh)
+      if (weight) sampler.setWeightAttribute(weight)
+      sampler.build()
 
-        mesh.updateMatrixWorld(true)
+      _mesh.updateMatrixWorld(true)
 
-        for (let i = 0; i < count; i++) {
-          sampler.sample(position, normal, color)
+      return [sampler, _mesh, instanceMesh?.()] as const
+    },
+    ([sampler, mesh, instanceMesh]) => {
+      if (!sampler || !mesh) {
+        return
+      }
 
-          if (typeof transform === 'function') {
-            transform({ dummy, sampledMesh: mesh, position, normal, color }, i)
-          } else {
-            dummy.position.copy(position)
-          }
+      const position = new Vector3()
+      const normal = new Vector3()
+      const color = new Color()
+      const dummy = new Object3D()
 
-          dummy.updateMatrix()
-          check(instanceMesh, instanceMesh => instanceMesh.setMatrixAt(i, dummy.matrix))
-          untrack(() => dummy.matrix.toArray(buffer().array, i * 16))
+      for (let i = 0; i < count; i++) {
+        sampler.sample(position, normal, color)
+
+        if (typeof transform === 'function') {
+          transform({ dummy, sampledMesh: mesh, position, normal, color }, i)
+        } else {
+          dummy.position.copy(position)
         }
 
-        check(instanceMesh, instanceMesh => (instanceMesh.instanceMatrix.needsUpdate = true))
+        dummy.updateMatrix()
 
-        untrack(() => {
-          buffer().needsUpdate = true
-          setBuffer(buffer => buffer.clone() as InstancedBufferAttribute)
-        })
-      })
+        if (instanceMesh) {
+          instanceMesh.setMatrixAt(i, dummy.matrix)
+        }
+
+        dummy.matrix.toArray(buffer().array, i * 16)
+      }
+
+      if (instanceMesh) {
+        instanceMesh.instanceMatrix.needsUpdate = true
+      }
+
+      buffer().needsUpdate = true
+      setBuffer(buffer)
     },
   )
 
