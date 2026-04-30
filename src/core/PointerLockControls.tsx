@@ -1,10 +1,9 @@
 import { processProps } from '@/utils'
-import { createEffect, createSignal, type JSXElement } from 'solid-js'
+import { createEffect, createSignal, onCleanup, onSettled, type JSXElement } from 'solid-js'
 import { autodispose, CenterRaycaster, useProps, useThree, type S3 } from 'solid-three'
 import * as THREE from 'three'
 // import type { EventDispatcher } from 'node_modules/three-stdlib/controls/EventDispatcher'
 import { PointerLockControls as ThreePointerLockControls } from 'three-stdlib'
-import { useAutolisten } from './useAutolisten'
 export declare class EventDispatcher<TEventMap extends {} = {}> {
   private _listeners
   /**
@@ -69,54 +68,58 @@ export function usePointerLockControls(options: PointerLockControlsProps) {
   const [locked, setLocked] = createSignal(false)
 
   const controls = autodispose(new ThreePointerLockControls(store.camera))
-  const autolisten = useAutolisten(controls)
 
   // Apply props to controls
   useProps(controls, rest)
 
-  // Attach event listeners and toggle locked
-  autolisten('lock', event => (setLocked(true), config.onLock?.(event)))
-  autolisten('unlock', event => (setLocked(false), config.onUnlock?.(event)))
+  // Attach lock/unlock listeners
+  onSettled(() => {
+    const ac = new AbortController()
+    controls.addEventListener('lock', event => (setLocked(true), config.onLock?.(event)), { signal: ac.signal })
+    controls.addEventListener('unlock', event => (setLocked(false), config.onUnlock?.(event)), { signal: ac.signal })
+    return () => ac.abort()
+  })
 
   createEffect(
     () => config.enabled,
-    (enabled) => {
+    enabled => {
       if (!enabled) return
 
-      // If useCenterRaycaster isn't disabled
-      // we push a CenterRaycaster to the raycaster-stack
       createEffect(
         () => locked() && config.useCenterRaycaster,
-        (should) => {
+        should => {
           if (!should) return
           return store.setRaycaster(new CenterRaycaster())
         },
       )
 
-      // Connect controls to domElement (defaults to store.canvas)
       createEffect(
         () => [controls, config.domElement] as const,
         ([ctrl, elem]) => ctrl.connect(elem),
       )
 
-      // Attach event listener
       createEffect(
         () => config.onChange,
-        onChange => autolisten('change', onChange),
+        onChange => {
+          if (!onChange) return
+          const ac = new AbortController()
+          controls.addEventListener('change', onChange, { signal: ac.signal })
+          return () => ac.abort()
+        },
       )
 
-      // Bind lock to either the domElement (defaults to store.canvas)
-      // or elements selected by given selector
       createEffect(
         () => [config.selector, config.domElement] as const,
         ([selector, domElement]) => {
+          const ac = new AbortController()
           if (selector) {
-            document.querySelectorAll(selector).forEach(element => {
-              useAutolisten(element)('click', controls.lock.bind(controls))
-            })
+            document.querySelectorAll(selector).forEach(element =>
+              element.addEventListener('click', controls.lock.bind(controls), { signal: ac.signal }),
+            )
           } else {
-            useAutolisten(domElement)('click', controls.lock.bind(controls))
+            domElement.addEventListener('click', controls.lock.bind(controls), { signal: ac.signal })
           }
+          return () => ac.abort()
         },
       )
     },

@@ -1,5 +1,5 @@
 import { processProps, useRef } from '@/utils'
-import { createRenderEffect } from 'solid-js'
+import { children, createRenderEffect } from 'solid-js'
 import { Entity, type S3 } from 'solid-three'
 import * as THREE from 'three'
 import { DoubleSide, Mesh, MeshBasicMaterial, PlaneGeometry, RingGeometry, Vector3 } from 'three'
@@ -43,12 +43,14 @@ export function Lightformer(_props: LightProps) {
   let mesh: Mesh = null!
   useRef(_props, () => mesh)
 
+  const c = children(() => props.children)
+
   createRenderEffect(
     () =>
-      [props.color, props.intensity, props.target, props.children, (rest as any).material] as const,
+      [props.color, props.intensity, props.target, c(), (rest as any).material] as const,
     () => {
       if (!mesh) return
-      if (!props.children && !(rest as any).material) {
+      if (!c() && !(rest as any).material) {
         const mat = mesh.material as MeshBasicMaterial
         if (mat?.color) {
           mat.color.set(props.color as THREE.ColorRepresentation)
@@ -81,8 +83,8 @@ export function Lightformer(_props: LightProps) {
       ) : (
         <Entity from={PlaneGeometry} />
       )}
-      {props.children ? (
-        props.children
+      {c() ? (
+        c()
       ) : !(rest as any).material ? (
         <Entity
           from={MeshBasicMaterial}

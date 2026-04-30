@@ -1,11 +1,10 @@
 import { processProps } from '@/utils'
 import type { Ref } from 'solid-js'
-import { createEffect, createRenderEffect, createMemo } from 'solid-js'
+import { createEffect, createMemo, createRenderEffect } from 'solid-js'
 import type { S3 } from 'solid-three'
 import { autodispose, useFrame, useProps, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { TrackballControls as TreeTrackballControls } from 'three-stdlib'
-import { useAutolisten } from './useAutolisten'
 
 export interface TrackballControlsProps
   extends Omit<S3.Props<typeof TreeTrackballControls>, 'object'> {
@@ -35,51 +34,52 @@ export function useTrackballControls(props: TrackballControlsProps) {
 
   const controls = createMemo(() => {
     const ctrl = autodispose(new TreeTrackballControls(props.camera || store.camera))
-    const autolisten = useAutolisten(() => ctrl)
 
-    // Connect to domElement (defaults to store.canvas)
     createRenderEffect(
       () => config.domElement,
-      (elem) => ctrl.connect(elem),
+      domElement => controls.connect(domElement),
     )
-
-    // Attach event-listeners
     createRenderEffect(
       () => config.onStart,
-      (onStart) => autolisten('start', onStart),
+      onStart => {
+        if (!onStart) return
+        controls.addEventListener('start', onStart)
+        return () => controls.removeEventListener('start', onStart)
+      },
     )
     createRenderEffect(
       () => config.onChange,
-      (onChange) => autolisten('change', onChange),
+      onChange => {
+        if (!onChange) return
+        controls.addEventListener('change', onChange)
+        return () => controls.removeEventListener('change', onChange)
+      },
     )
     createRenderEffect(
       () => config.onEnd,
-      (onEnd) => autolisten('end', onEnd),
+      onEnd => {
+        if (!onEnd) return
+        controls.addEventListener('end', onEnd)
+        return () => controls.removeEventListener('end', onEnd)
+      },
     )
-
-    // Call resize-handler whenever store.bounds updates
     createRenderEffect(
       () => store.bounds,
-      () => { ctrl.handleResize() },
+      () => { controls.handleResize() },
     )
 
-    // Apply props
-    useProps(ctrl, rest, store)
+    useProps(controls, rest, store)
+    useFrame(() => controls.update())
 
-    // Update controls on each frame
-    useFrame(() => ctrl.update())
-
-    return ctrl
+    return controls
   })
 
   createEffect(
     () => config.enabled,
-    (enabled) => { controls().enabled = enabled },
+    enabled => { controls().enabled = enabled },
   )
 
-  return {
-    controls,
-  }
+  return { controls }
 }
 
 export function TrackballControls(props: TrackballControlsProps) {

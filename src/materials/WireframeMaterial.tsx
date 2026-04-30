@@ -1,5 +1,5 @@
-import { createEffect } from 'solid-js'
 import type { Accessor } from 'solid-js'
+import { createRenderEffect } from 'solid-js'
 import * as THREE from 'three'
 import { shaderMaterial } from './shaderMaterial'
 
@@ -176,7 +176,7 @@ export function setWireframeOverride(
   material.onBeforeCompile = shader => {
     shader.uniforms = {
       ...shader.uniforms,
-      ...uniforms(),
+      ...uniforms,
     }
 
     shader.vertexShader = shader.vertexShader.replace(
@@ -240,98 +240,98 @@ export function useWireframeUniforms(
   uniforms: Accessor<WireFrameUniforms>,
   props: WireframeMaterialProps,
 ) {
-  createEffect(
-    () => props.fillOpacity,
-    () => {
-      uniforms().fillOpacity.value = props.fillOpacity ?? uniforms().fillOpacity.value
-    },
-  )
-  createEffect(
-    () => props.fillMix,
-    () => {
-      uniforms().fillMix.value = props.fillMix ?? uniforms().fillMix.value
-    },
-  )
-  createEffect(
-    () => props.strokeOpacity,
-    () => {
-      uniforms().strokeOpacity.value = props.strokeOpacity ?? uniforms().strokeOpacity.value
-    },
-  )
-  createEffect(
-    () => props.thickness,
-    () => {
-      uniforms().thickness.value = props.thickness ?? uniforms().thickness.value
-    },
-  )
-  createEffect(
-    () => props.colorBackfaces,
-    () => {
-      uniforms().colorBackfaces.value = !!props.colorBackfaces
-    },
-  )
-  createEffect(
-    () => props.dash,
-    () => {
-      uniforms().dash.value = !!props.dash
-    },
-  )
-  createEffect(
-    () => props.dashInvert,
-    () => {
-      uniforms().dashInvert.value = !!props.dashInvert
-    },
-  )
-  createEffect(
-    () => props.dashRepeats,
-    () => {
-      uniforms().dashRepeats.value = props.dashRepeats ?? uniforms().dashRepeats.value
-    },
-  )
-  createEffect(
-    () => props.dashLength,
-    () => {
-      uniforms().dashLength.value = props.dashLength ?? uniforms().dashLength.value
-    },
-  )
-  createEffect(
-    () => props.squeeze,
-    () => {
-      uniforms().squeeze.value = !!props.squeeze
-    },
-  )
-  createEffect(
-    () => props.squeezeMin,
-    () => {
-      uniforms().squeezeMin.value = props.squeezeMin ?? uniforms().squeezeMin.value
-    },
-  )
-  createEffect(
-    () => props.squeezeMax,
-    () => {
-      uniforms().squeezeMax.value = props.squeezeMax ?? uniforms().squeezeMax.value
-    },
-  )
-  createEffect(
-    () => props.stroke,
-    () => {
-      uniforms().stroke.value = props.stroke
-        ? new THREE.Color(props.stroke)
-        : uniforms().stroke.value
-    },
-  )
-  createEffect(
-    () => props.fill,
-    () => {
-      uniforms().fill.value = props.fill ? new THREE.Color(props.fill) : uniforms().fill.value
-    },
-  )
-  createEffect(
-    () => props.backfaceStroke,
-    () => {
-      uniforms().backfaceStroke.value = props.backfaceStroke
-        ? new THREE.Color(props.backfaceStroke)
-        : uniforms().backfaceStroke.value
-    },
-  )
+  createRenderEffect(uniforms, uniforms => {
+    createRenderEffect(
+      () => props.fillOpacity,
+      () => {
+        uniforms.fillOpacity.value = props.fillOpacity ?? uniforms.fillOpacity.value
+      },
+    )
+    createRenderEffect(
+      () => props.fillMix,
+      () => {
+        uniforms.fillMix.value = props.fillMix ?? uniforms.fillMix.value
+      },
+    )
+    createRenderEffect(
+      () => props.strokeOpacity,
+      () => {
+        uniforms.strokeOpacity.value = props.strokeOpacity ?? uniforms.strokeOpacity.value
+      },
+    )
+    createRenderEffect(
+      () => props.thickness,
+      () => {
+        uniforms.thickness.value = props.thickness ?? uniforms.thickness.value
+      },
+    )
+    createRenderEffect(
+      () => props.colorBackfaces,
+      () => {
+        uniforms.colorBackfaces.value = !!props.colorBackfaces
+      },
+    )
+    createRenderEffect(
+      () => props.dash,
+      () => {
+        uniforms.dash.value = !!props.dash
+      },
+    )
+    createRenderEffect(
+      () => props.dashInvert,
+      () => {
+        uniforms.dashInvert.value = !!props.dashInvert
+      },
+    )
+    createRenderEffect(
+      () => props.dashRepeats,
+      () => {
+        uniforms.dashRepeats.value = props.dashRepeats ?? uniforms.dashRepeats.value
+      },
+    )
+    createRenderEffect(
+      () => props.dashLength,
+      () => {
+        uniforms.dashLength.value = props.dashLength ?? uniforms.dashLength.value
+      },
+    )
+    createRenderEffect(
+      () => props.squeeze,
+      () => {
+        uniforms.squeeze.value = !!props.squeeze
+      },
+    )
+    createRenderEffect(
+      () => props.squeezeMin,
+      () => {
+        uniforms.squeezeMin.value = props.squeezeMin ?? uniforms.squeezeMin.value
+      },
+    )
+    createRenderEffect(
+      () => props.squeezeMax,
+      () => {
+        uniforms.squeezeMax.value = props.squeezeMax ?? uniforms.squeezeMax.value
+      },
+    )
+    createRenderEffect(
+      () => props.stroke,
+      () => {
+        uniforms.stroke.value = props.stroke ? new THREE.Color(props.stroke) : uniforms.stroke.value
+      },
+    )
+    createRenderEffect(
+      () => props.fill,
+      () => {
+        uniforms.fill.value = props.fill ? new THREE.Color(props.fill) : uniforms.fill.value
+      },
+    )
+    createRenderEffect(
+      () => props.backfaceStroke,
+      () => {
+        uniforms.backfaceStroke.value = props.backfaceStroke
+          ? new THREE.Color(props.backfaceStroke)
+          : uniforms.backfaceStroke.value
+      },
+    )
+  })
 }

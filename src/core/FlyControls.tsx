@@ -5,7 +5,6 @@ import type { S3 } from 'solid-three'
 import { useFrame, useProps, useThree } from 'solid-three'
 import type { Event, OrthographicCamera, PerspectiveCamera } from 'three'
 import { FlyControls as ThreeFlyControls } from 'three-stdlib'
-import { useAutolisten } from './useAutolisten'
 
 export interface FlyControlsProps extends Omit<S3.Props<typeof ThreeFlyControls>, 'object'> {
   ref?: Ref<ThreeFlyControls>
@@ -38,32 +37,28 @@ export function useFlyControls(props: FlyControlsProps) {
   )
 
   const controls = createMemo(() => new ThreeFlyControls(config.camera, config.domElement))
-  const autolisten = useAutolisten(controls)
 
-  // Attach event-listeners
   createEffect(
-    () => config.onChange,
-    onChange => autolisten('change', onChange),
+    () => [controls(), config.onChange] as const,
+    ([_controls, onChange]) => {
+      if (!onChange) return
+      _controls.addEventListener('change', onChange)
+      return () => _controls.removeEventListener('change', onChange)
+    },
   )
 
-  // Connect controls to DOM
   createEffect(
     () => [controls(), config.domElement] as const,
-    ([ctrl, elem]) => ctrl.connect(elem),
+    ([_controls, domElement]) => _controls.connect(domElement),
   )
 
   createEffect(
     () => config.enabled,
-    (enabled) => { (controls() as ThreeFlyControls & { enabled: boolean }).enabled = enabled },
+    enabled => { (controls() as ThreeFlyControls & { enabled: boolean }).enabled = enabled },
   )
 
-  // Attach controls to props.ref
   useRef(props, controls)
-
-  // Update controls with props
   useProps(controls, rest)
-
-  // Update controls on each frame
   useFrame((_, delta) => controls().update(delta))
 
   return {

@@ -2,6 +2,7 @@ import { processProps } from '@/utils'
 import {
   For,
   Show,
+  children,
   createMemo,
   type Accessor,
   type Component,
@@ -106,6 +107,7 @@ export function Clone(_props: CloneProps) {
   })
 
   const singleObj = createMemo(() => (!Array.isArray(object()) ? (object() as Object3D) : null))
+  const c = children(() => props.children)
 
   return (
     <Show
@@ -125,7 +127,7 @@ export function Clone(_props: CloneProps) {
               />
             )}
           </For>
-          {props.children}
+          {c()}
         </Entity>
       }
     >
@@ -163,7 +165,7 @@ export function Clone(_props: CloneProps) {
                 }) as unknown as JSXElement
               }
             </For>
-            {props.children}
+            {c()}
             {injectChildren}
           </El>
         )

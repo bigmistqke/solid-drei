@@ -379,8 +379,8 @@ export function MeshTransmissionMaterial(_props: MeshTransmissionMaterialProps) 
   useRef(_props, () => ref)
 
   const discardMaterial = new DiscardMaterial()
-  const fboBack = useFBO(props.backsideResolution || props.resolution)
-  const fboMain = useFBO(props.resolution)
+  const fboBack = useFBO(() => props.backsideResolution || props.resolution)
+  const fboMain = useFBO(() => props.resolution)
 
   let oldBg: THREE.Scene['background']
   let oldTone: THREE.WebGLRenderer['toneMapping']

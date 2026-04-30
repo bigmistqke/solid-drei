@@ -1,5 +1,5 @@
 import { processProps } from '@/utils'
-import { Show, createMemo, onSettled } from 'solid-js'
+import { Show, createEffect, createMemo } from 'solid-js'
 import { Entity, createT } from 'solid-three'
 import {
   BufferAttribute,
@@ -172,38 +172,38 @@ function WireframeWithoutCustomGeo(
   const [props, rest] = processProps(_props, { simplify: false }, ['simplify'])
 
   const object3d = new Object3D()
+  const geometry = getInputGeometry(object3d)
+
+  if (!geometry) {
+    throw new Error(
+      'Wireframe: Must be a child of a Mesh, Line or Points object or specify a geometry prop.',
+    )
+  }
+
+  const parentMesh = object3d.parent as Mesh<BufferGeometry, Material>
+  const og = parentMesh.material.clone()
 
   const uniforms = createMemo(getUniforms)
-  useWireframeUniforms(uniforms, rest)
 
-  onSettled(() => {
-    const geometry = getInputGeometry(object3d)
+  setWireframeOverride(parentMesh.material, uniforms)
 
-    if (!geometry) {
-      throw new Error(
-        'Wireframe: Must be a child of a Mesh, Line or Points object or specify a geometry prop.',
-      )
-    }
-    const original = geometry.clone()
+  createEffect(
+    () => props.simplify,
+    simplify => {
+      const original = geometry.clone()
 
-    setBarycentricCoordinates(geometry, props.simplify)
+      useWireframeUniforms(uniforms, rest)
 
-    return () => {
-      geometry.copy(original)
-      original.dispose()
-    }
-  })
+      setBarycentricCoordinates(geometry, simplify)
 
-  onSettled(() => {
-    const parentMesh = object3d.parent as Mesh<BufferGeometry, Material>
-    const og = parentMesh.material.clone()
-
-    setWireframeOverride(parentMesh.material, uniforms)
-    return () => {
-      parentMesh.material.dispose()
-      parentMesh.material = og
-    }
-  })
+      return () => {
+        geometry.copy(original)
+        original.dispose()
+        parentMesh.material.dispose()
+        parentMesh.material = og
+      }
+    },
+  )
 
   return <Entity from={object3d} />
 }

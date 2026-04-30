@@ -4,7 +4,6 @@ import type { S3 } from 'solid-three'
 import { Entity, Portal, useThree } from 'solid-three'
 import { Group, Object3D, type Event as ThreeEvent } from 'three'
 import { TransformControls as ThreeTransformControls } from 'three-stdlib'
-import { useAutolisten } from './useAutolisten'
 
 export interface TransformControlsProps
   extends Omit<
@@ -72,22 +71,41 @@ export function TransformControls(props: TransformControlsProps) {
       props.camera ?? store.camera,
       props.domElement ?? store.canvas,
     )
-    const autolisten = useAutolisten(controls)
     createEffect(
       () => props.onChange,
-      onChange => autolisten('change', onChange),
+      onChange => {
+        if (!onChange) return
+        const ac = new AbortController()
+        controls.addEventListener('change', onChange, { signal: ac.signal })
+        return () => ac.abort()
+      },
     )
     createEffect(
       () => props.onMouseUp,
-      onMouseUp => autolisten('mouseUp', onMouseUp),
+      onMouseUp => {
+        if (!onMouseUp) return
+        const ac = new AbortController()
+        controls.addEventListener('mouseUp', onMouseUp, { signal: ac.signal })
+        return () => ac.abort()
+      },
     )
     createEffect(
       () => props.onMouseDown,
-      onMouseDown => autolisten('mouseDown', onMouseDown),
+      onMouseDown => {
+        if (!onMouseDown) return
+        const ac = new AbortController()
+        controls.addEventListener('mouseDown', onMouseDown, { signal: ac.signal })
+        return () => ac.abort()
+      },
     )
     createEffect(
       () => props.onObjectChange,
-      onObjectChange => autolisten('objectChange', onObjectChange),
+      onObjectChange => {
+        if (!onObjectChange) return
+        const ac = new AbortController()
+        controls.addEventListener('objectChange', onObjectChange, { signal: ac.signal })
+        return () => ac.abort()
+      },
     )
     return controls
   })

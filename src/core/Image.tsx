@@ -136,7 +136,7 @@ function ImageBase(props: Omit<ImageProps, 'url'>) {
 
 function ImageWithUrl(props: UrlImageProps) {
   const rest = omit(props, 'url')
-  const texture = useTexture(props.url)
+  const texture = useTexture(() => props.url)
   return (
     <Show when={texture()}>
       <ImageBase {...rest} texture={texture()} />

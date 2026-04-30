@@ -1,6 +1,5 @@
 /* eslint react-hooks/exhaustive-deps: 1 */
 import { defaultProps, processProps } from '@/utils'
-import { check } from '@/utils/conditionals'
 import { createEffect, createMemo, createSignal } from 'solid-js'
 import { Entity, type S3, useThree } from 'solid-three'
 import * as THREE from 'three'
@@ -369,11 +368,13 @@ export function FacemeshEye(_props: FacemeshEyeProps) {
 
   const rotation = new THREE.Euler()
   const _update: FacemeshEyeApi['_update'] = (faceGeometry, faceBlendshapes, sphere) => {
-    check(eyeMeshRef, eyeMeshRef => {
+    const _eyeMeshRef = eyeMeshRef()
+
+    if (_eyeMeshRef) {
       sphere ??= _computeSphere(faceGeometry)
-      eyeMeshRef.position.copy(sphere!.center)
-      eyeMeshRef.scale.setScalar(sphere!.radius)
-    })
+      _eyeMeshRef.position.copy(sphere!.center)
+      _eyeMeshRef.scale.setScalar(sphere!.radius)
+    }
 
     if (faceBlendshapes && irisDirRef()) {
       const blendshapes = FacemeshEyeDefaults.blendshapes[props.side]

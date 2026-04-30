@@ -93,7 +93,7 @@ export const MeshPortalMaterial = (_props: PortalProps) => {
 
   let materialRef: PortalMaterialType = null!
   const store = useThree()
-  const maskRenderTarget = useFBO(props.resolution, props.resolution)
+  const maskRenderTarget = useFBO(() => props.resolution, () => props.resolution)
 
   const [priority, setPriority] = createSignal(0)
 

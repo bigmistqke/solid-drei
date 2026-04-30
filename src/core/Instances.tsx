@@ -117,19 +117,9 @@ export function Instances(_props: InstancesProps) {
     'frames',
   ])
 
-  const {
-    context,
-    Context: ContextComponent,
-    instance,
-  } = (() => {
-    const ctx = createContext<Api | undefined>()
-    const Context = ctx
-    return {
-      context: ctx,
-      Context,
-      instance: (p: InstanceProps) => <Instance context={ctx} {...p} />,
-    }
-  })()
+  const context = createContext<Api | undefined>()
+  const ContextComponent = context
+  const instance = (p: InstanceProps) => <Instance context={context} {...p} />
 
   let parentRef: THREE.InstancedMesh = null!
   const instances: PositionMesh[] = []

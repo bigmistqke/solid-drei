@@ -1,4 +1,3 @@
-import { useAutolisten } from '@/core'
 import { processProps } from '@/utils'
 import type { Accessor } from 'solid-js'
 import { createContext, createEffect, createSignal, useContext } from 'solid-js'
@@ -57,7 +56,6 @@ export function Select(props: SelectProps) {
 
   const store = useThree()
   const group = new Group()
-  const autolisten = useAutolisten(document)
 
   const [downed, down] = createSignal(false)
   const [hovered, hover] = createSignal(false)
@@ -167,7 +165,9 @@ export function Select(props: SelectProps) {
 
       let previous: Mesh<BufferGeometry, Material | Material[]>[] = []
 
-      autolisten(
+      const controller = new AbortController()
+
+      document.addEventListener(
         'pointerdown',
         (event: PointerEvent) => {
           if (event.shiftKey) {
@@ -175,9 +175,9 @@ export function Select(props: SelectProps) {
             prepareRay(event, selBox.startPoint)
           }
         },
-        { passive: true },
+        { passive: true, signal: controller.signal },
       )
-      autolisten(
+      document.addEventListener(
         'pointermove',
         (event: PointerEvent) => {
           if (downed()) {
@@ -196,17 +196,18 @@ export function Select(props: SelectProps) {
             // }
           }
         },
-        { passive: true, capture: true },
+        { passive: true, capture: true, signal: controller.signal },
       )
-      autolisten(
+      document.addEventListener(
         'pointerup',
         () => {
           if (downed()) {
             onSelectOver()
           }
         },
-        { passive: true },
+        { passive: true, signal: controller.signal },
       )
+      return () => controller.abort()
     },
   )
 

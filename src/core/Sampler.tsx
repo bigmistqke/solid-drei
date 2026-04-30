@@ -1,5 +1,11 @@
 import { processProps } from '@/utils'
-import { type Accessor, type ParentProps, createRenderEffect, createSignal } from 'solid-js'
+import {
+  type Accessor,
+  type ParentProps,
+  createEffect,
+  createRenderEffect,
+  createSignal,
+} from 'solid-js'
 import { Entity, type S3 } from 'solid-three'
 import {
   Color,
@@ -51,34 +57,48 @@ export function useSurfaceSampler(
   weight?: string,
   instanceMesh?: Accessor<InstancedMesh | undefined>,
 ) {
-  const arr = Array.from({ length: count }, () => [
-    1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1,
-  ]).flat()
-
-  const [buffer, setBuffer] = createSignal<InstancedBufferAttribute>(
-    new InstancedBufferAttribute(Float32Array.from(arr), 16),
-    { equals: false },
+  const buffer = new InstancedBufferAttribute(
+    Float32Array.from(
+      (function* () {
+        for (let i = 0; i < count; i++) {
+          yield 1
+          yield 0
+          yield 0
+          yield 0
+          yield 0
+          yield 1
+          yield 0
+          yield 0
+          yield 0
+          yield 0
+          yield 1
+          yield 0
+          yield 0
+          yield 0
+          yield 0
+          yield 1
+        }
+      })(),
+    ),
+    16,
   )
+  const [listen, trigger] = createSignal<void>(undefined, { equals: false })
 
-  createRenderEffect(
-    () => {
-      const _mesh = mesh()
-      if (!_mesh) {
-        return [] as const
-      }
-
-      const sampler = new MeshSurfaceSampler(_mesh)
-      if (weight) sampler.setWeightAttribute(weight)
-      sampler.build()
-
-      _mesh.updateMatrixWorld(true)
-
-      return [sampler, _mesh, instanceMesh?.()] as const
-    },
-    ([sampler, mesh, instanceMesh]) => {
-      if (!sampler || !mesh) {
+  createEffect(
+    () => [mesh(), instanceMesh?.()] as const,
+    ([mesh, instanceMesh]) => {
+      if (!mesh) {
         return
       }
+
+      const sampler = new MeshSurfaceSampler(mesh)
+
+      if (weight) {
+        sampler.setWeightAttribute(weight)
+      }
+
+      sampler.build()
+      mesh.updateMatrixWorld(true)
 
       const position = new Vector3()
       const normal = new Vector3()
@@ -100,19 +120,22 @@ export function useSurfaceSampler(
           instanceMesh.setMatrixAt(i, dummy.matrix)
         }
 
-        dummy.matrix.toArray(buffer().array, i * 16)
+        dummy.matrix.toArray(buffer.array, i * 16)
       }
 
       if (instanceMesh) {
         instanceMesh.instanceMatrix.needsUpdate = true
       }
 
-      buffer().needsUpdate = true
-      setBuffer(buffer)
+      buffer.needsUpdate = true
+      trigger()
     },
   )
 
-  return buffer
+  return () => {
+    listen()
+    return buffer
+  }
 }
 
 type SamplerProps = ParentProps<{

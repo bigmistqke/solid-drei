@@ -1,5 +1,5 @@
 import { defaultProps } from '@/utils'
-import { Show, createEffect, createSignal, type JSX } from 'solid-js'
+import { Show, children, createEffect, createSignal, type JSX } from 'solid-js'
 import { Entity, Portal, useFrame, useThree } from 'solid-three'
 import * as THREE from 'three'
 import { Group } from 'three'
@@ -60,6 +60,7 @@ export type ContainerProps = {
 
 function Container(props: ContainerProps) {
   const store = useThree()
+  const c = children(() => props.children)
 
   let frameCount = 0
 
@@ -111,7 +112,7 @@ function Container(props: ContainerProps) {
           state.gl.clear(true, true)
         } else {
           // When children are present render the portalled scene, otherwise the default scene
-          state.gl.render(props.children ? store.scene : props.scene, store.camera)
+          state.gl.render(c() ? store.scene : props.scene, store.camera)
         }
         // Restore the default state
         state.gl.setScissorTest(true)
@@ -120,7 +121,7 @@ function Container(props: ContainerProps) {
     { priority: props.index },
   )
 
-  return <>{props.children}</>
+  return <>{c()}</>
 }
 
 export type ViewProps = {

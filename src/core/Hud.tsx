@@ -43,8 +43,6 @@ function RenderHud(props: RenderHudProps) {
     },
   )
 
-  // return new Group()
-
   // Without an element that receives pointer events state.pointer will always be 0/0
   return <Entity from={Group} onPointerLeave={() => null} />
 }

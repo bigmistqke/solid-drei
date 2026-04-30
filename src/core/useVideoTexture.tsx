@@ -1,4 +1,5 @@
 import { processProps } from '@/utils'
+import type { AccessorMaybe } from '@/utils/types'
 import { createEffect, createMemo } from 'solid-js'
 import { useThree, type S3 } from 'solid-three'
 import * as THREE from 'three'
@@ -8,7 +9,10 @@ interface VideoTextureProps extends S3.Props<HTMLVideoElement> {
   start?: boolean
 }
 
-export function useVideoTexture(src: string | MediaStream, _props?: Partial<VideoTextureProps>) {
+export function useVideoTexture(
+  src: AccessorMaybe<string | MediaStream>,
+  _props?: Partial<VideoTextureProps>,
+) {
   const [props, rest] = processProps(
     _props || {},
     {
@@ -24,35 +28,36 @@ export function useVideoTexture(src: string | MediaStream, _props?: Partial<Vide
 
   const store = useThree()
 
-  return createMemo(
-    () =>
-      new Promise<THREE.VideoTexture>(resolve => {
-        const video = (
-          <video
-            src={typeof src === 'string' && src}
-            prop:srcObject={(src instanceof MediaStream && src) || undefined}
-            crossorigin={props.crossOrigin as any}
-            loop={props.loop}
-            muted={props.muted}
-            {...rest}
-          />
-        ) as unknown as HTMLVideoElement
+  const video = (
+    <video
+      src={typeof src === 'string' && src}
+      prop:srcObject={(src instanceof MediaStream && src) || undefined}
+      crossorigin={props.crossOrigin as any}
+      loop={props.loop}
+      muted={props.muted}
+      {...rest}
+    />
+  ) as unknown as HTMLVideoElement
 
-        const texture = new THREE.VideoTexture(video)
+  return createMemo(() => {
+    const { promise, resolve } = Promise.withResolvers<THREE.VideoTexture>()
 
-        createEffect(
-          () => props.start,
-          start => start && texture.image.play(),
-        )
+    const texture = new THREE.VideoTexture(video)
 
-        if ('colorSpace' in texture) {
-          texture.colorSpace = store.gl.outputColorSpace
-        } else {
-          // @ts-expect-error
-          texture.encoding = store.gl.outputEncoding
-        }
+    createEffect(
+      () => props.start,
+      start => start && texture.image.play(),
+    )
 
-        video.addEventListener(props.unsuspend, () => resolve(texture))
-      }),
-  )
+    if ('colorSpace' in texture) {
+      texture.colorSpace = store.gl.outputColorSpace
+    } else {
+      // @ts-expect-error
+      texture.encoding = store.gl.outputEncoding
+    }
+
+    video.addEventListener(props.unsuspend, () => resolve(texture))
+
+    return promise
+  })
 }

@@ -3,7 +3,6 @@ import { createEffect, createMemo, createRenderEffect, type JSXElement, type Ref
 import { autodispose, useFrame, useProps, useThree, type S3 } from 'solid-three'
 import { OrthographicCamera, PerspectiveCamera, type Event } from 'three'
 import { OrbitControls as ThreeOrbitControls } from 'three-stdlib'
-import { useAutolisten } from './useAutolisten'
 
 export interface OrbitControlsOptions extends S3.Props<typeof ThreeOrbitControls> {
   ref?: Ref<ThreeOrbitControls>
@@ -54,23 +53,34 @@ export function useOrbitControls(options?: OrbitControlsOptions) {
 
   const controls = createMemo<ThreeOrbitControls>(() => {
     const controls = autodispose(new ThreeOrbitControls(config.camera))
-    const autolisten = useAutolisten(controls)
 
     createRenderEffect(
       () => config.domElement,
-      (elem) => controls.connect(elem),
+      elem => controls.connect(elem),
     )
     createRenderEffect(
       () => config.onStart,
-      (onStart) => autolisten('start', onStart),
+      onStart => {
+        if (!onStart) return
+        controls.addEventListener('start', onStart)
+        return () => controls.removeEventListener('start', onStart)
+      },
     )
     createRenderEffect(
       () => config.onChange,
-      (onChange) => autolisten('change', onChange),
+      onChange => {
+        if (!onChange) return
+        controls.addEventListener('change', onChange)
+        return () => controls.removeEventListener('change', onChange)
+      },
     )
     createRenderEffect(
       () => config.onEnd,
-      (onEnd) => autolisten('end', onEnd),
+      onEnd => {
+        if (!onEnd) return
+        controls.addEventListener('end', onEnd)
+        return () => controls.removeEventListener('end', onEnd)
+      },
     )
 
     useProps(controls, rest, store)
@@ -81,10 +91,8 @@ export function useOrbitControls(options?: OrbitControlsOptions) {
 
   createEffect(
     () => config.enabled,
-    (enabled) => { controls().enabled = enabled },
+    enabled => { controls().enabled = enabled },
   )
 
-  return {
-    controls,
-  }
+  return { controls }
 }
